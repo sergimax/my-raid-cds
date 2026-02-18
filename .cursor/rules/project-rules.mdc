@@ -1,0 +1,50 @@
+---
+description: Basic rules for AI agents working on this project
+alwaysApply: true
+---
+
+# Project Rules for AI Agents
+
+## Code Style
+
+- Use TypeScript strictly; avoid `any` unless necessary
+- Prefer functional components and hooks in React
+- Use meaningful names; keep functions small and focused
+
+## Commit Messages
+
+Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
+
+```
+<type>[optional scope]: <description>
+```
+
+- **feat:** new feature (MINOR)
+- **fix:** bug fix (PATCH)
+- **docs:** documentation only
+- **style:** formatting, no code change
+- **refactor:** code change that neither fixes nor adds a feature
+- **perf:** performance improvement
+- **test:** adding or updating tests
+- **chore:** build, CI, tooling
+- **BREAKING CHANGE:** use `!` after type/scope or footer (MAJOR)
+
+Example: `feat(auth): add login form`
+
+## Editing
+
+- Prefer editing existing files over creating new ones
+- Preserve existing formatting and indentation
+- Run linter after changes; fix any new issues
+
+## Project Context
+
+- This is a React + TypeScript + Vite app
+- Follow existing patterns and structure in the codebase
+- Check README and config files before adding dependencies
+
+## Communication
+
+- Be direct and concise
+- Prefer answering questions before making edits when unclear
+- Explain non-obvious changes briefly
