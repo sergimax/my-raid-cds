@@ -20,3 +20,20 @@ td {
 th {
   background: #f5f5f5;
 }
+
+.dungeon-name {
+  font-weight: 600;
+  color: #213547;
+}
+
+.dungeon-mode {
+  margin-left: 0.5rem;
+  font-size: 0.9em;
+  color: #646cff;
+}
+
+.dungeon-item-level {
+  margin-left: 0.5rem;
+  font-size: 0.85em;
+  color: #888;
+}
