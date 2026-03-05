@@ -13,11 +13,11 @@ function App() {
 
   const handleAddCharacter = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!characterName.trim()) return;
+    if (!characterName.trim() || !characterClass) return;
     const newCharacter: CharacterRecord = {
       id: crypto.randomUUID(),
       name: characterName.trim(),
-      class: characterClass || undefined,
+      class: characterClass,
     };
     setCharacters((prev) => [...prev, newCharacter]);
     setCharacterName("");

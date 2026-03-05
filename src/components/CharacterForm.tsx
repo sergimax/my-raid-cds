@@ -20,11 +20,12 @@ export function CharacterForm({
       <label>
         Name
         <input
-          type="text"
-          value={characterName}
-          onChange={(e) => setCharacterName(e.target.value)}
-          placeholder="Character name"
-        />
+            type="text"
+            value={characterName}
+            onChange={(e) => setCharacterName(e.target.value)}
+            placeholder="Character name"
+            required
+          />
       </label>
       <label>
         Class
@@ -34,6 +35,7 @@ export function CharacterForm({
             const c = Classes.find((cls) => cls.name === e.target.value);
             setCharacterClass(c ?? "");
           }}
+          required
         >
           <option value="">Select class</option>
           {Classes.map((c) => (
