@@ -39,7 +39,11 @@ export function CharacterForm({
         >
           <option value="">Select class</option>
           {Classes.map((c) => (
-            <option key={c.name} value={c.name}>
+            <option
+              key={c.name}
+              value={c.name}
+              style={{ color: c.color ? `#${c.color}` : undefined }}
+            >
               {c.name}
             </option>
           ))}
