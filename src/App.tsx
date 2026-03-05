@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { CharacterForm } from "./components/CharacterForm.tsx";
 import { CharacterList } from "./components/CharacterList.tsx";
+import { DungeonTable } from "./components/DungeonTable.tsx";
 import { DungeonList } from "./data/dungeons.ts";
 import { Classes, type CharacterRecord, type CharacterClass } from "./types/characters.ts";
-import { DungeonMode } from "./types/dungeons.ts";
 import "./App.css";
 
 function App() {
@@ -53,29 +53,7 @@ function App() {
           </li>
         ))}
       </ul>
-      <table>
-        <thead>
-          <tr>
-            <th>Dungeon</th>
-          </tr>
-        </thead>
-        <tbody>
-          {DungeonList.map((dungeon, i) => (
-            <tr key={i}>
-              <td>
-                <span className="dungeon-name">{dungeon.name}</span>
-                <span className="dungeon-mode">
-                  {dungeon.size}
-                  {dungeon.mode === DungeonMode.HEROIC ? " 💀" : ""}
-                </span>
-                <span className="dungeon-item-level">
-                  {dungeon.itemLevel.join("...")}
-                </span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DungeonTable dungeons={DungeonList} />
     </>
   );
 }
