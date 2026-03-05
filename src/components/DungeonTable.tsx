@@ -26,39 +26,46 @@ export function DungeonTable({
       <thead>
         <tr>
           <th>Dungeon</th>
-          {characters.map((char) => (
-            <th key={char.id}>
-              <div className="dungeon-table-character-header">
-                {char.class && (
-                  <img src={char.class.icon} alt="" className="class-icon" />
-                )}
-                <span
-                  className="dungeon-table-character-name"
-                  style={{
-                    color: char.class?.color ? `#${char.class.color}` : undefined,
-                  }}
-                >
-                  {char.name}
-                </span>
-                <button
-                  type="button"
-                  className="reset-character-btn"
-                  onClick={() => onResetCharacter(char.id)}
-                  aria-label={`Reset ${char.name}`}
-                >
-                  🔄
-                </button>
-                <button
-                  type="button"
-                  className="delete-character-btn"
-                  onClick={() => onDeleteCharacter(char.id)}
-                  aria-label={`Delete ${char.name}`}
-                >
-                  🗑️
-                </button>
-              </div>
-            </th>
-          ))}
+          {characters.map((char) => {
+            const hasToggles = Object.values(
+              dungeonToggles[char.id] ?? {}
+            ).some(Boolean);
+            return (
+              <th key={char.id}>
+                <div className="dungeon-table-character-header">
+                  {char.class && (
+                    <img src={char.class.icon} alt="" className="class-icon" />
+                  )}
+                  <span
+                    className="dungeon-table-character-name"
+                    style={{
+                      color: char.class?.color ? `#${char.class.color}` : undefined,
+                    }}
+                  >
+                    {char.name}
+                  </span>
+                  {hasToggles && (
+                    <button
+                      type="button"
+                      className="reset-character-btn"
+                      onClick={() => onResetCharacter(char.id)}
+                      aria-label={`Reset ${char.name}`}
+                    >
+                      Reset
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="delete-character-btn"
+                    onClick={() => onDeleteCharacter(char.id)}
+                    aria-label={`Delete ${char.name}`}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </th>
+            );
+          })}
         </tr>
       </thead>
       <tbody>
