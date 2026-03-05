@@ -53,7 +53,11 @@ function App() {
           </li>
         ))}
       </ul>
-      <DungeonTable dungeons={DungeonList} />
+      <DungeonTable
+        dungeons={DungeonList}
+        characters={characters}
+        onDeleteCharacter={handleDeleteCharacter}
+      />
     </>
   );
 }

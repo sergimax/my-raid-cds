@@ -140,3 +140,18 @@ th {
   font-size: 0.85em;
   color: #888;
 }
+
+.dungeon-table-character-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dungeon-table-character-name {
+  font-weight: 600;
+}
+
+.dungeon-table-character-cell {
+  vertical-align: middle;
+}
