@@ -3,3 +3,20 @@
   margin: 0 auto;
   padding: 2rem;
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+th,
+td {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background: #f5f5f5;
+}
