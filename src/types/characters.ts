@@ -25,3 +25,5 @@ export type Character = {
   level?: number;
   gearScore?: number;
 };
+
+export type CharacterRecord = Character & { id: string };
