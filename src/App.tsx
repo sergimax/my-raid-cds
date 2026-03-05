@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CharacterForm } from "./components/CharacterForm.tsx";
 import { CharacterList } from "./components/CharacterList.tsx";
 import { DungeonTable } from "./components/DungeonTable.tsx";
 import { DungeonList } from "./data/dungeons.ts";
+import {
+  loadCharacters,
+  loadDungeonToggles,
+  saveToStorage,
+} from "./storage.ts";
 import { Classes, type CharacterRecord, type CharacterClass } from "./types/characters.ts";
 import "./App.css";
 
@@ -11,8 +16,13 @@ type DungeonToggles = Record<string, Record<number, boolean>>;
 function App() {
   const [characterName, setCharacterName] = useState("");
   const [characterClass, setCharacterClass] = useState<CharacterClass | "">("");
-  const [characters, setCharacters] = useState<CharacterRecord[]>([]);
-  const [dungeonToggles, setDungeonToggles] = useState<DungeonToggles>({});
+  const [characters, setCharacters] = useState<CharacterRecord[]>(loadCharacters);
+  const [dungeonToggles, setDungeonToggles] =
+    useState<DungeonToggles>(loadDungeonToggles);
+
+  useEffect(() => {
+    saveToStorage(characters, dungeonToggles);
+  }, [characters, dungeonToggles]);
 
   const handleAddCharacter = (e: React.FormEvent) => {
     e.preventDefault();
