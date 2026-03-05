@@ -1,4 +1,5 @@
 import { DungeonList } from "./data/dungeons.ts";
+import { Classes } from "./types/characters.ts";
 import { DungeonMode } from "./types/dungeons.ts";
 import "./App.css";
 
@@ -8,6 +9,18 @@ function App() {
       <header>
         <h1>My Raid CDs</h1>
       </header>
+      <ul className="class-list">
+        {Classes.map((c) => (
+          <li
+            key={c.name}
+            className="class-item"
+            style={{ color: c.color ? `#${c.color}` : undefined }}
+          >
+            <img src={c.icon} alt="" className="class-icon" />
+            <span>{c.name}</span>
+          </li>
+        ))}
+      </ul>
       <table>
         <thead>
           <tr>
