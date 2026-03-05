@@ -30,7 +30,7 @@ export function CharacterList({ characters, onDelete }: CharacterListProps) {
             onClick={() => onDelete(char.id)}
             aria-label={`Delete ${char.name}`}
           >
-            Delete
+            🗑️
           </button>
         </li>
       ))}

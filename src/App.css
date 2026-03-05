@@ -72,6 +72,20 @@
   color: #a1a1aa;
 }
 
+.reset-character-btn {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85em;
+  cursor: pointer;
+  background: #3f3f46;
+  color: #e4e4e7;
+  border: 1px solid #52525b;
+  border-radius: 4px;
+}
+
+.reset-character-btn:hover {
+  background: #52525b;
+}
+
 .delete-character-btn {
   margin-left: auto;
   padding: 0.25rem 0.6rem;
@@ -157,4 +171,47 @@ th {
 
 .dungeon-table-character-cell {
   vertical-align: middle;
+  text-align: center;
+}
+
+.dungeon-toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dungeon-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.dungeon-toggle-slider {
+  position: relative;
+  width: 2.5rem;
+  height: 1.25rem;
+  background-color: #3f3f46;
+  border-radius: 1.25rem;
+  transition: background-color 0.2s;
+}
+
+.dungeon-toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  left: 0.125rem;
+  top: 0.125rem;
+  background-color: #e4e4e7;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.dungeon-toggle input:checked + .dungeon-toggle-slider {
+  background-color: #6366f1;
+}
+
+.dungeon-toggle input:checked + .dungeon-toggle-slider::before {
+  transform: translateX(1.25rem);
 }
