@@ -5,9 +5,13 @@ export const DungeonMode = {
 
 export type DungeonMode = (typeof DungeonMode)[keyof typeof DungeonMode];
 
+export const DungeonSizes = [10, 20, 25, 40] as const;
+
+export type DungeonSize = (typeof DungeonSizes)[number];
+
 export type Dungeon = {
   name: string;
-  size: 10 | 20 | 25 | 40;
+  size: DungeonSize;
   itemLevel: Array<number>;
   mode: DungeonMode;
 };

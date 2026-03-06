@@ -1,4 +1,4 @@
-import { Classes, type CharacterClass } from "../types/characters.ts";
+import { Classes, type CharacterClass } from "../../types/characters.ts";
 
 type CharacterFormProps = {
   characterName: string;

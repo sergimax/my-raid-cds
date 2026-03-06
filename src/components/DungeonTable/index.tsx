@@ -1,6 +1,6 @@
-import type { CharacterRecord } from "../types/characters.ts";
-import type { DungeonRecord } from "../types/dungeons.ts";
-import { DungeonMode } from "../types/dungeons.ts";
+import type { CharacterRecord } from "../../types/characters.ts";
+import type { DungeonRecord } from "../../types/dungeons.ts";
+import { DungeonMode } from "../../types/dungeons.ts";
 
 type DungeonToggles = Record<string, Record<string, boolean>>;
 

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { CharacterForm } from "./components/CharacterForm.tsx";
-import { DungeonForm } from "./components/DungeonForm.tsx";
-import { DungeonTable } from "./components/DungeonTable.tsx";
+import {
+  CharacterForm,
+  DungeonForm,
+  DungeonTable,
+} from "./components/index.ts";
 import { DungeonList } from "./data/dungeons.ts";
 import {
   loadCharacters,

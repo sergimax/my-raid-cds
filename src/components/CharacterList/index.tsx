@@ -1,4 +1,4 @@
-import type { CharacterRecord } from "../types/characters.ts";
+import type { CharacterRecord } from "../../types/characters.ts";
 
 type CharacterListProps = {
   characters: CharacterRecord[];

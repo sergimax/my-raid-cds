@@ -1,6 +1,6 @@
 import { DungeonList } from "./data/dungeons.ts";
 import { Classes, type CharacterRecord } from "./types/characters.ts";
-import type { DungeonRecord } from "./types/dungeons.ts";
+import { DungeonSizes, type DungeonRecord } from "./types/dungeons.ts";
 
 const STORAGE_KEY = "my-raid-cds";
 
@@ -13,7 +13,7 @@ type StoredCharacter = {
 type StoredDungeon = {
   id: string;
   name: string;
-  size: 10 | 20 | 25 | 40;
+  size: DungeonRecord["size"];
   itemLevel: number[];
   mode: string;
 };
@@ -43,7 +43,7 @@ function loadStoredData(): StoredData | null {
 
 function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {
   const mode = stored.mode === "Heroic" ? "Heroic" : "Normal";
-  const size = [10, 20, 25, 40].includes(stored.size) ? stored.size : 10;
+  const size = DungeonSizes.includes(stored.size) ? stored.size : 10;
   if (!Array.isArray(stored.itemLevel) || !stored.itemLevel.every(Number.isFinite)) {
     return null;
   }
