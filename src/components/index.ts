@@ -1,4 +1,4 @@
-export { CharacterForm } from "./CharacterForm/index.tsx";
-export { CharacterList } from "./CharacterList/index.tsx";
-export { DungeonForm } from "./DungeonForm/index.tsx";
-export { DungeonTable } from "./DungeonTable/index.tsx";
+export { CharacterForm } from "./character-form/index.tsx";
+export { CharacterList } from "./character-list/index.tsx";
+export { DungeonForm } from "./dungeon-form/index.tsx";
+export { DungeonTable } from "./dungeon-table/index.tsx";
