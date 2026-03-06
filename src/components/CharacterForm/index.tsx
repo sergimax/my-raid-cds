@@ -1,12 +1,5 @@
-import { Classes, type CharacterClass } from "../../types/characters.ts";
-
-type CharacterFormProps = {
-  characterName: string;
-  setCharacterName: (value: string) => void;
-  characterClass: CharacterClass | "";
-  setCharacterClass: (value: CharacterClass | "") => void;
-  onSubmit: (e: React.FormEvent) => void;
-};
+import { Classes } from "../../types/characters.ts";
+import type { CharacterFormProps } from "./types.ts";
 
 export function CharacterForm({
   characterName,

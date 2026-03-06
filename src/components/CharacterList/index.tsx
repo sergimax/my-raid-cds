@@ -1,9 +1,4 @@
-import type { CharacterRecord } from "../../types/characters.ts";
-
-type CharacterListProps = {
-  characters: CharacterRecord[];
-  onDelete: (id: string) => void;
-};
+import type { CharacterListProps } from "./types.ts";
 
 export function CharacterList({ characters, onDelete }: CharacterListProps) {
   if (characters.length === 0) return null;

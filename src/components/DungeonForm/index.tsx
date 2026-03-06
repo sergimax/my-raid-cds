@@ -1,12 +1,5 @@
-import {
-  DungeonMode,
-  DungeonSizes,
-  type DungeonRecord,
-} from "../../types/dungeons.ts";
-
-type DungeonFormProps = {
-  onSubmit: (dungeon: Omit<DungeonRecord, "id">) => void;
-};
+import { DungeonMode, DungeonSizes, type DungeonRecord } from "../../types/dungeons.ts";
+import type { DungeonFormProps } from "./types.ts";
 
 export function DungeonForm({ onSubmit }: DungeonFormProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

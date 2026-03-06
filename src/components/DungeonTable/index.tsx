@@ -1,18 +1,5 @@
-import type { CharacterRecord } from "../../types/characters.ts";
-import type { DungeonRecord } from "../../types/dungeons.ts";
 import { DungeonMode } from "../../types/dungeons.ts";
-
-type DungeonToggles = Record<string, Record<string, boolean>>;
-
-type DungeonTableProps = {
-  dungeons: DungeonRecord[];
-  characters: CharacterRecord[];
-  dungeonToggles: DungeonToggles;
-  onDungeonToggle: (characterId: string, dungeonId: string) => void;
-  onDeleteDungeon: (dungeonId: string) => void;
-  onResetCharacter: (characterId: string) => void;
-  onDeleteCharacter: (id: string) => void;
-};
+import type { DungeonTableProps } from "./types.ts";
 
 export function DungeonTable({
   dungeons,
