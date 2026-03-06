@@ -1,5 +1,5 @@
 import { DungeonMode, DungeonSizes, type DungeonRecord } from "../../types/dungeons.ts";
-import type { DungeonFormProps } from "./types.ts";
+import type { DungeonFormProps } from "./types";
 import "./styles.css";
 
 export function DungeonForm({ onSubmit }: DungeonFormProps) {

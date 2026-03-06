@@ -1,4 +1,4 @@
-import type { CharacterListProps } from "./types.ts";
+import type { CharacterListProps } from "./types";
 import "./styles.css";
 
 export function CharacterList({ characters, onDelete }: CharacterListProps) {
