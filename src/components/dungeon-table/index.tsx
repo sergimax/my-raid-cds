@@ -72,7 +72,6 @@ export function DungeonTable({
           <tr key={dungeon.id}>
             <td>
               <div className="dungeon-table-dungeon-cell">
-                <span className="dungeon-name">{dungeon.name}</span>
                 <span
                   className={`dungeon-mode dungeon-mode--${
                     dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
@@ -81,6 +80,7 @@ export function DungeonTable({
                   {dungeon.size}
                   {dungeon.mode === DungeonMode.HEROIC ? " 💀" : ""}
                 </span>
+                <span className="dungeon-name">{dungeon.name}</span>
                 <span
                   className={`dungeon-item-level dungeon-item-level--tier-${getItemLevelTier(dungeon.itemLevel)}`}
                 >
