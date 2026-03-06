@@ -1,0 +1,45 @@
+.dungeon-form {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.dungeon-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9em;
+  font-weight: 500;
+}
+
+.dungeon-form input,
+.dungeon-form select,
+.dungeon-form .add-dungeon-btn {
+  height: 2.25rem;
+  box-sizing: border-box;
+}
+
+.dungeon-form input,
+.dungeon-form select {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9em;
+  min-width: 100px;
+  background-color: #27272a;
+  border: 1px solid #3f3f46;
+  color: #e4e4e7;
+}
+
+.dungeon-form .add-dungeon-btn {
+  padding: 0 1rem;
+  font-size: 0.9em;
+  cursor: pointer;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.dungeon-form .add-dungeon-btn:hover {
+  background: #4f46e5;
+}

@@ -1,4 +1,5 @@
 import type { CharacterListProps } from "./types.ts";
+import "./CharacterList.css";
 
 export function CharacterList({ characters, onDelete }: CharacterListProps) {
   if (characters.length === 0) return null;

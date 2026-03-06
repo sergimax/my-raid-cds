@@ -1,5 +1,6 @@
 import { DungeonMode } from "../../types/dungeons.ts";
 import type { DungeonTableProps } from "./types.ts";
+import "./DungeonTable.css";
 
 export function DungeonTable({
   dungeons,
@@ -11,7 +12,7 @@ export function DungeonTable({
   onDeleteCharacter,
 }: DungeonTableProps) {
   return (
-    <table>
+    <table className="dungeon-table">
       <thead>
         <tr>
           <th>Dungeon</th>

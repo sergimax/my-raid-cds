@@ -1,0 +1,148 @@
+.dungeon-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+.dungeon-table th,
+.dungeon-table td {
+  padding: 0.5rem 1rem;
+  text-align: left;
+  border: 1px solid #3f3f46;
+}
+
+.dungeon-table th {
+  background: #27272a;
+}
+
+.dungeon-table .dungeon-name {
+  font-weight: 600;
+  color: #e4e4e7;
+}
+
+.dungeon-table .dungeon-mode {
+  margin-left: 0.5rem;
+  font-size: 0.9em;
+  color: #818cf8;
+}
+
+.dungeon-table .dungeon-item-level {
+  margin-left: 0.5rem;
+  font-size: 0.85em;
+  color: #71717a;
+}
+
+.dungeon-table .class-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.dungeon-table-character-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dungeon-table-character-name {
+  font-weight: 600;
+}
+
+.dungeon-table-character-cell {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.dungeon-toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.dungeon-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.dungeon-toggle-slider {
+  position: relative;
+  width: 2.5rem;
+  height: 1.25rem;
+  background-color: #3f3f46;
+  border-radius: 1.25rem;
+  transition: background-color 0.2s;
+}
+
+.dungeon-toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  left: 0.125rem;
+  top: 0.125rem;
+  background-color: #e4e4e7;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.dungeon-toggle input:checked + .dungeon-toggle-slider {
+  background-color: #6366f1;
+}
+
+.dungeon-toggle input:checked + .dungeon-toggle-slider::before {
+  transform: translateX(1.25rem);
+}
+
+.dungeon-table .reset-character-btn {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85em;
+  cursor: pointer;
+  background: #3f3f46;
+  color: #e4e4e7;
+  border: 1px solid #52525b;
+  border-radius: 4px;
+}
+
+.dungeon-table .reset-character-btn:hover {
+  background: #52525b;
+}
+
+.dungeon-table .delete-character-btn {
+  margin-left: auto;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85em;
+  cursor: pointer;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.dungeon-table .delete-character-btn:hover {
+  background: #b91c1c;
+}
+
+.dungeon-table-dungeon-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.dungeon-table .delete-dungeon-btn {
+  margin-left: auto;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85em;
+  cursor: pointer;
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.dungeon-table .delete-dungeon-btn:hover {
+  background: #b91c1c;
+}
