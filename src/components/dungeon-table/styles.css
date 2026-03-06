@@ -157,14 +157,14 @@
   padding: 0.25rem 0.6rem;
   font-size: 0.85em;
   cursor: pointer;
-  background: #dc2626;
-  color: white;
-  border: none;
+  background: #7f1d1d;
+  color: #fca5a5;
+  border: 1px solid #991b1b;
   border-radius: 4px;
 }
 
 .dungeon-table .delete-character-btn:hover {
-  background: #b91c1c;
+  background: #991b1b;
 }
 
 .dungeon-table-dungeon-cell {
@@ -179,12 +179,12 @@
   padding: 0.25rem 0.6rem;
   font-size: 0.85em;
   cursor: pointer;
-  background: #dc2626;
-  color: white;
-  border: none;
+  background: #7f1d1d;
+  color: #fca5a5;
+  border: 1px solid #991b1b;
   border-radius: 4px;
 }
 
 .dungeon-table .delete-dungeon-btn:hover {
-  background: #b91c1c;
+  background: #991b1b;
 }
