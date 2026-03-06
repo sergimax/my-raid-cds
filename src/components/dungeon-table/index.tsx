@@ -43,24 +43,26 @@ export function DungeonTable({
                   >
                     {char.name}
                   </span>
-                  {hasToggles && (
+                  <div className="dungeon-table-character-header-actions">
+                    {hasToggles && (
+                      <button
+                        type="button"
+                        className="reset-character-btn"
+                        onClick={() => onResetCharacter(char.id)}
+                        aria-label={`Reset ${char.name}`}
+                      >
+                        🔄
+                      </button>
+                    )}
                     <button
                       type="button"
-                      className="reset-character-btn"
-                      onClick={() => onResetCharacter(char.id)}
-                      aria-label={`Reset ${char.name}`}
+                      className="delete-character-btn"
+                      onClick={() => onDeleteCharacter(char.id)}
+                      aria-label={`Delete ${char.name}`}
                     >
-                      Reset
+                      🗑️
                     </button>
-                  )}
-                  <button
-                    type="button"
-                    className="delete-character-btn"
-                    onClick={() => onDeleteCharacter(char.id)}
-                    aria-label={`Delete ${char.name}`}
-                  >
-                    Delete
-                  </button>
+                  </div>
                 </div>
               </th>
             );
@@ -92,7 +94,7 @@ export function DungeonTable({
                   onClick={() => onDeleteDungeon(dungeon.id)}
                   aria-label={`Delete ${dungeon.name}`}
                 >
-                  Delete
+                  🗑️
                 </button>
               </div>
             </td>
