@@ -1,27 +1,31 @@
 import { useEffect, useState } from "react";
 import { CharacterForm } from "./components/CharacterForm.tsx";
+import { DungeonForm } from "./components/DungeonForm.tsx";
 import { DungeonTable } from "./components/DungeonTable.tsx";
 import { DungeonList } from "./data/dungeons.ts";
 import {
   loadCharacters,
+  loadDungeons,
   loadDungeonToggles,
   saveToStorage,
 } from "./storage.ts";
 import { type CharacterRecord, type CharacterClass } from "./types/characters.ts";
+import type { DungeonRecord } from "./types/dungeons.ts";
 import "./App.css";
 
-type DungeonToggles = Record<string, Record<number, boolean>>;
+type DungeonToggles = Record<string, Record<string, boolean>>;
 
 function App() {
   const [characterName, setCharacterName] = useState("");
   const [characterClass, setCharacterClass] = useState<CharacterClass | "">("");
   const [characters, setCharacters] = useState<CharacterRecord[]>(loadCharacters);
+  const [dungeons, setDungeons] = useState<DungeonRecord[]>(loadDungeons);
   const [dungeonToggles, setDungeonToggles] =
     useState<DungeonToggles>(loadDungeonToggles);
 
   useEffect(() => {
-    saveToStorage(characters, dungeonToggles);
-  }, [characters, dungeonToggles]);
+    saveToStorage(characters, dungeons, dungeonToggles);
+  }, [characters, dungeons, dungeonToggles]);
 
   const handleAddCharacter = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,14 +49,41 @@ function App() {
     });
   };
 
-  const handleDungeonToggle = (characterId: string, dungeonIndex: number) => {
+  const handleDungeonToggle = (characterId: string, dungeonId: string) => {
     setDungeonToggles((prev) => ({
       ...prev,
       [characterId]: {
-        ...prev[characterId],
-        [dungeonIndex]: !(prev[characterId]?.[dungeonIndex] ?? false),
+        ...(prev[characterId] ?? {}),
+        [dungeonId]: !(prev[characterId]?.[dungeonId] ?? false),
       },
     }));
+  };
+
+  const handleAddDungeon = (dungeon: Omit<DungeonRecord, "id">) => {
+    setDungeons((prev) => [
+      ...prev,
+      { ...dungeon, id: crypto.randomUUID() },
+    ]);
+  };
+
+  const handleDeleteDungeon = (dungeonId: string) => {
+    setDungeons((prev) => prev.filter((d) => d.id !== dungeonId));
+    setDungeonToggles((prev) => {
+      const next = { ...prev };
+      for (const charId of Object.keys(next)) {
+        const toggles = { ...next[charId] };
+        delete toggles[dungeonId];
+        next[charId] = toggles;
+      }
+      return next;
+    });
+  };
+
+  const handleResetDungeons = () => {
+    setDungeons(
+      DungeonList.map((d) => ({ ...d, id: crypto.randomUUID() }))
+    );
+    setDungeonToggles({});
   };
 
   const handleResetCharacter = (characterId: string) => {
@@ -74,14 +105,27 @@ function App() {
         setCharacterClass={setCharacterClass}
         onSubmit={handleAddCharacter}
       />
-      <DungeonTable
-        dungeons={DungeonList}
-        characters={characters}
-        dungeonToggles={dungeonToggles}
-        onDungeonToggle={handleDungeonToggle}
-        onResetCharacter={handleResetCharacter}
-        onDeleteCharacter={handleDeleteCharacter}
-      />
+      <div className="dungeon-section">
+        <div className="dungeon-section-header">
+          <DungeonForm onSubmit={handleAddDungeon} />
+          <button
+            type="button"
+            className="reset-dungeons-btn"
+            onClick={handleResetDungeons}
+          >
+            Reset dungeons
+          </button>
+        </div>
+        <DungeonTable
+          dungeons={dungeons}
+          characters={characters}
+          dungeonToggles={dungeonToggles}
+          onDungeonToggle={handleDungeonToggle}
+          onDeleteDungeon={handleDeleteDungeon}
+          onResetCharacter={handleResetCharacter}
+          onDeleteCharacter={handleDeleteCharacter}
+        />
+      </div>
     </>
   );
 }

@@ -11,3 +11,5 @@ export type Dungeon = {
   itemLevel: Array<number>;
   mode: DungeonMode;
 };
+
+export type DungeonRecord = Dungeon & { id: string };

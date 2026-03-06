@@ -1,14 +1,15 @@
 import type { CharacterRecord } from "../types/characters.ts";
-import type { Dungeon } from "../types/dungeons.ts";
+import type { DungeonRecord } from "../types/dungeons.ts";
 import { DungeonMode } from "../types/dungeons.ts";
 
-type DungeonToggles = Record<string, Record<number, boolean>>;
+type DungeonToggles = Record<string, Record<string, boolean>>;
 
 type DungeonTableProps = {
-  dungeons: Dungeon[];
+  dungeons: DungeonRecord[];
   characters: CharacterRecord[];
   dungeonToggles: DungeonToggles;
-  onDungeonToggle: (characterId: string, dungeonIndex: number) => void;
+  onDungeonToggle: (characterId: string, dungeonId: string) => void;
+  onDeleteDungeon: (dungeonId: string) => void;
   onResetCharacter: (characterId: string) => void;
   onDeleteCharacter: (id: string) => void;
 };
@@ -18,6 +19,7 @@ export function DungeonTable({
   characters,
   dungeonToggles,
   onDungeonToggle,
+  onDeleteDungeon,
   onResetCharacter,
   onDeleteCharacter,
 }: DungeonTableProps) {
@@ -69,25 +71,35 @@ export function DungeonTable({
         </tr>
       </thead>
       <tbody>
-        {dungeons.map((dungeon, i) => (
-          <tr key={i}>
+        {dungeons.map((dungeon) => (
+          <tr key={dungeon.id}>
             <td>
-              <span className="dungeon-name">{dungeon.name}</span>
-              <span className="dungeon-mode">
-                {dungeon.size}
-                {dungeon.mode === DungeonMode.HEROIC ? " 💀" : ""}
-              </span>
-              <span className="dungeon-item-level">
-                {dungeon.itemLevel.join("...")}
-              </span>
+              <div className="dungeon-table-dungeon-cell">
+                <span className="dungeon-name">{dungeon.name}</span>
+                <span className="dungeon-mode">
+                  {dungeon.size}
+                  {dungeon.mode === DungeonMode.HEROIC ? " 💀" : ""}
+                </span>
+                <span className="dungeon-item-level">
+                  {dungeon.itemLevel.join("...")}
+                </span>
+                <button
+                  type="button"
+                  className="delete-dungeon-btn"
+                  onClick={() => onDeleteDungeon(dungeon.id)}
+                  aria-label={`Delete ${dungeon.name}`}
+                >
+                  Delete
+                </button>
+              </div>
             </td>
             {characters.map((char) => (
               <td key={char.id} className="dungeon-table-character-cell">
                 <label className="dungeon-toggle">
                   <input
                     type="checkbox"
-                    checked={dungeonToggles[char.id]?.[i] ?? false}
-                    onChange={() => onDungeonToggle(char.id, i)}
+                    checked={dungeonToggles[char.id]?.[dungeon.id] ?? false}
+                    onChange={() => onDungeonToggle(char.id, dungeon.id)}
                     aria-label={`${char.name} - ${dungeon.name}`}
                   />
                   <span className="dungeon-toggle-slider" />
