@@ -1,6 +1,6 @@
 import { DungeonMode } from "../../types/dungeons.ts";
 import type { DungeonTableProps } from "./types.ts";
-import "./dungeon-table.css";
+import "./styles.css";
 
 export function DungeonTable({
   dungeons,

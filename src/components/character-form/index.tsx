@@ -1,6 +1,6 @@
 import { Classes } from "../../types/characters.ts";
 import type { CharacterFormProps } from "./types.ts";
-import "./character-form.css";
+import "./styles.css";
 
 export function CharacterForm({
   characterName,

@@ -43,6 +43,11 @@ Example: `feat(auth): add login form`
 - Follow existing patterns and structure in the codebase
 - Check README and config files before adding dependencies
 
+## Component Structure
+
+- Use **kebab-case** for component directories (e.g. `character-form/`)
+- Each component folder: `index.tsx`, `types.ts`, and `styles.css`
+
 ## Communication
 
 - Be direct and concise

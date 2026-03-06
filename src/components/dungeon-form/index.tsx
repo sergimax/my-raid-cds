@@ -1,6 +1,6 @@
 import { DungeonMode, DungeonSizes, type DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonFormProps } from "./types.ts";
-import "./dungeon-form.css";
+import "./styles.css";
 
 export function DungeonForm({ onSubmit }: DungeonFormProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
