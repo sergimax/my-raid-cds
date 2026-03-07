@@ -27,7 +27,7 @@ export function DungeonTable({
       </caption>
       <thead>
         <tr>
-          <th scope="col">Dungeon</th>
+          <th scope="col" className="dungeon-table-sticky-col">Dungeon</th>
           {characters.map((char) => {
             const hasToggles = Object.values(
               dungeonToggles[char.id] ?? {}
@@ -75,7 +75,7 @@ export function DungeonTable({
       <tbody>
         {dungeons.map((dungeon) => (
           <tr key={dungeon.id}>
-            <td>
+            <td className="dungeon-table-sticky-col">
               <div className="dungeon-table-dungeon-cell">
                 <span
                   className={`dungeon-mode dungeon-mode--${

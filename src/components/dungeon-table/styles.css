@@ -4,6 +4,20 @@
   margin-top: 1.5rem;
 }
 
+.dungeon-table-sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #18181b;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.4);
+  min-width: 140px;
+}
+
+.dungeon-table th.dungeon-table-sticky-col {
+  background: #27272a;
+  z-index: 2;
+}
+
 .dungeon-table caption {
   text-align: left;
   font-size: 0.9em;
