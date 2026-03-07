@@ -22,8 +22,8 @@
   z-index: 1;
   background: #18181b;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.4);
-  min-width: 120px;
-  max-width: 180px;
+  min-width: 140px;
+  max-width: 190px;
 }
 
 .dungeon-table th.dungeon-table-sticky-col {
@@ -263,18 +263,19 @@
 
 .dungeon-table-dungeon-cell {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
-  flex-wrap: nowrap;
-  min-width: 0;
-  overflow: hidden;
+  /* flex-wrap: wrap; */
+}
+
+.dungeon-table-dungeon-cell .dungeon-mode {
+  flex-shrink: 0;
 }
 
 .dungeon-table-dungeon-cell .dungeon-name {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .dungeon-table .delete-dungeon-btn {
