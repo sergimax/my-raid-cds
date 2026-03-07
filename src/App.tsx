@@ -119,15 +119,17 @@ function App() {
             Reset dungeons
           </button>
         </div>
-        <DungeonTable
-          dungeons={dungeons}
-          characters={characters}
-          dungeonToggles={dungeonToggles}
-          onDungeonToggle={handleDungeonToggle}
-          onDeleteDungeon={handleDeleteDungeon}
-          onResetCharacter={handleResetCharacter}
-          onDeleteCharacter={handleDeleteCharacter}
-        />
+        <div className="dungeon-table-wrapper">
+          <DungeonTable
+            dungeons={dungeons}
+            characters={characters}
+            dungeonToggles={dungeonToggles}
+            onDungeonToggle={handleDungeonToggle}
+            onDeleteDungeon={handleDeleteDungeon}
+            onResetCharacter={handleResetCharacter}
+            onDeleteCharacter={handleDeleteCharacter}
+          />
+        </div>
       </div>
       </main>
     </>

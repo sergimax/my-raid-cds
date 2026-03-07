@@ -1,11 +1,31 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  #root {
+    padding: 2rem;
+  }
 }
 
 .dungeon-section {
   margin-top: 1.5rem;
+}
+
+.dungeon-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .dungeon-table-wrapper {
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .dungeon-section-header {
@@ -17,7 +37,7 @@
 }
 
 .reset-dungeons-btn {
-  height: 2.25rem;
+  min-height: 44px;
   box-sizing: border-box;
   padding: 0 1rem;
   font-size: 0.9em;
