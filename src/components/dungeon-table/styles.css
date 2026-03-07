@@ -4,6 +4,13 @@
   margin-top: 1.5rem;
 }
 
+.dungeon-table caption {
+  text-align: left;
+  font-size: 0.9em;
+  color: #a1a1aa;
+  margin-bottom: 0.5rem;
+}
+
 .dungeon-table th,
 .dungeon-table td {
   padding: 0.5rem 1rem;

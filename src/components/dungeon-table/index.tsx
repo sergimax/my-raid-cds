@@ -21,16 +21,19 @@ export function DungeonTable({
   onDeleteCharacter,
 }: DungeonTableProps) {
   return (
-    <table className="dungeon-table">
+    <table className="dungeon-table" aria-label="Dungeon cooldown tracker">
+      <caption>
+        Dungeon cooldowns per character. Toggle to mark cooldowns as used.
+      </caption>
       <thead>
         <tr>
-          <th>Dungeon</th>
+          <th scope="col">Dungeon</th>
           {characters.map((char) => {
             const hasToggles = Object.values(
               dungeonToggles[char.id] ?? {}
             ).some(Boolean);
             return (
-              <th key={char.id}>
+              <th key={char.id} scope="col">
                 <div className="dungeon-table-character-header">
                   {char.class && (
                     <img src={char.class.icon} alt="" className="class-icon" />

@@ -100,6 +100,7 @@ function App() {
       <header>
         <h1>My Raid CDs</h1>
       </header>
+      <main>
       <CharacterForm
         characterName={characterName}
         setCharacterName={setCharacterName}
@@ -128,6 +129,7 @@ function App() {
           onDeleteCharacter={handleDeleteCharacter}
         />
       </div>
+      </main>
     </>
   );
 }
