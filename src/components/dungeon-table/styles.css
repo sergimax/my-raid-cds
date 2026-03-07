@@ -45,8 +45,23 @@
 
 .dungeon-table .dungeon-name {
   font-weight: 600;
-  color: #e4e4e7;
   font-size: 0.95em;
+}
+
+.dungeon-table .dungeon-name--tier-1 {
+  color: #94a3b8;
+}
+
+.dungeon-table .dungeon-name--tier-2 {
+  color: #60a5fa;
+}
+
+.dungeon-table .dungeon-name--tier-3 {
+  color: #a78bfa;
+}
+
+.dungeon-table .dungeon-name--tier-4 {
+  color: #fbbf24;
 }
 
 .dungeon-table .dungeon-mode {
