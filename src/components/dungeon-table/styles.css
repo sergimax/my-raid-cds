@@ -4,6 +4,18 @@
   margin-top: 1.5rem;
 }
 
+.dungeon-table-delete-col {
+  width: 3rem;
+  min-width: 3rem;
+  padding: 0.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.dungeon-table-delete-col .delete-dungeon-btn {
+  margin: 0;
+}
+
 .dungeon-table-sticky-col {
   position: sticky;
   left: 0;
@@ -11,6 +23,7 @@
   background: #18181b;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.4);
   min-width: 120px;
+  max-width: 180px;
 }
 
 .dungeon-table th.dungeon-table-sticky-col {
@@ -93,15 +106,24 @@
 .dungeon-table-character-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem 0.5rem;
   flex-wrap: wrap;
+}
+
+.dungeon-table-character-header-name {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .dungeon-table-character-header-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.25rem;
-  margin-left: auto;
   flex-shrink: 0;
   flex-wrap: nowrap;
 }
@@ -243,7 +265,20 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dungeon-table-dungeon-cell .dungeon-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dungeon-table .delete-dungeon-btn {
+  margin-left: 0;
 }
 
 @media (min-width: 640px) {

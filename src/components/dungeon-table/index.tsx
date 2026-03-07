@@ -27,6 +27,7 @@ export function DungeonTable({
       </caption>
       <thead>
         <tr>
+          <th scope="col" className="dungeon-table-delete-col" aria-label="Delete dungeon" />
           <th scope="col" className="dungeon-table-sticky-col">Dungeon</th>
           {characters.map((char) => {
             const hasToggles = Object.values(
@@ -35,17 +36,19 @@ export function DungeonTable({
             return (
               <th key={char.id} scope="col">
                 <div className="dungeon-table-character-header">
-                  {char.class && (
-                    <img src={char.class.icon} alt="" className="class-icon" />
-                  )}
-                  <span
-                    className="dungeon-table-character-name"
-                    style={{
-                      color: char.class?.color ? `#${char.class.color}` : undefined,
-                    }}
-                  >
-                    {char.name}
-                  </span>
+                  <div className="dungeon-table-character-header-name">
+                    {char.class && (
+                      <img src={char.class.icon} alt="" className="class-icon" />
+                    )}
+                    <span
+                      className="dungeon-table-character-name"
+                      style={{
+                        color: char.class?.color ? `#${char.class.color}` : undefined,
+                      }}
+                    >
+                      {char.name}
+                    </span>
+                  </div>
                   <div className="dungeon-table-character-header-actions">
                     {hasToggles && (
                       <button
@@ -75,10 +78,20 @@ export function DungeonTable({
       <tbody>
         {dungeons.map((dungeon) => (
           <tr key={dungeon.id}>
+            <td className="dungeon-table-delete-col">
+              <button
+                type="button"
+                className="delete-dungeon-btn"
+                onClick={() => onDeleteDungeon(dungeon.id)}
+                aria-label={`Delete ${dungeon.name}`}
+              >
+                🗑️
+              </button>
+            </td>
             <td className="dungeon-table-sticky-col">
               <div
                 className="dungeon-table-dungeon-cell"
-                title={`Item level: ${dungeon.itemLevel.join("...")}`}
+                title={`${dungeon.name} — Item level: ${dungeon.itemLevel.join("...")}`}
               >
                 <span
                   className={`dungeon-mode dungeon-mode--${
@@ -92,14 +105,6 @@ export function DungeonTable({
                 >
                   {dungeon.name}
                 </span>
-                <button
-                  type="button"
-                  className="delete-dungeon-btn"
-                  onClick={() => onDeleteDungeon(dungeon.id)}
-                  aria-label={`Delete ${dungeon.name}`}
-                >
-                  🗑️
-                </button>
               </div>
             </td>
             {characters.map((char) => (
