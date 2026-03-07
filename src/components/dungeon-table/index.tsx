@@ -2,15 +2,6 @@ import { DungeonMode } from "../../types/dungeons.ts";
 import type { DungeonTableProps } from "./types";
 import "./styles.css";
 
-function getItemLevelTier(itemLevel: number[]): number {
-  if (itemLevel.length === 0) return 1;
-  const max = Math.max(...itemLevel);
-  if (max >= 260) return 4;
-  if (max >= 240) return 3;
-  if (max >= 220) return 2;
-  return 1;
-}
-
 export function DungeonTable({
   dungeons,
   characters,
@@ -76,21 +67,18 @@ export function DungeonTable({
         {dungeons.map((dungeon) => (
           <tr key={dungeon.id}>
             <td className="dungeon-table-sticky-col">
-              <div className="dungeon-table-dungeon-cell">
+              <div
+                className="dungeon-table-dungeon-cell"
+                title={`Item level: ${dungeon.itemLevel.join("...")}`}
+              >
                 <span
                   className={`dungeon-mode dungeon-mode--${
                     dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
                   }`}
                 >
                   {dungeon.size}
-                  {dungeon.mode === DungeonMode.HEROIC ? " 💀" : ""}
                 </span>
                 <span className="dungeon-name">{dungeon.name}</span>
-                <span
-                  className={`dungeon-item-level dungeon-item-level--tier-${getItemLevelTier(dungeon.itemLevel)}`}
-                >
-                  ⚔️ {dungeon.itemLevel.join("...")}
-                </span>
                 <button
                   type="button"
                   className="delete-dungeon-btn"
