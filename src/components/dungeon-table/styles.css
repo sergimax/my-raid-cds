@@ -106,7 +106,6 @@
 .dungeon-table-character-header {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.35rem 0.5rem;
   flex-wrap: wrap;
 }
@@ -122,8 +121,8 @@
 .dungeon-table-character-header-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.25rem;
+  margin-left: auto;
   flex-shrink: 0;
   flex-wrap: nowrap;
 }
@@ -278,10 +277,6 @@
   overflow-wrap: break-word;
 }
 
-.dungeon-table .delete-dungeon-btn {
-  margin-left: 0;
-}
-
 @media (min-width: 640px) {
   .dungeon-table .dungeon-mode {
     font-size: 0.8em;
@@ -290,7 +285,7 @@
 }
 
 .dungeon-table .delete-dungeon-btn {
-  margin-left: auto;
+  margin-left: 0;
   font-size: 0.85em;
   cursor: pointer;
   background: #3f3f46;
