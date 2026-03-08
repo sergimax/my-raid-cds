@@ -6,4 +6,5 @@ export type CharacterFormProps = {
   characterClass: CharacterClass | "";
   setCharacterClass: (value: CharacterClass | "") => void;
   onSubmit: (e: React.FormEvent) => void;
+  duplicateError?: string;
 };

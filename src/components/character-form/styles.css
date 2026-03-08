@@ -5,6 +5,17 @@
   flex-wrap: wrap;
 }
 
+.character-form-error {
+  width: 100%;
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9em;
+  color: #fca5a5;
+  background-color: rgba(239, 68, 68, 0.15);
+  border: 1px solid #dc2626;
+  border-radius: 4px;
+}
+
 .character-form label {
   display: flex;
   flex-direction: column;

@@ -29,6 +29,12 @@
   margin-top: 1rem;
 }
 
+.empty-state {
+  color: #a1a1aa;
+  font-size: 0.95em;
+  margin: 0;
+}
+
 .form-section-header {
   margin-bottom: 0.5rem;
 }

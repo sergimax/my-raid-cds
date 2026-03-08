@@ -76,7 +76,17 @@ export function DungeonTable({
         </tr>
       </thead>
       <tbody>
-        {dungeons.map((dungeon) => (
+        {dungeons.length === 0 ? (
+          <tr>
+            <td
+              colSpan={2 + characters.length}
+              className="dungeon-table-empty-state"
+            >
+              Add a dungeon to track
+            </td>
+          </tr>
+        ) : (
+          dungeons.map((dungeon) => (
           <tr key={dungeon.id}>
             <td className="dungeon-table-delete-col">
               <button
@@ -121,7 +131,8 @@ export function DungeonTable({
               </td>
             ))}
           </tr>
-        ))}
+          ))
+        )}
       </tbody>
     </table>
   );

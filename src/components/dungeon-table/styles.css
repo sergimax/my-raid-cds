@@ -38,6 +38,13 @@
   margin-bottom: 0.5rem;
 }
 
+.dungeon-table-empty-state {
+  color: #a1a1aa;
+  font-size: 0.95em;
+  text-align: center;
+  padding: 1.5rem 1rem;
+}
+
 .dungeon-table th,
 .dungeon-table td {
   padding: 0.5rem 0.75rem;

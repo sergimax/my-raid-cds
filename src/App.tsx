@@ -20,6 +20,7 @@ type DungeonToggles = Record<string, Record<string, boolean>>;
 function App() {
   const [characterName, setCharacterName] = useState("");
   const [characterClass, setCharacterClass] = useState<CharacterClass | "">("");
+  const [characterError, setCharacterError] = useState("");
   const [showForms, setShowForms] = useState(false);
   const [characters, setCharacters] = useState<CharacterRecord[]>(loadCharacters);
   const [dungeons, setDungeons] = useState<DungeonRecord[]>(loadDungeons);
@@ -33,12 +34,25 @@ function App() {
     return () => clearTimeout(timeout);
   }, [characters, dungeons, dungeonToggles]);
 
+  const clearCharacterError = () => setCharacterError("");
+
   const handleAddCharacter = (e: React.FormEvent) => {
     e.preventDefault();
+    setCharacterError("");
     if (!characterName.trim() || !characterClass) return;
+    const trimmedName = characterName.trim();
+    const isDuplicate = characters.some(
+      (c) =>
+        c.name.toLowerCase() === trimmedName.toLowerCase() &&
+        c.class?.name === characterClass.name
+    );
+    if (isDuplicate) {
+      setCharacterError("A character with this name and class already exists.");
+      return;
+    }
     const newCharacter: CharacterRecord = {
       id: crypto.randomUUID(),
-      name: characterName.trim(),
+      name: trimmedName,
       class: characterClass,
     };
     setCharacters((prev) => [...prev, newCharacter]);
@@ -117,6 +131,7 @@ function App() {
             type="button"
             className="reset-dungeons-btn"
             onClick={handleResetDungeons}
+            aria-label="Reset dungeons to default list"
           >
             Reset dungeons
           </button>
@@ -124,13 +139,25 @@ function App() {
       </header>
       <main>
         <section className="character-section">
+          {characters.length === 0 && (
+            <p className="empty-state" role="status">
+              Add a character to get started
+            </p>
+          )}
           {showForms && (
             <CharacterForm
               characterName={characterName}
-              setCharacterName={setCharacterName}
+              setCharacterName={(v) => {
+                setCharacterName(v);
+                clearCharacterError();
+              }}
               characterClass={characterClass}
-              setCharacterClass={setCharacterClass}
+              setCharacterClass={(v) => {
+                setCharacterClass(v);
+                clearCharacterError();
+              }}
               onSubmit={handleAddCharacter}
+              duplicateError={characterError}
             />
           )}
         </section>
