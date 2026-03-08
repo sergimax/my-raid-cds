@@ -20,6 +20,7 @@ type DungeonToggles = Record<string, Record<string, boolean>>;
 function App() {
   const [characterName, setCharacterName] = useState("");
   const [characterClass, setCharacterClass] = useState<CharacterClass | "">("");
+  const [showForms, setShowForms] = useState(false);
   const [characters, setCharacters] = useState<CharacterRecord[]>(loadCharacters);
   const [dungeons, setDungeons] = useState<DungeonRecord[]>(loadDungeons);
   const [dungeonToggles, setDungeonToggles] =
@@ -97,20 +98,18 @@ function App() {
 
   return (
     <>
-      <header>
+      <header className="app-header">
         <h1>My Raid CDs</h1>
-      </header>
-      <main>
-      <CharacterForm
-        characterName={characterName}
-        setCharacterName={setCharacterName}
-        characterClass={characterClass}
-        setCharacterClass={setCharacterClass}
-        onSubmit={handleAddCharacter}
-      />
-      <div className="dungeon-section">
-        <div className="dungeon-section-header">
-          <DungeonForm onSubmit={handleAddDungeon} />
+        <div className="app-header-actions">
+
+          <button
+            type="button"
+            className="form-toggle-btn"
+            onClick={() => setShowForms((v) => !v)}
+            aria-expanded={showForms}
+          >
+            {showForms ? "Hide forms" : "Add new"}
+          </button>
           <button
             type="button"
             className="reset-dungeons-btn"
@@ -119,6 +118,23 @@ function App() {
             Reset dungeons
           </button>
         </div>
+      </header>
+      <main>
+        <section className="character-section">
+          {showForms && (
+            <CharacterForm
+              characterName={characterName}
+              setCharacterName={setCharacterName}
+              characterClass={characterClass}
+              setCharacterClass={setCharacterClass}
+              onSubmit={handleAddCharacter}
+            />
+          )}
+        </section>
+        <div className="dungeon-section">
+          <div className="dungeon-section-header">
+            {showForms && <DungeonForm onSubmit={handleAddDungeon} />}
+          </div>
         <div className="dungeon-table-wrapper">
           <DungeonTable
             dungeons={dungeons}
