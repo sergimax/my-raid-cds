@@ -97,3 +97,27 @@
   margin-bottom: 1rem;
 }
 
+.app-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #27272a;
+  text-align: center;
+  font-size: 0.9em;
+  color: #a1a1aa;
+}
+
+.app-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #818cf8;
+}
+
+.app-footer a:hover {
+  color: #a5b4fc;
+}
+
+.app-footer .github-icon {
+  flex-shrink: 0;
+}
+
