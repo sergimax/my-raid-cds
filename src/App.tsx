@@ -21,6 +21,7 @@ function App() {
   const [characterName, setCharacterName] = useState("");
   const [characterClass, setCharacterClass] = useState<CharacterClass | "">("");
   const [characterError, setCharacterError] = useState("");
+  const [storageError, setStorageError] = useState<string | null>(null);
   const [showForms, setShowForms] = useState(false);
   const [characters, setCharacters] = useState<CharacterRecord[]>(loadCharacters);
   const [dungeons, setDungeons] = useState<DungeonRecord[]>(loadDungeons);
@@ -29,7 +30,9 @@ function App() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      saveToStorage(characters, dungeons, dungeonToggles);
+      saveToStorage(characters, dungeons, dungeonToggles, (err) =>
+        setStorageError(err)
+      );
     }, 400);
     return () => clearTimeout(timeout);
   }, [characters, dungeons, dungeonToggles]);
@@ -137,6 +140,11 @@ function App() {
           </button>
         </div>
       </header>
+      {storageError && (
+        <div className="storage-error" role="alert">
+          {storageError}
+        </div>
+      )}
       <main>
         <section className="character-section">
           {characters.length === 0 && (

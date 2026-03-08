@@ -111,7 +111,8 @@ export function loadDungeonToggles(): Record<string, Record<string, boolean>> {
 export function saveToStorage(
   characters: CharacterRecord[],
   dungeons: DungeonRecord[],
-  dungeonToggles: Record<string, Record<string, boolean>>
+  dungeonToggles: Record<string, Record<string, boolean>>,
+  onError?: (message: string | null) => void
 ): void {
   const characterIds = new Set(characters.map((c) => c.id));
   const dungeonIds = new Set(dungeons.map((d) => d.id));
@@ -151,7 +152,12 @@ export function saveToStorage(
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // Ignore storage errors (quota exceeded, private mode, etc.)
+    onError?.(null);
+  } catch (e) {
+    const message =
+      e instanceof DOMException && e.name === "QuotaExceededError"
+        ? "Storage quota exceeded. Please free up space."
+        : "Failed to save data. Please try again.";
+    onError?.(message);
   }
 }

@@ -101,7 +101,7 @@ export function DungeonTable({
             <td className="dungeon-table-sticky-col">
               <div
                 className="dungeon-table-dungeon-cell"
-                title={`${dungeon.name} — Item level: ${dungeon.itemLevel.join("...")}`}
+                title={`${dungeon.name} — Item level: ${dungeon.itemLevel.join(", ")}`}
               >
                 <span
                   className={`dungeon-mode dungeon-mode--${
