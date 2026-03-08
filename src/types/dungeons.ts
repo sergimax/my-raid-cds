@@ -17,3 +17,5 @@ export type Dungeon = {
 };
 
 export type DungeonRecord = Dungeon & { id: string };
+
+export type DungeonToggles = Record<string, Record<string, boolean>>;

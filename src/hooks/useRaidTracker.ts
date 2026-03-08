@@ -10,9 +10,7 @@ import {
   type CharacterRecord,
   type CharacterClass,
 } from "../types/characters.ts";
-import type { DungeonRecord } from "../types/dungeons.ts";
-
-export type DungeonToggles = Record<string, Record<string, boolean>>;
+import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
 
 export function useRaidTracker() {
   const [characterName, setCharacterName] = useState("");

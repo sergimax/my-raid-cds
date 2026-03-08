@@ -37,8 +37,6 @@ export const Classes: Array<CharacterClass> = [
 export type Character = {
   name: string;
   class?: CharacterClass;
-  level?: number;
-  gearScore?: number;
 };
 
 export type CharacterRecord = Character & { id: string };
