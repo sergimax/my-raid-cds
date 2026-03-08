@@ -27,7 +27,10 @@ function App() {
     useState<DungeonToggles>(loadDungeonToggles);
 
   useEffect(() => {
-    saveToStorage(characters, dungeons, dungeonToggles);
+    const timeout = setTimeout(() => {
+      saveToStorage(characters, dungeons, dungeonToggles);
+    }, 400);
+    return () => clearTimeout(timeout);
   }, [characters, dungeons, dungeonToggles]);
 
   const handleAddCharacter = (e: React.FormEvent) => {
