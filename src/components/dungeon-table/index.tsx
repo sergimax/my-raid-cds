@@ -50,16 +50,15 @@ export function DungeonTable({
                     </span>
                   </div>
                   <div className="dungeon-table-character-header-actions">
-                    {hasToggles && (
-                      <button
-                        type="button"
-                        className="reset-character-btn"
-                        onClick={() => onResetCharacter(char.id)}
-                        aria-label={`Reset ${char.name}`}
-                      >
-                        🔄
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      className={`reset-character-btn ${!hasToggles ? "reset-btn--inactive" : ""}`}
+                      onClick={() => onResetCharacter(char.id)}
+                      disabled={!hasToggles}
+                      aria-label={`Reset ${char.name}`}
+                    >
+                      🔄
+                    </button>
                     <button
                       type="button"
                       className="delete-character-btn"

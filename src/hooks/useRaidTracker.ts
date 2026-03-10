@@ -120,6 +120,21 @@ export function useRaidTracker() {
     }));
   };
 
+  const canResetDungeons =
+    dungeons.length !== DungeonList.length ||
+    dungeons.some(
+      (d, i) =>
+        DungeonList[i] == null ||
+        d.name !== DungeonList[i].name ||
+        d.size !== DungeonList[i].size ||
+        JSON.stringify(d.itemLevel) !==
+          JSON.stringify(DungeonList[i].itemLevel) ||
+        d.mode !== DungeonList[i].mode
+    ) ||
+    Object.values(dungeonToggles).some((toggles) =>
+      Object.values(toggles).some(Boolean)
+    );
+
   const toggleShowForms = () => setShowForms((v) => !v);
 
   return {
@@ -148,5 +163,6 @@ export function useRaidTracker() {
     handleDeleteDungeon,
     handleResetDungeons,
     handleResetCharacter,
+    canResetDungeons,
   };
 }

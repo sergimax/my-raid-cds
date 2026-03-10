@@ -26,6 +26,7 @@ function App() {
     handleDeleteDungeon,
     handleResetDungeons,
     handleResetCharacter,
+    canResetDungeons,
   } = useRaidTracker();
 
   return (
@@ -43,8 +44,9 @@ function App() {
           </button>
           <button
             type="button"
-            className="reset-dungeons-btn"
+            className={`reset-dungeons-btn ${!canResetDungeons ? "reset-btn--inactive" : ""}`}
             onClick={handleResetDungeons}
+            disabled={!canResetDungeons}
             aria-label="Reset dungeons to default list"
           >
             Reset dungeons
