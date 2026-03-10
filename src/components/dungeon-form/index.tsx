@@ -24,7 +24,7 @@ export function DungeonForm({ onSubmit }: DungeonFormProps) {
 
     const itemLevel = itemLevelStr
       ? itemLevelStr.split(/[\s,]+/).map(Number).filter(Number.isFinite)
-      : [200];
+      : [];
 
     onSubmit({ name, size, itemLevel, mode });
     form.reset();
