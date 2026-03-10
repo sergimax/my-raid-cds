@@ -6,13 +6,21 @@ import "./styles.css";
 
 export type DungeonSortKey = "default" | "name" | "size" | "itemLevel";
 
+/** GearScore-style ilvl tiers: 200, 213, 219, 226, 232, 245, 251, 258, 264, 277, 284 (max). */
 function getItemLevelTier(itemLevel: number[]): number {
   if (itemLevel.length === 0) return 1;
   const max = Math.max(...itemLevel);
-  if (max >= 260) return 4;
-  if (max >= 240) return 3;
-  if (max >= 220) return 2;
-  return 1;
+  if (max >= 277) return 11;
+  if (max >= 264) return 10;
+  if (max >= 258) return 9;
+  if (max >= 251) return 8;
+  if (max >= 245) return 7;
+  if (max >= 232) return 6;
+  if (max >= 226) return 5;
+  if (max >= 219) return 4;
+  if (max >= 213) return 3;
+  if (max >= 200) return 2;
+  return 1; /* < 200: dungeons, previous patches */
 }
 
 function getMaxItemLevel(d: DungeonRecord): number {
