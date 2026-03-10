@@ -1,4 +1,5 @@
 import { DungeonList } from "./data/dungeons.ts";
+import { generateUUID } from "./uuid.ts";
 import { Classes, type CharacterRecord } from "./types/characters.ts";
 import { DungeonSizes, type DungeonRecord } from "./types/dungeons.ts";
 
@@ -76,14 +77,14 @@ export function loadCharacters(): CharacterRecord[] {
 export function loadDungeons(): DungeonRecord[] {
   const data = loadStoredData();
   if (!data?.dungeons?.length) {
-    return DungeonList.map((d) => ({ ...d, id: crypto.randomUUID() }));
+    return DungeonList.map((d) => ({ ...d, id: generateUUID() }));
   }
   const result: DungeonRecord[] = [];
   for (const stored of data.dungeons) {
     const dungeon = toDungeonRecord(stored);
     if (dungeon) result.push(dungeon);
   }
-  return result.length > 0 ? result : DungeonList.map((d) => ({ ...d, id: crypto.randomUUID() }));
+  return result.length > 0 ? result : DungeonList.map((d) => ({ ...d, id: generateUUID() }));
 }
 
 export function loadDungeonToggles(): Record<string, Record<string, boolean>> {

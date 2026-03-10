@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { DungeonList } from "../data/dungeons.ts";
+import { generateUUID } from "../uuid.ts";
 import {
   loadCharacters,
   loadDungeons,
@@ -57,7 +58,7 @@ export function useRaidTracker() {
       return;
     }
     const newCharacter: CharacterRecord = {
-      id: crypto.randomUUID(),
+      id: generateUUID(),
       name: trimmedName,
       class: characterClass,
     };
@@ -88,7 +89,7 @@ export function useRaidTracker() {
   const handleAddDungeon = (dungeon: Omit<DungeonRecord, "id">) => {
     setDungeons((prev) => [
       ...prev,
-      { ...dungeon, id: crypto.randomUUID() },
+      { ...dungeon, id: generateUUID() },
     ]);
   };
 
@@ -107,7 +108,7 @@ export function useRaidTracker() {
 
   const handleResetDungeons = () => {
     setDungeons(
-      DungeonList.map((d) => ({ ...d, id: crypto.randomUUID() }))
+      DungeonList.map((d) => ({ ...d, id: generateUUID() }))
     );
     setDungeonToggles({});
   };
