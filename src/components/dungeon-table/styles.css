@@ -1,7 +1,10 @@
+.dungeon-table-container {
+  margin-top: 1.5rem;
+}
+
 .dungeon-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1.5rem;
 }
 
 .dungeon-table-delete-col {
@@ -31,11 +34,52 @@
   z-index: 2;
 }
 
-.dungeon-table caption {
-  text-align: left;
+.dungeon-table-dungeon-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+}
+
+.dungeon-table-dungeon-header-label {
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.dungeon-table-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.dungeon-table-sort-select {
   font-size: 0.9em;
-  color: #a1a1aa;
-  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: #3f3f46;
+  color: #e4e4e7;
+  border: 1px solid #52525b;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dungeon-table-sort-select:hover,
+.dungeon-table-sort-select:focus {
+  border-color: #6366f1;
+  outline: none;
+}
+
+.dungeon-table-sort-dir-btn {
+  font-size: 0.9em;
+  padding: 0.2rem 0.5rem;
+  background: #3f3f46;
+  color: #e4e4e7;
+  border: 1px solid #52525b;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dungeon-table-sort-dir-btn:hover {
+  background: #52525b;
 }
 
 .dungeon-table-empty-state {

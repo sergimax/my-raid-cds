@@ -1,6 +1,10 @@
+import { useState, useMemo } from "react";
 import { DungeonMode } from "../../types/dungeons.ts";
+import type { DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonTableProps } from "./types";
 import "./styles.css";
+
+export type DungeonSortKey = "default" | "name" | "size" | "itemLevel";
 
 function getItemLevelTier(itemLevel: number[]): number {
   if (itemLevel.length === 0) return 1;
@@ -9,6 +13,30 @@ function getItemLevelTier(itemLevel: number[]): number {
   if (max >= 240) return 3;
   if (max >= 220) return 2;
   return 1;
+}
+
+function getMaxItemLevel(d: DungeonRecord): number {
+  return d.itemLevel.length > 0 ? Math.max(...d.itemLevel) : 0;
+}
+
+function sortDungeons(
+  list: DungeonRecord[],
+  key: DungeonSortKey,
+  dir: "asc" | "desc"
+): DungeonRecord[] {
+  if (key === "default") return [...list];
+  const sorted = [...list].sort((a, b) => {
+    let cmp = 0;
+    if (key === "name") {
+      cmp = a.name.localeCompare(b.name) || a.size - b.size;
+    } else if (key === "size") {
+      cmp = a.size - b.size || a.name.localeCompare(b.name);
+    } else if (key === "itemLevel") {
+      cmp = getMaxItemLevel(a) - getMaxItemLevel(b) || a.name.localeCompare(b.name);
+    }
+    return dir === "asc" ? cmp : -cmp;
+  });
+  return sorted;
 }
 
 export function DungeonTable({
@@ -20,15 +48,59 @@ export function DungeonTable({
   onResetCharacter,
   onDeleteCharacter,
 }: DungeonTableProps) {
+  const [sortKey, setSortKey] = useState<DungeonSortKey>("default");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+
+  const sortedDungeons = useMemo(
+    () => sortDungeons(dungeons, sortKey, sortDir),
+    [dungeons, sortKey, sortDir]
+  );
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value as DungeonSortKey;
+    setSortKey(value);
+  };
+
+  const cycleSortDir = () => {
+    setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+  };
+
   return (
-    <table className="dungeon-table" aria-label="Dungeon cooldown tracker">
-      <caption>
-        Dungeon cooldowns per character. Toggle to mark cooldowns as used.
-      </caption>
+    <div className="dungeon-table-container">
+      <table className="dungeon-table" aria-label="Dungeon cooldown tracker">
       <thead>
         <tr>
           <th scope="col" className="dungeon-table-delete-col" aria-label="Delete dungeon" />
-          <th scope="col" className="dungeon-table-sticky-col">Dungeon</th>
+          <th scope="col" className="dungeon-table-sticky-col">
+            <div className="dungeon-table-dungeon-header">
+              <span className="dungeon-table-dungeon-header-label">Dungeon</span>
+              <div className="dungeon-table-sort">
+                <select
+                  id="dungeon-sort"
+                  className="dungeon-table-sort-select"
+                  value={sortKey}
+                  onChange={handleSortChange}
+                  aria-label="Sort dungeons by"
+                >
+                  <option value="default">Default</option>
+                  <option value="name">Name</option>
+                  <option value="size">Size</option>
+                  <option value="itemLevel">Item level</option>
+                </select>
+                {sortKey !== "default" && (
+                  <button
+                    type="button"
+                    className="dungeon-table-sort-dir-btn"
+                    onClick={cycleSortDir}
+                    aria-label={`Sort ${sortDir === "asc" ? "ascending" : "descending"}`}
+                    title={sortDir === "asc" ? "Ascending (click for descending)" : "Descending (click for ascending)"}
+                  >
+                    {sortDir === "asc" ? "↑" : "↓"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </th>
           {characters.map((char) => {
             const hasToggles = Object.values(
               dungeonToggles[char.id] ?? {}
@@ -85,7 +157,7 @@ export function DungeonTable({
             </td>
           </tr>
         ) : (
-          dungeons.map((dungeon) => (
+          sortedDungeons.map((dungeon) => (
           <tr key={dungeon.id}>
             <td className="dungeon-table-delete-col">
               <button
@@ -134,5 +206,6 @@ export function DungeonTable({
         )}
       </tbody>
     </table>
+    </div>
   );
 }
