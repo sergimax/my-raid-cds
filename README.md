@@ -17,17 +17,14 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173).
 
-Build for production:
+### Scripts
 
-```bash
-npm run build
-```
-
-Preview:
-
-```bash
-npm run preview
-```
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
 
 ## Usage
 
@@ -68,3 +65,15 @@ Data is saved automatically to `localStorage` under the key `my-raid-cds`.
 
 - React 19 + TypeScript + Vite
 - CSS (no UI framework)
+
+## Project Structure
+
+```
+src/
+├── components/     # character-form, dungeon-form, dungeon-table
+├── hooks/           # useRaidTracker
+├── types/           # characters, dungeons
+├── data/            # default dungeons
+├── assets/          # class icons
+└── storage.ts       # localStorage persistence
+```
