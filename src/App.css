@@ -110,9 +110,17 @@
   margin-top: 2rem;
   padding-top: 1rem;
   border-top: 1px solid #27272a;
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1rem;
   font-size: 0.9em;
   color: #a1a1aa;
+}
+
+.app-footer-version {
+  font-variant-numeric: tabular-nums;
 }
 
 .app-footer a {

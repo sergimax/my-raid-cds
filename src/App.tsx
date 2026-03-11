@@ -98,6 +98,9 @@ function App() {
         </div>
       </main>
       <footer className="app-footer">
+        <span className="app-footer-version" aria-label="Version">
+          v{__APP_VERSION__}
+        </span>
         <a
           href="https://github.com/sergimax"
           target="_blank"
