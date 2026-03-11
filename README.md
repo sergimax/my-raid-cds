@@ -6,7 +6,9 @@ Data persists in localStorage.
 
 ## Purpose
 
-Track which raid cooldowns (e.g. lockouts) are used per character across different dungeons. Default dungeon list includes WoW WotLK raids (Russian names). Supports custom characters and dungeons.
+Track which raid cooldowns (e.g. lockouts) are used per character across different dungeons.
+The dungeon table starts empty; you can add dungeons manually or load a template with WoW WotLK raids (Russian names).
+Supports custom characters and dungeons.
 
 ## Setup
 
@@ -30,10 +32,12 @@ Open [http://localhost:5173](http://localhost:5173).
 
 1. **Add a character** — Click "Add new", enter name and class, submit.
 2. **Add a dungeon** — Click "Add new", enter name, size (10/20/25/40), item level(s), and mode (Normal/Heroic).
-3. **Toggle cooldowns** — Use the per-row toggle for each character to mark a dungeon as used or available.
-4. **Reset per character** — Use the reset button in a character header to clear all toggles for that character.
-5. **Reset dungeons** — Restore the default dungeon list.
-6. **Delete** — Remove characters or dungeons via the trash icon.
+3. **Add from template** — When the table is empty, click "Add from template" to load WoW WotLK raids.
+4. **Toggle cooldowns** — Use the per-row toggle for each character to mark a dungeon as used or available.
+5. **Reset per character** — Use the reset button (🔄) in a character header to clear all toggles for that character.
+6. **Reset dungeons** — Clears all cooldown toggles (keeps the dungeon list).
+7. **Delete all** — Button in the table header removes all dungeons and toggles.
+8. **Delete** — Remove individual characters or dungeons via the trash icon (🗑️).
 
 Data is saved automatically to `localStorage` under the key `my-raid-cds`.
 
@@ -70,10 +74,12 @@ Data is saved automatically to `localStorage` under the key `my-raid-cds`.
 
 ```
 src/
-├── components/     # character-form, dungeon-form, dungeon-table
-├── hooks/           # useRaidTracker
-├── types/           # characters, dungeons
-├── data/            # default dungeons
-├── assets/          # class icons
-└── storage.ts       # localStorage persistence
+├── components/   # character-form, dungeon-form, dungeon-table
+├── hooks/        # useRaidTracker
+├── types/        # characters, dungeons
+├── data/         # dungeons.ts (DungeonList template)
+├── assets/       # class icons
+├── storage.ts    # localStorage load/save
+├── uuid.ts       # generateUUID
+└── vite-env.d.ts # __APP_VERSION__ declaration
 ```
