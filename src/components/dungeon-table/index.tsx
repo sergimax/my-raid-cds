@@ -54,6 +54,7 @@ export function DungeonTable({
   onDungeonToggle,
   onDeleteDungeon,
   onDeleteAllDungeons,
+  onAddFromTemplate,
   onResetCharacter,
   onDeleteCharacter,
 }: DungeonTableProps) {
@@ -173,7 +174,16 @@ export function DungeonTable({
               colSpan={2 + characters.length}
               className="dungeon-table-empty-state"
             >
-              Add a dungeon to track
+              <span className="dungeon-table-empty-text">Add a dungeon to track</span>
+              {onAddFromTemplate && (
+                <button
+                  type="button"
+                  className="add-from-template-btn"
+                  onClick={onAddFromTemplate}
+                >
+                  Add from template
+                </button>
+              )}
             </td>
           </tr>
         ) : (

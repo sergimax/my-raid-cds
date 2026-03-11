@@ -23,6 +23,7 @@ function App() {
     handleDeleteCharacter,
     handleDungeonToggle,
     handleAddDungeon,
+    handleAddFromTemplate,
     handleDeleteDungeon,
     handleDeleteAllDungeons,
     handleResetDungeons,
@@ -89,6 +90,7 @@ function App() {
               onDungeonToggle={handleDungeonToggle}
               onDeleteDungeon={handleDeleteDungeon}
               onDeleteAllDungeons={handleDeleteAllDungeons}
+              onAddFromTemplate={handleAddFromTemplate}
               onResetCharacter={handleResetCharacter}
               onDeleteCharacter={handleDeleteCharacter}
             />

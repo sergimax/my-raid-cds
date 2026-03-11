@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { DungeonList } from "../data/dungeons.ts";
 import { generateUUID } from "../uuid.ts";
 import {
   loadCharacters,
@@ -92,6 +93,11 @@ export function useRaidTracker() {
     ]);
   };
 
+  const handleAddFromTemplate = () => {
+    const template = DungeonList.map((d) => ({ ...d, id: generateUUID() }));
+    setDungeons((prev) => [...prev, ...template]);
+  };
+
   const handleDeleteDungeon = (dungeonId: string) => {
     setDungeons((prev) => prev.filter((d) => d.id !== dungeonId));
     setDungeonToggles((prev) => {
@@ -150,6 +156,7 @@ export function useRaidTracker() {
     handleDeleteCharacter,
     handleDungeonToggle,
     handleAddDungeon,
+    handleAddFromTemplate,
     handleDeleteDungeon,
     handleDeleteAllDungeons,
     handleResetDungeons,
