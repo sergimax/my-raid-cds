@@ -15,8 +15,29 @@
   vertical-align: middle;
 }
 
-.dungeon-table-delete-col .delete-dungeon-btn {
+.dungeon-table-delete-col .delete-dungeon-btn,
+.dungeon-table-delete-col .delete-all-dungeons-btn {
   margin: 0;
+}
+
+.dungeon-table .delete-all-dungeons-btn {
+  font-size: 0.75em;
+  padding: 0.25rem 0.4rem;
+  cursor: pointer;
+  background: #3f3f46;
+  color: #d4d4d8;
+  border: 1px solid #52525b;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.dungeon-table .delete-all-dungeons-btn:hover:not(:disabled) {
+  background: #52525b;
+}
+
+.dungeon-table .delete-all-dungeons-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .dungeon-table-sticky-col {

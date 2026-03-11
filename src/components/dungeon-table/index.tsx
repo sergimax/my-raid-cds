@@ -53,6 +53,7 @@ export function DungeonTable({
   dungeonToggles,
   onDungeonToggle,
   onDeleteDungeon,
+  onDeleteAllDungeons,
   onResetCharacter,
   onDeleteCharacter,
 }: DungeonTableProps) {
@@ -78,7 +79,18 @@ export function DungeonTable({
       <table className="dungeon-table" aria-label="Dungeon cooldown tracker">
       <thead>
         <tr>
-          <th scope="col" className="dungeon-table-delete-col" aria-label="Delete dungeon" />
+          <th scope="col" className="dungeon-table-delete-col">
+            <button
+              type="button"
+              className="delete-all-dungeons-btn"
+              onClick={onDeleteAllDungeons}
+              disabled={dungeons.length === 0}
+              aria-label="Delete all dungeons"
+              title="Delete all dungeons"
+            >
+              Delete all
+            </button>
+          </th>
           <th scope="col" className="dungeon-table-sticky-col">
             <div className="dungeon-table-dungeon-header">
               <span className="dungeon-table-dungeon-header-label">Dungeon</span>

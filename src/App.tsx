@@ -24,6 +24,7 @@ function App() {
     handleDungeonToggle,
     handleAddDungeon,
     handleDeleteDungeon,
+    handleDeleteAllDungeons,
     handleResetDungeons,
     handleResetCharacter,
     canResetDungeons,
@@ -47,7 +48,7 @@ function App() {
             className={`reset-dungeons-btn ${!canResetDungeons ? "reset-btn--inactive" : ""}`}
             onClick={handleResetDungeons}
             disabled={!canResetDungeons}
-            aria-label="Reset dungeons to default list"
+            aria-label="Reset all cooldown toggles"
           >
             Reset dungeons
           </button>
@@ -87,6 +88,7 @@ function App() {
               dungeonToggles={dungeonToggles}
               onDungeonToggle={handleDungeonToggle}
               onDeleteDungeon={handleDeleteDungeon}
+              onDeleteAllDungeons={handleDeleteAllDungeons}
               onResetCharacter={handleResetCharacter}
               onDeleteCharacter={handleDeleteCharacter}
             />

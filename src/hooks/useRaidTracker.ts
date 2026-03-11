@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { DungeonList } from "../data/dungeons.ts";
 import { generateUUID } from "../uuid.ts";
 import {
   loadCharacters,
@@ -106,10 +105,12 @@ export function useRaidTracker() {
     });
   };
 
+  const handleDeleteAllDungeons = () => {
+    setDungeons([]);
+    setDungeonToggles({});
+  };
+
   const handleResetDungeons = () => {
-    setDungeons(
-      DungeonList.map((d) => ({ ...d, id: generateUUID() }))
-    );
     setDungeonToggles({});
   };
 
@@ -120,20 +121,9 @@ export function useRaidTracker() {
     }));
   };
 
-  const canResetDungeons =
-    dungeons.length !== DungeonList.length ||
-    dungeons.some(
-      (d, i) =>
-        DungeonList[i] == null ||
-        d.name !== DungeonList[i].name ||
-        d.size !== DungeonList[i].size ||
-        JSON.stringify(d.itemLevel) !==
-          JSON.stringify(DungeonList[i].itemLevel) ||
-        d.mode !== DungeonList[i].mode
-    ) ||
-    Object.values(dungeonToggles).some((toggles) =>
-      Object.values(toggles).some(Boolean)
-    );
+  const canResetDungeons = Object.values(dungeonToggles).some((toggles) =>
+    Object.values(toggles).some(Boolean)
+  );
 
   const toggleShowForms = () => setShowForms((v) => !v);
 
@@ -161,6 +151,7 @@ export function useRaidTracker() {
     handleDungeonToggle,
     handleAddDungeon,
     handleDeleteDungeon,
+    handleDeleteAllDungeons,
     handleResetDungeons,
     handleResetCharacter,
     canResetDungeons,
