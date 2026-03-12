@@ -148,6 +148,14 @@
   background: #27272a;
 }
 
+.dungeon-table tbody tr:nth-child(odd) td {
+  background-color: #1f1f23;
+}
+
+.dungeon-table tbody tr:nth-child(odd) td.dungeon-table-sticky-col {
+  background-color: #1f1f23;
+}
+
 .dungeon-table .dungeon-name {
   font-weight: 600;
   font-size: 0.95em;
