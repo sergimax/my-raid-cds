@@ -30,6 +30,7 @@
 
 .dungeon-form .add-dungeon-btn {
   min-height: 44px;
+  box-sizing: border-box;
   padding: 0 1rem;
   font-size: 0.9em;
   cursor: pointer;
