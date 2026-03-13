@@ -27,14 +27,9 @@
 }
 
 .character-form input,
-.character-form select,
-.character-form .add-character-btn {
+.character-form select {
   min-height: 44px;
   box-sizing: border-box;
-}
-
-.character-form input,
-.character-form select {
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
   min-width: 0;
@@ -46,8 +41,8 @@
 
 .character-form .add-character-btn {
   align-self: flex-end;
-  padding: 0 1rem;
   min-height: 44px;
+  padding: 0 1rem;
   font-size: 0.9em;
   cursor: pointer;
   background: #6366f1;

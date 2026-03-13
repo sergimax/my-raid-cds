@@ -14,11 +14,9 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: dark;
   color: #e4e4e7;
   background-color: #18181b;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -30,6 +28,7 @@ a {
   color: #818cf8;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #a5b4fc;
 }
@@ -70,9 +69,11 @@ button {
   transition: border-color 0.25s;
   touch-action: manipulation;
 }
+
 button:hover {
   border-color: #818cf8;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;

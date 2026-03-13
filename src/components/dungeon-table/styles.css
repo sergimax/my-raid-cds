@@ -1,11 +1,6 @@
+/* Container & table */
 .dungeon-table-container {
   margin-top: 1.5rem;
-}
-
-@media (min-width: 1024px) {
-  .dungeon-table-container {
-    margin-top: 0.5rem;
-  }
 }
 
 .dungeon-table {
@@ -13,20 +8,29 @@
   border-collapse: collapse;
 }
 
+.dungeon-table th,
+.dungeon-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border: 1px solid #3f3f46;
+}
+
+.dungeon-table th {
+  background: #27272a;
+}
+
+.dungeon-table tbody tr:nth-child(odd) td,
+.dungeon-table tbody tr:nth-child(odd) td.dungeon-table-sticky-col {
+  background-color: #1f1f23;
+}
+
+/* Delete column */
 .dungeon-table-delete-col {
   width: 3rem;
   min-width: 3rem;
   padding: 0.5rem;
   text-align: center;
   vertical-align: middle;
-}
-
-@media (min-width: 1024px) {
-  .dungeon-table-delete-col {
-    width: 2.25rem;
-    min-width: 2.25rem;
-    padding: 0.25rem;
-  }
 }
 
 .dungeon-table-delete-col .delete-dungeon-btn,
@@ -45,13 +49,6 @@
   white-space: nowrap;
 }
 
-@media (min-width: 1024px) {
-  .dungeon-table .delete-all-dungeons-btn {
-    font-size: 0.7em;
-    padding: 0.2rem 0.3rem;
-  }
-}
-
 .dungeon-table .delete-all-dungeons-btn:hover:not(:disabled) {
   background: #52525b;
 }
@@ -61,6 +58,7 @@
   cursor: default;
 }
 
+/* Sticky dungeon column */
 .dungeon-table-sticky-col {
   position: sticky;
   left: 0;
@@ -71,18 +69,12 @@
   max-width: 190px;
 }
 
-@media (min-width: 1024px) {
-  .dungeon-table-sticky-col {
-    min-width: 110px;
-    max-width: 160px;
-  }
-}
-
 .dungeon-table th.dungeon-table-sticky-col {
   background: #27272a;
   z-index: 2;
 }
 
+/* Dungeon header & sort */
 .dungeon-table-dungeon-header {
   display: flex;
   flex-wrap: wrap;
@@ -111,13 +103,6 @@
   cursor: pointer;
 }
 
-@media (min-width: 1024px) {
-  .dungeon-table-sort-select {
-    font-size: 0.8em;
-    padding: 0.2rem 0.35rem;
-  }
-}
-
 .dungeon-table-sort-select:hover,
 .dungeon-table-sort-select:focus {
   border-color: #6366f1;
@@ -134,30 +119,17 @@
   cursor: pointer;
 }
 
-@media (min-width: 1024px) {
-  .dungeon-table-sort-dir-btn {
-    font-size: 0.8em;
-    padding: 0.15rem 0.35rem;
-  }
-}
-
 .dungeon-table-sort-dir-btn:hover {
   background: #52525b;
 }
 
+/* Empty state */
 .dungeon-table-empty-state {
   color: #a1a1aa;
   font-size: 0.95em;
   text-align: center;
   padding: 1.5rem 1rem;
   vertical-align: middle;
-}
-
-@media (min-width: 1024px) {
-  .dungeon-table-empty-state {
-    font-size: 0.9em;
-    padding: 0.75rem 1rem;
-  }
 }
 
 .dungeon-table-empty-state .dungeon-table-empty-text {
@@ -175,48 +147,25 @@
   border-radius: 4px;
 }
 
-@media (min-width: 1024px) {
-  .dungeon-table-empty-state .add-from-template-btn {
-    font-size: 0.8em;
-    padding: 0.25rem 0.5rem;
-  }
-}
-
 .dungeon-table-empty-state .add-from-template-btn:hover {
   background: #52525b;
 }
 
-.dungeon-table th,
-.dungeon-table td {
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  border: 1px solid #3f3f46;
+/* Dungeon cell & name */
+.dungeon-table-dungeon-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
 }
 
-@media (min-width: 640px) {
-  .dungeon-table th,
-  .dungeon-table td {
-    padding: 0.5rem 1rem;
-  }
+.dungeon-table-dungeon-cell .dungeon-mode {
+  flex-shrink: 0;
 }
 
-@media (min-width: 1024px) {
-  .dungeon-table th,
-  .dungeon-table td {
-    padding: 0.25rem 0.5rem;
-  }
-}
-
-.dungeon-table th {
-  background: #27272a;
-}
-
-.dungeon-table tbody tr:nth-child(odd) td {
-  background-color: #1f1f23;
-}
-
-.dungeon-table tbody tr:nth-child(odd) td.dungeon-table-sticky-col {
-  background-color: #1f1f23;
+.dungeon-table-dungeon-cell .dungeon-name {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .dungeon-table .dungeon-name {
@@ -224,56 +173,18 @@
   font-size: 0.95em;
 }
 
-@media (min-width: 1024px) {
-  .dungeon-table .dungeon-name {
-    font-size: 0.85em;
-  }
-}
-
-/* GearScore-style: light-blue → blue → violet → orange → red */
-.dungeon-table .dungeon-name--tier-1 {
-  color: #94a3b8;
-}
-
-.dungeon-table .dungeon-name--tier-2 {
-  color: #7dd3fc;
-}
-
-.dungeon-table .dungeon-name--tier-3 {
-  color: #38bdf8;
-}
-
-.dungeon-table .dungeon-name--tier-4 {
-  color: #0ea5e9;
-}
-
-.dungeon-table .dungeon-name--tier-5 {
-  color: #3b82f6;
-}
-
-.dungeon-table .dungeon-name--tier-6 {
-  color: #6366f1;
-}
-
-.dungeon-table .dungeon-name--tier-7 {
-  color: #8b5cf6;
-}
-
-.dungeon-table .dungeon-name--tier-8 {
-  color: #a78bfa;
-}
-
-.dungeon-table .dungeon-name--tier-9 {
-  color: #f97316;
-}
-
-.dungeon-table .dungeon-name--tier-10 {
-  color: #ef4444;
-}
-
-.dungeon-table .dungeon-name--tier-11 {
-  color: #dc2626;
-}
+/* GearScore-style tiers: light-blue → blue → violet → orange → red */
+.dungeon-table .dungeon-name--tier-1 { color: #94a3b8; }
+.dungeon-table .dungeon-name--tier-2 { color: #7dd3fc; }
+.dungeon-table .dungeon-name--tier-3 { color: #38bdf8; }
+.dungeon-table .dungeon-name--tier-4 { color: #0ea5e9; }
+.dungeon-table .dungeon-name--tier-5 { color: #3b82f6; }
+.dungeon-table .dungeon-name--tier-6 { color: #6366f1; }
+.dungeon-table .dungeon-name--tier-7 { color: #8b5cf6; }
+.dungeon-table .dungeon-name--tier-8 { color: #a78bfa; }
+.dungeon-table .dungeon-name--tier-9 { color: #f97316; }
+.dungeon-table .dungeon-name--tier-10 { color: #ef4444; }
+.dungeon-table .dungeon-name--tier-11 { color: #dc2626; }
 
 .dungeon-table .dungeon-mode {
   padding: 0.1rem 0.4rem;
@@ -295,17 +206,11 @@
   border-color: #d97706;
 }
 
+/* Character column */
 .dungeon-table .class-icon {
   width: 20px;
   height: 20px;
   object-fit: contain;
-}
-
-@media (min-width: 1024px) {
-  .dungeon-table .class-icon {
-    width: 16px;
-    height: 16px;
-  }
 }
 
 .dungeon-table-character-header {
@@ -336,22 +241,22 @@
   font-weight: 600;
 }
 
-@media (min-width: 1024px) {
-  .dungeon-table-character-name {
-    font-size: 0.9em;
-  }
-}
-
 .dungeon-table-character-cell {
   vertical-align: middle;
   text-align: center;
 }
 
+/* Toggle */
 .dungeon-toggle {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
   touch-action: manipulation;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem;
+  margin: -0.5rem;
 }
 
 .dungeon-toggle input {
@@ -359,14 +264,6 @@
   opacity: 0;
   width: 0;
   height: 0;
-}
-
-.dungeon-toggle {
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0.5rem;
-  margin: -0.5rem;
-  justify-content: center;
 }
 
 .dungeon-toggle-slider {
@@ -398,7 +295,64 @@
   transform: translateX(1.25rem);
 }
 
+/* Action buttons */
+.dungeon-table .reset-character-btn,
+.dungeon-table .delete-character-btn,
+.dungeon-table .delete-dungeon-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85em;
+  cursor: pointer;
+  background: #3f3f46;
+  border: 1px solid #52525b;
+  border-radius: 4px;
+}
+
+.dungeon-table .reset-character-btn,
+.dungeon-table .delete-character-btn {
+  color: #e4e4e7;
+}
+
+.dungeon-table .delete-character-btn,
+.dungeon-table .delete-dungeon-btn {
+  color: #d4d4d8;
+}
+
+.dungeon-table .delete-dungeon-btn {
+  margin-left: 0;
+}
+
+.dungeon-table .reset-character-btn:hover,
+.dungeon-table .delete-character-btn:hover,
+.dungeon-table .delete-dungeon-btn:hover {
+  background: #52525b;
+}
+
+.dungeon-table .reset-character-btn.reset-btn--inactive {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.dungeon-table .reset-character-btn.reset-btn--inactive:hover {
+  background: #3f3f46;
+}
+
+/* 640px: tablet */
 @media (min-width: 640px) {
+  .dungeon-table th,
+  .dungeon-table td {
+    padding: 0.5rem 1rem;
+  }
+
+  .dungeon-table .dungeon-mode {
+    font-size: 0.8em;
+    padding: 0.12rem 0.45rem;
+  }
+
   .dungeon-toggle {
     min-width: 0;
     min-height: 0;
@@ -422,9 +376,90 @@
   .dungeon-toggle input:checked + .dungeon-toggle-slider::before {
     transform: translateX(1.25rem);
   }
+
+  .dungeon-table .reset-character-btn,
+  .dungeon-table .delete-character-btn,
+  .dungeon-table .delete-dungeon-btn {
+    min-height: 0;
+    min-width: 0;
+    padding: 0.25rem 0.6rem;
+  }
 }
 
+/* 1024px: compact desktop */
 @media (min-width: 1024px) {
+  .dungeon-table-container {
+    margin-top: 0.5rem;
+  }
+
+  .dungeon-table-delete-col {
+    width: 2.25rem;
+    min-width: 2.25rem;
+    padding: 0.25rem;
+  }
+
+  .dungeon-table .delete-all-dungeons-btn {
+    font-size: 0.7em;
+    padding: 0.2rem 0.3rem;
+  }
+
+  .dungeon-table-sticky-col {
+    min-width: 110px;
+    max-width: 160px;
+  }
+
+  .dungeon-table-dungeon-header,
+  .dungeon-table-character-header {
+    gap: 0.25rem 0.35rem;
+  }
+
+  .dungeon-table-sort-select {
+    font-size: 0.8em;
+    padding: 0.2rem 0.35rem;
+  }
+
+  .dungeon-table-sort-dir-btn {
+    font-size: 0.8em;
+    padding: 0.15rem 0.35rem;
+  }
+
+  .dungeon-table-empty-state {
+    font-size: 0.9em;
+    padding: 0.75rem 1rem;
+  }
+
+  .dungeon-table-empty-state .add-from-template-btn {
+    font-size: 0.8em;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .dungeon-table th,
+  .dungeon-table td {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .dungeon-table .dungeon-name {
+    font-size: 0.85em;
+  }
+
+  .dungeon-table .dungeon-mode {
+    font-size: 0.7em;
+    padding: 0.1rem 0.35rem;
+  }
+
+  .dungeon-table .class-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .dungeon-table-character-name {
+    font-size: 0.9em;
+  }
+
+  .dungeon-table-dungeon-cell {
+    gap: 0.35rem;
+  }
+
   .dungeon-toggle-slider {
     width: 2rem;
     height: 1rem;
@@ -441,124 +476,11 @@
   .dungeon-toggle input:checked + .dungeon-toggle-slider::before {
     transform: translateX(1rem);
   }
-}
 
-.dungeon-table .reset-character-btn,
-.dungeon-table .delete-character-btn,
-.dungeon-table .delete-dungeon-btn {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0.5rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (min-width: 640px) {
-  .dungeon-table .reset-character-btn,
-  .dungeon-table .delete-character-btn,
-  .dungeon-table .delete-dungeon-btn {
-    min-height: 0;
-    min-width: 0;
-    padding: 0.25rem 0.6rem;
-  }
-}
-
-@media (min-width: 1024px) {
   .dungeon-table .reset-character-btn,
   .dungeon-table .delete-character-btn,
   .dungeon-table .delete-dungeon-btn {
     font-size: 0.8em;
     padding: 0.2rem 0.4rem;
   }
-}
-
-.dungeon-table .reset-character-btn {
-  font-size: 0.85em;
-  cursor: pointer;
-  background: #3f3f46;
-  color: #e4e4e7;
-  border: 1px solid #52525b;
-  border-radius: 4px;
-}
-
-.dungeon-table .reset-character-btn:hover {
-  background: #52525b;
-}
-
-.dungeon-table .reset-character-btn.reset-btn--inactive {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.dungeon-table .reset-character-btn.reset-btn--inactive:hover {
-  background: #3f3f46;
-}
-
-.dungeon-table .delete-character-btn {
-  font-size: 0.85em;
-  cursor: pointer;
-  background: #3f3f46;
-  color: #d4d4d8;
-  border: 1px solid #52525b;
-  border-radius: 4px;
-}
-
-.dungeon-table .delete-character-btn:hover {
-  background: #52525b;
-}
-
-.dungeon-table-dungeon-cell {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
-@media (min-width: 1024px) {
-  .dungeon-table-dungeon-header,
-  .dungeon-table-character-header {
-    gap: 0.25rem 0.35rem;
-  }
-
-  .dungeon-table-dungeon-cell {
-    gap: 0.35rem;
-  }
-}
-
-.dungeon-table-dungeon-cell .dungeon-mode {
-  flex-shrink: 0;
-}
-
-.dungeon-table-dungeon-cell .dungeon-name {
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-
-@media (min-width: 640px) {
-  .dungeon-table .dungeon-mode {
-    font-size: 0.8em;
-    padding: 0.12rem 0.45rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .dungeon-table .dungeon-mode {
-    font-size: 0.7em;
-    padding: 0.1rem 0.35rem;
-  }
-}
-
-.dungeon-table .delete-dungeon-btn {
-  margin-left: 0;
-  font-size: 0.85em;
-  cursor: pointer;
-  background: #3f3f46;
-  color: #d4d4d8;
-  border: 1px solid #52525b;
-  border-radius: 4px;
-}
-
-.dungeon-table .delete-dungeon-btn:hover {
-  background: #52525b;
 }
