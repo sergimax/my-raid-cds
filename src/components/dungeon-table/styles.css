@@ -2,6 +2,12 @@
   margin-top: 1.5rem;
 }
 
+@media (min-width: 1024px) {
+  .dungeon-table-container {
+    margin-top: 0.5rem;
+  }
+}
+
 .dungeon-table {
   width: 100%;
   border-collapse: collapse;
@@ -13,6 +19,14 @@
   padding: 0.5rem;
   text-align: center;
   vertical-align: middle;
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table-delete-col {
+    width: 2.25rem;
+    min-width: 2.25rem;
+    padding: 0.25rem;
+  }
 }
 
 .dungeon-table-delete-col .delete-dungeon-btn,
@@ -29,6 +43,13 @@
   border: 1px solid #52525b;
   border-radius: 4px;
   white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table .delete-all-dungeons-btn {
+    font-size: 0.7em;
+    padding: 0.2rem 0.3rem;
+  }
 }
 
 .dungeon-table .delete-all-dungeons-btn:hover:not(:disabled) {
@@ -48,6 +69,13 @@
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.4);
   min-width: 140px;
   max-width: 190px;
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table-sticky-col {
+    min-width: 110px;
+    max-width: 160px;
+  }
 }
 
 .dungeon-table th.dungeon-table-sticky-col {
@@ -83,6 +111,13 @@
   cursor: pointer;
 }
 
+@media (min-width: 1024px) {
+  .dungeon-table-sort-select {
+    font-size: 0.8em;
+    padding: 0.2rem 0.35rem;
+  }
+}
+
 .dungeon-table-sort-select:hover,
 .dungeon-table-sort-select:focus {
   border-color: #6366f1;
@@ -99,6 +134,13 @@
   cursor: pointer;
 }
 
+@media (min-width: 1024px) {
+  .dungeon-table-sort-dir-btn {
+    font-size: 0.8em;
+    padding: 0.15rem 0.35rem;
+  }
+}
+
 .dungeon-table-sort-dir-btn:hover {
   background: #52525b;
 }
@@ -109,6 +151,13 @@
   text-align: center;
   padding: 1.5rem 1rem;
   vertical-align: middle;
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table-empty-state {
+    font-size: 0.9em;
+    padding: 0.75rem 1rem;
+  }
 }
 
 .dungeon-table-empty-state .dungeon-table-empty-text {
@@ -124,6 +173,13 @@
   color: #e4e4e7;
   border: 1px solid #52525b;
   border-radius: 4px;
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table-empty-state .add-from-template-btn {
+    font-size: 0.8em;
+    padding: 0.25rem 0.5rem;
+  }
 }
 
 .dungeon-table-empty-state .add-from-template-btn:hover {
@@ -144,6 +200,13 @@
   }
 }
 
+@media (min-width: 1024px) {
+  .dungeon-table th,
+  .dungeon-table td {
+    padding: 0.25rem 0.5rem;
+  }
+}
+
 .dungeon-table th {
   background: #27272a;
 }
@@ -159,6 +222,12 @@
 .dungeon-table .dungeon-name {
   font-weight: 600;
   font-size: 0.95em;
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table .dungeon-name {
+    font-size: 0.85em;
+  }
 }
 
 /* GearScore-style: light-blue → blue → violet → orange → red */
@@ -232,6 +301,13 @@
   object-fit: contain;
 }
 
+@media (min-width: 1024px) {
+  .dungeon-table .class-icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
 .dungeon-table-character-header {
   display: flex;
   align-items: center;
@@ -258,6 +334,12 @@
 
 .dungeon-table-character-name {
   font-weight: 600;
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table-character-name {
+    font-size: 0.9em;
+  }
 }
 
 .dungeon-table-character-cell {
@@ -342,6 +424,25 @@
   }
 }
 
+@media (min-width: 1024px) {
+  .dungeon-toggle-slider {
+    width: 2rem;
+    height: 1rem;
+    border-radius: 1rem;
+  }
+
+  .dungeon-toggle-slider::before {
+    width: 0.75rem;
+    height: 0.75rem;
+    left: 0.125rem;
+    top: 0.125rem;
+  }
+
+  .dungeon-toggle input:checked + .dungeon-toggle-slider::before {
+    transform: translateX(1rem);
+  }
+}
+
 .dungeon-table .reset-character-btn,
 .dungeon-table .delete-character-btn,
 .dungeon-table .delete-dungeon-btn {
@@ -360,6 +461,15 @@
     min-height: 0;
     min-width: 0;
     padding: 0.25rem 0.6rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table .reset-character-btn,
+  .dungeon-table .delete-character-btn,
+  .dungeon-table .delete-dungeon-btn {
+    font-size: 0.8em;
+    padding: 0.2rem 0.4rem;
   }
 }
 
@@ -402,7 +512,17 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  /* flex-wrap: wrap; */
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table-dungeon-header,
+  .dungeon-table-character-header {
+    gap: 0.25rem 0.35rem;
+  }
+
+  .dungeon-table-dungeon-cell {
+    gap: 0.35rem;
+  }
 }
 
 .dungeon-table-dungeon-cell .dungeon-mode {
@@ -419,6 +539,13 @@
   .dungeon-table .dungeon-mode {
     font-size: 0.8em;
     padding: 0.12rem 0.45rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dungeon-table .dungeon-mode {
+    font-size: 0.7em;
+    padding: 0.1rem 0.35rem;
   }
 }
 

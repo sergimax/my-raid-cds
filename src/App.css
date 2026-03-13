@@ -6,6 +6,12 @@
   flex-wrap: wrap;
 }
 
+@media (min-width: 1024px) {
+  .app-header {
+    gap: 0.5rem;
+  }
+}
+
 .app-header-actions {
   display: flex;
   align-items: center;
@@ -23,6 +29,14 @@
   border-radius: 4px;
 }
 
+@media (min-width: 1024px) {
+  .storage-error {
+    margin-top: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85em;
+  }
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -35,8 +49,20 @@
   }
 }
 
+@media (min-width: 1024px) {
+  #root {
+    padding: 1rem 1.5rem;
+  }
+}
+
 .character-section {
   margin-top: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .character-section {
+    margin-top: 0.5rem;
+  }
 }
 
 .empty-state {
@@ -64,6 +90,17 @@
   border-radius: 4px;
 }
 
+@media (min-width: 1024px) {
+  .form-toggle-btn,
+  .reset-dungeons-btn,
+  .character-form .add-character-btn,
+  .dungeon-form .add-dungeon-btn {
+    height: 32px;
+    padding: 0 0.65rem;
+    font-size: 0.8em;
+  }
+}
+
 .form-toggle-btn:hover,
 .reset-dungeons-btn:hover,
 .character-form .add-character-btn:hover,
@@ -82,6 +119,12 @@
 
 .dungeon-section {
   margin-top: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .dungeon-section {
+    margin-top: 0.75rem;
+  }
 }
 
 .dungeon-table-wrapper {
@@ -106,6 +149,13 @@
   margin-bottom: 1rem;
 }
 
+@media (min-width: 1024px) {
+  .dungeon-section-header {
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
 .app-footer {
   margin-top: 2rem;
   padding-top: 1rem;
@@ -117,6 +167,14 @@
   gap: 0.5rem 1rem;
   font-size: 0.9em;
   color: #a1a1aa;
+}
+
+@media (min-width: 1024px) {
+  .app-footer {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    font-size: 0.8em;
+  }
 }
 
 .app-footer-version {
