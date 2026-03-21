@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2026-03-21
+
+### Added
+
+- Dungeon form preset selector: pick from WotLK template when adding manually (presets already in table are hidden)
+- Raid names shown with Russian (in-game) and English (original) in parentheses
+- `displayDungeonName` helper for locale-based dungeon name display
+
+### Changed
+
+- Dungeon form receives `existingDungeons` to filter preset options and avoid invalid select state
+
 ## [1.0.2] - 2026-03-13
 
 ### Changed

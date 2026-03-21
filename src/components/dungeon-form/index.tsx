@@ -1,14 +1,80 @@
-import { useId } from "react";
-import { DungeonMode, DungeonSizes, type DungeonRecord } from "../../types/dungeons.ts";
+import { useId, useRef, useState } from "react";
+import { DungeonList, formatRaidNameRuWithEn } from "../../data/dungeons.ts";
+import { DungeonMode, DungeonSizes, type Dungeon, type DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonFormProps } from "./types";
 import "./styles.css";
 
-export function DungeonForm({ onSubmit }: DungeonFormProps) {
+function itemLevelsEqual(a: number[], b: number[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((v, i) => v === b[i]);
+}
+
+function dungeonMatchesRow(a: Dungeon, row: DungeonRecord): boolean {
+  return (
+    a.name === row.name &&
+    a.size === row.size &&
+    a.mode === row.mode &&
+    itemLevelsEqual(a.itemLevel, row.itemLevel)
+  );
+}
+
+function isPresetInTable(preset: Dungeon, dungeons: DungeonRecord[]): boolean {
+  return dungeons.some((d) => dungeonMatchesRow(preset, d));
+}
+
+function formatPresetLabel(d: Dungeon): string {
+  const ilvl = d.itemLevel.join("/");
+  const namePart = formatRaidNameRuWithEn(d.name);
+  return `${namePart} · ${d.size} · ${d.mode} · ${ilvl}`;
+}
+
+function applyDungeonToForm(form: HTMLFormElement, d: Dungeon): void {
+  const nameInput = form.elements.namedItem("dungeonName") as HTMLInputElement | null;
+  const sizeSelect = form.elements.namedItem("dungeonSize") as HTMLSelectElement | null;
+  const itemLevelInput = form.elements.namedItem("itemLevel") as HTMLInputElement | null;
+  const modeSelect = form.elements.namedItem("dungeonMode") as HTMLSelectElement | null;
+  if (nameInput) nameInput.value = d.name;
+  if (sizeSelect) sizeSelect.value = String(d.size);
+  if (itemLevelInput) itemLevelInput.value = d.itemLevel.join(", ");
+  if (modeSelect) modeSelect.value = d.mode;
+}
+
+export function DungeonForm({ onSubmit, existingDungeons }: DungeonFormProps) {
   const id = useId();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [presetIndex, setPresetIndex] = useState("");
+  const presetId = `${id}-preset`;
   const nameId = `${id}-name`;
   const sizeId = `${id}-size`;
   const itemLevelId = `${id}-item-level`;
   const modeId = `${id}-mode`;
+
+  const availablePresetIndices = DungeonList.map((d, i) => ({ d, i })).filter(
+    ({ d }) => !isPresetInTable(d, existingDungeons)
+  );
+
+  // Preset options omit rows already in the table. If the user had a non-empty
+  // selection and that preset is no longer listed (e.g. "Add from template" or
+  // the same dungeon added elsewhere), derive "" so the <select> does not
+  // display a value that no longer exists as an <option>.
+  const effectivePresetIndex =
+    presetIndex === ""
+      ? ""
+      : (() => {
+          const idx = Number(presetIndex);
+          const preset = DungeonList[idx];
+          return preset && !isPresetInTable(preset, existingDungeons) ? presetIndex : "";
+        })();
+
+  const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const indexStr = e.target.value;
+    setPresetIndex(indexStr);
+    if (indexStr === "" || !formRef.current) return;
+    const idx = Number(indexStr);
+    const d = DungeonList[idx];
+    if (!d) return;
+    applyDungeonToForm(formRef.current, d);
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,10 +94,27 @@ export function DungeonForm({ onSubmit }: DungeonFormProps) {
 
     onSubmit({ name, size, itemLevel, mode });
     form.reset();
+    setPresetIndex("");
   };
 
   return (
-    <form className="dungeon-form" onSubmit={handleSubmit}>
+    <form ref={formRef} className="dungeon-form" onSubmit={handleSubmit}>
+      <label className="dungeon-form-preset-label" htmlFor={presetId}>
+        Preset
+        <select
+          id={presetId}
+          name="presetIndex"
+          value={effectivePresetIndex}
+          onChange={handlePresetChange}
+        >
+          <option value="">Custom (manual)</option>
+          {availablePresetIndices.map(({ d, i }) => (
+            <option key={i} value={String(i)}>
+              {formatPresetLabel(d)}
+            </option>
+          ))}
+        </select>
+      </label>
       <label htmlFor={nameId}>
         Name
         <input
