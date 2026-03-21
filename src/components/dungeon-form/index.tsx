@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { DungeonList, formatRaidNameRuWithEn } from "../../data/dungeons.ts";
 import { DungeonMode, DungeonSizes, type Dungeon, type DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonFormProps } from "./types";
@@ -55,16 +55,16 @@ export function DungeonForm({ onSubmit, existingDungeons }: DungeonFormProps) {
 
   // Preset options omit rows already in the table. If the user had a non-empty
   // selection and that preset is no longer listed (e.g. "Add from template" or
-  // the same dungeon added elsewhere), clear state so the <select> does not
-  // keep a value that no longer exists as an <option>.
-  useEffect(() => {
-    if (presetIndex === "") return;
-    const idx = Number(presetIndex);
-    const preset = DungeonList[idx];
-    if (!preset || isPresetInTable(preset, existingDungeons)) {
-      setPresetIndex("");
-    }
-  }, [existingDungeons, presetIndex]);
+  // the same dungeon added elsewhere), derive "" so the <select> does not
+  // display a value that no longer exists as an <option>.
+  const effectivePresetIndex =
+    presetIndex === ""
+      ? ""
+      : (() => {
+          const idx = Number(presetIndex);
+          const preset = DungeonList[idx];
+          return preset && !isPresetInTable(preset, existingDungeons) ? presetIndex : "";
+        })();
 
   const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const indexStr = e.target.value;
@@ -104,7 +104,7 @@ export function DungeonForm({ onSubmit, existingDungeons }: DungeonFormProps) {
         <select
           id={presetId}
           name="presetIndex"
-          value={presetIndex}
+          value={effectivePresetIndex}
           onChange={handlePresetChange}
         >
           <option value="">Custom (manual)</option>
