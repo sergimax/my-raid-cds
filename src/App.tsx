@@ -80,7 +80,9 @@ function App() {
         </section>
         <div className="dungeon-section">
           <div className="dungeon-section-header">
-            {showForms && <DungeonForm onSubmit={handleAddDungeon} />}
+            {showForms && (
+              <DungeonForm onSubmit={handleAddDungeon} existingDungeons={dungeons} />
+            )}
           </div>
           <div className="dungeon-table-wrapper">
             <DungeonTable

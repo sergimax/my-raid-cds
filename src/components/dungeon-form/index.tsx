@@ -1,8 +1,26 @@
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { DungeonList } from "../../data/dungeons.ts";
 import { DungeonMode, DungeonSizes, type Dungeon, type DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonFormProps } from "./types";
 import "./styles.css";
+
+function itemLevelsEqual(a: number[], b: number[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((v, i) => v === b[i]);
+}
+
+function dungeonMatchesRow(a: Dungeon, row: DungeonRecord): boolean {
+  return (
+    a.name === row.name &&
+    a.size === row.size &&
+    a.mode === row.mode &&
+    itemLevelsEqual(a.itemLevel, row.itemLevel)
+  );
+}
+
+function isPresetInTable(preset: Dungeon, dungeons: DungeonRecord[]): boolean {
+  return dungeons.some((d) => dungeonMatchesRow(preset, d));
+}
 
 function formatPresetLabel(d: Dungeon): string {
   const ilvl = d.itemLevel.join("/");
@@ -20,7 +38,7 @@ function applyDungeonToForm(form: HTMLFormElement, d: Dungeon): void {
   if (modeSelect) modeSelect.value = d.mode;
 }
 
-export function DungeonForm({ onSubmit }: DungeonFormProps) {
+export function DungeonForm({ onSubmit, existingDungeons }: DungeonFormProps) {
   const id = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const [presetIndex, setPresetIndex] = useState("");
@@ -29,6 +47,23 @@ export function DungeonForm({ onSubmit }: DungeonFormProps) {
   const sizeId = `${id}-size`;
   const itemLevelId = `${id}-item-level`;
   const modeId = `${id}-mode`;
+
+  const availablePresetIndices = DungeonList.map((d, i) => ({ d, i })).filter(
+    ({ d }) => !isPresetInTable(d, existingDungeons)
+  );
+
+  // Preset options omit rows already in the table. If the user had a non-empty
+  // selection and that preset is no longer listed (e.g. "Add from template" or
+  // the same dungeon added elsewhere), clear state so the <select> does not
+  // keep a value that no longer exists as an <option>.
+  useEffect(() => {
+    if (presetIndex === "") return;
+    const idx = Number(presetIndex);
+    const preset = DungeonList[idx];
+    if (!preset || isPresetInTable(preset, existingDungeons)) {
+      setPresetIndex("");
+    }
+  }, [existingDungeons, presetIndex]);
 
   const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const indexStr = e.target.value;
@@ -72,7 +107,7 @@ export function DungeonForm({ onSubmit }: DungeonFormProps) {
           onChange={handlePresetChange}
         >
           <option value="">Custom (manual)</option>
-          {DungeonList.map((d, i) => (
+          {availablePresetIndices.map(({ d, i }) => (
             <option key={i} value={String(i)}>
               {formatPresetLabel(d)}
             </option>
