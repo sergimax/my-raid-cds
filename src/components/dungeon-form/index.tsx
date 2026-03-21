@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { DungeonList } from "../../data/dungeons.ts";
+import { DungeonList, formatRaidNameRuWithEn } from "../../data/dungeons.ts";
 import { DungeonMode, DungeonSizes, type Dungeon, type DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonFormProps } from "./types";
 import "./styles.css";
@@ -24,7 +24,8 @@ function isPresetInTable(preset: Dungeon, dungeons: DungeonRecord[]): boolean {
 
 function formatPresetLabel(d: Dungeon): string {
   const ilvl = d.itemLevel.join("/");
-  return `${d.name} · ${d.size} · ${d.mode} · ${ilvl}`;
+  const namePart = formatRaidNameRuWithEn(d.name);
+  return `${namePart} · ${d.size} · ${d.mode} · ${ilvl}`;
 }
 
 function applyDungeonToForm(form: HTMLFormElement, d: Dungeon): void {

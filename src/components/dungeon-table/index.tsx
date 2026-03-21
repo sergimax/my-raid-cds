@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { formatRaidNameRuWithEn } from "../../data/dungeons.ts";
 import { DungeonMode } from "../../types/dungeons.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonTableProps } from "./types";
@@ -204,8 +205,8 @@ export function DungeonTable({
                 className="dungeon-table-dungeon-cell"
                 title={
                   dungeon.itemLevel.length > 0
-                    ? `${dungeon.name} — Item level: ${dungeon.itemLevel.join(", ")}`
-                    : `${dungeon.name} — Item level not set`
+                    ? `${formatRaidNameRuWithEn(dungeon.name)} — Item level: ${dungeon.itemLevel.join(", ")}`
+                    : `${formatRaidNameRuWithEn(dungeon.name)} — Item level not set`
                 }
               >
                 <span
