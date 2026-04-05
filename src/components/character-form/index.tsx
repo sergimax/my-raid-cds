@@ -37,7 +37,7 @@ export function CharacterForm({
         Class
         <select
           id={classId}
-          value={characterClass === "" ? "" : characterClass.name}
+          value={characterClass ? characterClass.name : ""}
           onChange={(e) => {
             const c = Classes.find((cls) => cls.name === e.target.value);
             setCharacterClass(c ?? "");
