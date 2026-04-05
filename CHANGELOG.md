@@ -18,6 +18,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Table chrome simplified (bottom borders, lighter sticky separation); raid size badge without outline border
 - Sorting defaults to item level descending; “Default” sort option removed
 - Delete all dungeons control removed (remove dungeons with per-row delete only)
+- Shared design tokens on `:root` (`--zinc-*`, borders, table surfaces); forms and dungeon table use them for colors
+- `App.css`: one consolidated `1024px` media block; footer styles live with `AppFooter`
+- `AppFooter` in `components/app-footer/` (`index.tsx`, `types.ts`, `styles.css`) and exported from the components barrel
+- Dungeon table: single memo for filtered+sorted rows; tooltip/toggle helpers; ilvl tier from a threshold list instead of a long branch chain
+- Dungeon form: `useMemo` for available presets and for the effective preset `<select>` value
+
+### Fixed
+
+- Toolbar button rules in `App.css` apply only to header actions so “Add character” / “Add dungeon” stay primary (indigo), not overridden by gray header styling
+
+### Docs
+
+- README usage steps and Cursor project rules updated for current flows (e.g. search, no delete-all)
 
 ## [1.0.3] - 2026-03-21
 
