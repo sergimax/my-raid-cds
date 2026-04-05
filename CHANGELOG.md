@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-05
+
+### Added
+
+- Dungeon name search in the table header (case-insensitive substring filter; empty search shows all rows)
+- Monospace font stack for the whole app, including form controls
+
+### Changed
+
+- Dungeon table: per-row delete stays in the dungeon column; distinct cool-toned styling for that column vs character cells
+- Table chrome simplified (bottom borders, lighter sticky separation); raid size badge without outline border
+- Sorting defaults to item level descending; “Default” sort option removed
+- Delete all dungeons control removed (remove dungeons with per-row delete only)
+
 ## [1.0.3] - 2026-03-21
 
 ### Added
