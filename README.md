@@ -36,8 +36,8 @@ Open [http://localhost:5173](http://localhost:5173).
 4. **Toggle cooldowns** — Use the per-row toggle for each character to mark a dungeon as used or available.
 5. **Reset per character** — Use the reset button (🔄) in a character header to clear all toggles for that character.
 6. **Reset dungeons** — Clears all cooldown toggles (keeps the dungeon list).
-7. **Delete all** — Button in the table header removes all dungeons and toggles.
-8. **Delete** — Remove individual characters or dungeons via the trash icon (🗑️).
+7. **Search** — Filter the dungeon list by substring in the dungeon name (table header).
+8. **Delete** — Remove a dungeon via the row trash icon in the dungeon column, or remove a character via the header trash icon.
 
 Data is saved automatically to `localStorage` under the key `my-raid-cds`.
 
