@@ -28,6 +28,12 @@ function getMaxItemLevel(d: DungeonRecord): number {
   return d.itemLevel.length > 0 ? Math.max(...d.itemLevel) : 0;
 }
 
+function filterDungeonsByName(list: DungeonRecord[], query: string): DungeonRecord[] {
+  const q = query.trim().toLowerCase();
+  if (q === "") return list;
+  return list.filter((d) => d.name.toLowerCase().includes(q));
+}
+
 function sortDungeons(
   list: DungeonRecord[],
   key: DungeonSortKey,
@@ -59,10 +65,16 @@ export function DungeonTable({
 }: DungeonTableProps) {
   const [sortKey, setSortKey] = useState<DungeonSortKey>("itemLevel");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [nameSearch, setNameSearch] = useState("");
+
+  const filteredDungeons = useMemo(
+    () => filterDungeonsByName(dungeons, nameSearch),
+    [dungeons, nameSearch]
+  );
 
   const sortedDungeons = useMemo(
-    () => sortDungeons(dungeons, sortKey, sortDir),
-    [dungeons, sortKey, sortDir]
+    () => sortDungeons(filteredDungeons, sortKey, sortDir),
+    [filteredDungeons, sortKey, sortDir]
   );
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -106,6 +118,17 @@ export function DungeonTable({
                   </button>
                 </div>
               </div>
+              <input
+                id="dungeon-name-search"
+                type="search"
+                className="dungeon-table-name-search"
+                value={nameSearch}
+                onChange={(e) => setNameSearch(e.target.value)}
+                placeholder="Search name…"
+                aria-label="Filter dungeons by name"
+                autoComplete="off"
+                spellCheck={false}
+              />
             </div>
           </th>
           {characters.map((char) => {
@@ -170,6 +193,15 @@ export function DungeonTable({
                   Add from template
                 </button>
               )}
+            </td>
+          </tr>
+        ) : filteredDungeons.length === 0 ? (
+          <tr>
+            <td
+              colSpan={1 + characters.length}
+              className="dungeon-table-empty-state dungeon-table-empty-state--filter"
+            >
+              <span className="dungeon-table-empty-text">No dungeons match this search</span>
             </td>
           </tr>
         ) : (

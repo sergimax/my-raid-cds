@@ -107,6 +107,33 @@
   background: #52525b;
 }
 
+.dungeon-table-name-search {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0.4rem;
+  font-size: 0.9em;
+  padding: 0.3rem 0.5rem;
+  background: #0f1729;
+  color: #e4e4e7;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 4px;
+}
+
+.dungeon-table-name-search::placeholder {
+  color: #71717a;
+}
+
+.dungeon-table-name-search:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.dungeon-table-name-search:focus {
+  border-color: #38bdf8;
+  outline: none;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35);
+}
+
 /* Empty state */
 .dungeon-table-empty-state {
   color: #a1a1aa;
@@ -133,6 +160,10 @@
 
 .dungeon-table-empty-state .add-from-template-btn:hover {
   background: #52525b;
+}
+
+.dungeon-table-empty-state--filter .dungeon-table-empty-text {
+  margin-bottom: 0;
 }
 
 /* Dungeon cell & name */
@@ -401,6 +432,12 @@
   .dungeon-table-sort-dir-btn {
     font-size: 0.8em;
     padding: 0.15rem 0.35rem;
+  }
+
+  .dungeon-table-name-search {
+    font-size: 0.8em;
+    padding: 0.2rem 0.35rem;
+    margin-top: 0.3rem;
   }
 
   .dungeon-table-empty-state {
