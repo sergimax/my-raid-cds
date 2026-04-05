@@ -39,6 +39,8 @@ Open [http://localhost:5173](http://localhost:5173).
 7. **Search** — Filter the dungeon list by substring in the dungeon name (table header).
 8. **Delete** — Remove a dungeon via the row trash icon in the dungeon column, or remove a character via the header trash icon.
 
+The footer shows the app version (from `package.json`, injected at build time), a link to the author on GitHub, and a link to Cursor.
+
 Data is saved automatically to `localStorage` under the key `my-raid-cds`.
 
 ## Data Model
@@ -74,7 +76,7 @@ Data is saved automatically to `localStorage` under the key `my-raid-cds`.
 
 ```
 src/
-├── components/   # character-form, dungeon-form, dungeon-table
+├── components/   # app-footer, character-form, dungeon-form, dungeon-table
 ├── hooks/        # useRaidTracker
 ├── types/        # characters, dungeons
 ├── data/         # dungeons.ts (DungeonList template)
