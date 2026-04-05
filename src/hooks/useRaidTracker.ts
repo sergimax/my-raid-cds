@@ -111,11 +111,6 @@ export function useRaidTracker() {
     });
   };
 
-  const handleDeleteAllDungeons = () => {
-    setDungeons([]);
-    setDungeonToggles({});
-  };
-
   const handleResetDungeons = () => {
     setDungeonToggles({});
   };
@@ -158,7 +153,6 @@ export function useRaidTracker() {
     handleAddDungeon,
     handleAddFromTemplate,
     handleDeleteDungeon,
-    handleDeleteAllDungeons,
     handleResetDungeons,
     handleResetCharacter,
     canResetDungeons,

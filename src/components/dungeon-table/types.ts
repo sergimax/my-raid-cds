@@ -7,7 +7,6 @@ export type DungeonTableProps = {
   dungeonToggles: DungeonToggles;
   onDungeonToggle: (characterId: string, dungeonId: string) => void;
   onDeleteDungeon: (dungeonId: string) => void;
-  onDeleteAllDungeons: () => void;
   onAddFromTemplate?: () => void;
   onResetCharacter: (characterId: string) => void;
   onDeleteCharacter: (id: string) => void;

@@ -25,7 +25,6 @@ function App() {
     handleAddDungeon,
     handleAddFromTemplate,
     handleDeleteDungeon,
-    handleDeleteAllDungeons,
     handleResetDungeons,
     handleResetCharacter,
     canResetDungeons,
@@ -91,7 +90,6 @@ function App() {
               dungeonToggles={dungeonToggles}
               onDungeonToggle={handleDungeonToggle}
               onDeleteDungeon={handleDeleteDungeon}
-              onDeleteAllDungeons={handleDeleteAllDungeons}
               onAddFromTemplate={handleAddFromTemplate}
               onResetCharacter={handleResetCharacter}
               onDeleteCharacter={handleDeleteCharacter}
