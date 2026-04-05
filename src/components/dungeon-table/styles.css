@@ -12,21 +12,21 @@
 .dungeon-table td {
   padding: 0.5rem 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #2e2e33;
+  border-bottom: 1px solid var(--border-muted);
 }
 
 .dungeon-table th {
-  background: #1f1f23;
-  border-bottom-color: #3f3f46;
+  background: var(--surface-table-header);
+  border-bottom-color: var(--zinc-700);
 }
 
 /* Character columns: zebra separate from dungeon column */
 .dungeon-table tbody tr td:not(.dungeon-table-sticky-col) {
-  background-color: #18181b;
+  background-color: var(--zinc-900);
 }
 
 .dungeon-table tbody tr:nth-child(odd) td:not(.dungeon-table-sticky-col) {
-  background-color: #222228;
+  background-color: var(--row-stripe);
 }
 
 /* Sticky dungeon column — cool slate/teal tint vs neutral character cells */
@@ -77,14 +77,22 @@
   gap: 0.35rem;
 }
 
-.dungeon-table-sort-select {
+.dungeon-table-sort-select,
+.dungeon-table-sort-dir-btn {
   font-size: 0.9em;
-  padding: 0.25rem 0.5rem;
-  background: #3f3f46;
-  color: #e4e4e7;
-  border: 1px solid #52525b;
+  background: var(--zinc-700);
+  color: var(--zinc-200);
+  border: 1px solid var(--zinc-600);
   border-radius: 4px;
   cursor: pointer;
+}
+
+.dungeon-table-sort-select {
+  padding: 0.25rem 0.5rem;
+}
+
+.dungeon-table-sort-dir-btn {
+  padding: 0.2rem 0.5rem;
 }
 
 .dungeon-table-sort-select:hover,
@@ -93,18 +101,8 @@
   outline: none;
 }
 
-.dungeon-table-sort-dir-btn {
-  font-size: 0.9em;
-  padding: 0.2rem 0.5rem;
-  background: #3f3f46;
-  color: #e4e4e7;
-  border: 1px solid #52525b;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
 .dungeon-table-sort-dir-btn:hover {
-  background: #52525b;
+  background: var(--zinc-600);
 }
 
 .dungeon-table-name-search {
@@ -115,13 +113,13 @@
   font-size: 0.9em;
   padding: 0.3rem 0.5rem;
   background: #0f1729;
-  color: #e4e4e7;
+  color: var(--zinc-200);
   border: 1px solid rgba(56, 189, 248, 0.25);
   border-radius: 4px;
 }
 
 .dungeon-table-name-search::placeholder {
-  color: #71717a;
+  color: var(--zinc-500);
 }
 
 .dungeon-table-name-search:hover {
@@ -136,7 +134,7 @@
 
 /* Empty state */
 .dungeon-table-empty-state {
-  color: #a1a1aa;
+  color: var(--zinc-400);
   font-size: 0.95em;
   text-align: center;
   padding: 1.5rem 1rem;
@@ -152,14 +150,14 @@
   font-size: 0.9em;
   padding: 0.4rem 0.75rem;
   cursor: pointer;
-  background: #3f3f46;
-  color: #e4e4e7;
-  border: 1px solid #52525b;
+  background: var(--zinc-700);
+  color: var(--zinc-200);
+  border: 1px solid var(--zinc-600);
   border-radius: 4px;
 }
 
 .dungeon-table-empty-state .add-from-template-btn:hover {
-  background: #52525b;
+  background: var(--zinc-600);
 }
 
 .dungeon-table-empty-state--filter .dungeon-table-empty-text {
@@ -291,7 +289,7 @@
   position: relative;
   width: 2.75rem;
   height: 1.5rem;
-  background-color: #3f3f46;
+  background-color: var(--zinc-700);
   border-radius: 1.5rem;
   transition: background-color 0.2s;
 }
@@ -303,7 +301,7 @@
   height: 1.125rem;
   left: 0.1875rem;
   top: 0.1875rem;
-  background-color: #e4e4e7;
+  background-color: var(--zinc-200);
   border-radius: 50%;
   transition: transform 0.2s;
 }
@@ -328,30 +326,20 @@
   justify-content: center;
   font-size: 0.85em;
   cursor: pointer;
-  background: #3f3f46;
-  border: 1px solid #52525b;
+  color: var(--zinc-200);
+  background: var(--zinc-700);
+  border: 1px solid var(--zinc-600);
   border-radius: 4px;
-}
-
-.dungeon-table .reset-character-btn,
-.dungeon-table .delete-character-btn {
-  color: #e4e4e7;
-}
-
-.dungeon-table .delete-character-btn,
-.dungeon-table .delete-dungeon-btn {
-  color: #d4d4d8;
 }
 
 .dungeon-table .delete-dungeon-btn {
   flex-shrink: 0;
-  margin-left: 0;
 }
 
 .dungeon-table .reset-character-btn:hover,
 .dungeon-table .delete-character-btn:hover,
 .dungeon-table .delete-dungeon-btn:hover {
-  background: #52525b;
+  background: var(--zinc-600);
 }
 
 .dungeon-table .reset-character-btn.reset-btn--inactive {
@@ -360,7 +348,7 @@
 }
 
 .dungeon-table .reset-character-btn.reset-btn--inactive:hover {
-  background: #3f3f46;
+  background: var(--zinc-700);
 }
 
 /* 640px: tablet */
@@ -424,13 +412,16 @@
     gap: 0.25rem 0.35rem;
   }
 
-  .dungeon-table-sort-select {
+  .dungeon-table-sort-select,
+  .dungeon-table-sort-dir-btn {
     font-size: 0.8em;
+  }
+
+  .dungeon-table-sort-select {
     padding: 0.2rem 0.35rem;
   }
 
   .dungeon-table-sort-dir-btn {
-    font-size: 0.8em;
     padding: 0.15rem 0.35rem;
   }
 
