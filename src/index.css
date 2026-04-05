@@ -11,7 +11,8 @@
 }
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: ui-monospace, "Cascadia Code", "Cascadia Mono", "Segoe UI Mono", "Roboto Mono",
+    Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;
@@ -37,6 +38,12 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 h1 {
