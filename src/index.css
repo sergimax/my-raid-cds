@@ -11,12 +11,25 @@
 }
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Surfaces & text (zinc scale) */
+  --zinc-900: #18181b;
+  --zinc-800: #27272a;
+  --zinc-700: #3f3f46;
+  --zinc-600: #52525b;
+  --zinc-500: #71717a;
+  --zinc-400: #a1a1aa;
+  --zinc-200: #e4e4e7;
+  --border-muted: #2e2e33;
+  --row-stripe: #222228;
+  --surface-table-header: #1f1f23;
+
+  font-family: ui-monospace, "Cascadia Code", "Cascadia Mono", "Segoe UI Mono", "Roboto Mono",
+    Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;
-  color: #e4e4e7;
-  background-color: #18181b;
+  color: var(--zinc-200);
+  background-color: var(--zinc-900);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -37,6 +50,12 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 h1 {
@@ -63,8 +82,8 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #27272a;
-  color: #e4e4e7;
+  background-color: var(--zinc-800);
+  color: var(--zinc-200);
   cursor: pointer;
   transition: border-color 0.25s;
   touch-action: manipulation;

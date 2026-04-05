@@ -70,14 +70,14 @@ Example: `feat(auth): add login form`
 
 - **Add from template** — loads DungeonList into table (empty state)
 - **Reset dungeons** — clears all cooldown toggles only (keeps dungeon list)
-- **Delete all** — removes all dungeons and toggles
+- **Delete dungeon** — per-row control in the dungeon column removes that dungeon and its toggles
 - **Reset per character** — clears toggles for that character only
 
 ## Component Structure
 
 - **kebab-case** for component dirs (e.g. `character-form/`)
 - Each component: `index.tsx`, `types.ts`, `styles.css`
-- State centralized in `useRaidTracker`; components receive handlers via props
+- Domain state lives in `useRaidTracker`; components receive data and mutation handlers via props. Ephemeral UI state (e.g. table sort, name search query) may live in leaf components.
 
 ## Project Structure
 

@@ -5,27 +5,28 @@ import type { DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonTableProps } from "./types";
 import "./styles.css";
 
-export type DungeonSortKey = "default" | "name" | "size" | "itemLevel";
+export type DungeonSortKey = "name" | "size" | "itemLevel";
 
-/** GearScore-style ilvl tiers: 200, 213, 219, 226, 232, 245, 251, 258, 264, 277, 284 (max). */
+/** GearScore-style ilvl tiers (thresholds descending; tier 1 = below 200). */
+const ILVL_TIER_THRESHOLDS = [
+  277, 264, 258, 251, 245, 232, 226, 219, 213, 200,
+] as const;
+
 function getItemLevelTier(itemLevel: number[]): number {
   if (itemLevel.length === 0) return 1;
   const max = Math.max(...itemLevel);
-  if (max >= 277) return 11;
-  if (max >= 264) return 10;
-  if (max >= 258) return 9;
-  if (max >= 251) return 8;
-  if (max >= 245) return 7;
-  if (max >= 232) return 6;
-  if (max >= 226) return 5;
-  if (max >= 219) return 4;
-  if (max >= 213) return 3;
-  if (max >= 200) return 2;
-  return 1; /* < 200: dungeons, previous patches */
+  const i = ILVL_TIER_THRESHOLDS.findIndex((t) => max >= t);
+  return i === -1 ? 1 : ILVL_TIER_THRESHOLDS.length + 1 - i;
 }
 
 function getMaxItemLevel(d: DungeonRecord): number {
   return d.itemLevel.length > 0 ? Math.max(...d.itemLevel) : 0;
+}
+
+function filterDungeonsByName(list: DungeonRecord[], query: string): DungeonRecord[] {
+  const q = query.trim().toLowerCase();
+  if (q === "") return list;
+  return list.filter((d) => d.name.toLowerCase().includes(q));
 }
 
 function sortDungeons(
@@ -33,7 +34,6 @@ function sortDungeons(
   key: DungeonSortKey,
   dir: "asc" | "desc"
 ): DungeonRecord[] {
-  if (key === "default") return [...list];
   const sorted = [...list].sort((a, b) => {
     let cmp = 0;
     if (key === "name") {
@@ -48,85 +48,100 @@ function sortDungeons(
   return sorted;
 }
 
+function dungeonCellTitle(dungeon: DungeonRecord): string {
+  const name = formatRaidNameRuWithEn(dungeon.name);
+  return dungeon.itemLevel.length > 0
+    ? `${name} — Item level: ${dungeon.itemLevel.join(", ")}`
+    : `${name} — Item level not set`;
+}
+
+function characterHasToggles(
+  toggles: Record<string, boolean> | undefined
+): boolean {
+  return toggles ? Object.values(toggles).some(Boolean) : false;
+}
+
 export function DungeonTable({
   dungeons,
   characters,
   dungeonToggles,
   onDungeonToggle,
   onDeleteDungeon,
-  onDeleteAllDungeons,
   onAddFromTemplate,
   onResetCharacter,
   onDeleteCharacter,
 }: DungeonTableProps) {
-  const [sortKey, setSortKey] = useState<DungeonSortKey>("default");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [sortKey, setSortKey] = useState<DungeonSortKey>("itemLevel");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [nameSearch, setNameSearch] = useState("");
 
-  const sortedDungeons = useMemo(
-    () => sortDungeons(dungeons, sortKey, sortDir),
-    [dungeons, sortKey, sortDir]
+  const visibleDungeons = useMemo(
+    () =>
+      sortDungeons(
+        filterDungeonsByName(dungeons, nameSearch),
+        sortKey,
+        sortDir
+      ),
+    [dungeons, nameSearch, sortKey, sortDir]
   );
 
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value as DungeonSortKey;
-    setSortKey(value);
-  };
-
-  const cycleSortDir = () => {
-    setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-  };
+  const colSpan = 1 + characters.length;
+  const hasDungeons = dungeons.length > 0;
+  const hasVisibleRows = visibleDungeons.length > 0;
 
   return (
     <div className="dungeon-table-container">
       <table className="dungeon-table" aria-label="Dungeon cooldown tracker">
       <thead>
         <tr>
-          <th scope="col" className="dungeon-table-delete-col">
-            <button
-              type="button"
-              className="delete-all-dungeons-btn"
-              onClick={onDeleteAllDungeons}
-              disabled={dungeons.length === 0}
-              aria-label="Delete all dungeons"
-              title="Delete all dungeons"
-            >
-              Delete all
-            </button>
-          </th>
           <th scope="col" className="dungeon-table-sticky-col">
             <div className="dungeon-table-dungeon-header">
-              <span className="dungeon-table-dungeon-header-label">Dungeon</span>
-              <div className="dungeon-table-sort">
-                <select
-                  id="dungeon-sort"
-                  className="dungeon-table-sort-select"
-                  value={sortKey}
-                  onChange={handleSortChange}
-                  aria-label="Sort dungeons by"
-                >
-                  <option value="default">Default</option>
-                  <option value="name">Name</option>
-                  <option value="size">Size</option>
-                  <option value="itemLevel">Item level</option>
-                </select>
-                {sortKey !== "default" && (
+              <div className="dungeon-table-dungeon-header-row">
+                <span className="dungeon-table-dungeon-header-label">Dungeon</span>
+                <div className="dungeon-table-sort">
+                  <select
+                    id="dungeon-sort"
+                    className="dungeon-table-sort-select"
+                    value={sortKey}
+                    onChange={(e) =>
+                      setSortKey(e.target.value as DungeonSortKey)
+                    }
+                    aria-label="Sort dungeons by"
+                  >
+                    <option value="name">Name</option>
+                    <option value="size">Size</option>
+                    <option value="itemLevel">Item level</option>
+                  </select>
                   <button
                     type="button"
                     className="dungeon-table-sort-dir-btn"
-                    onClick={cycleSortDir}
+                    onClick={() =>
+                      setSortDir((d) => (d === "asc" ? "desc" : "asc"))
+                    }
                     aria-label={`Sort ${sortDir === "asc" ? "ascending" : "descending"}`}
                     title={sortDir === "asc" ? "Ascending (click for descending)" : "Descending (click for ascending)"}
                   >
                     {sortDir === "asc" ? "↑" : "↓"}
                   </button>
-                )}
+                </div>
               </div>
+              <input
+                id="dungeon-name-search"
+                type="search"
+                className="dungeon-table-name-search"
+                value={nameSearch}
+                onChange={(e) => setNameSearch(e.target.value)}
+                placeholder="Search name…"
+                aria-label="Filter dungeons by name"
+                autoComplete="off"
+                spellCheck={false}
+              />
             </div>
           </th>
           {characters.map((char) => {
-            const hasToggles = Object.values(
-              dungeonToggles[char.id] ?? {}
-            ).some(Boolean);
+            const hasToggles = characterHasToggles(
+              dungeonToggles[char.id]
+            );
             return (
               <th key={char.id} scope="col">
                 <div className="dungeon-table-character-header">
@@ -169,12 +184,9 @@ export function DungeonTable({
         </tr>
       </thead>
       <tbody>
-        {dungeons.length === 0 ? (
+        {!hasDungeons ? (
           <tr>
-            <td
-              colSpan={2 + characters.length}
-              className="dungeon-table-empty-state"
-            >
+            <td colSpan={colSpan} className="dungeon-table-empty-state">
               <span className="dungeon-table-empty-text">Add a dungeon to track</span>
               {onAddFromTemplate && (
                 <button
@@ -187,40 +199,47 @@ export function DungeonTable({
               )}
             </td>
           </tr>
-        ) : (
-          sortedDungeons.map((dungeon) => (
-          <tr key={dungeon.id}>
-            <td className="dungeon-table-delete-col">
-              <button
-                type="button"
-                className="delete-dungeon-btn"
-                onClick={() => onDeleteDungeon(dungeon.id)}
-                aria-label={`Delete ${dungeon.name}`}
-              >
-                🗑️
-              </button>
+        ) : !hasVisibleRows ? (
+          <tr>
+            <td
+              colSpan={colSpan}
+              className="dungeon-table-empty-state dungeon-table-empty-state--filter"
+            >
+              <span className="dungeon-table-empty-text">
+                No dungeons match this search
+              </span>
             </td>
+          </tr>
+        ) : (
+          visibleDungeons.map((dungeon) => (
+          <tr key={dungeon.id}>
             <td className="dungeon-table-sticky-col">
               <div
                 className="dungeon-table-dungeon-cell"
-                title={
-                  dungeon.itemLevel.length > 0
-                    ? `${formatRaidNameRuWithEn(dungeon.name)} — Item level: ${dungeon.itemLevel.join(", ")}`
-                    : `${formatRaidNameRuWithEn(dungeon.name)} — Item level not set`
-                }
+                title={dungeonCellTitle(dungeon)}
               >
-                <span
-                  className={`dungeon-mode dungeon-mode--${
-                    dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
-                  }`}
+                <div className="dungeon-table-dungeon-cell-text">
+                  <span
+                    className={`dungeon-mode dungeon-mode--${
+                      dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
+                    }`}
+                  >
+                    {dungeon.size}
+                  </span>
+                  <span
+                    className={`dungeon-name dungeon-name--tier-${getItemLevelTier(dungeon.itemLevel)}`}
+                  >
+                    {dungeon.name}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="delete-dungeon-btn"
+                  onClick={() => onDeleteDungeon(dungeon.id)}
+                  aria-label={`Delete ${dungeon.name}`}
                 >
-                  {dungeon.size}
-                </span>
-                <span
-                  className={`dungeon-name dungeon-name--tier-${getItemLevelTier(dungeon.itemLevel)}`}
-                >
-                  {dungeon.name}
-                </span>
+                  🗑️
+                </button>
               </div>
             </td>
             {characters.map((char) => (

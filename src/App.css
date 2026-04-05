@@ -11,12 +11,6 @@
   }
 }
 
-@media (min-width: 1024px) {
-  #root {
-    padding: 1rem 1.5rem;
-  }
-}
-
 /* Header */
 .app-header {
   display: flex;
@@ -31,12 +25,6 @@
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
-}
-
-@media (min-width: 1024px) {
-  .app-header {
-    gap: 0.5rem;
-  }
 }
 
 /* Sections */
@@ -70,19 +58,6 @@
   }
 }
 
-@media (min-width: 1024px) {
-  .character-section {
-    margin-top: 0.5rem;
-  }
-  .dungeon-section {
-    margin-top: 0.75rem;
-  }
-  .dungeon-section-header {
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-}
-
 /* Alerts */
 .storage-error {
   margin-top: 1rem;
@@ -95,40 +70,28 @@
 }
 
 .empty-state {
-  color: #a1a1aa;
+  color: var(--zinc-400);
   font-size: 0.95em;
   margin: 0;
 }
 
-@media (min-width: 1024px) {
-  .storage-error {
-    margin-top: 0.5rem;
-    padding: 0.35rem 0.5rem;
-    font-size: 0.85em;
-  }
-}
-
-/* Buttons - header & forms */
+/* Header toolbar buttons */
 .form-toggle-btn,
-.reset-dungeons-btn,
-.character-form .add-character-btn,
-.dungeon-form .add-dungeon-btn {
+.reset-dungeons-btn {
   height: 44px;
   box-sizing: border-box;
   padding: 0 1rem;
   font-size: 0.9em;
   cursor: pointer;
-  background: #3f3f46;
-  color: #e4e4e7;
-  border: 1px solid #52525b;
+  background: var(--zinc-700);
+  color: var(--zinc-200);
+  border: 1px solid var(--zinc-600);
   border-radius: 4px;
 }
 
 .form-toggle-btn:hover,
-.reset-dungeons-btn:hover,
-.character-form .add-character-btn:hover,
-.dungeon-form .add-dungeon-btn:hover {
-  background: #52525b;
+.reset-dungeons-btn:hover {
+  background: var(--zinc-600);
 }
 
 .reset-dungeons-btn.reset-btn--inactive {
@@ -137,57 +100,41 @@
 }
 
 .reset-dungeons-btn.reset-btn--inactive:hover {
-  background: #3f3f46;
+  background: var(--zinc-700);
 }
 
 @media (min-width: 1024px) {
+  #root {
+    padding: 1rem 1.5rem;
+  }
+
+  .app-header {
+    gap: 0.5rem;
+  }
+
+  .character-section {
+    margin-top: 0.5rem;
+  }
+
+  .dungeon-section {
+    margin-top: 0.75rem;
+  }
+
+  .dungeon-section-header {
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .storage-error {
+    margin-top: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85em;
+  }
+
   .form-toggle-btn,
-  .reset-dungeons-btn,
-  .character-form .add-character-btn,
-  .dungeon-form .add-dungeon-btn {
+  .reset-dungeons-btn {
     height: 32px;
     padding: 0 0.65rem;
-    font-size: 0.8em;
-  }
-}
-
-/* Footer */
-.app-footer {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid #27272a;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem 1rem;
-  font-size: 0.9em;
-  color: #a1a1aa;
-}
-
-.app-footer-version {
-  font-variant-numeric: tabular-nums;
-}
-
-.app-footer a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: #818cf8;
-}
-
-.app-footer a:hover {
-  color: #a5b4fc;
-}
-
-.app-footer .github-icon {
-  flex-shrink: 0;
-}
-
-@media (min-width: 1024px) {
-  .app-footer {
-    margin-top: 1rem;
-    padding-top: 0.5rem;
     font-size: 0.8em;
   }
 }
