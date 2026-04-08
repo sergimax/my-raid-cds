@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-04-09
+
+### Changed
+
+- Main hook module path is kebab-case: `hooks/use-raid-tracker.ts` (exported `useRaidTracker` unchanged)
+- Dungeon table: stable `useCallback` handlers for toggles and row actions; `data-*` attributes for IDs; item-level sort reuses a per-sort cache of max item level per dungeon
+- Forms and table: event handler parameters use descriptive names (e.g. `event`) for readability
+
+### Docs
+
+- README project structure lists `use-raid-tracker.ts`
+- Cursor project rules: naming section (kebab-case file paths, avoid oversimplified local names)
+
 ## [1.1.1] - 2026-04-06
 
 ### Changed

@@ -4,7 +4,7 @@ import {
   DungeonForm,
   DungeonTable,
 } from "./components/index.ts";
-import { useRaidTracker } from "./hooks/useRaidTracker.ts";
+import { useRaidTracker } from "./hooks/use-raid-tracker.ts";
 import "./App.css";
 
 function App() {

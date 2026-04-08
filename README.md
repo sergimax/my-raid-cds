@@ -77,7 +77,7 @@ Data is saved automatically to `localStorage` under the key `my-raid-cds`.
 ```
 src/
 ├── components/   # app-footer, character-form, dungeon-form, dungeon-table
-├── hooks/        # useRaidTracker
+├── hooks/        # use-raid-tracker.ts (useRaidTracker)
 ├── types/        # characters, dungeons
 ├── data/         # dungeons.ts (DungeonList template)
 ├── assets/       # class icons

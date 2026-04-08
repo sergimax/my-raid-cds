@@ -67,8 +67,8 @@ export function DungeonForm({ onSubmit, existingDungeons }: DungeonFormProps) {
       : "";
   }, [presetIndex, existingDungeons]);
 
-  const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const indexStr = e.target.value;
+  const handlePresetChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const indexStr = event.target.value;
     setPresetIndex(indexStr);
     if (indexStr === "" || !formRef.current) return;
     const idx = Number(indexStr);
@@ -77,9 +77,9 @@ export function DungeonForm({ onSubmit, existingDungeons }: DungeonFormProps) {
     applyDungeonToForm(formRef.current, d);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
     const formData = new FormData(form);
     const name = (formData.get("dungeonName") as string)?.trim();
     const size = Number(formData.get("dungeonSize")) as DungeonRecord["size"];

@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import type { ChangeEvent, MouseEvent } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { formatRaidNameRuWithEn } from "../../data/dungeons.ts";
 import { DungeonMode } from "../../types/dungeons.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
@@ -19,14 +20,14 @@ function getItemLevelTier(itemLevel: number[]): number {
   return i === -1 ? 1 : ILVL_TIER_THRESHOLDS.length + 1 - i;
 }
 
-function getMaxItemLevel(d: DungeonRecord): number {
-  return d.itemLevel.length > 0 ? Math.max(...d.itemLevel) : 0;
+function getMaxItemLevel(dungeon: DungeonRecord): number {
+  return dungeon.itemLevel.length > 0 ? Math.max(...dungeon.itemLevel) : 0;
 }
 
 function filterDungeonsByName(list: DungeonRecord[], query: string): DungeonRecord[] {
   const q = query.trim().toLowerCase();
   if (q === "") return list;
-  return list.filter((d) => d.name.toLowerCase().includes(q));
+  return list.filter((dungeon) => dungeon.name.toLowerCase().includes(q));
 }
 
 function sortDungeons(
@@ -34,14 +35,31 @@ function sortDungeons(
   key: DungeonSortKey,
   dir: "asc" | "desc"
 ): DungeonRecord[] {
-  const sorted = [...list].sort((a, b) => {
+  const maxIlvlCache = key === "itemLevel" ? new Map<string, number>() : null;
+  const getCachedMaxItemLevel = (dungeon: DungeonRecord): number => {
+    if (!maxIlvlCache) return getMaxItemLevel(dungeon);
+    const existing = maxIlvlCache.get(dungeon.id);
+    if (existing !== undefined) return existing;
+    const computed = getMaxItemLevel(dungeon);
+    maxIlvlCache.set(dungeon.id, computed);
+    return computed;
+  };
+
+  const sorted = [...list].sort((firstDungeon, secondDungeon) => {
     let cmp = 0;
     if (key === "name") {
-      cmp = a.name.localeCompare(b.name) || a.size - b.size;
+      cmp =
+        firstDungeon.name.localeCompare(secondDungeon.name) ||
+        firstDungeon.size - secondDungeon.size;
     } else if (key === "size") {
-      cmp = a.size - b.size || a.name.localeCompare(b.name);
+      cmp =
+        firstDungeon.size - secondDungeon.size ||
+        firstDungeon.name.localeCompare(secondDungeon.name);
     } else if (key === "itemLevel") {
-      cmp = getMaxItemLevel(a) - getMaxItemLevel(b) || a.name.localeCompare(b.name);
+      cmp =
+        getCachedMaxItemLevel(firstDungeon) -
+          getCachedMaxItemLevel(secondDungeon) ||
+        firstDungeon.name.localeCompare(secondDungeon.name);
     }
     return dir === "asc" ? cmp : -cmp;
   });
@@ -75,6 +93,19 @@ export function DungeonTable({
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [nameSearch, setNameSearch] = useState("");
 
+  const handleToggleSortDir = useCallback(() => {
+    setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+  }, []);
+
+  const characterIdsWithAnyToggle = useMemo(() => {
+    const result = new Set<string>();
+    for (const char of characters) {
+      const toggles = dungeonToggles[char.id];
+      if (characterHasToggles(toggles)) result.add(char.id);
+    }
+    return result;
+  }, [characters, dungeonToggles]);
+
   const visibleDungeons = useMemo(
     () =>
       sortDungeons(
@@ -88,6 +119,43 @@ export function DungeonTable({
   const colSpan = 1 + characters.length;
   const hasDungeons = dungeons.length > 0;
   const hasVisibleRows = visibleDungeons.length > 0;
+
+  const handleToggleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const characterId = event.currentTarget.dataset.characterId;
+      const dungeonId = event.currentTarget.dataset.dungeonId;
+      if (!characterId || !dungeonId) return;
+      onDungeonToggle(characterId, dungeonId);
+    },
+    [onDungeonToggle]
+  );
+
+  const handleDeleteDungeonClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      const dungeonId = event.currentTarget.dataset.dungeonId;
+      if (!dungeonId) return;
+      onDeleteDungeon(dungeonId);
+    },
+    [onDeleteDungeon]
+  );
+
+  const handleResetCharacterClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      const characterId = event.currentTarget.dataset.characterId;
+      if (!characterId) return;
+      onResetCharacter(characterId);
+    },
+    [onResetCharacter]
+  );
+
+  const handleDeleteCharacterClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      const characterId = event.currentTarget.dataset.characterId;
+      if (!characterId) return;
+      onDeleteCharacter(characterId);
+    },
+    [onDeleteCharacter]
+  );
 
   return (
     <div className="dungeon-table-container">
@@ -103,8 +171,8 @@ export function DungeonTable({
                     id="dungeon-sort"
                     className="dungeon-table-sort-select"
                     value={sortKey}
-                    onChange={(e) =>
-                      setSortKey(e.target.value as DungeonSortKey)
+                    onChange={(event) =>
+                      setSortKey(event.target.value as DungeonSortKey)
                     }
                     aria-label="Sort dungeons by"
                   >
@@ -115,9 +183,7 @@ export function DungeonTable({
                   <button
                     type="button"
                     className="dungeon-table-sort-dir-btn"
-                    onClick={() =>
-                      setSortDir((d) => (d === "asc" ? "desc" : "asc"))
-                    }
+                    onClick={handleToggleSortDir}
                     aria-label={`Sort ${sortDir === "asc" ? "ascending" : "descending"}`}
                     title={sortDir === "asc" ? "Ascending (click for descending)" : "Descending (click for ascending)"}
                   >
@@ -130,7 +196,7 @@ export function DungeonTable({
                 type="search"
                 className="dungeon-table-name-search"
                 value={nameSearch}
-                onChange={(e) => setNameSearch(e.target.value)}
+                onChange={(event) => setNameSearch(event.target.value)}
                 placeholder="Search name…"
                 aria-label="Filter dungeons by name"
                 autoComplete="off"
@@ -139,9 +205,7 @@ export function DungeonTable({
             </div>
           </th>
           {characters.map((char) => {
-            const hasToggles = characterHasToggles(
-              dungeonToggles[char.id]
-            );
+            const hasToggles = characterIdsWithAnyToggle.has(char.id);
             return (
               <th key={char.id} scope="col">
                 <div className="dungeon-table-character-header">
@@ -162,7 +226,8 @@ export function DungeonTable({
                     <button
                       type="button"
                       className={`reset-character-btn ${!hasToggles ? "reset-btn--inactive" : ""}`}
-                      onClick={() => onResetCharacter(char.id)}
+                      data-character-id={char.id}
+                      onClick={handleResetCharacterClick}
                       disabled={!hasToggles}
                       aria-label={`Reset ${char.name}`}
                     >
@@ -171,7 +236,8 @@ export function DungeonTable({
                     <button
                       type="button"
                       className="delete-character-btn"
-                      onClick={() => onDeleteCharacter(char.id)}
+                      data-character-id={char.id}
+                      onClick={handleDeleteCharacterClick}
                       aria-label={`Delete ${char.name}`}
                     >
                       🗑️
@@ -235,7 +301,8 @@ export function DungeonTable({
                 <button
                   type="button"
                   className="delete-dungeon-btn"
-                  onClick={() => onDeleteDungeon(dungeon.id)}
+                  data-dungeon-id={dungeon.id}
+                  onClick={handleDeleteDungeonClick}
                   aria-label={`Delete ${dungeon.name}`}
                 >
                   🗑️
@@ -248,7 +315,9 @@ export function DungeonTable({
                   <input
                     type="checkbox"
                     checked={dungeonToggles[char.id]?.[dungeon.id] ?? false}
-                    onChange={() => onDungeonToggle(char.id, dungeon.id)}
+                    data-character-id={char.id}
+                    data-dungeon-id={dungeon.id}
+                    onChange={handleToggleChange}
                     aria-label={`${char.name} - ${dungeon.name}`}
                   />
                   <span className="dungeon-toggle-slider" />
