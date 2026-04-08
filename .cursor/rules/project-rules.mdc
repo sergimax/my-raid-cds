@@ -90,7 +90,7 @@ Example: `feat(auth): add login form`
 ```
 src/
 ├── components/   # character-form, dungeon-form, dungeon-table
-├── hooks/         # useRaidTracker
+├── hooks/         # use-raid-tracker.ts (useRaidTracker)
 ├── types/         # characters, dungeons
 ├── data/          # dungeons.ts (DungeonList template)
 ├── assets/        # class icons
