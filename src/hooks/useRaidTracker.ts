@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DungeonList } from "../data/dungeons.ts";
 import { generateUUID } from "../uuid.ts";
 import {
@@ -33,17 +34,17 @@ export function useRaidTracker() {
     return () => clearTimeout(timeout);
   }, [characters, dungeons, dungeonToggles]);
 
-  const setCharacterNameWithClear = (v: string) => {
+  const setCharacterNameWithClear = useCallback((v: string) => {
     setCharacterName(v);
     setCharacterError("");
-  };
+  }, []);
 
-  const setCharacterClassWithClear = (v: CharacterClass | "") => {
+  const setCharacterClassWithClear = useCallback((v: CharacterClass | "") => {
     setCharacterClass(v);
     setCharacterError("");
-  };
+  }, []);
 
-  const handleAddCharacter = (e: React.FormEvent) => {
+  const handleAddCharacter = useCallback((e: FormEvent) => {
     e.preventDefault();
     setCharacterError("");
     if (!characterName.trim() || !characterClass) return;
@@ -65,40 +66,46 @@ export function useRaidTracker() {
     setCharacters((prev) => [...prev, newCharacter]);
     setCharacterName("");
     setCharacterClass("");
-  };
+  }, [characterClass, characterName, characters]);
 
-  const handleDeleteCharacter = (id: string) => {
+  const handleDeleteCharacter = useCallback((id: string) => {
     setCharacters((prev) => prev.filter((c) => c.id !== id));
     setDungeonToggles((prev) => {
       const next = { ...prev };
       delete next[id];
       return next;
     });
-  };
+  }, []);
 
-  const handleDungeonToggle = (characterId: string, dungeonId: string) => {
-    setDungeonToggles((prev) => ({
-      ...prev,
-      [characterId]: {
-        ...(prev[characterId] ?? {}),
-        [dungeonId]: !(prev[characterId]?.[dungeonId] ?? false),
-      },
-    }));
-  };
+  const handleDungeonToggle = useCallback((characterId: string, dungeonId: string) => {
+    setDungeonToggles((prev) => {
+      const prevCharacter = prev[characterId] ?? {};
+      const nextValue = !(prevCharacter[dungeonId] ?? false);
+      return {
+        ...prev,
+        [characterId]: {
+          ...prevCharacter,
+          [dungeonId]: nextValue,
+        },
+      };
+    });
+  }, []);
 
-  const handleAddDungeon = (dungeon: Omit<DungeonRecord, "id">) => {
+  const handleAddDungeon = useCallback((dungeon: Omit<DungeonRecord, "id">) => {
     setDungeons((prev) => [
       ...prev,
       { ...dungeon, id: generateUUID() },
     ]);
-  };
+  }, []);
 
-  const handleAddFromTemplate = () => {
-    const template = DungeonList.map((d) => ({ ...d, id: generateUUID() }));
-    setDungeons((prev) => [...prev, ...template]);
-  };
+  const handleAddFromTemplate = useCallback(() => {
+    setDungeons((prev) => {
+      const template = DungeonList.map((d) => ({ ...d, id: generateUUID() }));
+      return [...prev, ...template];
+    });
+  }, []);
 
-  const handleDeleteDungeon = (dungeonId: string) => {
+  const handleDeleteDungeon = useCallback((dungeonId: string) => {
     setDungeons((prev) => prev.filter((d) => d.id !== dungeonId));
     setDungeonToggles((prev) => {
       const next = { ...prev };
@@ -109,24 +116,29 @@ export function useRaidTracker() {
       }
       return next;
     });
-  };
+  }, []);
 
-  const handleResetDungeons = () => {
+  const handleResetDungeons = useCallback(() => {
     setDungeonToggles({});
-  };
+  }, []);
 
-  const handleResetCharacter = (characterId: string) => {
+  const handleResetCharacter = useCallback((characterId: string) => {
     setDungeonToggles((prev) => ({
       ...prev,
       [characterId]: {},
     }));
-  };
+  }, []);
 
-  const canResetDungeons = Object.values(dungeonToggles).some((toggles) =>
-    Object.values(toggles).some(Boolean)
-  );
+  const canResetDungeons = useMemo(() => {
+    for (const toggles of Object.values(dungeonToggles)) {
+      for (const value of Object.values(toggles)) {
+        if (value) return true;
+      }
+    }
+    return false;
+  }, [dungeonToggles]);
 
-  const toggleShowForms = () => setShowForms((v) => !v);
+  const toggleShowForms = useCallback(() => setShowForms((v) => !v), []);
 
   return {
     // Character form state
