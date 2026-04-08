@@ -11,6 +11,12 @@ alwaysApply: true
 - Prefer functional components and hooks in React
 - Use meaningful names; keep functions small and focused
 
+## Naming
+
+- Prefer **kebab-case** for file names (e.g. `use-raid-tracker.ts`, `dungeon-table.tsx`)
+- Keep exported symbols idiomatic (e.g. `useRaidTracker` is fine), but keep **file paths** kebab-case
+- Avoid oversimplified names for locals and callback params (e.g. `v`, `d`, `c`, `e`); prefer descriptive names like `event`, `nextValue`, `character`, `dungeon`
+
 ## Commit Messages
 
 Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
