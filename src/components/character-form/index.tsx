@@ -28,7 +28,7 @@ export function CharacterForm({
           id={nameId}
           type="text"
           value={characterName}
-          onChange={(e) => setCharacterName(e.target.value)}
+          onChange={(event) => setCharacterName(event.target.value)}
           placeholder="Character name"
           required
         />
@@ -38,8 +38,8 @@ export function CharacterForm({
         <select
           id={classId}
           value={characterClass ? characterClass.name : ""}
-          onChange={(e) => {
-            const c = Classes.find((cls) => cls.name === e.target.value);
+          onChange={(event) => {
+            const c = Classes.find((cls) => cls.name === event.target.value);
             setCharacterClass(c ?? "");
           }}
           required

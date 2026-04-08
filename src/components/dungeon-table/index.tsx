@@ -20,14 +20,14 @@ function getItemLevelTier(itemLevel: number[]): number {
   return i === -1 ? 1 : ILVL_TIER_THRESHOLDS.length + 1 - i;
 }
 
-function getMaxItemLevel(d: DungeonRecord): number {
-  return d.itemLevel.length > 0 ? Math.max(...d.itemLevel) : 0;
+function getMaxItemLevel(dungeon: DungeonRecord): number {
+  return dungeon.itemLevel.length > 0 ? Math.max(...dungeon.itemLevel) : 0;
 }
 
 function filterDungeonsByName(list: DungeonRecord[], query: string): DungeonRecord[] {
   const q = query.trim().toLowerCase();
   if (q === "") return list;
-  return list.filter((d) => d.name.toLowerCase().includes(q));
+  return list.filter((dungeon) => dungeon.name.toLowerCase().includes(q));
 }
 
 function sortDungeons(
@@ -36,26 +36,30 @@ function sortDungeons(
   dir: "asc" | "desc"
 ): DungeonRecord[] {
   const maxIlvlCache = key === "itemLevel" ? new Map<string, number>() : null;
-  const getCachedMaxItemLevel = (d: DungeonRecord): number => {
-    if (!maxIlvlCache) return getMaxItemLevel(d);
-    const existing = maxIlvlCache.get(d.id);
+  const getCachedMaxItemLevel = (dungeon: DungeonRecord): number => {
+    if (!maxIlvlCache) return getMaxItemLevel(dungeon);
+    const existing = maxIlvlCache.get(dungeon.id);
     if (existing !== undefined) return existing;
-    const computed = getMaxItemLevel(d);
-    maxIlvlCache.set(d.id, computed);
+    const computed = getMaxItemLevel(dungeon);
+    maxIlvlCache.set(dungeon.id, computed);
     return computed;
   };
 
-  const sorted = [...list].sort((a, b) => {
+  const sorted = [...list].sort((firstDungeon, secondDungeon) => {
     let cmp = 0;
     if (key === "name") {
-      cmp = a.name.localeCompare(b.name) || a.size - b.size;
+      cmp =
+        firstDungeon.name.localeCompare(secondDungeon.name) ||
+        firstDungeon.size - secondDungeon.size;
     } else if (key === "size") {
-      cmp = a.size - b.size || a.name.localeCompare(b.name);
+      cmp =
+        firstDungeon.size - secondDungeon.size ||
+        firstDungeon.name.localeCompare(secondDungeon.name);
     } else if (key === "itemLevel") {
       cmp =
-        getCachedMaxItemLevel(a) -
-          getCachedMaxItemLevel(b) ||
-        a.name.localeCompare(b.name);
+        getCachedMaxItemLevel(firstDungeon) -
+          getCachedMaxItemLevel(secondDungeon) ||
+        firstDungeon.name.localeCompare(secondDungeon.name);
     }
     return dir === "asc" ? cmp : -cmp;
   });
@@ -117,9 +121,9 @@ export function DungeonTable({
   const hasVisibleRows = visibleDungeons.length > 0;
 
   const handleToggleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const characterId = e.currentTarget.dataset.characterId;
-      const dungeonId = e.currentTarget.dataset.dungeonId;
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const characterId = event.currentTarget.dataset.characterId;
+      const dungeonId = event.currentTarget.dataset.dungeonId;
       if (!characterId || !dungeonId) return;
       onDungeonToggle(characterId, dungeonId);
     },
@@ -127,8 +131,8 @@ export function DungeonTable({
   );
 
   const handleDeleteDungeonClick = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      const dungeonId = e.currentTarget.dataset.dungeonId;
+    (event: MouseEvent<HTMLButtonElement>) => {
+      const dungeonId = event.currentTarget.dataset.dungeonId;
       if (!dungeonId) return;
       onDeleteDungeon(dungeonId);
     },
@@ -136,8 +140,8 @@ export function DungeonTable({
   );
 
   const handleResetCharacterClick = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      const characterId = e.currentTarget.dataset.characterId;
+    (event: MouseEvent<HTMLButtonElement>) => {
+      const characterId = event.currentTarget.dataset.characterId;
       if (!characterId) return;
       onResetCharacter(characterId);
     },
@@ -145,8 +149,8 @@ export function DungeonTable({
   );
 
   const handleDeleteCharacterClick = useCallback(
-    (e: MouseEvent<HTMLButtonElement>) => {
-      const characterId = e.currentTarget.dataset.characterId;
+    (event: MouseEvent<HTMLButtonElement>) => {
+      const characterId = event.currentTarget.dataset.characterId;
       if (!characterId) return;
       onDeleteCharacter(characterId);
     },
@@ -167,8 +171,8 @@ export function DungeonTable({
                     id="dungeon-sort"
                     className="dungeon-table-sort-select"
                     value={sortKey}
-                    onChange={(e) =>
-                      setSortKey(e.target.value as DungeonSortKey)
+                    onChange={(event) =>
+                      setSortKey(event.target.value as DungeonSortKey)
                     }
                     aria-label="Sort dungeons by"
                   >
@@ -192,7 +196,7 @@ export function DungeonTable({
                 type="search"
                 className="dungeon-table-name-search"
                 value={nameSearch}
-                onChange={(e) => setNameSearch(e.target.value)}
+                onChange={(event) => setNameSearch(event.target.value)}
                 placeholder="Search name…"
                 aria-label="Filter dungeons by name"
                 autoComplete="off"
