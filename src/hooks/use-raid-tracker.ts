@@ -34,25 +34,25 @@ export function useRaidTracker() {
     return () => clearTimeout(timeout);
   }, [characters, dungeons, dungeonToggles]);
 
-  const setCharacterNameWithClear = useCallback((v: string) => {
-    setCharacterName(v);
+  const setCharacterNameWithClear = useCallback((characterNameValue: string) => {
+    setCharacterName(characterNameValue);
     setCharacterError("");
   }, []);
 
-  const setCharacterClassWithClear = useCallback((v: CharacterClass | "") => {
-    setCharacterClass(v);
+  const setCharacterClassWithClear = useCallback((characterClassValue: CharacterClass | "") => {
+    setCharacterClass(characterClassValue);
     setCharacterError("");
   }, []);
 
-  const handleAddCharacter = useCallback((e: FormEvent) => {
-    e.preventDefault();
+  const handleAddCharacter = useCallback((event: FormEvent) => {
+    event.preventDefault();
     setCharacterError("");
     if (!characterName.trim() || !characterClass) return;
     const trimmedName = characterName.trim();
     const isDuplicate = characters.some(
-      (c) =>
-        c.name.toLowerCase() === trimmedName.toLowerCase() &&
-        c.class?.name === characterClass.name
+      (existingCharacter) =>
+        existingCharacter.name.toLowerCase() === trimmedName.toLowerCase() &&
+        existingCharacter.class?.name === characterClass.name
     );
     if (isDuplicate) {
       setCharacterError("A character with this name and class already exists.");
@@ -69,52 +69,59 @@ export function useRaidTracker() {
   }, [characterClass, characterName, characters]);
 
   const handleDeleteCharacter = useCallback((id: string) => {
-    setCharacters((prev) => prev.filter((c) => c.id !== id));
-    setDungeonToggles((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
+    setCharacters((previousCharacters) =>
+      previousCharacters.filter((character) => character.id !== id)
+    );
+    setDungeonToggles((previousDungeonToggles) => {
+      const nextDungeonTogglesByCharacterId = { ...previousDungeonToggles };
+      delete nextDungeonTogglesByCharacterId[id];
+      return nextDungeonTogglesByCharacterId;
     });
   }, []);
 
   const handleDungeonToggle = useCallback((characterId: string, dungeonId: string) => {
-    setDungeonToggles((prev) => {
-      const prevCharacter = prev[characterId] ?? {};
-      const nextValue = !(prevCharacter[dungeonId] ?? false);
+    setDungeonToggles((previousDungeonToggles) => {
+      const previousCharacterToggles = previousDungeonToggles[characterId] ?? {};
+      const nextToggleValue = !(previousCharacterToggles[dungeonId] ?? false);
       return {
-        ...prev,
+        ...previousDungeonToggles,
         [characterId]: {
-          ...prevCharacter,
-          [dungeonId]: nextValue,
+          ...previousCharacterToggles,
+          [dungeonId]: nextToggleValue,
         },
       };
     });
   }, []);
 
   const handleAddDungeon = useCallback((dungeon: Omit<DungeonRecord, "id">) => {
-    setDungeons((prev) => [
-      ...prev,
+    setDungeons((previousDungeons) => [
+      ...previousDungeons,
       { ...dungeon, id: generateUUID() },
     ]);
   }, []);
 
   const handleAddFromTemplate = useCallback(() => {
-    setDungeons((prev) => {
-      const template = DungeonList.map((d) => ({ ...d, id: generateUUID() }));
-      return [...prev, ...template];
+    setDungeons((previousDungeons) => {
+      const templateDungeons = DungeonList.map((templateDungeon) => ({
+        ...templateDungeon,
+        id: generateUUID(),
+      }));
+      return [...previousDungeons, ...templateDungeons];
     });
   }, []);
 
   const handleDeleteDungeon = useCallback((dungeonId: string) => {
-    setDungeons((prev) => prev.filter((d) => d.id !== dungeonId));
-    setDungeonToggles((prev) => {
-      const next = { ...prev };
-      for (const charId of Object.keys(next)) {
-        const toggles = { ...next[charId] };
-        delete toggles[dungeonId];
-        next[charId] = toggles;
+    setDungeons((previousDungeons) =>
+      previousDungeons.filter((dungeon) => dungeon.id !== dungeonId)
+    );
+    setDungeonToggles((previousDungeonToggles) => {
+      const nextDungeonTogglesByCharacterId = { ...previousDungeonToggles };
+      for (const characterId of Object.keys(nextDungeonTogglesByCharacterId)) {
+        const nextTogglesByDungeonId = { ...nextDungeonTogglesByCharacterId[characterId] };
+        delete nextTogglesByDungeonId[dungeonId];
+        nextDungeonTogglesByCharacterId[characterId] = nextTogglesByDungeonId;
       }
-      return next;
+      return nextDungeonTogglesByCharacterId;
     });
   }, []);
 
@@ -138,7 +145,10 @@ export function useRaidTracker() {
     return false;
   }, [dungeonToggles]);
 
-  const toggleShowForms = useCallback(() => setShowForms((v) => !v), []);
+  const toggleShowForms = useCallback(
+    () => setShowForms((previousShowForms) => !previousShowForms),
+    []
+  );
 
   return {
     // Character form state
