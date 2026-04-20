@@ -97,6 +97,27 @@ export function DungeonTable({
     setSortDir((d) => (d === "asc" ? "desc" : "asc"));
   }, []);
 
+  const markedCountsByCharacterId = useMemo(() => {
+    const dungeonIdSet = new Set(dungeons.map((dungeon) => dungeon.id));
+    const result: Record<string, number> = {};
+
+    for (const character of characters) {
+      const toggles = dungeonToggles[character.id];
+      if (!toggles) {
+        result[character.id] = 0;
+        continue;
+      }
+
+      let count = 0;
+      for (const [dungeonId, isMarked] of Object.entries(toggles)) {
+        if (isMarked && dungeonIdSet.has(dungeonId)) count += 1;
+      }
+      result[character.id] = count;
+    }
+
+    return result;
+  }, [characters, dungeons, dungeonToggles]);
+
   const characterIdsWithAnyToggle = useMemo(() => {
     const result = new Set<string>();
     for (const char of characters) {
@@ -206,6 +227,7 @@ export function DungeonTable({
           </th>
           {characters.map((char) => {
             const hasToggles = characterIdsWithAnyToggle.has(char.id);
+            const markedCount = markedCountsByCharacterId[char.id] ?? 0;
             return (
               <th key={char.id} scope="col">
                 <div className="dungeon-table-character-header">
@@ -220,6 +242,14 @@ export function DungeonTable({
                       }}
                     >
                       {char.name}
+                    </span>
+                    <span
+                      className="dungeon-table-character-count"
+                      data-empty={markedCount === 0}
+                      aria-label={`${char.name}: ${markedCount} marked dungeons`}
+                      title={`${markedCount} marked`}
+                    >
+                      {markedCount}
                     </span>
                   </div>
                   <div className="dungeon-table-character-header-actions">
