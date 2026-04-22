@@ -6,7 +6,7 @@ import type { DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonTableProps } from "./types";
 import "./styles.css";
 
-export type DungeonSortKey = "name" | "size" | "itemLevel";
+export type DungeonSortKey = "name" | "size" | "itemLevel" | "completions";
 
 /** GearScore-style ilvl tiers (thresholds descending; tier 1 = below 200). */
 const ILVL_TIER_THRESHOLDS = [
@@ -33,7 +33,8 @@ function filterDungeonsByName(list: DungeonRecord[], query: string): DungeonReco
 function sortDungeons(
   list: DungeonRecord[],
   key: DungeonSortKey,
-  dir: "asc" | "desc"
+  dir: "asc" | "desc",
+  completionsByDungeonId?: Readonly<Record<string, number>>
 ): DungeonRecord[] {
   const maxIlvlCache = key === "itemLevel" ? new Map<string, number>() : null;
   const getCachedMaxItemLevel = (dungeon: DungeonRecord): number => {
@@ -60,17 +61,25 @@ function sortDungeons(
         getCachedMaxItemLevel(firstDungeon) -
           getCachedMaxItemLevel(secondDungeon) ||
         firstDungeon.name.localeCompare(secondDungeon.name);
+    } else if (key === "completions") {
+      const a = completionsByDungeonId?.[firstDungeon.id] ?? 0;
+      const b = completionsByDungeonId?.[secondDungeon.id] ?? 0;
+      cmp =
+        a - b ||
+        firstDungeon.name.localeCompare(secondDungeon.name) ||
+        firstDungeon.size - secondDungeon.size;
     }
     return dir === "asc" ? cmp : -cmp;
   });
   return sorted;
 }
 
-function dungeonCellTitle(dungeon: DungeonRecord): string {
+function dungeonCellTitle(dungeon: DungeonRecord, completionCount: number): string {
   const name = formatRaidNameRuWithEn(dungeon.name);
+  const completionText = `${completionCount} completions`;
   return dungeon.itemLevel.length > 0
-    ? `${name} — Item level: ${dungeon.itemLevel.join(", ")}`
-    : `${name} — Item level not set`;
+    ? `${name} — ${completionText} — Item level: ${dungeon.itemLevel.join(", ")}`
+    : `${name} — ${completionText} — Item level not set`;
 }
 
 function characterHasToggles(
@@ -92,6 +101,23 @@ export function DungeonTable({
   const [sortKey, setSortKey] = useState<DungeonSortKey>("itemLevel");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [nameSearch, setNameSearch] = useState("");
+
+  const completionCountsByDungeonId = useMemo(() => {
+    const result: Record<string, number> = Object.fromEntries(
+      dungeons.map((d) => [d.id, 0])
+    );
+
+    for (const character of characters) {
+      const toggles = dungeonToggles[character.id];
+      if (!toggles) continue;
+      for (const [dungeonId, isMarked] of Object.entries(toggles)) {
+        if (!isMarked) continue;
+        if (result[dungeonId] === undefined) continue;
+        result[dungeonId] += 1;
+      }
+    }
+    return result;
+  }, [characters, dungeons, dungeonToggles]);
 
   const handleToggleSortDir = useCallback(() => {
     setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -132,9 +158,10 @@ export function DungeonTable({
       sortDungeons(
         filterDungeonsByName(dungeons, nameSearch),
         sortKey,
-        sortDir
+        sortDir,
+        completionCountsByDungeonId
       ),
-    [dungeons, nameSearch, sortKey, sortDir]
+    [dungeons, nameSearch, sortKey, sortDir, completionCountsByDungeonId]
   );
 
   const colSpan = 1 + characters.length;
@@ -200,6 +227,7 @@ export function DungeonTable({
                     <option value="name">Name</option>
                     <option value="size">Size</option>
                     <option value="itemLevel">Item level</option>
+                    <option value="completions">Completions</option>
                   </select>
                   <button
                     type="button"
@@ -310,9 +338,12 @@ export function DungeonTable({
           visibleDungeons.map((dungeon) => (
           <tr key={dungeon.id}>
             <td className="dungeon-table-sticky-col">
+              {(() => {
+                const completionCount = completionCountsByDungeonId[dungeon.id] ?? 0;
+                return (
               <div
                 className="dungeon-table-dungeon-cell"
-                title={dungeonCellTitle(dungeon)}
+                title={dungeonCellTitle(dungeon, completionCount)}
               >
                 <div className="dungeon-table-dungeon-cell-text">
                   <span
@@ -321,6 +352,14 @@ export function DungeonTable({
                     }`}
                   >
                     {dungeon.size}
+                  </span>
+                  <span
+                    className="dungeon-table-dungeon-count"
+                    data-empty={completionCount === 0}
+                    aria-label={`${dungeon.name}: ${completionCount} completions`}
+                    title={`${completionCount} completions`}
+                  >
+                    {completionCount}
                   </span>
                   <span
                     className={`dungeon-name dungeon-name--tier-${getItemLevelTier(dungeon.itemLevel)}`}
@@ -338,6 +377,8 @@ export function DungeonTable({
                   🗑️
                 </button>
               </div>
+                );
+              })()}
             </td>
             {characters.map((char) => (
               <td key={char.id} className="dungeon-table-character-cell">

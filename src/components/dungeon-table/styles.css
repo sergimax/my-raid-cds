@@ -180,6 +180,26 @@
   flex: 1;
 }
 
+.dungeon-table-dungeon-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.15rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--zinc-100);
+  background: rgba(34, 197, 94, 0.18);
+}
+
+.dungeon-table-dungeon-count[data-empty="true"] {
+  color: var(--zinc-300);
+  background: rgba(148, 163, 184, 0.12);
+}
+
 .dungeon-table-dungeon-cell-text .dungeon-mode {
   flex-shrink: 0;
 }
