@@ -1,23 +1,21 @@
 /* Layout */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-@media (min-width: 640px) {
-  #root {
-    padding: 2rem;
-  }
+  max-width: none;
+  margin: 0;
+  padding: 1rem 1.5rem;
 }
 
 /* Header */
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: flex-start;
+  gap: 0.75rem;
   flex-wrap: wrap;
+}
+
+.app-header h1 {
+  margin: 0;
 }
 
 .app-header-actions {
@@ -29,40 +27,33 @@
 
 /* Sections */
 .character-section {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
 }
 
 .dungeon-section {
-  margin-top: 1.5rem;
+  margin-top: 0.75rem;
 }
 
 .dungeon-section-header {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .dungeon-table-wrapper {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin: 0 -1rem;
-  padding: 0 1rem;
-}
-
-@media (min-width: 640px) {
-  .dungeon-table-wrapper {
-    margin: 0;
-    padding: 0;
-  }
+  margin: 0;
+  padding: 0;
 }
 
 /* Alerts */
 .storage-error {
-  margin-top: 1rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.9em;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85em;
   color: #fca5a5;
   background-color: rgba(239, 68, 68, 0.15);
   border: 1px solid #dc2626;
@@ -78,10 +69,10 @@
 /* Header toolbar buttons */
 .form-toggle-btn,
 .reset-dungeons-btn {
-  height: 44px;
+  height: 32px;
   box-sizing: border-box;
-  padding: 0 1rem;
-  font-size: 0.9em;
+  padding: 0 0.65rem;
+  font-size: 0.8em;
   cursor: pointer;
   background: var(--zinc-700);
   color: var(--zinc-200);
@@ -101,40 +92,4 @@
 
 .reset-dungeons-btn.reset-btn--inactive:hover {
   background: var(--zinc-700);
-}
-
-@media (min-width: 1024px) {
-  #root {
-    padding: 1rem 1.5rem;
-  }
-
-  .app-header {
-    gap: 0.5rem;
-  }
-
-  .character-section {
-    margin-top: 0.5rem;
-  }
-
-  .dungeon-section {
-    margin-top: 0.75rem;
-  }
-
-  .dungeon-section-header {
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .storage-error {
-    margin-top: 0.5rem;
-    padding: 0.35rem 0.5rem;
-    font-size: 0.85em;
-  }
-
-  .form-toggle-btn,
-  .reset-dungeons-btn {
-    height: 32px;
-    padding: 0 0.65rem;
-    font-size: 0.8em;
-  }
 }
