@@ -1,17 +1,17 @@
 /* Container & table */
 .dungeon-table-container {
-  margin-top: 1.5rem;
+  margin-top: 0.5rem;
 }
 
 .dungeon-table {
-  width: 100%;
+  width: max-content;
   border-collapse: collapse;
   table-layout: fixed;
 }
 
 .dungeon-table th,
 .dungeon-table td {
-  padding: 0.5rem 0.75rem;
+  padding: 0.25rem 0.5rem;
   text-align: left;
   border-bottom: 1px solid var(--border-muted);
 }
@@ -37,7 +37,8 @@
   z-index: 1;
   background: #141c2a;
   box-shadow: 1px 0 0 rgba(56, 189, 248, 0.12);
-  min-width: 160px;
+  width: 220px;
+  min-width: 220px;
   max-width: 220px;
 }
 
@@ -85,7 +86,7 @@
 
 .dungeon-table-sort-select,
 .dungeon-table-sort-dir-btn {
-  font-size: 0.9em;
+  font-size: 0.8em;
   background: var(--zinc-700);
   color: var(--zinc-200);
   border: 1px solid var(--zinc-600);
@@ -94,11 +95,11 @@
 }
 
 .dungeon-table-sort-select {
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.35rem;
 }
 
 .dungeon-table-sort-dir-btn {
-  padding: 0.2rem 0.5rem;
+  padding: 0.15rem 0.35rem;
 }
 
 .dungeon-table-sort-select:hover,
@@ -115,9 +116,9 @@
   display: block;
   width: 100%;
   box-sizing: border-box;
-  margin-top: 0.4rem;
-  font-size: 0.9em;
-  padding: 0.3rem 0.5rem;
+  margin-top: 0.3rem;
+  font-size: 0.8em;
+  padding: 0.2rem 0.35rem;
   background: #0f1729;
   color: var(--zinc-200);
   border: 1px solid rgba(56, 189, 248, 0.25);
@@ -141,9 +142,9 @@
 /* Empty state */
 .dungeon-table-empty-state {
   color: var(--zinc-400);
-  font-size: 0.95em;
+  font-size: 0.9em;
   text-align: center;
-  padding: 1.5rem 1rem;
+  padding: 0.75rem 1rem;
   vertical-align: middle;
 }
 
@@ -153,8 +154,8 @@
 }
 
 .dungeon-table-empty-state .add-from-template-btn {
-  font-size: 0.9em;
-  padding: 0.4rem 0.75rem;
+  font-size: 0.8em;
+  padding: 0.25rem 0.5rem;
   cursor: pointer;
   background: var(--zinc-700);
   color: var(--zinc-200);
@@ -218,7 +219,7 @@
 
 .dungeon-table .dungeon-name {
   font-weight: 600;
-  font-size: 0.95em;
+  font-size: 0.85em;
 }
 
 /* GearScore-style tiers: light-blue → blue → violet → orange → red */
@@ -236,7 +237,7 @@
 
 .dungeon-table .dungeon-mode {
   padding: 0.1rem 0.35rem;
-  font-size: 0.75em;
+  font-size: 0.7em;
   font-weight: 600;
   border-radius: 3px;
   border: 1px solid transparent;
@@ -257,8 +258,8 @@
 
 /* Character column */
 .dungeon-table .class-icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   object-fit: contain;
 }
 
@@ -331,10 +332,10 @@
   justify-content: center;
   cursor: pointer;
   touch-action: manipulation;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0.5rem;
-  margin: -0.5rem;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .dungeon-toggle input {
@@ -346,20 +347,20 @@
 
 .dungeon-toggle-slider {
   position: relative;
-  width: 2.75rem;
-  height: 1.5rem;
+  width: 2rem;
+  height: 1rem;
   background-color: var(--zinc-700);
-  border-radius: 1.5rem;
+  border-radius: 1rem;
   transition: background-color 0.2s;
 }
 
 .dungeon-toggle-slider::before {
   content: "";
   position: absolute;
-  width: 1.125rem;
-  height: 1.125rem;
-  left: 0.1875rem;
-  top: 0.1875rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  left: 0.125rem;
+  top: 0.125rem;
   background-color: var(--zinc-200);
   border-radius: 50%;
   transition: transform 0.2s;
@@ -370,20 +371,20 @@
 }
 
 .dungeon-toggle input:checked + .dungeon-toggle-slider::before {
-  transform: translateX(1.25rem);
+  transform: translateX(1rem);
 }
 
 /* Action buttons */
 .dungeon-table .reset-character-btn,
 .dungeon-table .delete-character-btn,
 .dungeon-table .delete-dungeon-btn {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0.5rem;
+  min-height: 32px;
+  min-width: 32px;
+  padding: 0.2rem 0.4rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85em;
+  font-size: 0.8em;
   cursor: pointer;
   color: var(--zinc-200);
   background: var(--zinc-700);
@@ -410,144 +411,3 @@
   background: var(--zinc-700);
 }
 
-/* 640px: tablet */
-@media (min-width: 640px) {
-  .dungeon-table th,
-  .dungeon-table td {
-    padding: 0.5rem 1rem;
-  }
-
-  .dungeon-table .dungeon-mode {
-    font-size: 0.8em;
-    padding: 0.12rem 0.45rem;
-  }
-
-  .dungeon-toggle {
-    min-width: 0;
-    min-height: 0;
-    padding: 0;
-    margin: 0;
-  }
-
-  .dungeon-toggle-slider {
-    width: 2.5rem;
-    height: 1.25rem;
-    border-radius: 1.25rem;
-  }
-
-  .dungeon-toggle-slider::before {
-    width: 1rem;
-    height: 1rem;
-    left: 0.125rem;
-    top: 0.125rem;
-  }
-
-  .dungeon-toggle input:checked + .dungeon-toggle-slider::before {
-    transform: translateX(1.25rem);
-  }
-
-  .dungeon-table .reset-character-btn,
-  .dungeon-table .delete-character-btn,
-  .dungeon-table .delete-dungeon-btn {
-    min-height: 0;
-    min-width: 0;
-    padding: 0.25rem 0.6rem;
-  }
-}
-
-/* 1024px: compact desktop */
-@media (min-width: 1024px) {
-  .dungeon-table-container {
-    margin-top: 0.5rem;
-  }
-
-  .dungeon-table-sticky-col {
-    min-width: 130px;
-    max-width: 200px;
-  }
-
-  .dungeon-table-dungeon-header-row,
-  .dungeon-table-character-header {
-    gap: 0.25rem 0.35rem;
-  }
-
-  .dungeon-table-sort-select,
-  .dungeon-table-sort-dir-btn {
-    font-size: 0.8em;
-  }
-
-  .dungeon-table-sort-select {
-    padding: 0.2rem 0.35rem;
-  }
-
-  .dungeon-table-sort-dir-btn {
-    padding: 0.15rem 0.35rem;
-  }
-
-  .dungeon-table-name-search {
-    font-size: 0.8em;
-    padding: 0.2rem 0.35rem;
-    margin-top: 0.3rem;
-  }
-
-  .dungeon-table-empty-state {
-    font-size: 0.9em;
-    padding: 0.75rem 1rem;
-  }
-
-  .dungeon-table-empty-state .add-from-template-btn {
-    font-size: 0.8em;
-    padding: 0.25rem 0.5rem;
-  }
-
-  .dungeon-table th,
-  .dungeon-table td {
-    padding: 0.25rem 0.5rem;
-  }
-
-  .dungeon-table .dungeon-name {
-    font-size: 0.85em;
-  }
-
-  .dungeon-table .dungeon-mode {
-    font-size: 0.7em;
-    padding: 0.1rem 0.35rem;
-  }
-
-  .dungeon-table .class-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .dungeon-table-character-name {
-    font-size: 0.9em;
-  }
-
-  .dungeon-table-dungeon-cell {
-    gap: 0.35rem;
-  }
-
-  .dungeon-toggle-slider {
-    width: 2rem;
-    height: 1rem;
-    border-radius: 1rem;
-  }
-
-  .dungeon-toggle-slider::before {
-    width: 0.75rem;
-    height: 0.75rem;
-    left: 0.125rem;
-    top: 0.125rem;
-  }
-
-  .dungeon-toggle input:checked + .dungeon-toggle-slider::before {
-    transform: translateX(1rem);
-  }
-
-  .dungeon-table .reset-character-btn,
-  .dungeon-table .delete-character-btn,
-  .dungeon-table .delete-dungeon-btn {
-    font-size: 0.8em;
-    padding: 0.2rem 0.4rem;
-  }
-}
