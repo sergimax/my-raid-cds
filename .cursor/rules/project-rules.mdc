@@ -69,7 +69,7 @@ Example: `feat(auth): add login form`
 
 - React 19 + TypeScript + Vite app
 - WoW raid cooldown tracker: characters, dungeons, per-character–dungeon toggles
-- Data in localStorage; dungeons list starts empty by default
+- Data in localStorage (`my-raid-cds` key); dungeons list starts empty by default
 - `data/dungeons.ts` — DungeonList template (WoW WotLK raids, Russian names)
 - App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`)
 - Follow existing patterns; check README before adding dependencies
@@ -91,7 +91,7 @@ Example: `feat(auth): add login form`
 
 ```
 src/
-├── components/   # character-form, dungeon-form, dungeon-table
+├── components/   # app-footer, character-form, dungeon-form, dungeon-table
 ├── hooks/         # use-raid-tracker.ts (useRaidTracker)
 ├── types/         # characters, dungeons
 ├── data/          # dungeons.ts (DungeonList template)

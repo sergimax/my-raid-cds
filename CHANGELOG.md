@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2026-04-22
+
+### Changed
+
+- App layout: remove centered max-width wrapper; content is left-aligned and can grow horizontally
+- Header: keep action buttons near the app title
+- Forms: keep character/dungeon forms compact (max-width) instead of stretching full screen
+- Styles: remove adaptive `@media` breakpoints (consistent compact UI at all widths)
+- Dungeon table: heroic mode badge is more visually distinct; character columns use equal widths and long names are truncated; table no longer stretches full width
+
+### Refactor
+
+- Dungeon table: split `components/dungeon-table/index.tsx` into smaller components and utilities
+
 ## [1.1.3] - 2026-04-20
 
 ### Added
