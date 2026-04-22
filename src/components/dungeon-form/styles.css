@@ -3,6 +3,8 @@
   gap: 1rem;
   flex-wrap: wrap;
   align-items: flex-end;
+  width: 100%;
+  max-width: 720px;
 }
 
 .dungeon-form label {

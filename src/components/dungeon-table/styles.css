@@ -6,6 +6,7 @@
 .dungeon-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .dungeon-table th,
@@ -38,6 +39,11 @@
   box-shadow: 1px 0 0 rgba(56, 189, 248, 0.12);
   min-width: 160px;
   max-width: 220px;
+}
+
+.dungeon-table th:not(.dungeon-table-sticky-col),
+.dungeon-table td:not(.dungeon-table-sticky-col) {
+  width: 180px;
 }
 
 .dungeon-table th.dungeon-table-sticky-col {
@@ -267,7 +273,8 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
   white-space: nowrap;
 }
 
@@ -306,6 +313,10 @@
 
 .dungeon-table-character-name {
   font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 14ch;
 }
 
 .dungeon-table-character-cell {
