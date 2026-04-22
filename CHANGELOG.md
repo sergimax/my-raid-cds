@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - App layout: remove centered max-width wrapper; content is left-aligned and can grow horizontally
 - Header: keep action buttons near the app title
 - Forms: keep character/dungeon forms compact (max-width) instead of stretching full screen
-- Styles: remove adaptive `@media` breakpoints (consistent compact UI at all widths)
+- Styles: remove adaptive `@media` breakpoints (consistent compact UI at all widths); add missing zinc tokens (`--zinc-100`, `--zinc-300`) for badge/count text colors
 - Dungeon table: heroic mode badge is more visually distinct; character columns use equal widths and long names are truncated; table no longer stretches full width
 
 ### Refactor
