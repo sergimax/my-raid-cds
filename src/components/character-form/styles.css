@@ -3,6 +3,8 @@
   gap: 1rem;
   margin-top: 1rem;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 720px;
 }
 
 .character-form-error {
