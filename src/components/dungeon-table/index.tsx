@@ -1,92 +1,15 @@
 import type { ChangeEvent, MouseEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
-import { formatRaidNameRuWithEn } from "../../data/dungeons.ts";
-import { DungeonMode } from "../../types/dungeons.ts";
-import type { DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonTableProps } from "./types";
+import { CharacterHeaderCell } from "./character-header-cell";
+import { DungeonCell } from "./dungeon-cell";
+import type { DungeonSortKey } from "./dungeon-table-utils";
+import {
+  characterHasToggles,
+  filterDungeonsByName,
+  sortDungeons,
+} from "./dungeon-table-utils";
 import "./styles.css";
-
-export type DungeonSortKey = "name" | "size" | "itemLevel" | "completions";
-
-/** GearScore-style ilvl tiers (thresholds descending; tier 1 = below 200). */
-const ILVL_TIER_THRESHOLDS = [
-  277, 264, 258, 251, 245, 232, 226, 219, 213, 200,
-] as const;
-
-function getItemLevelTier(itemLevel: number[]): number {
-  if (itemLevel.length === 0) return 1;
-  const max = Math.max(...itemLevel);
-  const i = ILVL_TIER_THRESHOLDS.findIndex((t) => max >= t);
-  return i === -1 ? 1 : ILVL_TIER_THRESHOLDS.length + 1 - i;
-}
-
-function getMaxItemLevel(dungeon: DungeonRecord): number {
-  return dungeon.itemLevel.length > 0 ? Math.max(...dungeon.itemLevel) : 0;
-}
-
-function filterDungeonsByName(list: DungeonRecord[], query: string): DungeonRecord[] {
-  const q = query.trim().toLowerCase();
-  if (q === "") return list;
-  return list.filter((dungeon) => dungeon.name.toLowerCase().includes(q));
-}
-
-function sortDungeons(
-  list: DungeonRecord[],
-  key: DungeonSortKey,
-  dir: "asc" | "desc",
-  completionsByDungeonId?: Readonly<Record<string, number>>
-): DungeonRecord[] {
-  const maxIlvlCache = key === "itemLevel" ? new Map<string, number>() : null;
-  const getCachedMaxItemLevel = (dungeon: DungeonRecord): number => {
-    if (!maxIlvlCache) return getMaxItemLevel(dungeon);
-    const existing = maxIlvlCache.get(dungeon.id);
-    if (existing !== undefined) return existing;
-    const computed = getMaxItemLevel(dungeon);
-    maxIlvlCache.set(dungeon.id, computed);
-    return computed;
-  };
-
-  const sorted = [...list].sort((firstDungeon, secondDungeon) => {
-    let cmp = 0;
-    if (key === "name") {
-      cmp =
-        firstDungeon.name.localeCompare(secondDungeon.name) ||
-        firstDungeon.size - secondDungeon.size;
-    } else if (key === "size") {
-      cmp =
-        firstDungeon.size - secondDungeon.size ||
-        firstDungeon.name.localeCompare(secondDungeon.name);
-    } else if (key === "itemLevel") {
-      cmp =
-        getCachedMaxItemLevel(firstDungeon) -
-          getCachedMaxItemLevel(secondDungeon) ||
-        firstDungeon.name.localeCompare(secondDungeon.name);
-    } else if (key === "completions") {
-      const a = completionsByDungeonId?.[firstDungeon.id] ?? 0;
-      const b = completionsByDungeonId?.[secondDungeon.id] ?? 0;
-      cmp =
-        a - b ||
-        firstDungeon.name.localeCompare(secondDungeon.name) ||
-        firstDungeon.size - secondDungeon.size;
-    }
-    return dir === "asc" ? cmp : -cmp;
-  });
-  return sorted;
-}
-
-function dungeonCellTitle(dungeon: DungeonRecord, completionCount: number): string {
-  const name = formatRaidNameRuWithEn(dungeon.name);
-  const completionText = `${completionCount} completions`;
-  return dungeon.itemLevel.length > 0
-    ? `${name} — ${completionText} — Item level: ${dungeon.itemLevel.join(", ")}`
-    : `${name} — ${completionText} — Item level not set`;
-}
-
-function characterHasToggles(
-  toggles: Record<string, boolean> | undefined
-): boolean {
-  return toggles ? Object.values(toggles).some(Boolean) : false;
-}
 
 export function DungeonTable({
   dungeons,
@@ -258,50 +181,13 @@ export function DungeonTable({
             const markedCount = markedCountsByCharacterId[char.id] ?? 0;
             return (
               <th key={char.id} scope="col">
-                <div className="dungeon-table-character-header">
-                  <div className="dungeon-table-character-header-name">
-                    {char.class && (
-                      <img src={char.class.icon} alt="" className="class-icon" />
-                    )}
-                    <span
-                      className="dungeon-table-character-name"
-                      style={{
-                        color: char.class?.color ? `#${char.class.color}` : undefined,
-                      }}
-                    >
-                      {char.name}
-                    </span>
-                    <span
-                      className="dungeon-table-character-count"
-                      data-empty={markedCount === 0}
-                      aria-label={`${char.name}: ${markedCount} marked dungeons`}
-                      title={`${markedCount} marked`}
-                    >
-                      {markedCount}
-                    </span>
-                  </div>
-                  <div className="dungeon-table-character-header-actions">
-                    <button
-                      type="button"
-                      className={`reset-character-btn ${!hasToggles ? "reset-btn--inactive" : ""}`}
-                      data-character-id={char.id}
-                      onClick={handleResetCharacterClick}
-                      disabled={!hasToggles}
-                      aria-label={`Reset ${char.name}`}
-                    >
-                      🔄
-                    </button>
-                    <button
-                      type="button"
-                      className="delete-character-btn"
-                      data-character-id={char.id}
-                      onClick={handleDeleteCharacterClick}
-                      aria-label={`Delete ${char.name}`}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
+                <CharacterHeaderCell
+                  character={char}
+                  hasToggles={hasToggles}
+                  markedCount={markedCount}
+                  onResetCharacterClick={handleResetCharacterClick}
+                  onDeleteCharacterClick={handleDeleteCharacterClick}
+                />
               </th>
             );
           })}
@@ -338,47 +224,11 @@ export function DungeonTable({
           visibleDungeons.map((dungeon) => (
           <tr key={dungeon.id}>
             <td className="dungeon-table-sticky-col">
-              {(() => {
-                const completionCount = completionCountsByDungeonId[dungeon.id] ?? 0;
-                return (
-              <div
-                className="dungeon-table-dungeon-cell"
-                title={dungeonCellTitle(dungeon, completionCount)}
-              >
-                <div className="dungeon-table-dungeon-cell-text">
-                  <span
-                    className={`dungeon-mode dungeon-mode--${
-                      dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
-                    }`}
-                  >
-                    {dungeon.size}
-                  </span>
-                  <span
-                    className="dungeon-table-dungeon-count"
-                    data-empty={completionCount === 0}
-                    aria-label={`${dungeon.name}: ${completionCount} completions`}
-                    title={`${completionCount} completions`}
-                  >
-                    {completionCount}
-                  </span>
-                  <span
-                    className={`dungeon-name dungeon-name--tier-${getItemLevelTier(dungeon.itemLevel)}`}
-                  >
-                    {dungeon.name}
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  className="delete-dungeon-btn"
-                  data-dungeon-id={dungeon.id}
-                  onClick={handleDeleteDungeonClick}
-                  aria-label={`Delete ${dungeon.name}`}
-                >
-                  🗑️
-                </button>
-              </div>
-                );
-              })()}
+              <DungeonCell
+                dungeon={dungeon}
+                completionCount={completionCountsByDungeonId[dungeon.id] ?? 0}
+                onDeleteDungeonClick={handleDeleteDungeonClick}
+              />
             </td>
             {characters.map((char) => (
               <td key={char.id} className="dungeon-table-character-cell">
