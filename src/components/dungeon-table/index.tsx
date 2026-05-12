@@ -8,14 +8,11 @@ import type { DungeonSortKey } from "./dungeon-table-utils";
 import {
   characterHasToggles,
   filterDungeonsByName,
+  getItemLevelTier,
+  getStartingItemLevel,
   sortDungeons,
 } from "./dungeon-table-utils";
 import "./styles.css";
-
-type DungeonSortKeyDungeonSelect = Exclude<
-  DungeonSortKey,
-  "size" | "mode" | "completions"
->;
 
 export function DungeonTable({
   dungeons,
@@ -70,6 +67,24 @@ export function DungeonTable({
     }
   }, [sortKey, handleToggleSortDir]);
 
+  const handleNameSortClick = useCallback(() => {
+    if (sortKey !== "name") {
+      setSortKey("name");
+      setSortDir("asc");
+    } else {
+      handleToggleSortDir();
+    }
+  }, [sortKey, handleToggleSortDir]);
+
+  const handleItemLevelSortClick = useCallback(() => {
+    if (sortKey !== "itemLevel") {
+      setSortKey("itemLevel");
+      setSortDir("desc");
+    } else {
+      handleToggleSortDir();
+    }
+  }, [sortKey, handleToggleSortDir]);
+
   const handleCompletionsSortClick = useCallback(() => {
     if (sortKey !== "completions") {
       setSortKey("completions");
@@ -78,25 +93,6 @@ export function DungeonTable({
       handleToggleSortDir();
     }
   }, [sortKey, handleToggleSortDir]);
-
-  const handleDungeonSortKeyChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      const nextKey = event.target.value as
-        | DungeonSortKeyDungeonSelect
-        | "__size__"
-        | "__mode__"
-        | "__completions__";
-      if (
-        nextKey === "__size__" ||
-        nextKey === "__mode__" ||
-        nextKey === "__completions__"
-      ) {
-        return;
-      }
-      setSortKey(nextKey as DungeonSortKey);
-    },
-    []
-  );
 
   const markedCountsByCharacterId = useMemo(() => {
     const dungeonIdSet = new Set(dungeons.map((dungeon) => dungeon.id));
@@ -139,7 +135,7 @@ export function DungeonTable({
     [dungeons, nameSearch, sortKey, sortDir, completionCountsByDungeonId]
   );
 
-  const colSpan = 4 + characters.length;
+  const colSpan = 5 + characters.length;
   const hasDungeons = dungeons.length > 0;
   const hasVisibleRows = visibleDungeons.length > 0;
 
@@ -267,55 +263,61 @@ export function DungeonTable({
               </button>
             </div>
           </th>
+          <th scope="col" className="dungeon-table-ilvl-col">
+            <div className="dungeon-table-ilvl-header">
+              <span className="dungeon-table-ilvl-header-label">ilvl</span>
+              <button
+                type="button"
+                className={`dungeon-table-sort-dir-btn dungeon-table-ilvl-sort-dir-btn${
+                  sortKey === "itemLevel"
+                    ? " dungeon-table-ilvl-sort-dir-btn--active"
+                    : ""
+                }`}
+                onClick={handleItemLevelSortClick}
+                aria-label={
+                  sortKey === "itemLevel"
+                    ? `Starting item level: sort ${sortDir === "asc" ? "ascending" : "descending"}`
+                    : "Sort by starting item level"
+                }
+                title={
+                  sortKey === "itemLevel"
+                    ? sortDir === "asc"
+                      ? "Ascending by starting ilvl (click for descending)"
+                      : "Descending by starting ilvl (click for ascending)"
+                    : "Sort by starting item level"
+                }
+              >
+                {sortKey === "itemLevel" ? (sortDir === "asc" ? "↑" : "↓") : "↓"}
+              </button>
+            </div>
+          </th>
           <th scope="col" className="dungeon-table-sticky-col">
             <div className="dungeon-table-dungeon-header">
               <div className="dungeon-table-dungeon-header-row">
                 <span className="dungeon-table-dungeon-header-label">Dungeon</span>
-                <div className="dungeon-table-sort">
-                  <select
-                    id="dungeon-sort"
-                    className="dungeon-table-sort-select"
-                    value={
-                      sortKey === "size"
-                        ? "__size__"
-                        : sortKey === "mode"
-                          ? "__mode__"
-                          : sortKey === "completions"
-                            ? "__completions__"
-                            : sortKey
+                <div className="dungeon-table-sort dungeon-table-name-sort">
+                  <span className="dungeon-table-name-sort-label">Name</span>
+                  <button
+                    type="button"
+                    className={`dungeon-table-sort-dir-btn dungeon-table-name-sort-dir-btn${
+                      sortKey === "name" ? " dungeon-table-name-sort-dir-btn--active" : ""
+                    }`}
+                    onClick={handleNameSortClick}
+                    aria-label={
+                      sortKey === "name"
+                        ? `Dungeon name: sort ${sortDir === "asc" ? "ascending" : "descending"}`
+                        : "Sort by dungeon name"
                     }
-                    onChange={handleDungeonSortKeyChange}
-                    aria-label="Sort dungeons by"
+                    title={
+                      sortKey === "name"
+                        ? sortDir === "asc"
+                          ? "Ascending A–Z (click for descending)"
+                          : "Descending Z–A (click for ascending)"
+                        : "Sort by name"
+                    }
                   >
-                    <option value="__size__" hidden>
-                      —
-                    </option>
-                    <option value="__mode__" hidden>
-                      —
-                    </option>
-                    <option value="__completions__" hidden>
-                      —
-                    </option>
-                    <option value="name">Name</option>
-                    <option value="itemLevel">Item level</option>
-                  </select>
-                  {sortKey !== "size" &&
-                  sortKey !== "mode" &&
-                  sortKey !== "completions" ? (
-                    <button
-                      type="button"
-                      className="dungeon-table-sort-dir-btn"
-                      onClick={handleToggleSortDir}
-                      aria-label={`Sort ${sortDir === "asc" ? "ascending" : "descending"}`}
-                      title={
-                        sortDir === "asc"
-                          ? "Ascending (click for descending)"
-                          : "Descending (click for ascending)"
-                      }
-                    >
-                      {sortDir === "asc" ? "↑" : "↓"}
-                    </button>
-                  ) : null}
+                    {sortKey === "name" ? (sortDir === "asc" ? "↑" : "↓") : "↑"}
+                  </button>
                 </div>
               </div>
               <input
@@ -379,6 +381,7 @@ export function DungeonTable({
           visibleDungeons.map((dungeon) => {
             const completionCount =
               completionCountsByDungeonId[dungeon.id] ?? 0;
+            const startingIlvl = getStartingItemLevel(dungeon);
             return (
               <tr key={dungeon.id}>
                 <td className="dungeon-table-size-col">{dungeon.size}</td>
@@ -400,6 +403,24 @@ export function DungeonTable({
                   >
                     {completionCount}
                   </span>
+                </td>
+                <td className="dungeon-table-ilvl-col">
+                  {startingIlvl > 0 ? (
+                    <span
+                      className={`dungeon-table-ilvl-value dungeon-name dungeon-name--tier-${getItemLevelTier(
+                        dungeon.itemLevel
+                      )}`}
+                    >
+                      {startingIlvl}
+                    </span>
+                  ) : (
+                    <span
+                      className="dungeon-table-ilvl-empty"
+                      aria-label="Item level not set"
+                    >
+                      —
+                    </span>
+                  )}
                 </td>
                 <td className="dungeon-table-sticky-col">
                   <DungeonCell
