@@ -1,3 +1,4 @@
+export { AntdExampleTable } from "./antd-example-table/index.tsx";
 export { AppFooter } from "./app-footer/index.tsx";
 export { CharacterForm } from "./character-form/index.tsx";
 export { DungeonForm } from "./dungeon-form/index.tsx";

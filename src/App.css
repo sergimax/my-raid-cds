@@ -49,22 +49,6 @@
   padding: 0;
 }
 
-.dungeon-table-antd-example {
-  margin-top: 1.25rem;
-  max-width: 720px;
-}
-
-.dungeon-table-antd-example-caption {
-  margin: 0 0 0.5rem;
-  font-size: 0.85em;
-  color: var(--zinc-400);
-}
-
-.dungeon-table-antd-example-caption code {
-  font-size: 0.95em;
-  color: var(--zinc-300);
-}
-
 /* Alerts */
 .storage-error {
   margin-top: 0.5rem;
