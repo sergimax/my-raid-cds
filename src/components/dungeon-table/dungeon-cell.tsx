@@ -1,5 +1,4 @@
 import type { MouseEvent } from "react";
-import { DungeonMode } from "../../types/dungeons";
 import type { DungeonRecord } from "../../types/dungeons";
 import { dungeonCellTitle, getItemLevelTier } from "./dungeon-table-utils";
 
@@ -20,21 +19,6 @@ export function DungeonCell({
       title={dungeonCellTitle(dungeon, completionCount)}
     >
       <div className="dungeon-table-dungeon-cell-text">
-        <span
-          className={`dungeon-mode dungeon-mode--${
-            dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
-          }`}
-        >
-          {dungeon.size}
-        </span>
-        <span
-          className="dungeon-table-dungeon-count"
-          data-empty={completionCount === 0}
-          aria-label={`${dungeon.name}: ${completionCount} completions`}
-          title={`${completionCount} completions`}
-        >
-          {completionCount}
-        </span>
         <span
           className={`dungeon-name dungeon-name--tier-${getItemLevelTier(
             dungeon.itemLevel

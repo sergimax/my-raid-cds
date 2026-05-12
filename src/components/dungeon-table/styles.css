@@ -7,6 +7,10 @@
   width: max-content;
   border-collapse: collapse;
   table-layout: fixed;
+  --dungeon-table-size-col-width: 4.25rem;
+  --dungeon-table-mode-col-width: 5.75rem;
+  --dungeon-table-completions-col-width: 6.75rem;
+  --dungeon-table-ilvl-col-width: 3.75rem;
 }
 
 .dungeon-table th,
@@ -21,19 +25,264 @@
   border-bottom-color: var(--zinc-700);
 }
 
-/* Character columns: zebra separate from dungeon column */
-.dungeon-table tbody tr td:not(.dungeon-table-sticky-col) {
+/* Character columns: zebra separate from dungeon block */
+.dungeon-table tbody tr td.dungeon-table-character-cell {
   background-color: var(--zinc-900);
 }
 
-.dungeon-table tbody tr:nth-child(odd) td:not(.dungeon-table-sticky-col) {
+.dungeon-table tbody tr:nth-child(odd) td.dungeon-table-character-cell {
   background-color: var(--row-stripe);
 }
 
-/* Sticky dungeon column — cool slate/teal tint vs neutral character cells */
-.dungeon-table-sticky-col {
+/* Sticky size column (raid size: 10 / 25 / …) */
+.dungeon-table-size-col {
   position: sticky;
   left: 0;
+  z-index: 1;
+  width: var(--dungeon-table-size-col-width);
+  min-width: var(--dungeon-table-size-col-width);
+  max-width: var(--dungeon-table-size-col-width);
+  text-align: center;
+  vertical-align: middle;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--zinc-200);
+  background: #141c2a;
+  box-shadow: 1px 0 0 rgba(56, 189, 248, 0.12);
+}
+
+.dungeon-table th.dungeon-table-size-col {
+  background: #1a2740;
+  z-index: 2;
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--zinc-300);
+  vertical-align: top;
+  padding: 0.35rem 0.3rem;
+}
+
+.dungeon-table-size-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.dungeon-table-size-header-label {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dungeon-table-size-sort-dir-btn:not(.dungeon-table-size-sort-dir-btn--active) {
+  opacity: 0.55;
+}
+
+.dungeon-table-size-sort-dir-btn--active {
+  opacity: 1;
+}
+
+.dungeon-table tbody tr:nth-child(odd) td.dungeon-table-size-col {
+  background-color: #182234;
+}
+
+.dungeon-table tbody tr:nth-child(even) td.dungeon-table-size-col {
+  background-color: #141c2a;
+}
+
+/* Sticky mode column (Normal / Heroic) */
+.dungeon-table-mode-col {
+  position: sticky;
+  left: var(--dungeon-table-size-col-width);
+  z-index: 1;
+  width: var(--dungeon-table-mode-col-width);
+  min-width: var(--dungeon-table-mode-col-width);
+  max-width: var(--dungeon-table-mode-col-width);
+  text-align: center;
+  vertical-align: middle;
+  background: #141c2a;
+  box-shadow: 1px 0 0 rgba(56, 189, 248, 0.12);
+}
+
+.dungeon-table-mode-col .dungeon-mode {
+  white-space: nowrap;
+}
+
+.dungeon-table th.dungeon-table-mode-col {
+  background: #1a2740;
+  z-index: 2;
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--zinc-300);
+  vertical-align: top;
+  padding: 0.35rem 0.3rem;
+}
+
+.dungeon-table-mode-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.dungeon-table-mode-header-label {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dungeon-table-mode-sort-dir-btn:not(.dungeon-table-mode-sort-dir-btn--active) {
+  opacity: 0.55;
+}
+
+.dungeon-table-mode-sort-dir-btn--active {
+  opacity: 1;
+}
+
+.dungeon-table tbody tr:nth-child(odd) td.dungeon-table-mode-col {
+  background-color: #182234;
+}
+
+.dungeon-table tbody tr:nth-child(even) td.dungeon-table-mode-col {
+  background-color: #141c2a;
+}
+
+/* Sticky completions column (marked count) */
+.dungeon-table-completions-col {
+  position: sticky;
+  left: calc(
+    var(--dungeon-table-size-col-width) + var(--dungeon-table-mode-col-width)
+  );
+  z-index: 1;
+  width: var(--dungeon-table-completions-col-width);
+  min-width: var(--dungeon-table-completions-col-width);
+  max-width: var(--dungeon-table-completions-col-width);
+  text-align: center;
+  vertical-align: middle;
+  background: #141c2a;
+  box-shadow: 1px 0 0 rgba(56, 189, 248, 0.12);
+}
+
+.dungeon-table th.dungeon-table-completions-col {
+  background: #1a2740;
+  z-index: 2;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--zinc-300);
+  vertical-align: top;
+  padding: 0.35rem 0.25rem;
+}
+
+.dungeon-table-completions-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.dungeon-table-completions-header-label {
+  font-weight: 600;
+  line-height: 1.15;
+  max-width: 100%;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+.dungeon-table-completions-sort-dir-btn:not(
+  .dungeon-table-completions-sort-dir-btn--active
+) {
+  opacity: 0.55;
+}
+
+.dungeon-table-completions-sort-dir-btn--active {
+  opacity: 1;
+}
+
+.dungeon-table tbody tr:nth-child(odd) td.dungeon-table-completions-col {
+  background-color: #182234;
+}
+
+.dungeon-table tbody tr:nth-child(even) td.dungeon-table-completions-col {
+  background-color: #141c2a;
+}
+
+/* Sticky starting ilvl column */
+.dungeon-table-ilvl-col {
+  position: sticky;
+  left: calc(
+    var(--dungeon-table-size-col-width) + var(--dungeon-table-mode-col-width) +
+      var(--dungeon-table-completions-col-width)
+  );
+  z-index: 1;
+  width: var(--dungeon-table-ilvl-col-width);
+  min-width: var(--dungeon-table-ilvl-col-width);
+  max-width: var(--dungeon-table-ilvl-col-width);
+  text-align: center;
+  vertical-align: middle;
+  background: #141c2a;
+  box-shadow: 1px 0 0 rgba(56, 189, 248, 0.12);
+}
+
+.dungeon-table th.dungeon-table-ilvl-col {
+  background: #1a2740;
+  z-index: 2;
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--zinc-300);
+  vertical-align: top;
+  padding: 0.35rem 0.25rem;
+}
+
+.dungeon-table-ilvl-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.dungeon-table-ilvl-header-label {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.dungeon-table-ilvl-sort-dir-btn:not(.dungeon-table-ilvl-sort-dir-btn--active) {
+  opacity: 0.55;
+}
+
+.dungeon-table-ilvl-sort-dir-btn--active {
+  opacity: 1;
+}
+
+.dungeon-table-ilvl-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.dungeon-table-ilvl-empty {
+  color: var(--zinc-500);
+  font-weight: 600;
+}
+
+.dungeon-table tbody tr:nth-child(odd) td.dungeon-table-ilvl-col {
+  background-color: #182234;
+}
+
+.dungeon-table tbody tr:nth-child(even) td.dungeon-table-ilvl-col {
+  background-color: #141c2a;
+}
+
+/* Sticky dungeon column — name and delete */
+.dungeon-table-sticky-col {
+  position: sticky;
+  left: calc(
+    var(--dungeon-table-size-col-width) + var(--dungeon-table-mode-col-width) +
+      var(--dungeon-table-completions-col-width) + var(--dungeon-table-ilvl-col-width)
+  );
   z-index: 1;
   background: #141c2a;
   box-shadow: 1px 0 0 rgba(56, 189, 248, 0.12);
@@ -42,8 +291,14 @@
   max-width: 220px;
 }
 
-.dungeon-table th:not(.dungeon-table-sticky-col),
-.dungeon-table td:not(.dungeon-table-sticky-col) {
+.dungeon-table
+  th:not(.dungeon-table-sticky-col):not(.dungeon-table-size-col):not(
+    .dungeon-table-mode-col
+  ):not(.dungeon-table-completions-col):not(.dungeon-table-ilvl-col),
+.dungeon-table
+  td:not(.dungeon-table-sticky-col):not(.dungeon-table-size-col):not(
+    .dungeon-table-mode-col
+  ):not(.dungeon-table-completions-col):not(.dungeon-table-ilvl-col) {
   width: 180px;
 }
 
@@ -76,6 +331,24 @@
 .dungeon-table-dungeon-header-label {
   font-weight: 600;
   flex-shrink: 0;
+}
+
+.dungeon-table-name-sort {
+  margin-left: auto;
+}
+
+.dungeon-table-name-sort-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  color: var(--zinc-400);
+}
+
+.dungeon-table-name-sort-dir-btn:not(.dungeon-table-name-sort-dir-btn--active) {
+  opacity: 0.55;
+}
+
+.dungeon-table-name-sort-dir-btn--active {
+  opacity: 1;
 }
 
 .dungeon-table-sort {
@@ -205,10 +478,6 @@
 .dungeon-table-dungeon-count[data-empty="true"] {
   color: var(--zinc-300);
   background: rgba(148, 163, 184, 0.12);
-}
-
-.dungeon-table-dungeon-cell-text .dungeon-mode {
-  flex-shrink: 0;
 }
 
 .dungeon-table-dungeon-cell-text .dungeon-name {

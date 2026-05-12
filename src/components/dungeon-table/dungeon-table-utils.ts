@@ -1,15 +1,26 @@
 import { formatRaidNameRuWithEn } from "../../data/dungeons";
-import type { DungeonRecord } from "../../types/dungeons";
+import { DungeonMode, type DungeonRecord } from "../../types/dungeons";
 
-export type DungeonSortKey = "name" | "size" | "itemLevel" | "completions";
+export type DungeonSortKey =
+  | "name"
+  | "size"
+  | "mode"
+  | "itemLevel"
+  | "completions";
+
+function modeSortRank(mode: DungeonRecord["mode"]): number {
+  return mode === DungeonMode.NORMAL ? 0 : 1;
+}
 
 /** GearScore-style ilvl tiers (thresholds descending; tier 1 = below 200). */
 const ILVL_TIER_THRESHOLDS = [
   277, 264, 258, 251, 245, 232, 226, 219, 213, 200,
 ] as const;
 
-function getMaxItemLevel(dungeon: DungeonRecord): number {
-  return dungeon.itemLevel.length > 0 ? Math.max(...dungeon.itemLevel) : 0;
+/** Lowest value in `itemLevel` (starting / entry ilvl); 0 if unset. */
+export function getStartingItemLevel(dungeon: DungeonRecord): number {
+  if (dungeon.itemLevel.length === 0) return 0;
+  return Math.min(...dungeon.itemLevel);
 }
 
 export function getItemLevelTier(itemLevel: number[]): number {
@@ -34,13 +45,14 @@ export function sortDungeons(
   dir: "asc" | "desc",
   completionsByDungeonId?: Readonly<Record<string, number>>
 ): DungeonRecord[] {
-  const maxIlvlCache = key === "itemLevel" ? new Map<string, number>() : null;
-  const getCachedMaxItemLevel = (dungeon: DungeonRecord): number => {
-    if (!maxIlvlCache) return getMaxItemLevel(dungeon);
-    const existing = maxIlvlCache.get(dungeon.id);
+  const startingIlvlCache =
+    key === "itemLevel" ? new Map<string, number>() : null;
+  const getCachedStartingItemLevel = (dungeon: DungeonRecord): number => {
+    if (!startingIlvlCache) return getStartingItemLevel(dungeon);
+    const existing = startingIlvlCache.get(dungeon.id);
     if (existing !== undefined) return existing;
-    const computed = getMaxItemLevel(dungeon);
-    maxIlvlCache.set(dungeon.id, computed);
+    const computed = getStartingItemLevel(dungeon);
+    startingIlvlCache.set(dungeon.id, computed);
     return computed;
   };
 
@@ -54,10 +66,15 @@ export function sortDungeons(
       cmp =
         firstDungeon.size - secondDungeon.size ||
         firstDungeon.name.localeCompare(secondDungeon.name);
+    } else if (key === "mode") {
+      cmp =
+        modeSortRank(firstDungeon.mode) - modeSortRank(secondDungeon.mode) ||
+        firstDungeon.name.localeCompare(secondDungeon.name) ||
+        firstDungeon.size - secondDungeon.size;
     } else if (key === "itemLevel") {
       cmp =
-        getCachedMaxItemLevel(firstDungeon) -
-          getCachedMaxItemLevel(secondDungeon) ||
+        getCachedStartingItemLevel(firstDungeon) -
+          getCachedStartingItemLevel(secondDungeon) ||
         firstDungeon.name.localeCompare(secondDungeon.name);
     } else if (key === "completions") {
       const a = completionsByDungeonId?.[firstDungeon.id] ?? 0;
@@ -78,9 +95,10 @@ export function dungeonCellTitle(
 ): string {
   const name = formatRaidNameRuWithEn(dungeon.name);
   const completionText = `${completionCount} completions`;
+  const sizeMode = `${dungeon.size}-player — ${dungeon.mode}`;
   return dungeon.itemLevel.length > 0
-    ? `${name} — ${completionText} — Item level: ${dungeon.itemLevel.join(", ")}`
-    : `${name} — ${completionText} — Item level not set`;
+    ? `${name} — ${sizeMode} — ${completionText} — Item level: ${dungeon.itemLevel.join(", ")}`
+    : `${name} — ${sizeMode} — ${completionText} — Item level not set`;
 }
 
 export function characterHasToggles(
