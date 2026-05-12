@@ -1,7 +1,16 @@
 import { formatRaidNameRuWithEn } from "../../data/dungeons";
-import type { DungeonRecord } from "../../types/dungeons";
+import { DungeonMode, type DungeonRecord } from "../../types/dungeons";
 
-export type DungeonSortKey = "name" | "size" | "itemLevel" | "completions";
+export type DungeonSortKey =
+  | "name"
+  | "size"
+  | "mode"
+  | "itemLevel"
+  | "completions";
+
+function modeSortRank(mode: DungeonRecord["mode"]): number {
+  return mode === DungeonMode.NORMAL ? 0 : 1;
+}
 
 /** GearScore-style ilvl tiers (thresholds descending; tier 1 = below 200). */
 const ILVL_TIER_THRESHOLDS = [
@@ -54,6 +63,11 @@ export function sortDungeons(
       cmp =
         firstDungeon.size - secondDungeon.size ||
         firstDungeon.name.localeCompare(secondDungeon.name);
+    } else if (key === "mode") {
+      cmp =
+        modeSortRank(firstDungeon.mode) - modeSortRank(secondDungeon.mode) ||
+        firstDungeon.name.localeCompare(secondDungeon.name) ||
+        firstDungeon.size - secondDungeon.size;
     } else if (key === "itemLevel") {
       cmp =
         getCachedMaxItemLevel(firstDungeon) -

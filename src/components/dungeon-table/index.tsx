@@ -1,6 +1,7 @@
 import type { ChangeEvent, MouseEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
 import type { DungeonTableProps } from "./types";
+import { DungeonMode } from "../../types/dungeons";
 import { CharacterHeaderCell } from "./character-header-cell";
 import { DungeonCell } from "./dungeon-cell";
 import type { DungeonSortKey } from "./dungeon-table-utils";
@@ -11,7 +12,7 @@ import {
 } from "./dungeon-table-utils";
 import "./styles.css";
 
-type DungeonSortKeyNonSize = Exclude<DungeonSortKey, "size">;
+type DungeonSortKeyDungeonSelect = Exclude<DungeonSortKey, "size" | "mode">;
 
 export function DungeonTable({
   dungeons,
@@ -57,10 +58,22 @@ export function DungeonTable({
     }
   }, [sortKey, handleToggleSortDir]);
 
+  const handleModeSortClick = useCallback(() => {
+    if (sortKey !== "mode") {
+      setSortKey("mode");
+      setSortDir("desc");
+    } else {
+      handleToggleSortDir();
+    }
+  }, [sortKey, handleToggleSortDir]);
+
   const handleDungeonSortKeyChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
-      const nextKey = event.target.value as DungeonSortKeyNonSize | "__size__";
-      if (nextKey === "__size__") return;
+      const nextKey = event.target.value as
+        | DungeonSortKeyDungeonSelect
+        | "__size__"
+        | "__mode__";
+      if (nextKey === "__size__" || nextKey === "__mode__") return;
       setSortKey(nextKey as DungeonSortKey);
     },
     []
@@ -107,7 +120,7 @@ export function DungeonTable({
     [dungeons, nameSearch, sortKey, sortDir, completionCountsByDungeonId]
   );
 
-  const colSpan = 2 + characters.length;
+  const colSpan = 3 + characters.length;
   const hasDungeons = dungeons.length > 0;
   const hasVisibleRows = visibleDungeons.length > 0;
 
@@ -179,6 +192,32 @@ export function DungeonTable({
               </button>
             </div>
           </th>
+          <th scope="col" className="dungeon-table-mode-col">
+            <div className="dungeon-table-mode-header">
+              <span className="dungeon-table-mode-header-label">Mode</span>
+              <button
+                type="button"
+                className={`dungeon-table-sort-dir-btn dungeon-table-mode-sort-dir-btn${
+                  sortKey === "mode" ? " dungeon-table-mode-sort-dir-btn--active" : ""
+                }`}
+                onClick={handleModeSortClick}
+                aria-label={
+                  sortKey === "mode"
+                    ? `Difficulty: sort ${sortDir === "asc" ? "ascending" : "descending"}`
+                    : "Sort by mode (Normal / Heroic)"
+                }
+                title={
+                  sortKey === "mode"
+                    ? sortDir === "asc"
+                      ? "Ascending: Normal then Heroic (click for descending)"
+                      : "Descending: Heroic then Normal (click for ascending)"
+                    : "Sort by mode"
+                }
+              >
+                {sortKey === "mode" ? (sortDir === "asc" ? "↑" : "↓") : "↓"}
+              </button>
+            </div>
+          </th>
           <th scope="col" className="dungeon-table-sticky-col">
             <div className="dungeon-table-dungeon-header">
               <div className="dungeon-table-dungeon-header-row">
@@ -187,18 +226,27 @@ export function DungeonTable({
                   <select
                     id="dungeon-sort"
                     className="dungeon-table-sort-select"
-                    value={sortKey === "size" ? "__size__" : sortKey}
+                    value={
+                      sortKey === "size"
+                        ? "__size__"
+                        : sortKey === "mode"
+                          ? "__mode__"
+                          : sortKey
+                    }
                     onChange={handleDungeonSortKeyChange}
                     aria-label="Sort dungeons by"
                   >
                     <option value="__size__" hidden>
                       —
                     </option>
+                    <option value="__mode__" hidden>
+                      —
+                    </option>
                     <option value="name">Name</option>
                     <option value="itemLevel">Item level</option>
                     <option value="completions">Completions</option>
                   </select>
-                  {sortKey !== "size" ? (
+                  {sortKey !== "size" && sortKey !== "mode" ? (
                     <button
                       type="button"
                       className="dungeon-table-sort-dir-btn"
@@ -276,6 +324,15 @@ export function DungeonTable({
           visibleDungeons.map((dungeon) => (
           <tr key={dungeon.id}>
             <td className="dungeon-table-size-col">{dungeon.size}</td>
+            <td className="dungeon-table-mode-col">
+              <span
+                className={`dungeon-mode dungeon-mode--${
+                  dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
+                }`}
+              >
+                {dungeon.mode}
+              </span>
+            </td>
             <td className="dungeon-table-sticky-col">
               <DungeonCell
                 dungeon={dungeon}

@@ -9,9 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Dungeon table: dedicated **Size** column (10 / 25 / …) that sticks with the dungeon column when scrolling horizontally
-- Dungeon table: sort by raid size and toggle sort direction from the size column header; the dungeon header sort control covers name, item level, and completions only (with direction next to it when one of those is active)
-- Dungeon table: dungeon cell shows a compact **H** / **N** difficulty badge next to completions; row hover title includes player size and mode
+- Dungeon table: dedicated **Size** column (10 / 25 / …), sticky with the dungeon block when scrolling horizontally; raid-size sort and direction live in the size column header
+- Dungeon table: dedicated **Mode** column showing **Normal** or **Heroic**, sticky with that block; mode sort and direction live in the mode column header
+- Dungeon table: dungeon header sort `<select>` lists name, item level, and completions only; its direction control appears when one of those sorts is active (size and mode sorts use their own column headers)
+- Dungeon table: row hover title still summarizes player size, mode, completions, and item level
+
+### Added
+
+- Dungeon table: sort dungeons by **mode** (ascending: Normal then Heroic; descending: Heroic then Normal), with name and raid size as tie-breakers
 
 ## [1.1.4] - 2026-04-22
 
