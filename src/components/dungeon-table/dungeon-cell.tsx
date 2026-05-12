@@ -20,14 +20,6 @@ export function DungeonCell({
     >
       <div className="dungeon-table-dungeon-cell-text">
         <span
-          className="dungeon-table-dungeon-count"
-          data-empty={completionCount === 0}
-          aria-label={`${dungeon.name}: ${completionCount} completions`}
-          title={`${completionCount} completions`}
-        >
-          {completionCount}
-        </span>
-        <span
           className={`dungeon-name dungeon-name--tier-${getItemLevelTier(
             dungeon.itemLevel
           )}`}

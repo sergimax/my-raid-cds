@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Dungeon table: dedicated **Size** column (10 / 25 / …), sticky with the dungeon block when scrolling horizontally; raid-size sort and direction live in the size column header
 - Dungeon table: dedicated **Mode** column showing **Normal** or **Heroic**, sticky with that block; mode sort and direction live in the mode column header
-- Dungeon table: dungeon header sort `<select>` lists name, item level, and completions only; its direction control appears when one of those sorts is active (size and mode sorts use their own column headers)
-- Dungeon table: row hover title still summarizes player size, mode, completions, and item level
+- Dungeon table: dedicated **Completions** column with the per-dungeon marked count (same count badge styling as before), sticky with that block; completions sort and direction live in that column header
+- Dungeon table: dungeon header sort `<select>` lists **name** and **item level** only; its direction control appears when one of those sorts is active (size, mode, and completions use their own column headers for sort and direction)
+- Dungeon table: dungeon name cell shows raid name and delete only; completion count is only in the completions column; row hover title still summarizes player size, mode, completions, and item level
 
 ### Added
 

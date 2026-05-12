@@ -9,6 +9,7 @@
   table-layout: fixed;
   --dungeon-table-size-col-width: 4.25rem;
   --dungeon-table-mode-col-width: 5.75rem;
+  --dungeon-table-completions-col-width: 6.75rem;
 }
 
 .dungeon-table th,
@@ -147,11 +148,73 @@
   background-color: #141c2a;
 }
 
-/* Sticky dungeon column — name, completions, actions */
-.dungeon-table-sticky-col {
+/* Sticky completions column (marked count) */
+.dungeon-table-completions-col {
   position: sticky;
   left: calc(
     var(--dungeon-table-size-col-width) + var(--dungeon-table-mode-col-width)
+  );
+  z-index: 1;
+  width: var(--dungeon-table-completions-col-width);
+  min-width: var(--dungeon-table-completions-col-width);
+  max-width: var(--dungeon-table-completions-col-width);
+  text-align: center;
+  vertical-align: middle;
+  background: #141c2a;
+  box-shadow: 1px 0 0 rgba(56, 189, 248, 0.12);
+}
+
+.dungeon-table th.dungeon-table-completions-col {
+  background: #1a2740;
+  z-index: 2;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--zinc-300);
+  vertical-align: top;
+  padding: 0.35rem 0.25rem;
+}
+
+.dungeon-table-completions-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.dungeon-table-completions-header-label {
+  font-weight: 600;
+  line-height: 1.15;
+  max-width: 100%;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+.dungeon-table-completions-sort-dir-btn:not(
+  .dungeon-table-completions-sort-dir-btn--active
+) {
+  opacity: 0.55;
+}
+
+.dungeon-table-completions-sort-dir-btn--active {
+  opacity: 1;
+}
+
+.dungeon-table tbody tr:nth-child(odd) td.dungeon-table-completions-col {
+  background-color: #182234;
+}
+
+.dungeon-table tbody tr:nth-child(even) td.dungeon-table-completions-col {
+  background-color: #141c2a;
+}
+
+/* Sticky dungeon column — name and delete */
+.dungeon-table-sticky-col {
+  position: sticky;
+  left: calc(
+    var(--dungeon-table-size-col-width) + var(--dungeon-table-mode-col-width) +
+      var(--dungeon-table-completions-col-width)
   );
   z-index: 1;
   background: #141c2a;
@@ -164,11 +227,11 @@
 .dungeon-table
   th:not(.dungeon-table-sticky-col):not(.dungeon-table-size-col):not(
     .dungeon-table-mode-col
-  ),
+  ):not(.dungeon-table-completions-col),
 .dungeon-table
   td:not(.dungeon-table-sticky-col):not(.dungeon-table-size-col):not(
     .dungeon-table-mode-col
-  ) {
+  ):not(.dungeon-table-completions-col) {
   width: 180px;
 }
 

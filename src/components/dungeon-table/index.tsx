@@ -12,7 +12,10 @@ import {
 } from "./dungeon-table-utils";
 import "./styles.css";
 
-type DungeonSortKeyDungeonSelect = Exclude<DungeonSortKey, "size" | "mode">;
+type DungeonSortKeyDungeonSelect = Exclude<
+  DungeonSortKey,
+  "size" | "mode" | "completions"
+>;
 
 export function DungeonTable({
   dungeons,
@@ -67,13 +70,29 @@ export function DungeonTable({
     }
   }, [sortKey, handleToggleSortDir]);
 
+  const handleCompletionsSortClick = useCallback(() => {
+    if (sortKey !== "completions") {
+      setSortKey("completions");
+      setSortDir("desc");
+    } else {
+      handleToggleSortDir();
+    }
+  }, [sortKey, handleToggleSortDir]);
+
   const handleDungeonSortKeyChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const nextKey = event.target.value as
         | DungeonSortKeyDungeonSelect
         | "__size__"
-        | "__mode__";
-      if (nextKey === "__size__" || nextKey === "__mode__") return;
+        | "__mode__"
+        | "__completions__";
+      if (
+        nextKey === "__size__" ||
+        nextKey === "__mode__" ||
+        nextKey === "__completions__"
+      ) {
+        return;
+      }
       setSortKey(nextKey as DungeonSortKey);
     },
     []
@@ -120,7 +139,7 @@ export function DungeonTable({
     [dungeons, nameSearch, sortKey, sortDir, completionCountsByDungeonId]
   );
 
-  const colSpan = 3 + characters.length;
+  const colSpan = 4 + characters.length;
   const hasDungeons = dungeons.length > 0;
   const hasVisibleRows = visibleDungeons.length > 0;
 
@@ -218,6 +237,36 @@ export function DungeonTable({
               </button>
             </div>
           </th>
+          <th scope="col" className="dungeon-table-completions-col">
+            <div className="dungeon-table-completions-header">
+              <span className="dungeon-table-completions-header-label">
+                Completions
+              </span>
+              <button
+                type="button"
+                className={`dungeon-table-sort-dir-btn dungeon-table-completions-sort-dir-btn${
+                  sortKey === "completions"
+                    ? " dungeon-table-completions-sort-dir-btn--active"
+                    : ""
+                }`}
+                onClick={handleCompletionsSortClick}
+                aria-label={
+                  sortKey === "completions"
+                    ? `Completions: sort ${sortDir === "asc" ? "ascending" : "descending"}`
+                    : "Sort by completion count"
+                }
+                title={
+                  sortKey === "completions"
+                    ? sortDir === "asc"
+                      ? "Ascending by completions (click for descending)"
+                      : "Descending by completions (click for ascending)"
+                    : "Sort by completions"
+                }
+              >
+                {sortKey === "completions" ? (sortDir === "asc" ? "↑" : "↓") : "↓"}
+              </button>
+            </div>
+          </th>
           <th scope="col" className="dungeon-table-sticky-col">
             <div className="dungeon-table-dungeon-header">
               <div className="dungeon-table-dungeon-header-row">
@@ -231,7 +280,9 @@ export function DungeonTable({
                         ? "__size__"
                         : sortKey === "mode"
                           ? "__mode__"
-                          : sortKey
+                          : sortKey === "completions"
+                            ? "__completions__"
+                            : sortKey
                     }
                     onChange={handleDungeonSortKeyChange}
                     aria-label="Sort dungeons by"
@@ -242,11 +293,15 @@ export function DungeonTable({
                     <option value="__mode__" hidden>
                       —
                     </option>
+                    <option value="__completions__" hidden>
+                      —
+                    </option>
                     <option value="name">Name</option>
                     <option value="itemLevel">Item level</option>
-                    <option value="completions">Completions</option>
                   </select>
-                  {sortKey !== "size" && sortKey !== "mode" ? (
+                  {sortKey !== "size" &&
+                  sortKey !== "mode" &&
+                  sortKey !== "completions" ? (
                     <button
                       type="button"
                       className="dungeon-table-sort-dir-btn"
@@ -321,42 +376,56 @@ export function DungeonTable({
             </td>
           </tr>
         ) : (
-          visibleDungeons.map((dungeon) => (
-          <tr key={dungeon.id}>
-            <td className="dungeon-table-size-col">{dungeon.size}</td>
-            <td className="dungeon-table-mode-col">
-              <span
-                className={`dungeon-mode dungeon-mode--${
-                  dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
-                }`}
-              >
-                {dungeon.mode}
-              </span>
-            </td>
-            <td className="dungeon-table-sticky-col">
-              <DungeonCell
-                dungeon={dungeon}
-                completionCount={completionCountsByDungeonId[dungeon.id] ?? 0}
-                onDeleteDungeonClick={handleDeleteDungeonClick}
-              />
-            </td>
-            {characters.map((char) => (
-              <td key={char.id} className="dungeon-table-character-cell">
-                <label className="dungeon-toggle">
-                  <input
-                    type="checkbox"
-                    checked={dungeonToggles[char.id]?.[dungeon.id] ?? false}
-                    data-character-id={char.id}
-                    data-dungeon-id={dungeon.id}
-                    onChange={handleToggleChange}
-                    aria-label={`${char.name} - ${dungeon.name}`}
+          visibleDungeons.map((dungeon) => {
+            const completionCount =
+              completionCountsByDungeonId[dungeon.id] ?? 0;
+            return (
+              <tr key={dungeon.id}>
+                <td className="dungeon-table-size-col">{dungeon.size}</td>
+                <td className="dungeon-table-mode-col">
+                  <span
+                    className={`dungeon-mode dungeon-mode--${
+                      dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
+                    }`}
+                  >
+                    {dungeon.mode}
+                  </span>
+                </td>
+                <td className="dungeon-table-completions-col">
+                  <span
+                    className="dungeon-table-dungeon-count"
+                    data-empty={completionCount === 0}
+                    aria-label={`${dungeon.name}: ${completionCount} completions`}
+                    title={`${completionCount} completions`}
+                  >
+                    {completionCount}
+                  </span>
+                </td>
+                <td className="dungeon-table-sticky-col">
+                  <DungeonCell
+                    dungeon={dungeon}
+                    completionCount={completionCount}
+                    onDeleteDungeonClick={handleDeleteDungeonClick}
                   />
-                  <span className="dungeon-toggle-slider" />
-                </label>
-              </td>
-            ))}
-          </tr>
-          ))
+                </td>
+                {characters.map((char) => (
+                  <td key={char.id} className="dungeon-table-character-cell">
+                    <label className="dungeon-toggle">
+                      <input
+                        type="checkbox"
+                        checked={dungeonToggles[char.id]?.[dungeon.id] ?? false}
+                        data-character-id={char.id}
+                        data-dungeon-id={dungeon.id}
+                        onChange={handleToggleChange}
+                        aria-label={`${char.name} - ${dungeon.name}`}
+                      />
+                      <span className="dungeon-toggle-slider" />
+                    </label>
+                  </td>
+                ))}
+              </tr>
+            );
+          })
         )}
       </tbody>
     </table>
