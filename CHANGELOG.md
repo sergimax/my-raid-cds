@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Dungeon table: dedicated **Size** column (10 / 25 / …) that sticks with the dungeon column when scrolling horizontally
+- Dungeon table: sort by raid size and toggle sort direction from the size column header; the dungeon header sort control covers name, item level, and completions only (with direction next to it when one of those is active)
+- Dungeon table: dungeon cell shows a compact **H** / **N** difficulty badge next to completions; row hover title includes player size and mode
+
 ## [1.1.4] - 2026-04-22
 
 ### Changed

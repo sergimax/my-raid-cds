@@ -24,8 +24,10 @@ export function DungeonCell({
           className={`dungeon-mode dungeon-mode--${
             dungeon.mode === DungeonMode.HEROIC ? "heroic" : "normal"
           }`}
+          title={dungeon.mode}
+          aria-label={dungeon.mode}
         >
-          {dungeon.size}
+          {dungeon.mode === DungeonMode.HEROIC ? "H" : "N"}
         </span>
         <span
           className="dungeon-table-dungeon-count"

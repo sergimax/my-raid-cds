@@ -78,9 +78,10 @@ export function dungeonCellTitle(
 ): string {
   const name = formatRaidNameRuWithEn(dungeon.name);
   const completionText = `${completionCount} completions`;
+  const sizeMode = `${dungeon.size}-player — ${dungeon.mode}`;
   return dungeon.itemLevel.length > 0
-    ? `${name} — ${completionText} — Item level: ${dungeon.itemLevel.join(", ")}`
-    : `${name} — ${completionText} — Item level not set`;
+    ? `${name} — ${sizeMode} — ${completionText} — Item level: ${dungeon.itemLevel.join(", ")}`
+    : `${name} — ${sizeMode} — ${completionText} — Item level not set`;
 }
 
 export function characterHasToggles(

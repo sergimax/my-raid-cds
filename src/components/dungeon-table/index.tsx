@@ -11,6 +11,8 @@ import {
 } from "./dungeon-table-utils";
 import "./styles.css";
 
+type DungeonSortKeyNonSize = Exclude<DungeonSortKey, "size">;
+
 export function DungeonTable({
   dungeons,
   characters,
@@ -45,6 +47,24 @@ export function DungeonTable({
   const handleToggleSortDir = useCallback(() => {
     setSortDir((d) => (d === "asc" ? "desc" : "asc"));
   }, []);
+
+  const handleSizeSortClick = useCallback(() => {
+    if (sortKey !== "size") {
+      setSortKey("size");
+      setSortDir("desc");
+    } else {
+      handleToggleSortDir();
+    }
+  }, [sortKey, handleToggleSortDir]);
+
+  const handleDungeonSortKeyChange = useCallback(
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      const nextKey = event.target.value as DungeonSortKeyNonSize | "__size__";
+      if (nextKey === "__size__") return;
+      setSortKey(nextKey as DungeonSortKey);
+    },
+    []
+  );
 
   const markedCountsByCharacterId = useMemo(() => {
     const dungeonIdSet = new Set(dungeons.map((dungeon) => dungeon.id));
@@ -87,7 +107,7 @@ export function DungeonTable({
     [dungeons, nameSearch, sortKey, sortDir, completionCountsByDungeonId]
   );
 
-  const colSpan = 1 + characters.length;
+  const colSpan = 2 + characters.length;
   const hasDungeons = dungeons.length > 0;
   const hasVisibleRows = visibleDungeons.length > 0;
 
@@ -133,6 +153,32 @@ export function DungeonTable({
       <table className="dungeon-table" aria-label="Dungeon cooldown tracker">
       <thead>
         <tr>
+          <th scope="col" className="dungeon-table-size-col">
+            <div className="dungeon-table-size-header">
+              <span className="dungeon-table-size-header-label">Size</span>
+              <button
+                type="button"
+                className={`dungeon-table-sort-dir-btn dungeon-table-size-sort-dir-btn${
+                  sortKey === "size" ? " dungeon-table-size-sort-dir-btn--active" : ""
+                }`}
+                onClick={handleSizeSortClick}
+                aria-label={
+                  sortKey === "size"
+                    ? `Raid size: sort ${sortDir === "asc" ? "ascending" : "descending"}`
+                    : "Sort by raid size (10 / 25 / …)"
+                }
+                title={
+                  sortKey === "size"
+                    ? sortDir === "asc"
+                      ? "Ascending by size (click for descending)"
+                      : "Descending by size (click for ascending)"
+                    : "Sort by raid size"
+                }
+              >
+                {sortKey === "size" ? (sortDir === "asc" ? "↑" : "↓") : "↓"}
+              </button>
+            </div>
+          </th>
           <th scope="col" className="dungeon-table-sticky-col">
             <div className="dungeon-table-dungeon-header">
               <div className="dungeon-table-dungeon-header-row">
@@ -141,26 +187,32 @@ export function DungeonTable({
                   <select
                     id="dungeon-sort"
                     className="dungeon-table-sort-select"
-                    value={sortKey}
-                    onChange={(event) =>
-                      setSortKey(event.target.value as DungeonSortKey)
-                    }
+                    value={sortKey === "size" ? "__size__" : sortKey}
+                    onChange={handleDungeonSortKeyChange}
                     aria-label="Sort dungeons by"
                   >
+                    <option value="__size__" hidden>
+                      —
+                    </option>
                     <option value="name">Name</option>
-                    <option value="size">Size</option>
                     <option value="itemLevel">Item level</option>
                     <option value="completions">Completions</option>
                   </select>
-                  <button
-                    type="button"
-                    className="dungeon-table-sort-dir-btn"
-                    onClick={handleToggleSortDir}
-                    aria-label={`Sort ${sortDir === "asc" ? "ascending" : "descending"}`}
-                    title={sortDir === "asc" ? "Ascending (click for descending)" : "Descending (click for ascending)"}
-                  >
-                    {sortDir === "asc" ? "↑" : "↓"}
-                  </button>
+                  {sortKey !== "size" ? (
+                    <button
+                      type="button"
+                      className="dungeon-table-sort-dir-btn"
+                      onClick={handleToggleSortDir}
+                      aria-label={`Sort ${sortDir === "asc" ? "ascending" : "descending"}`}
+                      title={
+                        sortDir === "asc"
+                          ? "Ascending (click for descending)"
+                          : "Descending (click for ascending)"
+                      }
+                    >
+                      {sortDir === "asc" ? "↑" : "↓"}
+                    </button>
+                  ) : null}
                 </div>
               </div>
               <input
@@ -223,6 +275,7 @@ export function DungeonTable({
         ) : (
           visibleDungeons.map((dungeon) => (
           <tr key={dungeon.id}>
+            <td className="dungeon-table-size-col">{dungeon.size}</td>
             <td className="dungeon-table-sticky-col">
               <DungeonCell
                 dungeon={dungeon}
