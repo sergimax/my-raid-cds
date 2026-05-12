@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ant Design (`antd`) for UI building blocks
+- Dungeon section: **AntdExampleTable** — a small static Ant Design `Table` sample (WotLK-style Russian raid names) below the main dungeon table, using the dark theme algorithm so it fits the existing dark UI
+
 ## [1.2.0] - 2026-05-12
 
 ### Changed
