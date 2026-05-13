@@ -6,6 +6,7 @@ import {
 } from "./components/index.ts";
 import { useRaidTracker } from "./hooks/use-raid-tracker.ts";
 import "./App.css";
+import { TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from "@mui/material";
 
 function App() {
   const {
@@ -60,6 +61,31 @@ function App() {
           {storageError}
         </div>
       )}
+
+<div>
+  MUI TEST
+  <div className="mui-test">
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>Age</TableCell>
+            <TableCell>City</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell>John</TableCell>
+            <TableCell>20</TableCell>
+            <TableCell>New York</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
+  </div>
+</div>
+
       <main>
         <section className="character-section">
           {characters.length === 0 && (
