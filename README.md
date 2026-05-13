@@ -70,15 +70,18 @@ Data is saved automatically to `localStorage` under the key `my-raid-cds`.
 ## Tech Stack
 
 - React 19 + TypeScript + Vite
-- CSS (no UI framework)
+- Ant Design (`antd`) for the experimental table
+- CSS (no CSS framework)
 
 ## Project Structure
 
 ```
 src/
-├── components/   # app-footer, character-form, dungeon-form, dungeon-table
+├── components/   # app-footer, antd-example-table
 ├── hooks/        # use-raid-tracker.ts (useRaidTracker)
-├── types/        # characters, dungeons
+├── types/        # domain + future UI props (e.g. dungeon-table, forms)
+├── styles/       # shared CSS (e.g. dungeon-name-tiers)
+├── utils/        # dungeon-table-utils (sorting, ilvl tiers, etc.)
 ├── data/         # dungeons.ts (DungeonList template)
 ├── assets/       # class icons
 ├── storage.ts    # localStorage load/save

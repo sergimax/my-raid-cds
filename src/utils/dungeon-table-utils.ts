@@ -1,12 +1,6 @@
-import { formatRaidNameRuWithEn } from "../../data/dungeons";
-import { DungeonMode, type DungeonRecord } from "../../types/dungeons";
-
-export type DungeonSortKey =
-  | "name"
-  | "size"
-  | "mode"
-  | "itemLevel"
-  | "completions";
+import { formatRaidNameRuWithEn } from "../data/dungeons.ts";
+import { DungeonMode, type DungeonRecord } from "../types/dungeons.ts";
+import type { DungeonSortKey } from "../types/dungeon-table.ts";
 
 function modeSortRank(mode: DungeonRecord["mode"]): number {
   return mode === DungeonMode.NORMAL ? 0 : 1;

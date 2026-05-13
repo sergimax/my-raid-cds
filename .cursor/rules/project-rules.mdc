@@ -83,17 +83,19 @@ Example: `feat(auth): add login form`
 
 ## Component Structure
 
-- **kebab-case** for component dirs (e.g. `character-form/`)
-- Each component: `index.tsx`, `types.ts`, `styles.css`
+- **kebab-case** for component dirs (e.g. `antd-example-table/`)
+- Each component: entry `index.ts` or `index.tsx`, optional `styles.css`; shared types live under `src/types/`
 - Domain state lives in `useRaidTracker`; components receive data and mutation handlers via props. Ephemeral UI state (e.g. table sort, name search query) may live in leaf components.
 
 ## Project Structure
 
 ```
 src/
-├── components/   # app-footer, character-form, dungeon-form, dungeon-table
+├── components/   # app-footer, antd-example-table
 ├── hooks/         # use-raid-tracker.ts (useRaidTracker)
-├── types/         # characters, dungeons
+├── types/         # characters, dungeons, form/table props, etc.
+├── styles/        # shared CSS (e.g. dungeon-name-tiers)
+├── utils/         # dungeon-table-utils (helpers for future table)
 ├── data/          # dungeons.ts (DungeonList template)
 ├── assets/        # class icons
 ├── storage.ts     # localStorage load/save
