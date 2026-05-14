@@ -1,7 +1,7 @@
 import { AppFooter } from "./components/index.ts";
 import "./App.css";
 import {
-  Alert,
+  // TODO error handling with Alert,
   Box,
   Button,
   Container,
@@ -20,19 +20,25 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import type { FormEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
 import {
   Classes,
-  ClassName,
+  type CharacterClass,
   type CharacterRecord,
 } from "./types/characters.ts";
 import {
   DungeonDifficulty,
+  DungeonSizes,
   type DungeonRecord,
   type DungeonSize,
   type DungeonToggles,
 } from "./types/dungeons.ts";
 import { generateUUID } from "./uuid.ts";
+
+// TODO move to types/dungeons.ts ?
+type DungeonDifficultyOption =
+  (typeof DungeonDifficulty)[keyof typeof DungeonDifficulty];
 
 /** Static columns for the dungeon table. */
 const STATIC_COLUMNS: ReadonlyArray<{
@@ -62,48 +68,42 @@ function formatDungeonCell(
   return String(dungeon[columnKey]);
 }
 
-/**
- * Create a sample character.
- * @param existingCount - The number of existing characters.
- * @returns The sample character.
- *
- * TODO убрать из финального кода
- */
-function createSampleCharacter(existingCount: number): CharacterRecord {
-  const warriorClass = Classes.find(
-    (characterClass) => characterClass.name === ClassName.Warrior,
-  )!;
-  return {
-    id: generateUUID(),
-    name: `Character ${existingCount + 1}`,
-    class: warriorClass,
-  };
-}
-
-/**
- * Create a sample dungeon.
- * @returns The sample dungeon.
- *
- * TODO убрать из финального кода
- */
-function createSampleDungeon(): DungeonRecord {
-  return {
-    id: generateUUID(),
-    name: "Наксрамас",
-    size: 10 as DungeonSize,
-    itemLevel: [200],
-    difficulty: DungeonDifficulty.NORMAL,
-  };
+function parseItemLevelInput(text: string): number[] {
+  const segments = text
+  // TODO move to utils/parse-item-level-input.ts ?
+  // TODO add processing of different separators like - / .. ...
+    .split(/[/,]+/)
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+  return segments
+    .map((segment) => Number(segment))
+    .filter((value) => Number.isFinite(value));
 }
 
 function App() {
-  const [characters, setCharacters] = useState<CharacterRecord[]>(() => [
-    createSampleCharacter(0),
-  ]);
-  const [dungeons, setDungeons] = useState<DungeonRecord[]>(() => [
-    createSampleDungeon(),
-  ]);
+  // TODO separation of logic for forms and data handling ?
+  // TODO use hooks for forms ?
+  // TODO use zod for validation ?
+  // TODO use state manager ?
+  const [characters, setCharacters] = useState<CharacterRecord[]>([]);
+  const [dungeons, setDungeons] = useState<DungeonRecord[]>([]);
   const [dungeonToggles, setDungeonToggles] = useState<DungeonToggles>({});
+
+  const [showCharacterForm, setShowCharacterForm] = useState(false);
+  const [showDungeonForm, setShowDungeonForm] = useState(false);
+
+  const [newCharacterName, setNewCharacterName] = useState("");
+  const [newCharacterClass, setNewCharacterClass] = useState<CharacterClass | "">(
+    "",
+  );
+  const [characterFormError, setCharacterFormError] = useState("");
+
+  const [newDungeonName, setNewDungeonName] = useState("");
+  const [newDungeonSize, setNewDungeonSize] = useState<DungeonSize>(10);
+  const [newDungeonItemLevelText, setNewDungeonItemLevelText] = useState("200");
+  const [newDungeonDifficulty, setNewDungeonDifficulty] =
+    useState<DungeonDifficultyOption>(DungeonDifficulty.NORMAL);
+  const [dungeonFormError, setDungeonFormError] = useState("");
 
   /**
    * Handle dungeon toggle.
@@ -127,22 +127,78 @@ function App() {
     [],
   );
 
-  const handleAddCharacter = useCallback(() => {
-    // TODO добавить валидацию на уникальность имени и класса
-    // TODO добавить сохранение в localStorage
-    // TODO использовать данные с формы
-    setCharacters((previous) => [
-      ...previous,
-      createSampleCharacter(previous.length),
-    ]);
-  }, []);
+  const handleCharacterFormSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setCharacterFormError("");
+      const trimmedName = newCharacterName.trim();
+      if (!trimmedName || !newCharacterClass) {
+        setCharacterFormError("Enter a name and choose a class.");
+        return;
+      }
+      const isDuplicate = characters.some(
+        (existing) =>
+          existing.name.toLowerCase() === trimmedName.toLowerCase() &&
+          existing.class?.name === newCharacterClass.name,
+      );
+      if (isDuplicate) {
+        setCharacterFormError(
+          "A character with this name and class already exists.",
+        );
+        return;
+      }
+      const newCharacter: CharacterRecord = {
+        id: generateUUID(),
+        name: trimmedName,
+        class: newCharacterClass,
+      };
+      setCharacters((previous) => [...previous, newCharacter]);
 
-  const handleAddDungeon = useCallback(() => {
-    // TODO добавить валидацию на уникальность имени и класса
-    // TODO добавить сохранение в localStorage
-    // TODO использовать данные с формы
-    setDungeons((previous) => [...previous, createSampleDungeon()]);
-  }, []);
+      // TODO unite as ResetFormValues ?
+      setNewCharacterName("");
+      setNewCharacterClass("");
+    },
+    [characters, newCharacterClass, newCharacterName],
+  );
+
+  const handleDungeonFormSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setDungeonFormError("");
+      const trimmedName = newDungeonName.trim();
+      if (!trimmedName) {
+        setDungeonFormError("Enter a dungeon name.");
+        return;
+      }
+      const itemLevels = parseItemLevelInput(newDungeonItemLevelText);
+      if (itemLevels.length === 0) {
+        setDungeonFormError(
+          "Enter at least one item level (e.g. 200 or range like 200 / 213).",
+        );
+        return;
+      }
+      const newDungeon: DungeonRecord = {
+        id: generateUUID(),
+        name: trimmedName,
+        size: newDungeonSize,
+        itemLevel: itemLevels,
+        difficulty: newDungeonDifficulty,
+      };
+      setDungeons((previous) => [...previous, newDungeon]);
+
+      // TODO unite as ResetFormValues ?
+      setNewDungeonName("");
+      setNewDungeonSize(10);
+      setNewDungeonItemLevelText("200");
+      setNewDungeonDifficulty(DungeonDifficulty.NORMAL);
+    },
+    [
+      newDungeonDifficulty,
+      newDungeonItemLevelText,
+      newDungeonName,
+      newDungeonSize,
+    ],
+  );
 
   const handleDeleteCharacter = useCallback((characterId: string) => {
     setCharacters((previous) =>
@@ -218,16 +274,22 @@ function App() {
 
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
             <Button
-              variant="contained"
+              variant={showCharacterForm ? "contained" : "outlined"}
               color="primary"
-              onClick={handleAddCharacter}
+              aria-expanded={showCharacterForm}
+              onClick={() => {
+                setShowCharacterForm((previous) => !previous);
+              }}
             >
               Add character
             </Button>
             <Button
-              variant="contained"
+              variant={showDungeonForm ? "contained" : "outlined"}
               color="primary"
-              onClick={handleAddDungeon}
+              aria-expanded={showDungeonForm}
+              onClick={() => {
+                setShowDungeonForm((previous) => !previous);
+              }}
             >
               Add dungeon
             </Button>
@@ -240,60 +302,155 @@ function App() {
             </Button>
           </Stack>
 
-          <Box>
-            <Typography>Add new character</Typography>
-            <Stack spacing={1}>
-              <FormControl>
-                <Stack spacing={1} direction="row">
-                  <TextField label="Name" name="name" />
-                  <TextField label="Class" name="class" />
+{/* TODO make a separate component for form */}
+          {showCharacterForm ? (
+            <Box>
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                New character
+              </Typography>
+              {/* TODO check what is noValidate doing? */}
+              <form onSubmit={handleCharacterFormSubmit} noValidate>
+                <Stack spacing={2} sx={{ maxWidth: 480 }}>
+                  <TextField
+                    label="Name"
+                    name="characterName"
+                    value={newCharacterName}
+                    onChange={(event) => {
+                      setNewCharacterName(event.target.value);
+                      setCharacterFormError("");
+                    }}
+                    required
+                    autoComplete="off"
+                  />
+                  <FormControl required>
+                    <InputLabel id="character-class-label">Class</InputLabel>
+                    <Select
+                      labelId="character-class-label"
+                      label="Class"
+                      name="characterClass"
+                      value={newCharacterClass === "" ? "" : newCharacterClass.name}
+                      onChange={(event) => {
+                        const selectedName = event.target.value;
+                        const selectedClass = Classes.find(
+                          (characterClass) => characterClass.name === selectedName,
+                        );
+                        setNewCharacterClass(selectedClass ?? "");
+                        setCharacterFormError("");
+                      }}
+                    >
+                      {/* TODO check if it possible to use image inside items */}
+                      {Classes.map((characterClass) => (
+                        <MenuItem
+                          key={characterClass.name}
+                          value={characterClass.name}
+                        >
+                          {characterClass.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                   <Button variant="contained" color="primary" type="submit">
                     Add character
                   </Button>
+                  {characterFormError ? (
+                    // TODO use Alert component ?
+                    <Typography color="error" variant="body2">
+                      {characterFormError}
+                    </Typography>
+                  ) : null}
                 </Stack>
-              </FormControl>
-              {/* TODO ошибки создания персонажа */}
-              {/* {true && (
-                <Alert severity="error">
-                  Ошибка создания персонажа: {false}
-                </Alert>
-              )} */}
-            </Stack>
-          </Box>
+              </form>
+            </Box>
+          ) : null}
 
-          <Box>
-            <Typography>Add new dungeon</Typography>
-            <Stack spacing={1}>
-              <FormControl>
-                <Stack spacing={1}>
-                  <TextField label="Name" name="name" />
-                  <TextField label="Size" name="size" />
-                  <TextField label="Item level" name="itemLevel" />
-                  <FormControl>
-                    <InputLabel id="difficulty-label">Difficulty</InputLabel>
+          {showDungeonForm ? (
+            <Box>
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                New dungeon
+              </Typography>
+              {/* TODO check what is noValidate doing? */}
+              <form onSubmit={handleDungeonFormSubmit} noValidate>
+                <Stack spacing={2} sx={{ maxWidth: 480 }}>
+                  <TextField
+                    label="Name"
+                    name="dungeonName"
+                    value={newDungeonName}
+                    onChange={(event) => {
+                      setNewDungeonName(event.target.value);
+                      setDungeonFormError("");
+                    }}
+                    required
+                    autoComplete="off"
+                  />
+                  <FormControl required>
+                    <InputLabel id="dungeon-size-label">Size</InputLabel>
                     <Select
-                      label="Difficulty"
-                      name="difficulty"
-                      labelId="difficulty-label"
+                      labelId="dungeon-size-label"
+                      label="Size"
+                      name="dungeonSize"
+                      value={newDungeonSize}
+                      onChange={(event) => {
+                        setNewDungeonSize(Number(event.target.value) as DungeonSize);
+                        setDungeonFormError("");
+                      }}
                     >
-                      <MenuItem value="Normal">Normal</MenuItem>
-                      <MenuItem value="Heroic">Heroic</MenuItem>
+                      {/* TODO check if it possible to use image inside items */}
+                      {DungeonSizes.map((sizeOption) => (
+                        <MenuItem key={sizeOption} value={sizeOption}>
+                          {sizeOption}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <TextField
+                    label="Item levels"
+                    name="dungeonItemLevels"
+                    value={newDungeonItemLevelText}
+                    onChange={(event) => {
+                      setNewDungeonItemLevelText(event.target.value);
+                      setDungeonFormError("");
+                    }}
+                    helperText="One or more values, separated by / or comma (e.g. 200 or 200 / 213)."
+                    required
+                    autoComplete="off"
+                  />
+                  <FormControl>
+                    <InputLabel id="dungeon-difficulty-label">
+                      Difficulty
+                    </InputLabel>
+                    <Select
+                      labelId="dungeon-difficulty-label"
+                      label="Difficulty"
+                      name="dungeonDifficulty"
+                      value={newDungeonDifficulty}
+                      onChange={(event) => {
+                        setNewDungeonDifficulty(
+                          event.target.value as DungeonDifficultyOption,
+                        );
+                        setDungeonFormError("");
+                      }}
+                    >
+                      <MenuItem value={DungeonDifficulty.NORMAL}>
+                        {DungeonDifficulty.NORMAL}
+                      </MenuItem>
+                      <MenuItem value={DungeonDifficulty.HEROIC}>
+                        {DungeonDifficulty.HEROIC}
+                      </MenuItem>
                     </Select>
                   </FormControl>
                   <Button variant="contained" color="primary" type="submit">
                     Add dungeon
                   </Button>
+                  {dungeonFormError ? (
+                    // TODO use Alert component ?
+                    <Typography color="error" variant="body2">
+                      {dungeonFormError}
+                    </Typography>
+                  ) : null}
                 </Stack>
-              </FormControl>
-
-              {/* TODO ошибки создания подземелья */}
-              {/* {true && (
-                <Alert severity="error">
-                  Ошибка создания подземелья: {false}
-                </Alert>
-              )} */}
-            </Stack>
-          </Box>
+              </form>
+            </Box>
+          ) : null}
 
           <Box>
             <Typography variant="subtitle2" gutterBottom>
