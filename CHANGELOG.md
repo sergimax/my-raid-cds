@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Refactor
+
+- **App shell:** `App.tsx` is a self-contained MUI layout (table, forms, toggles) using shared domain types (`CharacterRecord`, `DungeonRecord`, `DungeonToggles`). Completion lives only in the toggle map (character id → dungeon id → boolean), not on dungeon rows.
+- **Root theming:** `main.tsx` wraps the tree in MUI `ThemeProvider` and `CssBaseline` for the new UI path.
+- **Add flows:** Header actions **Add character** / **Add dungeon** toggle visibility of the matching form; **submit** on each form creates the entity (with basic validation, including duplicate name + class for characters). Lists start empty until something is added.
+- **Persistence split:** This `App` iteration does not call `useRaidTracker` or `localStorage` yet; the hook and table components remain in the repo for a later wiring pass.
+
+### Changed
+
+- **Dungeon domain shape:** Stored and in-memory dungeons use **`difficulty`** (Normal / Heroic) to match `DungeonRecord`; item levels remain `number[]` (entered as text and parsed).
+
+### Fixed
+
+- **localStorage:** Load/save dungeons using `difficulty`; older saves that only had **`mode`** are still read and mapped to Normal or Heroic on import.
+
 ## [1.2.0] - 2026-05-12
 
 ### Changed
