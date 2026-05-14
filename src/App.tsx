@@ -53,7 +53,7 @@ const STATIC_COLUMNS: ReadonlyArray<{
  */
 function formatDungeonCell(
   dungeon: DungeonRecord,
-  columnKey: (typeof STATIC_COLUMNS)[number]["key"]
+  columnKey: (typeof STATIC_COLUMNS)[number]["key"],
 ): string {
   // TODO убрать отдельный формат для itemLevel ?
   if (columnKey === "itemLevel") {
@@ -66,12 +66,12 @@ function formatDungeonCell(
  * Create a sample character.
  * @param existingCount - The number of existing characters.
  * @returns The sample character.
- * 
+ *
  * TODO убрать из финального кода
  */
 function createSampleCharacter(existingCount: number): CharacterRecord {
   const warriorClass = Classes.find(
-    (characterClass) => characterClass.name === ClassName.Warrior
+    (characterClass) => characterClass.name === ClassName.Warrior,
   )!;
   return {
     id: generateUUID(),
@@ -83,7 +83,7 @@ function createSampleCharacter(existingCount: number): CharacterRecord {
 /**
  * Create a sample dungeon.
  * @returns The sample dungeon.
- * 
+ *
  * TODO убрать из финального кода
  */
 function createSampleDungeon(): DungeonRecord {
@@ -124,14 +124,17 @@ function App() {
         };
       });
     },
-    []
+    [],
   );
 
   const handleAddCharacter = useCallback(() => {
     // TODO добавить валидацию на уникальность имени и класса
     // TODO добавить сохранение в localStorage
     // TODO использовать данные с формы
-    setCharacters((previous) => [...previous, createSampleCharacter(previous.length)]);
+    setCharacters((previous) => [
+      ...previous,
+      createSampleCharacter(previous.length),
+    ]);
   }, []);
 
   const handleAddDungeon = useCallback(() => {
@@ -143,7 +146,7 @@ function App() {
 
   const handleDeleteCharacter = useCallback((characterId: string) => {
     setCharacters((previous) =>
-      previous.filter((character) => character.id !== characterId)
+      previous.filter((character) => character.id !== characterId),
     );
     setDungeonToggles((previous) => {
       const next = { ...previous };
@@ -154,7 +157,7 @@ function App() {
 
   const handleDeleteDungeon = useCallback((dungeonId: string) => {
     setDungeons((previous) =>
-      previous.filter((dungeon) => dungeon.id !== dungeonId)
+      previous.filter((dungeon) => dungeon.id !== dungeonId),
     );
     setDungeonToggles((previous) => {
       const next: DungeonToggles = {};
@@ -178,14 +181,14 @@ function App() {
     const perCharacter = characters.map((character) => {
       const togglesForCharacter = dungeonToggles[character.id] ?? {};
       const completedCount = dungeons.filter(
-        (dungeon) => togglesForCharacter[dungeon.id]
+        (dungeon) => togglesForCharacter[dungeon.id],
       ).length;
       return { character, completedCount };
     });
 
     const perDungeon = dungeons.map((dungeon) => {
       const completedCount = characters.filter(
-        (character) => dungeonToggles[character.id]?.[dungeon.id]
+        (character) => dungeonToggles[character.id]?.[dungeon.id],
       ).length;
       return { dungeon, completedCount };
     });
@@ -193,7 +196,7 @@ function App() {
     const totalCells = characters.length * dungeons.length;
     const totalCompleted = perCharacter.reduce(
       (sum, row) => sum + row.completedCount,
-      0
+      0,
     );
 
     return { perCharacter, perDungeon, totalCells, totalCompleted };
