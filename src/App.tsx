@@ -1,9 +1,14 @@
 import { AppFooter } from "./components/index.ts";
 import "./App.css";
 import {
+  Alert,
   Box,
   Button,
   Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   Switch,
   Table,
@@ -12,6 +17,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
@@ -201,38 +207,105 @@ function App() {
             My Raid CDs
           </Typography>
           <Typography color="text.secondary" variant="body1">
-            Self-contained demo: characters and dungeons use shared domain types;
-            completion is stored in <code>DungeonToggles</code> (character id →
-            dungeon id → boolean). Replace this file when you wire storage and
-            hooks.
+            Self-contained demo: characters and dungeons use shared domain
+            types; completion is stored in <code>DungeonToggles</code>{" "}
+            (character id → dungeon id → boolean). Replace this file when you
+            wire storage and hooks.
           </Typography>
 
           <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-            <Button variant="contained" color="primary" onClick={handleAddCharacter}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddCharacter}
+            >
               Add character
             </Button>
-            <Button variant="contained" color="primary" onClick={handleAddDungeon}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddDungeon}
+            >
               Add dungeon
             </Button>
-            <Button variant="outlined" color="warning" onClick={handleResetAllToggles}>
+            <Button
+              variant="outlined"
+              color="warning"
+              onClick={handleResetAllToggles}
+            >
               Reset all toggles
             </Button>
           </Stack>
+
+          <Box>
+            <Typography>Add new character</Typography>
+            <Stack spacing={1}>
+              <FormControl>
+                <Stack spacing={1} direction="row">
+                  <TextField label="Name" name="name" />
+                  <TextField label="Class" name="class" />
+                  <Button variant="contained" color="primary" type="submit">
+                    Add character
+                  </Button>
+                </Stack>
+              </FormControl>
+              {/* TODO ошибки создания персонажа */}
+              {/* {true && (
+                <Alert severity="error">
+                  Ошибка создания персонажа: {false}
+                </Alert>
+              )} */}
+            </Stack>
+          </Box>
+
+          <Box>
+            <Typography>Add new dungeon</Typography>
+            <Stack spacing={1}>
+              <FormControl>
+                <Stack spacing={1}>
+                  <TextField label="Name" name="name" />
+                  <TextField label="Size" name="size" />
+                  <TextField label="Item level" name="itemLevel" />
+                  <FormControl>
+                    <InputLabel id="difficulty-label">Difficulty</InputLabel>
+                    <Select
+                      label="Difficulty"
+                      name="difficulty"
+                      labelId="difficulty-label"
+                    >
+                      <MenuItem value="Normal">Normal</MenuItem>
+                      <MenuItem value="Heroic">Heroic</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <Button variant="contained" color="primary" type="submit">
+                    Add dungeon
+                  </Button>
+                </Stack>
+              </FormControl>
+
+              {/* TODO ошибки создания подземелья */}
+              {/* {true && (
+                <Alert severity="error">
+                  Ошибка создания подземелья: {false}
+                </Alert>
+              )} */}
+            </Stack>
+          </Box>
 
           <Box>
             <Typography variant="subtitle2" gutterBottom>
               Completion summary
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Total: {completionSummary.totalCompleted} / {completionSummary.totalCells}{" "}
-              cells marked complete
+              Total: {completionSummary.totalCompleted} /{" "}
+              {completionSummary.totalCells} cells marked complete
             </Typography>
             <Typography variant="body2" color="text.secondary">
               By character:{" "}
               {completionSummary.perCharacter
                 .map(
                   ({ character, completedCount }) =>
-                    `${character.name}: ${completedCount}/${dungeons.length}`
+                    `${character.name}: ${completedCount}/${dungeons.length}`,
                 )
                 .join(" · ") || "—"}
             </Typography>
@@ -241,7 +314,7 @@ function App() {
               {completionSummary.perDungeon
                 .map(
                   ({ dungeon, completedCount }) =>
-                    `${dungeon.name}: ${completedCount}/${characters.length}`
+                    `${dungeon.name}: ${completedCount}/${characters.length}`,
                 )
                 .join(" · ") || "—"}
             </Typography>
