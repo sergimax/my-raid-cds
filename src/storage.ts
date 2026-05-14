@@ -1,5 +1,9 @@
 import { Classes, type CharacterRecord } from "./types/characters.ts";
-import { DungeonSizes, type DungeonRecord } from "./types/dungeons.ts";
+import {
+  DungeonDifficulty,
+  DungeonSizes,
+  type DungeonRecord,
+} from "./types/dungeons.ts";
 
 const STORAGE_KEY = "my-raid-cds";
 
@@ -14,7 +18,9 @@ type StoredDungeon = {
   name: string;
   size: DungeonRecord["size"];
   itemLevel: number[];
-  mode: string;
+  /** Legacy key from older saves */
+  mode?: string;
+  difficulty?: string;
 };
 
 type StoredData = {
@@ -41,7 +47,11 @@ function loadStoredData(): StoredData | null {
 }
 
 function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {
-  const mode = stored.mode === "Heroic" ? "Heroic" : "Normal";
+  const rawDifficulty = stored.difficulty ?? stored.mode;
+  const difficulty =
+    rawDifficulty === DungeonDifficulty.HEROIC
+      ? DungeonDifficulty.HEROIC
+      : DungeonDifficulty.NORMAL;
   const size = DungeonSizes.includes(stored.size) ? stored.size : 10;
   if (!Array.isArray(stored.itemLevel) || !stored.itemLevel.every(Number.isFinite)) {
     return null;
@@ -51,7 +61,7 @@ function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {
     name: stored.name,
     size,
     itemLevel: stored.itemLevel as number[],
-    mode,
+    difficulty,
   };
 }
 
@@ -125,7 +135,7 @@ export function saveToStorage(
     name: d.name,
     size: d.size,
     itemLevel: d.itemLevel,
-    mode: d.mode,
+    difficulty: d.difficulty,
   }));
 
   const storedToggles: Record<string, Record<string, boolean>> = {};
