@@ -17,7 +17,12 @@ import {
   countCompletedForCharacter,
   countCompletedForDungeon,
 } from "../../utils/completion-counts.ts";
+import {
+  getItemLevelTier,
+  itemLevelTierClassName,
+} from "../../utils/item-level-tier.ts";
 import type { RaidTrackerTableProps } from "./types.ts";
+import "./styles.css";
 
 const STATIC_COLUMNS: ReadonlyArray<{
   key: keyof Pick<DungeonRecord, "name" | "size" | "difficulty" | "itemLevel">;
@@ -35,10 +40,34 @@ function formatDungeonCell(
   dungeon: DungeonRecord,
   columnKey: (typeof STATIC_COLUMNS)[number]["key"],
 ): string {
-  if (columnKey === "itemLevel") {
-    return dungeon.itemLevel.join(" / ");
-  }
   return String(dungeon[columnKey]);
+}
+
+function ItemLevelCell({ itemLevels }: { itemLevels: number[] }) {
+  if (itemLevels.length === 0) {
+    return (
+      <Typography component="span" variant="body2" color="text.secondary">
+        —
+      </Typography>
+    );
+  }
+
+  return (
+    <>
+      {itemLevels.map((itemLevel, index) => (
+        <span key={`${itemLevel}-${index}`}>
+          {index > 0 ? (
+            <span className="raid-tracker-table__ilvl-separator"> / </span>
+          ) : null}
+          <span
+            className={`raid-tracker-table__ilvl ${itemLevelTierClassName(getItemLevelTier(itemLevel))}`}
+          >
+            {itemLevel}
+          </span>
+        </span>
+      ))}
+    </>
+  );
 }
 
 export function RaidTrackerTable({
@@ -55,7 +84,7 @@ export function RaidTrackerTable({
 
   return (
     <TableContainer sx={{ overflowX: "auto" }}>
-      <Table size="small" stickyHeader>
+      <Table className="raid-tracker-table" size="small" stickyHeader>
         <TableHead>
           <TableRow>
             {STATIC_COLUMNS.map((column) => (
@@ -129,7 +158,11 @@ export function RaidTrackerTable({
             <TableRow key={dungeon.id} hover>
               {STATIC_COLUMNS.map((column) => (
                 <TableCell key={column.key}>
-                  {formatDungeonCell(dungeon, column.key)}
+                  {column.key === "itemLevel" ? (
+                    <ItemLevelCell itemLevels={dungeon.itemLevel} />
+                  ) : (
+                    formatDungeonCell(dungeon, column.key)
+                  )}
                 </TableCell>
               ))}
               <TableCell key={COMPLETE_COLUMN.key} align="center">
