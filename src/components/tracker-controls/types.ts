@@ -4,4 +4,7 @@ export type TrackerControlsProps = {
   onToggleCharacterForm: () => void;
   onToggleDungeonForm: () => void;
   onResetAllToggles: () => void;
+  resetAllTogglesDisabled?: boolean;
+  showAddFromTemplate?: boolean;
+  onAddFromTemplate?: () => void;
 };

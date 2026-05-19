@@ -3,6 +3,7 @@ import {
   DungeonDifficulty,
   DungeonSizes,
   type DungeonRecord,
+  type DungeonToggles,
 } from "./types/dungeons.ts";
 
 const STORAGE_KEY = "my-raid-cds";
@@ -29,7 +30,19 @@ type StoredData = {
   dungeonToggles: Record<string, Record<string, boolean>>;
 };
 
-function loadStoredData(): StoredData | null {
+export type RaidTrackerState = {
+  characters: CharacterRecord[];
+  dungeons: DungeonRecord[];
+  dungeonToggles: DungeonToggles;
+};
+
+const EMPTY_STATE: RaidTrackerState = {
+  characters: [],
+  dungeons: [],
+  dungeonToggles: {},
+};
+
+function readRawStoredData(): StoredData | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
@@ -40,7 +53,11 @@ function loadStoredData(): StoredData | null {
       return null;
     }
     const dungeons = Array.isArray(obj.dungeons) ? obj.dungeons : [];
-    return { ...parsed, dungeons } as StoredData;
+    return {
+      characters: obj.characters as StoredCharacter[],
+      dungeons: dungeons as StoredDungeon[],
+      dungeonToggles: obj.dungeonToggles as Record<string, Record<string, boolean>>,
+    };
   } catch {
     return null;
   }
@@ -65,13 +82,10 @@ function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {
   };
 }
 
-export function loadCharacters(): CharacterRecord[] {
-  const data = loadStoredData();
-  if (!data?.characters?.length) return [];
-
-  return data.characters
+function parseCharacters(storedCharacters: StoredCharacter[]): CharacterRecord[] {
+  return storedCharacters
     .map((stored) => {
-      const charClass = Classes.find((c) => c.name === stored.className);
+      const charClass = Classes.find((candidate) => candidate.name === stored.className);
       if (!charClass) return null;
       return {
         id: stored.id,
@@ -79,90 +93,96 @@ export function loadCharacters(): CharacterRecord[] {
         class: charClass,
       } as CharacterRecord;
     })
-    .filter((c): c is CharacterRecord => c !== null);
+    .filter((character): character is CharacterRecord => character !== null);
 }
 
-export function loadDungeons(): DungeonRecord[] {
-  const data = loadStoredData();
-  if (!data?.dungeons?.length) return [];
+function parseDungeons(storedDungeons: StoredDungeon[]): DungeonRecord[] {
   const result: DungeonRecord[] = [];
-  for (const stored of data.dungeons) {
+  for (const stored of storedDungeons) {
     const dungeon = toDungeonRecord(stored);
     if (dungeon) result.push(dungeon);
   }
   return result;
 }
 
-export function loadDungeonToggles(): Record<string, Record<string, boolean>> {
-  const data = loadStoredData();
-  if (!data?.dungeonToggles) return {};
-  if (!Array.isArray(data.dungeons) || data.dungeons.length === 0) {
-    return {};
-  }
-
-  const result: Record<string, Record<string, boolean>> = {};
-  const dungeonIds = new Set(data.dungeons.map((d) => d.id));
-  for (const [charId, toggles] of Object.entries(data.dungeonToggles)) {
-    if (toggles && typeof toggles === "object") {
-      result[charId] = {};
-      for (const [dungeonId, value] of Object.entries(toggles)) {
-        if (dungeonIds.has(dungeonId) && typeof value === "boolean") {
-          result[charId][dungeonId] = value;
-        }
+function parseDungeonToggles(
+  storedToggles: Record<string, Record<string, boolean>>,
+  dungeonIds: Set<string>,
+): DungeonToggles {
+  const result: DungeonToggles = {};
+  for (const [charId, toggles] of Object.entries(storedToggles)) {
+    if (!toggles || typeof toggles !== "object") continue;
+    result[charId] = {};
+    for (const [dungeonId, value] of Object.entries(toggles)) {
+      if (dungeonIds.has(dungeonId) && typeof value === "boolean") {
+        result[charId][dungeonId] = value;
       }
     }
   }
   return result;
 }
 
-export function saveToStorage(
-  characters: CharacterRecord[],
-  dungeons: DungeonRecord[],
-  dungeonToggles: Record<string, Record<string, boolean>>,
-  onError?: (message: string | null) => void
-): void {
-  const characterIds = new Set(characters.map((c) => c.id));
-  const dungeonIds = new Set(dungeons.map((d) => d.id));
+export function loadRaidTrackerState(): RaidTrackerState {
+  const data = readRawStoredData();
+  if (!data) return EMPTY_STATE;
 
-  const storedCharacters: StoredCharacter[] = characters.map((c) => ({
-    id: c.id,
-    name: c.name,
-    className: c.class?.name ?? "",
+  const characters = parseCharacters(data.characters);
+  const dungeons = parseDungeons(data.dungeons);
+  const dungeonIds = new Set(dungeons.map((dungeon) => dungeon.id));
+  const dungeonToggles =
+    dungeons.length > 0
+      ? parseDungeonToggles(data.dungeonToggles, dungeonIds)
+      : {};
+
+  return { characters, dungeons, dungeonToggles };
+}
+
+export function saveRaidTrackerState(
+  state: RaidTrackerState,
+  onError?: (message: string | null) => void,
+): void {
+  const { characters, dungeons, dungeonToggles } = state;
+  const characterIds = new Set(characters.map((character) => character.id));
+  const dungeonIds = new Set(dungeons.map((dungeon) => dungeon.id));
+
+  const storedCharacters: StoredCharacter[] = characters.map((character) => ({
+    id: character.id,
+    name: character.name,
+    className: character.class?.name ?? "",
   }));
 
-  const storedDungeons: StoredDungeon[] = dungeons.map((d) => ({
-    id: d.id,
-    name: d.name,
-    size: d.size,
-    itemLevel: d.itemLevel,
-    difficulty: d.difficulty,
+  const storedDungeons: StoredDungeon[] = dungeons.map((dungeon) => ({
+    id: dungeon.id,
+    name: dungeon.name,
+    size: dungeon.size,
+    itemLevel: dungeon.itemLevel,
+    difficulty: dungeon.difficulty,
   }));
 
   const storedToggles: Record<string, Record<string, boolean>> = {};
   for (const [charId, toggles] of Object.entries(dungeonToggles)) {
-    if (characterIds.has(charId) && toggles && Object.keys(toggles).length > 0) {
-      const filtered: Record<string, boolean> = {};
-      for (const [dungeonId, value] of Object.entries(toggles)) {
-        if (dungeonIds.has(dungeonId)) filtered[dungeonId] = value;
-      }
-      if (Object.keys(filtered).length > 0) {
-        storedToggles[charId] = filtered;
-      }
+    if (!characterIds.has(charId) || !toggles) continue;
+    const filtered: Record<string, boolean> = {};
+    for (const [dungeonId, value] of Object.entries(toggles)) {
+      if (dungeonIds.has(dungeonId)) filtered[dungeonId] = value;
+    }
+    if (Object.keys(filtered).length > 0) {
+      storedToggles[charId] = filtered;
     }
   }
 
-  const data: StoredData = {
+  const payload: StoredData = {
     characters: storedCharacters,
     dungeons: storedDungeons,
     dungeonToggles: storedToggles,
   };
 
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     onError?.(null);
-  } catch (e) {
+  } catch (error) {
     const message =
-      e instanceof DOMException && e.name === "QuotaExceededError"
+      error instanceof DOMException && error.name === "QuotaExceededError"
         ? "Storage quota exceeded. Please free up space."
         : "Failed to save data. Please try again.";
     onError?.(message);

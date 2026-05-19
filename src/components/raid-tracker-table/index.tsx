@@ -42,6 +42,7 @@ export function RaidTrackerTable({
   onDungeonToggle,
   onDeleteCharacter,
   onDeleteDungeon,
+  onResetCharacterToggles,
 }: RaidTrackerTableProps) {
   return (
     <TableContainer sx={{ overflowX: "auto" }}>
@@ -76,15 +77,27 @@ export function RaidTrackerTable({
                       {character.name}
                     </Typography>
                   </Stack>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => {
-                      onDeleteCharacter(character.id);
-                    }}
-                  >
-                    Remove
-                  </Button>
+                  <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap", justifyContent: "center" }}>
+                    <Button
+                      size="small"
+                      color="inherit"
+                      onClick={() => {
+                        onResetCharacterToggles(character.id);
+                      }}
+                      aria-label={`Reset toggles for ${character.name}`}
+                    >
+                      Reset
+                    </Button>
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => {
+                        onDeleteCharacter(character.id);
+                      }}
+                    >
+                      Remove
+                    </Button>
+                  </Stack>
                 </Stack>
               </TableCell>
             ))}

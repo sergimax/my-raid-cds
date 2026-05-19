@@ -8,9 +8,9 @@ export function AppIntro({ visible = true }: AppIntroProps) {
 
   return (
     <Typography color="text.secondary" variant="body1">
-      Self-contained demo: characters and dungeons use shared domain types;
-      completion is stored in <code>DungeonToggles</code> (character id →
-      dungeon id → boolean). Replace this file when you wire storage and hooks.
+      Add characters and dungeons, then mark cooldown usage per cell. Data is
+      saved automatically in your browser. When the dungeon list is empty, use{" "}
+      <strong>Add from template</strong> to load WotLK raids (Russian names).
     </Typography>
   );
 }

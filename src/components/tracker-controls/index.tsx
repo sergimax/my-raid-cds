@@ -7,9 +7,17 @@ export function TrackerControls({
   onToggleCharacterForm,
   onToggleDungeonForm,
   onResetAllToggles,
+  resetAllTogglesDisabled = false,
+  showAddFromTemplate = false,
+  onAddFromTemplate,
 }: TrackerControlsProps) {
   return (
     <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+      {showAddFromTemplate && onAddFromTemplate ? (
+        <Button variant="contained" color="secondary" onClick={onAddFromTemplate}>
+          Add from template
+        </Button>
+      ) : null}
       <Button
         variant={showCharacterForm ? "contained" : "outlined"}
         color="primary"
@@ -26,7 +34,12 @@ export function TrackerControls({
       >
         Add dungeon
       </Button>
-      <Button variant="outlined" color="warning" onClick={onResetAllToggles}>
+      <Button
+        variant="outlined"
+        color="warning"
+        disabled={resetAllTogglesDisabled}
+        onClick={onResetAllToggles}
+      >
         Reset all toggles
       </Button>
     </Stack>

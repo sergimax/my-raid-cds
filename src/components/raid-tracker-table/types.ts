@@ -8,4 +8,5 @@ export type RaidTrackerTableProps = {
   onDungeonToggle: (characterId: string, dungeonId: string) => void;
   onDeleteCharacter: (characterId: string) => void;
   onDeleteDungeon: (dungeonId: string) => void;
+  onResetCharacterToggles: (characterId: string) => void;
 };
