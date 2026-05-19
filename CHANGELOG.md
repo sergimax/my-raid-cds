@@ -7,16 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Refactor
+### Added
 
-- **App shell:** `App.tsx` is a self-contained MUI layout (table, forms, toggles) using shared domain types (`CharacterRecord`, `DungeonRecord`, `DungeonToggles`). Completion lives only in the toggle map (character id → dungeon id → boolean), not on dungeon rows.
-- **Root theming:** `main.tsx` wraps the tree in MUI `ThemeProvider` and `CssBaseline` for the new UI path.
-- **Add flows:** Header actions **Add character** / **Add dungeon** toggle visibility of the matching form; **submit** on each form creates the entity (with basic validation, including duplicate name + class for characters). Lists start empty until something is added.
-- **Persistence split:** This `App` iteration does not call `useRaidTracker` or `localStorage` yet; the hook and table components remain in the repo for a later wiring pass.
+- **MUI app shell:** `App.tsx` is a self-contained layout (completion table, add forms, toggle matrix) built with Material UI; `main.tsx` wraps the tree in `ThemeProvider` and `CssBaseline` with a light theme aligned to the existing palette.
+- **Add character / add dungeon:** Header buttons toggle each form; submit creates the entity with validation (required fields, parsed item levels for dungeons, duplicate name + class for characters). Lists start empty until entries are added.
+- **WoW class styling:** Character table headers and the class picker show each spec’s icon and name in its class color (`characterNameDisplaySx` in `types/characters.ts`, with contrast handling for light colors such as Priest and Rogue).
 
 ### Changed
 
+- **Add forms:** After a successful submit, the character or dungeon form closes automatically (toolbar buttons still reopen it).
 - **Dungeon domain shape:** Stored and in-memory dungeons use **`difficulty`** (Normal / Heroic) to match `DungeonRecord`; item levels remain `number[]` (entered as text and parsed).
+- **Class select:** Dropdown options and the closed-field value render icon + colored label, not plain text only.
+- **Persistence (in progress):** The MUI `App` demo does not write to `localStorage` or use `useRaidTracker` / the legacy dungeon-table components yet.
 
 ### Fixed
 
