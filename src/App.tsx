@@ -10,7 +10,7 @@ import {
 } from "./components/index.ts";
 import "./App.css";
 import { Container, Stack } from "@mui/material";
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
 import type { CompletionSummaryData } from "./components/completion-summary/types.ts";
 import {
@@ -66,7 +66,7 @@ function App() {
   );
 
   const handleCharacterFormSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+    (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
       setCharacterFormError("");
       const trimmedName = newCharacterName.trim();
@@ -99,7 +99,7 @@ function App() {
   );
 
   const handleDungeonFormSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+    (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
       setDungeonFormError("");
       const trimmedName = newDungeonName.trim();

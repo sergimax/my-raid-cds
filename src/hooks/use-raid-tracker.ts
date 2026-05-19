@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DungeonList } from "../data/dungeons.ts";
 import { generateUUID } from "../uuid.ts";
@@ -44,7 +44,7 @@ export function useRaidTracker() {
     setCharacterError("");
   }, []);
 
-  const handleAddCharacter = useCallback((event: FormEvent) => {
+  const handleAddCharacter = useCallback((event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setCharacterError("");
     if (!characterName.trim() || !characterClass) return;

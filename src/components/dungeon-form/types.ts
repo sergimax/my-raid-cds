@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import type { SubmitEvent } from "react";
 import type {
   DungeonDifficulty,
   DungeonSize,
@@ -14,5 +14,5 @@ export type DungeonFormProps = {
   onSizeChange: (size: DungeonSize) => void;
   onItemLevelTextChange: (text: string) => void;
   onDifficultyChange: (difficulty: DungeonDifficulty) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
 };
