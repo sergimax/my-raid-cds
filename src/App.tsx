@@ -24,6 +24,7 @@ import type { FormEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
 import {
   Classes,
+  characterNameDisplaySx,
   type CharacterClass,
   type CharacterRecord,
 } from "./types/characters.ts";
@@ -492,12 +493,31 @@ function App() {
                   {characters.map((character) => (
                     <TableCell key={character.id} align="center">
                       <Stack spacing={0.5} sx={{ alignItems: "center" }}>
-                        <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                          {character.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Stack
+                          direction="row"
+                          spacing={0.5}
+                          sx={{ alignItems: "center", justifyContent: "center" }}
+                        >
+                          {character.class ? (
+                            <Box
+                              component="img"
+                              src={character.class.icon}
+                              alt=""
+                              width={18}
+                              height={18}
+                              sx={{ borderRadius: "4px", flexShrink: 0 }}
+                            />
+                          ) : null}
+                          <Typography
+                            variant="caption"
+                            sx={characterNameDisplaySx(character.class)}
+                          >
+                            {character.name}
+                          </Typography>
+                        </Stack>
+                        {/* <Typography variant="caption" color="text.secondary">
                           {character.class?.name ?? "—"}
-                        </Typography>
+                        </Typography> */}
                         <Button
                           size="small"
                           color="error"
