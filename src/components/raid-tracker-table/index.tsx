@@ -13,6 +13,10 @@ import {
 } from "@mui/material";
 import { characterNameDisplaySx, type CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
+import {
+  countCompletedForCharacter,
+  countCompletedForDungeon,
+} from "../../utils/completion-counts.ts";
 import type { RaidTrackerTableProps } from "./types.ts";
 
 const STATIC_COLUMNS: ReadonlyArray<{
@@ -24,6 +28,8 @@ const STATIC_COLUMNS: ReadonlyArray<{
   { key: "difficulty", label: "Difficulty" },
   { key: "itemLevel", label: "Item level" },
 ];
+
+const COMPLETE_COLUMN = { key: "complete" as const, label: "Complete" };
 
 function formatDungeonCell(
   dungeon: DungeonRecord,
@@ -44,6 +50,9 @@ export function RaidTrackerTable({
   onDeleteDungeon,
   onResetCharacterToggles,
 }: RaidTrackerTableProps) {
+  const dungeonCount = dungeons.length;
+  const characterCount = characters.length;
+
   return (
     <TableContainer sx={{ overflowX: "auto" }}>
       <Table size="small" stickyHeader>
@@ -52,6 +61,9 @@ export function RaidTrackerTable({
             {STATIC_COLUMNS.map((column) => (
               <TableCell key={column.key}>{column.label}</TableCell>
             ))}
+            <TableCell key={COMPLETE_COLUMN.key} align="center">
+              {COMPLETE_COLUMN.label}
+            </TableCell>
             {characters.map((character: CharacterRecord) => (
               <TableCell key={character.id} align="center">
                 <Stack spacing={0.5} sx={{ alignItems: "center" }}>
@@ -77,6 +89,14 @@ export function RaidTrackerTable({
                       {character.name}
                     </Typography>
                   </Stack>
+                  <Typography variant="caption" color="text.secondary">
+                    {countCompletedForCharacter(
+                      character.id,
+                      dungeons,
+                      dungeonToggles,
+                    )}
+                    /{dungeonCount}
+                  </Typography>
                   <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap", justifyContent: "center" }}>
                     <Button
                       size="small"
@@ -112,6 +132,16 @@ export function RaidTrackerTable({
                   {formatDungeonCell(dungeon, column.key)}
                 </TableCell>
               ))}
+              <TableCell key={COMPLETE_COLUMN.key} align="center">
+                <Typography variant="body2" color="text.secondary">
+                  {countCompletedForDungeon(
+                    dungeon.id,
+                    characters,
+                    dungeonToggles,
+                  )}
+                  /{characterCount}
+                </Typography>
+              </TableCell>
               {characters.map((character: CharacterRecord) => (
                 <TableCell key={character.id} align="center">
                   <Switch

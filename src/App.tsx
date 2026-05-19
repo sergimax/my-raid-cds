@@ -11,35 +11,26 @@ import {
 import "./App.css";
 import { Alert, Container, Stack } from "@mui/material";
 import { useMemo } from "react";
-import type { CompletionSummaryData } from "./components/completion-summary/types.ts";
+import { countCompletedForCharacter } from "./utils/completion-counts.ts";
 import { useRaidTracker } from "./hooks/use-raid-tracker.ts";
 
 function App() {
   const tracker = useRaidTracker();
 
-  const completionSummary = useMemo((): CompletionSummaryData => {
-    const perCharacter = tracker.characters.map((character) => {
-      const togglesForCharacter = tracker.dungeonToggles[character.id] ?? {};
-      const completedCount = tracker.dungeons.filter(
-        (dungeon) => togglesForCharacter[dungeon.id],
-      ).length;
-      return { character, completedCount };
-    });
-
-    const perDungeon = tracker.dungeons.map((dungeon) => {
-      const completedCount = tracker.characters.filter(
-        (character) => tracker.dungeonToggles[character.id]?.[dungeon.id],
-      ).length;
-      return { dungeon, completedCount };
-    });
-
-    const totalCells = tracker.characters.length * tracker.dungeons.length;
-    const totalCompleted = perCharacter.reduce(
-      (sum, row) => sum + row.completedCount,
+  const { totalCells, totalCompleted } = useMemo(() => {
+    const totalCells =
+      tracker.characters.length * tracker.dungeons.length;
+    const totalCompleted = tracker.characters.reduce(
+      (sum, character) =>
+        sum +
+        countCompletedForCharacter(
+          character.id,
+          tracker.dungeons,
+          tracker.dungeonToggles,
+        ),
       0,
     );
-
-    return { perCharacter, perDungeon, totalCells, totalCompleted };
+    return { totalCells, totalCompleted };
   }, [tracker.characters, tracker.dungeons, tracker.dungeonToggles]);
 
   const showIntro =
@@ -94,9 +85,8 @@ function App() {
           ) : null}
 
           <CompletionSummary
-            summary={completionSummary}
-            characterCount={tracker.characters.length}
-            dungeonCount={tracker.dungeons.length}
+            totalCompleted={totalCompleted}
+            totalCells={totalCells}
           />
 
           <RaidTrackerTable
