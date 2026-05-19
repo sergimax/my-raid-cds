@@ -332,6 +332,40 @@ function App() {
                       label="Class"
                       name="characterClass"
                       value={newCharacterClass === "" ? "" : newCharacterClass.name}
+                      renderValue={(selectedName) => {
+                        if (!selectedName) {
+                          return "";
+                        }
+                        const selectedClass = Classes.find(
+                          (characterClass) => characterClass.name === selectedName,
+                        );
+                        if (!selectedClass) {
+                          return selectedName;
+                        }
+                        return (
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ alignItems: "center" }}
+                          >
+                            <Box
+                              component="img"
+                              src={selectedClass.icon}
+                              alt=""
+                              width={20}
+                              height={20}
+                              sx={{ borderRadius: "4px", flexShrink: 0 }}
+                            />
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              sx={characterNameDisplaySx(selectedClass)}
+                            >
+                              {selectedClass.name}
+                            </Typography>
+                          </Stack>
+                        );
+                      }}
                       onChange={(event) => {
                         const selectedName = event.target.value;
                         const selectedClass = Classes.find(
@@ -341,13 +375,32 @@ function App() {
                         setCharacterFormError("");
                       }}
                     >
-                      {/* TODO check if it possible to use image inside items */}
                       {Classes.map((characterClass) => (
                         <MenuItem
                           key={characterClass.name}
                           value={characterClass.name}
                         >
-                          {characterClass.name}
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ alignItems: "center" }}
+                          >
+                            <Box
+                              component="img"
+                              src={characterClass.icon}
+                              alt=""
+                              width={20}
+                              height={20}
+                              sx={{ borderRadius: "4px", flexShrink: 0 }}
+                            />
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              sx={characterNameDisplaySx(characterClass)}
+                            >
+                              {characterClass.name}
+                            </Typography>
+                          </Stack>
                         </MenuItem>
                       ))}
                     </Select>
