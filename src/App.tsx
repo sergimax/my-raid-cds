@@ -157,6 +157,7 @@ function App() {
       // TODO unite as ResetFormValues ?
       setNewCharacterName("");
       setNewCharacterClass("");
+      setShowCharacterForm(false);
     },
     [characters, newCharacterClass, newCharacterName],
   );
@@ -191,6 +192,7 @@ function App() {
       setNewDungeonSize(10);
       setNewDungeonItemLevelText("200");
       setNewDungeonDifficulty(DungeonDifficulty.NORMAL);
+      setShowDungeonForm(false);
     },
     [
       newDungeonDifficulty,
