@@ -2,7 +2,6 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
-  Button,
   IconButton,
   Stack,
   Switch,
@@ -24,6 +23,7 @@ import {
   countCompletedForDungeon,
 } from "../../utils/completion-counts.ts";
 import {
+  dungeonNameTierClassName,
   getItemLevelTier,
   itemLevelTierClassName,
 } from "../../utils/item-level-tier.ts";
@@ -129,6 +129,26 @@ function formatDungeonCell(
   columnKey: (typeof STATIC_COLUMNS)[number]["key"],
 ): string {
   return String(dungeon[columnKey]);
+}
+
+function DungeonNameCell({
+  name,
+  itemLevels,
+}: {
+  name: string;
+  itemLevels: number[];
+}) {
+  const tierClass = dungeonNameTierClassName(getItemLevelTier(itemLevels));
+
+  return (
+    <Typography
+      component="span"
+      variant="body2"
+      className={`raid-tracker-table__dungeon-name ${tierClass}`}
+    >
+      {name}
+    </Typography>
+  );
 }
 
 function ItemLevelCell({ itemLevels }: { itemLevels: number[] }) {
@@ -402,7 +422,12 @@ export function RaidTrackerTable({
                             : undefined
                   }
                 >
-                  {column.key === "itemLevel" ? (
+                  {column.key === "name" ? (
+                    <DungeonNameCell
+                      name={dungeon.name}
+                      itemLevels={dungeon.itemLevel}
+                    />
+                  ) : column.key === "itemLevel" ? (
                     <ItemLevelCell itemLevels={dungeon.itemLevel} />
                   ) : (
                     formatDungeonCell(dungeon, column.key)

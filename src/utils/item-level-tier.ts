@@ -22,7 +22,15 @@ export function getItemLevelTier(itemLevel: number | number[]): number {
     : ILVL_TIER_THRESHOLDS.length + 1 - thresholdIndex;
 }
 
-export function itemLevelTierClassName(tier: number): string {
+function tierClassName(tier: number, target: "ilvl" | "dungeon-name"): string {
   const clamped = Math.min(Math.max(tier, 1), ILVL_TIER_COUNT);
-  return `raid-tracker-table__ilvl--tier-${clamped}`;
+  return `raid-tracker-table__${target}--tier-${clamped}`;
+}
+
+export function itemLevelTierClassName(tier: number): string {
+  return tierClassName(tier, "ilvl");
+}
+
+export function dungeonNameTierClassName(tier: number): string {
+  return tierClassName(tier, "dungeon-name");
 }
