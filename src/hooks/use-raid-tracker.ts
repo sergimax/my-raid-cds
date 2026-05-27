@@ -17,6 +17,7 @@ import { parseItemLevelInput } from "../utils/parse-item-level-input.ts";
 import { generateUUID } from "../uuid.ts";
 
 export function useRaidTracker() {
+  const MAX_CHARACTER_NAME_LENGTH = 12;
   const [initialState] = useState(loadRaidTrackerState);
   const [characters, setCharacters] = useState<CharacterRecord[]>(
     initialState.characters,
@@ -81,6 +82,12 @@ export function useRaidTracker() {
         setCharacterFormError("Enter a name and choose a class.");
         return;
       }
+      if (trimmedName.length > MAX_CHARACTER_NAME_LENGTH) {
+        setCharacterFormError(
+          `Character name must be at most ${MAX_CHARACTER_NAME_LENGTH} characters.`,
+        );
+        return;
+      }
       const isDuplicate = characters.some(
         (existing) =>
           existing.name.toLowerCase() === trimmedName.toLowerCase() &&
@@ -102,7 +109,7 @@ export function useRaidTracker() {
       setNewCharacterClass("");
       setShowCharacterForm(false);
     },
-    [characters, newCharacterClass, newCharacterName],
+    [MAX_CHARACTER_NAME_LENGTH, characters, newCharacterClass, newCharacterName],
   );
 
   const handleDungeonFormSubmit = useCallback(

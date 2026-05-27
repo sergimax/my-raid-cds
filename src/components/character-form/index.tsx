@@ -21,6 +21,8 @@ export function CharacterForm({
   onClassChange,
   onSubmit,
 }: CharacterFormProps) {
+  const MAX_CHARACTER_NAME_LENGTH = 12;
+
   return (
     <Box>
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
@@ -37,6 +39,10 @@ export function CharacterForm({
             }}
             required
             autoComplete="off"
+            slotProps={{
+              htmlInput: { maxLength: MAX_CHARACTER_NAME_LENGTH },
+            }}
+            helperText={`${name.length}/${MAX_CHARACTER_NAME_LENGTH}`}
           />
           <FormControl required>
             <InputLabel id="character-class-label">Class</InputLabel>
