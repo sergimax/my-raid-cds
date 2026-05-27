@@ -1,5 +1,6 @@
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import SportsScoreIcon from "@mui/icons-material/SportsScore";
 import DeleteIcon from "@mui/icons-material/Delete";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import {
   Box,
   IconButton,
@@ -296,6 +297,7 @@ export function RaidTrackerTable({
                   key={column.key}
                   label={column.label}
                   sortKey={column.sortKey}
+                  sortAriaLabel={column.label}
                   activeSortKey={sortKey}
                   sortDirection={sortDirection}
                   onSort={handleSort}
@@ -318,8 +320,9 @@ export function RaidTrackerTable({
               ),
             )}
             <SortableHeaderCell
-              label={COMPLETE_COLUMN.label}
+              label={<SportsScoreIcon fontSize="small" />}
               sortKey={COMPLETE_COLUMN.sortKey}
+              sortAriaLabel={COMPLETE_COLUMN.label}
               activeSortKey={sortKey}
               sortDirection={sortDirection}
               onSort={handleSort}
