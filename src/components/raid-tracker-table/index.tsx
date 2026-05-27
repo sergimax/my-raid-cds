@@ -11,6 +11,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useCallback, useMemo, useState } from "react";
 import { characterNameDisplaySx, type CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import {
@@ -21,20 +22,32 @@ import {
   getItemLevelTier,
   itemLevelTierClassName,
 } from "../../utils/item-level-tier.ts";
+import {
+  defaultSortDirectionForKey,
+  sortDungeons,
+  type DungeonSortKey,
+  type SortDirection,
+} from "../../utils/sort-dungeons.ts";
+import { SortableHeaderCell } from "./sortable-header-cell.tsx";
 import type { RaidTrackerTableProps } from "./types.ts";
 import "./styles.css";
 
 const STATIC_COLUMNS: ReadonlyArray<{
   key: keyof Pick<DungeonRecord, "name" | "size" | "difficulty" | "itemLevel">;
+  sortKey: DungeonSortKey;
   label: string;
 }> = [
-  { key: "name", label: "Dungeon name" },
-  { key: "size", label: "Size" },
-  { key: "difficulty", label: "Difficulty" },
-  { key: "itemLevel", label: "Item level" },
+  { key: "name", sortKey: "name", label: "Dungeon name" },
+  { key: "size", sortKey: "size", label: "Size" },
+  { key: "difficulty", sortKey: "difficulty", label: "Difficulty" },
+  { key: "itemLevel", sortKey: "itemLevel", label: "Item level" },
 ];
 
-const COMPLETE_COLUMN = { key: "complete" as const, label: "Complete" };
+const COMPLETE_COLUMN = {
+  key: "complete" as const,
+  sortKey: "completions" as const,
+  label: "Complete",
+};
 
 function formatDungeonCell(
   dungeon: DungeonRecord,
@@ -81,6 +94,34 @@ export function RaidTrackerTable({
 }: RaidTrackerTableProps) {
   const dungeonCount = dungeons.length;
   const characterCount = characters.length;
+  const [sortKey, setSortKey] = useState<DungeonSortKey>("itemLevel");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+
+  const handleSort = useCallback((nextSortKey: DungeonSortKey) => {
+    if (nextSortKey === sortKey) {
+      setSortDirection((previous) => (previous === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(nextSortKey);
+      setSortDirection(defaultSortDirectionForKey(nextSortKey));
+    }
+  }, [sortKey]);
+
+  const completionsByDungeonId = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const dungeon of dungeons) {
+      counts[dungeon.id] = countCompletedForDungeon(
+        dungeon.id,
+        characters,
+        dungeonToggles,
+      );
+    }
+    return counts;
+  }, [characters, dungeonToggles, dungeons]);
+
+  const sortedDungeons = useMemo(
+    () => sortDungeons(dungeons, sortKey, sortDirection, completionsByDungeonId),
+    [completionsByDungeonId, dungeons, sortDirection, sortKey],
+  );
 
   return (
     <TableContainer sx={{ overflowX: "auto" }}>
@@ -88,11 +129,23 @@ export function RaidTrackerTable({
         <TableHead>
           <TableRow>
             {STATIC_COLUMNS.map((column) => (
-              <TableCell key={column.key}>{column.label}</TableCell>
+              <SortableHeaderCell
+                key={column.key}
+                label={column.label}
+                sortKey={column.sortKey}
+                activeSortKey={sortKey}
+                sortDirection={sortDirection}
+                onSort={handleSort}
+              />
             ))}
-            <TableCell key={COMPLETE_COLUMN.key} align="center">
-              {COMPLETE_COLUMN.label}
-            </TableCell>
+            <SortableHeaderCell
+              label={COMPLETE_COLUMN.label}
+              sortKey={COMPLETE_COLUMN.sortKey}
+              activeSortKey={sortKey}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+              align="center"
+            />
             {characters.map((character: CharacterRecord) => (
               <TableCell key={character.id} align="center">
                 <Stack spacing={0.5} sx={{ alignItems: "center" }}>
@@ -154,7 +207,7 @@ export function RaidTrackerTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {dungeons.map((dungeon: DungeonRecord) => (
+          {sortedDungeons.map((dungeon: DungeonRecord) => (
             <TableRow key={dungeon.id} hover>
               {STATIC_COLUMNS.map((column) => (
                 <TableCell key={column.key}>
@@ -167,12 +220,7 @@ export function RaidTrackerTable({
               ))}
               <TableCell key={COMPLETE_COLUMN.key} align="center">
                 <Typography variant="body2" color="text.secondary">
-                  {countCompletedForDungeon(
-                    dungeon.id,
-                    characters,
-                    dungeonToggles,
-                  )}
-                  /{characterCount}
+                  {completionsByDungeonId[dungeon.id] ?? 0}/{characterCount}
                 </Typography>
               </TableCell>
               {characters.map((character: CharacterRecord) => (
