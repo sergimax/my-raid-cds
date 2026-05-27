@@ -1,3 +1,4 @@
+import type { SxProps, Theme } from "@mui/material";
 import { TableCell, TableSortLabel } from "@mui/material";
 import type { DungeonSortKey, SortDirection } from "../../utils/sort-dungeons.ts";
 
@@ -8,6 +9,7 @@ type SortableHeaderCellProps = {
   sortDirection: SortDirection;
   onSort: (sortKey: DungeonSortKey) => void;
   align?: "left" | "center" | "right";
+  sx?: SxProps<Theme>;
 };
 
 export function SortableHeaderCell({
@@ -17,11 +19,16 @@ export function SortableHeaderCell({
   sortDirection,
   onSort,
   align = "left",
+  sx,
 }: SortableHeaderCellProps) {
   const isActive = activeSortKey === sortKey;
 
   return (
-    <TableCell align={align} sortDirection={isActive ? sortDirection : false}>
+    <TableCell
+      align={align}
+      sortDirection={isActive ? sortDirection : false}
+      sx={sx}
+    >
       <TableSortLabel
         active={isActive}
         direction={isActive ? sortDirection : "asc"}

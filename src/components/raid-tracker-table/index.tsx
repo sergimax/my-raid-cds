@@ -50,6 +50,58 @@ const COMPLETE_COLUMN = {
   label: "Complete",
 };
 
+const PINNED_CELL_BASE_SX = {
+  position: "sticky",
+  zIndex: 1,
+  backgroundColor: "background.paper",
+  boxShadow: "1px 0 0 rgba(0,0,0,0.08)",
+} as const;
+
+// Keep these widths stable so sticky offsets work predictably.
+const PINNED_WIDTHS = {
+  actions: 44,
+  name: 220,
+  size: 72,
+  difficulty: 92,
+  itemLevel: 120,
+  complete: 90,
+} as const;
+
+const PINNED_LEFT = {
+  actions: 0,
+  name: PINNED_WIDTHS.actions,
+  size: PINNED_WIDTHS.actions + PINNED_WIDTHS.name,
+  difficulty: PINNED_WIDTHS.actions + PINNED_WIDTHS.name + PINNED_WIDTHS.size,
+  itemLevel:
+    PINNED_WIDTHS.actions +
+    PINNED_WIDTHS.name +
+    PINNED_WIDTHS.size +
+    PINNED_WIDTHS.difficulty,
+  complete:
+    PINNED_WIDTHS.actions +
+    PINNED_WIDTHS.name +
+    PINNED_WIDTHS.size +
+    PINNED_WIDTHS.difficulty +
+    PINNED_WIDTHS.itemLevel,
+} as const;
+
+function pinnedCellSx(left: number, width: number) {
+  return {
+    ...PINNED_CELL_BASE_SX,
+    left,
+    width,
+    minWidth: width,
+    maxWidth: width,
+  } as const;
+}
+
+function pinnedHeaderCellSx(left: number, width: number) {
+  return {
+    ...pinnedCellSx(left, width),
+    zIndex: 4,
+  } as const;
+}
+
 function formatDungeonCell(
   dungeon: DungeonRecord,
   columnKey: (typeof STATIC_COLUMNS)[number]["key"],
@@ -169,6 +221,10 @@ export function RaidTrackerTable({
       <Table className="raid-tracker-table" size="small" stickyHeader>
         <TableHead>
           <TableRow>
+            <TableCell
+              sx={pinnedHeaderCellSx(PINNED_LEFT.actions, PINNED_WIDTHS.actions)}
+              aria-label="Row actions"
+            />
             {STATIC_COLUMNS.map((column) => (
               <SortableHeaderCell
                 key={column.key}
@@ -177,6 +233,23 @@ export function RaidTrackerTable({
                 activeSortKey={sortKey}
                 sortDirection={sortDirection}
                 onSort={handleSort}
+                sx={
+                  column.key === "name"
+                    ? pinnedHeaderCellSx(PINNED_LEFT.name, PINNED_WIDTHS.name)
+                    : column.key === "size"
+                      ? pinnedHeaderCellSx(PINNED_LEFT.size, PINNED_WIDTHS.size)
+                      : column.key === "difficulty"
+                        ? pinnedHeaderCellSx(
+                            PINNED_LEFT.difficulty,
+                            PINNED_WIDTHS.difficulty,
+                          )
+                        : column.key === "itemLevel"
+                          ? pinnedHeaderCellSx(
+                              PINNED_LEFT.itemLevel,
+                              PINNED_WIDTHS.itemLevel,
+                            )
+                          : undefined
+                }
               />
             ))}
             <SortableHeaderCell
@@ -186,6 +259,7 @@ export function RaidTrackerTable({
               sortDirection={sortDirection}
               onSort={handleSort}
               align="center"
+              sx={pinnedHeaderCellSx(PINNED_LEFT.complete, PINNED_WIDTHS.complete)}
             />
             {characters.map((character: CharacterRecord) => (
               <TableCell key={character.id} align="center">
@@ -257,14 +331,46 @@ export function RaidTrackerTable({
                 </Stack>
               </TableCell>
             ))}
-            <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {sortedDungeons.map((dungeon: DungeonRecord) => (
             <TableRow key={dungeon.id} hover>
+              <TableCell sx={pinnedCellSx(PINNED_LEFT.actions, PINNED_WIDTHS.actions)}>
+                <Button
+                  size="small"
+                  color="error"
+                  variant="text"
+                  onClick={() => {
+                    onDeleteDungeon(dungeon.id);
+                  }}
+                  aria-label="Delete dungeon"
+                  sx={{ minWidth: 0, padding: 0.5, lineHeight: 1 }}
+                >
+                  🗑️
+                </Button>
+              </TableCell>
               {STATIC_COLUMNS.map((column) => (
-                <TableCell key={column.key}>
+                <TableCell
+                  key={column.key}
+                  sx={
+                    column.key === "name"
+                      ? pinnedCellSx(PINNED_LEFT.name, PINNED_WIDTHS.name)
+                      : column.key === "size"
+                        ? pinnedCellSx(PINNED_LEFT.size, PINNED_WIDTHS.size)
+                        : column.key === "difficulty"
+                          ? pinnedCellSx(
+                              PINNED_LEFT.difficulty,
+                              PINNED_WIDTHS.difficulty,
+                            )
+                          : column.key === "itemLevel"
+                            ? pinnedCellSx(
+                                PINNED_LEFT.itemLevel,
+                                PINNED_WIDTHS.itemLevel,
+                              )
+                            : undefined
+                  }
+                >
                   {column.key === "itemLevel" ? (
                     <ItemLevelCell itemLevels={dungeon.itemLevel} />
                   ) : (
@@ -272,7 +378,11 @@ export function RaidTrackerTable({
                   )}
                 </TableCell>
               ))}
-              <TableCell key={COMPLETE_COLUMN.key} align="center">
+              <TableCell
+                key={COMPLETE_COLUMN.key}
+                align="center"
+                sx={pinnedCellSx(PINNED_LEFT.complete, PINNED_WIDTHS.complete)}
+              >
                 <Typography variant="body2" color="text.secondary">
                   {completionsByDungeonId[dungeon.id] ?? 0}/{characterCount}
                 </Typography>
@@ -294,17 +404,6 @@ export function RaidTrackerTable({
                   />
                 </TableCell>
               ))}
-              <TableCell align="right">
-                <Button
-                  size="small"
-                  color="error"
-                  onClick={() => {
-                    onDeleteDungeon(dungeon.id);
-                  }}
-                >
-                  Delete dungeon
-                </Button>
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
