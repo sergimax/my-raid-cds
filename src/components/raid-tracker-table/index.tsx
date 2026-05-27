@@ -69,6 +69,8 @@ const PINNED_WIDTHS = {
   complete: 78,
 } as const;
 
+const CHARACTER_COLUMN_WIDTH = 132;
+
 const PINNED_LEFT = {
   actions: 0,
   name: PINNED_WIDTHS.actions,
@@ -103,6 +105,22 @@ function pinnedHeaderCellSx(left: number, width: number) {
     zIndex: 4,
   } as const;
 }
+
+const CHARACTER_HEADER_CELL_SX = {
+  width: CHARACTER_COLUMN_WIDTH,
+  minWidth: CHARACTER_COLUMN_WIDTH,
+  maxWidth: CHARACTER_COLUMN_WIDTH,
+  paddingLeft: "6px",
+  paddingRight: "6px",
+} as const;
+
+const CHARACTER_BODY_CELL_SX = {
+  width: CHARACTER_COLUMN_WIDTH,
+  minWidth: CHARACTER_COLUMN_WIDTH,
+  maxWidth: CHARACTER_COLUMN_WIDTH,
+  paddingLeft: "6px",
+  paddingRight: "6px",
+} as const;
 
 function formatDungeonCell(
   dungeon: DungeonRecord,
@@ -264,7 +282,11 @@ export function RaidTrackerTable({
               sx={pinnedHeaderCellSx(PINNED_LEFT.complete, PINNED_WIDTHS.complete)}
             />
             {characters.map((character: CharacterRecord) => (
-              <TableCell key={character.id} align="center">
+              <TableCell
+                key={character.id}
+                align="center"
+                sx={CHARACTER_HEADER_CELL_SX}
+              >
                 <Stack spacing={0.5} sx={{ alignItems: "center" }}>
                   <TableSortLabel
                     active={characterSortId === character.id}
@@ -397,7 +419,11 @@ export function RaidTrackerTable({
                 </Typography>
               </TableCell>
               {characters.map((character: CharacterRecord) => (
-                <TableCell key={character.id} align="center">
+                <TableCell
+                  key={character.id}
+                  align="center"
+                  sx={CHARACTER_BODY_CELL_SX}
+                >
                   <Switch
                     size="small"
                     checked={
