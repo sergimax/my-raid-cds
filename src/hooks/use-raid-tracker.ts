@@ -200,11 +200,19 @@ export function useRaidTracker() {
   }, [dungeonToggles]);
 
   const toggleCharacterForm = useCallback(() => {
-    setShowCharacterForm((previous) => !previous);
+    setShowCharacterForm((previous) => {
+      const next = !previous;
+      if (next) setShowDungeonForm(false);
+      return next;
+    });
   }, []);
 
   const toggleDungeonForm = useCallback(() => {
-    setShowDungeonForm((previous) => !previous);
+    setShowDungeonForm((previous) => {
+      const next = !previous;
+      if (next) setShowCharacterForm(false);
+      return next;
+    });
   }, []);
 
   const setNewCharacterNameWithClear = useCallback((name: string) => {
