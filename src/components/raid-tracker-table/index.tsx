@@ -1,3 +1,5 @@
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
   Button,
@@ -341,7 +343,7 @@ export function RaidTrackerTable({
                         }}
                         aria-label={`Reset toggles for ${character.name}`}
                       >
-                        🔄️
+                        <RestartAltIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title={`Remove character ${character.name}`}>
@@ -353,7 +355,7 @@ export function RaidTrackerTable({
                         }}
                         aria-label={`Remove character ${character.name}`}
                       >
-                        ❌
+                        <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   </Stack>
@@ -367,18 +369,16 @@ export function RaidTrackerTable({
             <TableRow key={dungeon.id} hover>
               <TableCell sx={pinnedCellSx(PINNED_LEFT.actions, PINNED_WIDTHS.actions)}>
                 <Tooltip title={`Delete dungeon: ${dungeon.name}`}>
-                  <Button
+                  <IconButton
                     size="small"
                     color="error"
-                    variant="text"
                     onClick={() => {
                       onDeleteDungeon(dungeon.id);
                     }}
                     aria-label={`Delete dungeon: ${dungeon.name}`}
-                    sx={{ minWidth: 0, padding: 0.5, lineHeight: 1 }}
                   >
-                    🗑️
-                  </Button>
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
                 </Tooltip>
               </TableCell>
               {STATIC_COLUMNS.map((column) => (
