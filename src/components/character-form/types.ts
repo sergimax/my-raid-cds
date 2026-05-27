@@ -1,10 +1,11 @@
+import type { SubmitEvent } from "react";
 import type { CharacterClass } from "../../types/characters.ts";
 
 export type CharacterFormProps = {
-  characterName: string;
-  setCharacterName: (value: string) => void;
+  name: string;
   characterClass: CharacterClass | "";
-  setCharacterClass: (value: CharacterClass | "") => void;
-  onSubmit: (event: React.FormEvent) => void;
-  duplicateError?: string;
+  error: string;
+  onNameChange: (name: string) => void;
+  onClassChange: (characterClass: CharacterClass | "") => void;
+  onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
 };

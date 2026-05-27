@@ -1,13 +1,12 @@
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 
-export type DungeonTableProps = {
-  dungeons: DungeonRecord[];
+export type RaidTrackerTableProps = {
   characters: CharacterRecord[];
+  dungeons: DungeonRecord[];
   dungeonToggles: DungeonToggles;
   onDungeonToggle: (characterId: string, dungeonId: string) => void;
+  onDeleteCharacter: (characterId: string) => void;
   onDeleteDungeon: (dungeonId: string) => void;
-  onAddFromTemplate?: () => void;
-  onResetCharacter: (characterId: string) => void;
-  onDeleteCharacter: (id: string) => void;
+  onResetCharacterToggles: (characterId: string) => void;
 };

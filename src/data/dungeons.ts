@@ -1,5 +1,5 @@
 import type { Dungeon } from "../types/dungeons.ts";
-import { DungeonMode } from "../types/dungeons.ts";
+import { DungeonDifficulty } from "../types/dungeons.ts";
 
 /** WotLK raids: Russian (in-game) name + English (original) name. */
 export const RaidNames = {
@@ -27,126 +27,126 @@ export function formatRaidNameRuWithEn(ruName: string): string {
 const R = RaidNames;
 
 export const DungeonList: Array<Dungeon> = [
-  { name: R.naxxramas.ru, size: 10, itemLevel: [200], mode: DungeonMode.NORMAL },
-  { name: R.naxxramas.ru, size: 25, itemLevel: [213], mode: DungeonMode.NORMAL },
+  { name: R.naxxramas.ru, size: 10, itemLevel: [200], difficulty: DungeonDifficulty.NORMAL },
+  { name: R.naxxramas.ru, size: 25, itemLevel: [213], difficulty: DungeonDifficulty.NORMAL },
   {
     name: R.obsidianSanctum.ru,
     size: 10,
     itemLevel: [200, 213],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.obsidianSanctum.ru,
     size: 25,
     itemLevel: [213, 226],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.onyxiasLair.ru,
     size: 10,
     itemLevel: [232],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.onyxiasLair.ru,
     size: 25,
     itemLevel: [245],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.vaultOfArchavon.ru,
     size: 10,
     itemLevel: [232, 251],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.vaultOfArchavon.ru,
     size: 25,
     itemLevel: [245, 264],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.trialOfTheCrusader.ru,
     size: 10,
     itemLevel: [232],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.trialOfTheCrusader.ru,
     size: 10,
     itemLevel: [245],
-    mode: DungeonMode.HEROIC,
+    difficulty: DungeonDifficulty.HEROIC,
   },
   {
     name: R.trialOfTheCrusader.ru,
     size: 25,
     itemLevel: [245],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.trialOfTheCrusader.ru,
     size: 25,
     itemLevel: [258],
-    mode: DungeonMode.HEROIC,
+    difficulty: DungeonDifficulty.HEROIC,
   },
   {
     name: R.ulduar.ru,
     size: 10,
     itemLevel: [219, 232],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.ulduar.ru,
     size: 25,
     itemLevel: [226, 239],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.icecrownCitadel.ru,
     size: 10,
     itemLevel: [251, 258],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.icecrownCitadel.ru,
     size: 10,
     itemLevel: [264, 271],
-    mode: DungeonMode.HEROIC,
+    difficulty: DungeonDifficulty.HEROIC,
   },
   {
     name: R.icecrownCitadel.ru,
     size: 25,
     itemLevel: [264, 271],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.icecrownCitadel.ru,
     size: 25,
     itemLevel: [277, 284],
-    mode: DungeonMode.HEROIC,
+    difficulty: DungeonDifficulty.HEROIC,
   },
   {
     name: R.rubySanctum.ru,
     size: 10,
     itemLevel: [258],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.rubySanctum.ru,
     size: 10,
     itemLevel: [271],
-    mode: DungeonMode.HEROIC,
+    difficulty: DungeonDifficulty.HEROIC,
   },
   {
     name: R.rubySanctum.ru,
     size: 25,
     itemLevel: [271],
-    mode: DungeonMode.NORMAL,
+    difficulty: DungeonDifficulty.NORMAL,
   },
   {
     name: R.rubySanctum.ru,
     size: 25,
     itemLevel: [284],
-    mode: DungeonMode.HEROIC,
+    difficulty: DungeonDifficulty.HEROIC,
   },
 ];

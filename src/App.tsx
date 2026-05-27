@@ -1,105 +1,89 @@
 import {
   AppFooter,
+  AppHeader,
+  AppIntro,
   CharacterForm,
   DungeonForm,
-  DungeonTable,
+  RaidTrackerTable,
+  TrackerControls,
 } from "./components/index.ts";
-import { useRaidTracker } from "./hooks/use-raid-tracker.ts";
 import "./App.css";
+import { Alert, Container, Stack } from "@mui/material";
+import { useRaidTracker } from "./hooks/use-raid-tracker.ts";
 
 function App() {
-  const {
-    characterName,
-    setCharacterName,
-    characterClass,
-    setCharacterClass,
-    characterError,
-    handleAddCharacter,
-    showForms,
-    toggleShowForms,
-    characters,
-    dungeons,
-    dungeonToggles,
-    storageError,
-    handleDeleteCharacter,
-    handleDungeonToggle,
-    handleAddDungeon,
-    handleAddFromTemplate,
-    handleDeleteDungeon,
-    handleResetDungeons,
-    handleResetCharacter,
-    canResetDungeons,
-  } = useRaidTracker();
+  const tracker = useRaidTracker();
+
+  const showIntro =
+    tracker.characters.length === 0 && tracker.dungeons.length === 0;
 
   return (
-    <>
-      <header className="app-header">
-        <h1>My Raid CDs</h1>
-        <div className="app-header-actions">
-          <button
-            type="button"
-            className="form-toggle-btn"
-            onClick={toggleShowForms}
-            aria-expanded={showForms}
-          >
-            {showForms ? "Hide forms" : "Add new"}
-          </button>
-          <button
-            type="button"
-            className={`reset-dungeons-btn ${!canResetDungeons ? "reset-btn--inactive" : ""}`}
-            onClick={handleResetDungeons}
-            disabled={!canResetDungeons}
-            aria-label="Reset all cooldown toggles"
-          >
-            Reset dungeons
-          </button>
-        </div>
-      </header>
-      {storageError && (
-        <div className="storage-error" role="alert">
-          {storageError}
-        </div>
-      )}
-      <main>
-        <section className="character-section">
-          {characters.length === 0 && (
-            <p className="empty-state" role="status">
-              Add a character to get started
-            </p>
-          )}
-          {showForms && (
+    <div className="app-shell">
+      <Container
+        className="app-main"
+        component="main"
+        maxWidth={false}
+        disableGutters
+      >
+        <Stack spacing={2}>
+          <AppHeader />
+          <AppIntro visible={showIntro} />
+
+          {tracker.storageError ? (
+            <Alert severity="error">{tracker.storageError}</Alert>
+          ) : null}
+
+          <TrackerControls
+            showCharacterForm={tracker.showCharacterForm}
+            showDungeonForm={tracker.showDungeonForm}
+            onToggleCharacterForm={tracker.toggleCharacterForm}
+            onToggleDungeonForm={tracker.toggleDungeonForm}
+            onResetAllToggles={tracker.handleResetAllToggles}
+            resetAllTogglesDisabled={!tracker.canResetAllToggles}
+            showAddFromTemplate={tracker.dungeons.length === 0}
+            onAddFromTemplate={tracker.handleAddFromTemplate}
+          />
+
+          {tracker.showCharacterForm ? (
             <CharacterForm
-              characterName={characterName}
-              setCharacterName={setCharacterName}
-              characterClass={characterClass}
-              setCharacterClass={setCharacterClass}
-              onSubmit={handleAddCharacter}
-              duplicateError={characterError}
+              name={tracker.newCharacterName}
+              characterClass={tracker.newCharacterClass}
+              error={tracker.characterFormError}
+              onNameChange={tracker.setNewCharacterName}
+              onClassChange={tracker.setNewCharacterClass}
+              onSubmit={tracker.handleCharacterFormSubmit}
             />
-          )}
-        </section>
-        <div className="dungeon-section">
-          <div className="dungeon-section-header">
-            {showForms && (
-              <DungeonForm onSubmit={handleAddDungeon} existingDungeons={dungeons} />
-            )}
-          </div>
-          <div className="dungeon-table-wrapper">
-            <DungeonTable
-              dungeons={dungeons}
-              characters={characters}
-              dungeonToggles={dungeonToggles}
-              onDungeonToggle={handleDungeonToggle}
-              onDeleteDungeon={handleDeleteDungeon}
-              onAddFromTemplate={handleAddFromTemplate}
-              onResetCharacter={handleResetCharacter}
-              onDeleteCharacter={handleDeleteCharacter}
+          ) : null}
+
+          {tracker.showDungeonForm ? (
+            <DungeonForm
+              name={tracker.newDungeonName}
+              size={tracker.newDungeonSize}
+              itemLevelText={tracker.newDungeonItemLevelText}
+              difficulty={tracker.newDungeonDifficulty}
+              error={tracker.dungeonFormError}
+              onNameChange={tracker.setNewDungeonName}
+              onSizeChange={tracker.setNewDungeonSize}
+              onItemLevelTextChange={tracker.setNewDungeonItemLevelText}
+              onDifficultyChange={tracker.setNewDungeonDifficulty}
+              onSubmit={tracker.handleDungeonFormSubmit}
             />
-          </div>
-        </div>
-      </main>
+          ) : null}
+
+          <RaidTrackerTable
+            characters={tracker.characters}
+            dungeons={tracker.dungeons}
+            dungeonToggles={tracker.dungeonToggles}
+            onDungeonToggle={tracker.handleDungeonToggle}
+            onDeleteCharacter={tracker.handleDeleteCharacter}
+            onDeleteDungeon={tracker.handleDeleteDungeon}
+            onResetCharacterToggles={tracker.handleResetCharacterToggles}
+          />
+        </Stack>
+      </Container>
+
       <AppFooter />
-    </>
+    </div>
   );
 }
 

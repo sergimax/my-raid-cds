@@ -1,160 +1,111 @@
-import { useId, useMemo, useRef, useState } from "react";
-import { DungeonList, formatRaidNameRuWithEn } from "../../data/dungeons.ts";
-import { DungeonMode, DungeonSizes, type Dungeon, type DungeonRecord } from "../../types/dungeons.ts";
-import type { DungeonFormProps } from "./types";
-import "./styles.css";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import {
+  DungeonDifficulty,
+  DungeonSizes,
+  type DungeonDifficulty as DungeonDifficultyValue,
+  type DungeonSize,
+} from "../../types/dungeons.ts";
+import type { DungeonFormProps } from "./types.ts";
 
-function itemLevelsEqual(a: number[], b: number[]): boolean {
-  if (a.length !== b.length) return false;
-  return a.every((v, i) => v === b[i]);
-}
-
-function dungeonMatchesRow(a: Dungeon, row: DungeonRecord): boolean {
+export function DungeonForm({
+  name,
+  size,
+  itemLevelText,
+  difficulty,
+  error,
+  onNameChange,
+  onSizeChange,
+  onItemLevelTextChange,
+  onDifficultyChange,
+  onSubmit,
+}: DungeonFormProps) {
   return (
-    a.name === row.name &&
-    a.size === row.size &&
-    a.mode === row.mode &&
-    itemLevelsEqual(a.itemLevel, row.itemLevel)
-  );
-}
-
-function isPresetInTable(preset: Dungeon, dungeons: DungeonRecord[]): boolean {
-  return dungeons.some((d) => dungeonMatchesRow(preset, d));
-}
-
-function formatPresetLabel(d: Dungeon): string {
-  const ilvl = d.itemLevel.join("/");
-  const namePart = formatRaidNameRuWithEn(d.name);
-  return `${namePart} · ${d.size} · ${d.mode} · ${ilvl}`;
-}
-
-function applyDungeonToForm(form: HTMLFormElement, d: Dungeon): void {
-  const nameInput = form.elements.namedItem("dungeonName") as HTMLInputElement | null;
-  const sizeSelect = form.elements.namedItem("dungeonSize") as HTMLSelectElement | null;
-  const itemLevelInput = form.elements.namedItem("itemLevel") as HTMLInputElement | null;
-  const modeSelect = form.elements.namedItem("dungeonMode") as HTMLSelectElement | null;
-  if (nameInput) nameInput.value = d.name;
-  if (sizeSelect) sizeSelect.value = String(d.size);
-  if (itemLevelInput) itemLevelInput.value = d.itemLevel.join(", ");
-  if (modeSelect) modeSelect.value = d.mode;
-}
-
-export function DungeonForm({ onSubmit, existingDungeons }: DungeonFormProps) {
-  const id = useId();
-  const formRef = useRef<HTMLFormElement>(null);
-  const [presetIndex, setPresetIndex] = useState("");
-  const presetId = `${id}-preset`;
-  const nameId = `${id}-name`;
-  const sizeId = `${id}-size`;
-  const itemLevelId = `${id}-item-level`;
-  const modeId = `${id}-mode`;
-
-  const availablePresetIndices = useMemo(
-    () =>
-      DungeonList.map((d, i) => ({ d, i })).filter(
-        ({ d }) => !isPresetInTable(d, existingDungeons)
-      ),
-    [existingDungeons]
-  );
-
-  /** Keeps <select> value in sync when the chosen preset is no longer listed. */
-  const effectivePresetIndex = useMemo(() => {
-    if (presetIndex === "") return "";
-    const idx = Number(presetIndex);
-    const preset = DungeonList[idx];
-    return preset && !isPresetInTable(preset, existingDungeons)
-      ? presetIndex
-      : "";
-  }, [presetIndex, existingDungeons]);
-
-  const handlePresetChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const indexStr = event.target.value;
-    setPresetIndex(indexStr);
-    if (indexStr === "" || !formRef.current) return;
-    const idx = Number(indexStr);
-    const d = DungeonList[idx];
-    if (!d) return;
-    applyDungeonToForm(formRef.current, d);
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const name = (formData.get("dungeonName") as string)?.trim();
-    const size = Number(formData.get("dungeonSize")) as DungeonRecord["size"];
-    const itemLevelStr = (formData.get("itemLevel") as string)?.trim();
-    const mode = formData.get("dungeonMode") === "Heroic" ? DungeonMode.HEROIC : DungeonMode.NORMAL;
-
-    if (!name) return;
-    if (!DungeonSizes.includes(size)) return;
-
-    const itemLevel = itemLevelStr
-      ? itemLevelStr.split(/[\s,]+/).map(Number).filter(Number.isFinite)
-      : [];
-
-    onSubmit({ name, size, itemLevel, mode });
-    form.reset();
-    setPresetIndex("");
-  };
-
-  return (
-    <form ref={formRef} className="dungeon-form" onSubmit={handleSubmit}>
-      <label className="dungeon-form-preset-label" htmlFor={presetId}>
-        Preset
-        <select
-          id={presetId}
-          name="presetIndex"
-          value={effectivePresetIndex}
-          onChange={handlePresetChange}
-        >
-          <option value="">Custom (manual)</option>
-          {availablePresetIndices.map(({ d, i }) => (
-            <option key={i} value={String(i)}>
-              {formatPresetLabel(d)}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label htmlFor={nameId}>
-        Name
-        <input
-          id={nameId}
-          name="dungeonName"
-          type="text"
-          placeholder="Dungeon name"
-          required
-        />
-      </label>
-      <label htmlFor={sizeId}>
-        Size
-        <select id={sizeId} name="dungeonSize" required>
-          {DungeonSizes.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label htmlFor={itemLevelId}>
-        Item level
-        <input
-          id={itemLevelId}
-          name="itemLevel"
-          type="text"
-          placeholder="200, 213 or 200"
-        />
-      </label>
-      <label htmlFor={modeId}>
-        Mode
-        <select id={modeId} name="dungeonMode">
-          <option value={DungeonMode.NORMAL}>Normal</option>
-          <option value={DungeonMode.HEROIC}>Heroic</option>
-        </select>
-      </label>
-      <button type="submit" className="add-dungeon-btn">
-        Add dungeon
-      </button>
-    </form>
+    <Box>
+      <Typography variant="subtitle1" sx={{ mb: 1 }}>
+        New dungeon
+      </Typography>
+      <form onSubmit={onSubmit} noValidate>
+        <Stack spacing={2} sx={{ maxWidth: 480 }}>
+          <TextField
+            label="Name"
+            name="dungeonName"
+            value={name}
+            onChange={(event) => {
+              onNameChange(event.target.value);
+            }}
+            required
+            autoComplete="off"
+          />
+          <FormControl required>
+            <InputLabel id="dungeon-size-label">Size</InputLabel>
+            <Select
+              labelId="dungeon-size-label"
+              label="Size"
+              name="dungeonSize"
+              value={size}
+              onChange={(event) => {
+                onSizeChange(Number(event.target.value) as DungeonSize);
+              }}
+            >
+              {DungeonSizes.map((sizeOption) => (
+                <MenuItem key={sizeOption} value={sizeOption}>
+                  {sizeOption}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
+            label="Item levels"
+            name="dungeonItemLevels"
+            value={itemLevelText}
+            onChange={(event) => {
+              onItemLevelTextChange(event.target.value);
+            }}
+            helperText="One or more values, separated by / or comma (e.g. 200 or 200 / 213)."
+            required
+            autoComplete="off"
+          />
+          <FormControl>
+            <InputLabel id="dungeon-difficulty-label">Difficulty</InputLabel>
+            <Select
+              labelId="dungeon-difficulty-label"
+              label="Difficulty"
+              name="dungeonDifficulty"
+              value={difficulty}
+              onChange={(event) => {
+                onDifficultyChange(
+                  event.target.value as DungeonDifficultyValue,
+                );
+              }}
+            >
+              <MenuItem value={DungeonDifficulty.NORMAL}>
+                {DungeonDifficulty.NORMAL}
+              </MenuItem>
+              <MenuItem value={DungeonDifficulty.HEROIC}>
+                {DungeonDifficulty.HEROIC}
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="contained" color="primary" type="submit">
+            Add dungeon
+          </Button>
+          {error ? (
+            <Typography color="error" variant="body2">
+              {error}
+            </Typography>
+          ) : null}
+        </Stack>
+      </form>
+    </Box>
   );
 }

@@ -1,64 +1,93 @@
-import { useId } from "react";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Classes } from "../../types/characters.ts";
-import type { CharacterFormProps } from "./types";
-import "./styles.css";
+import { ClassOptionLabel } from "../class-option-label/index.tsx";
+import type { CharacterFormProps } from "./types.ts";
 
 export function CharacterForm({
-  characterName,
-  setCharacterName,
+  name,
   characterClass,
-  setCharacterClass,
+  error,
+  onNameChange,
+  onClassChange,
   onSubmit,
-  duplicateError,
 }: CharacterFormProps) {
-  const id = useId();
-  const nameId = `${id}-name`;
-  const classId = `${id}-class`;
+  const MAX_CHARACTER_NAME_LENGTH = 12;
 
   return (
-    <form className="character-form" onSubmit={onSubmit}>
-      {duplicateError && (
-        <p className="character-form-error" role="alert">
-          {duplicateError}
-        </p>
-      )}
-      <label htmlFor={nameId}>
-        Name
-        <input
-          id={nameId}
-          type="text"
-          value={characterName}
-          onChange={(event) => setCharacterName(event.target.value)}
-          placeholder="Character name"
-          required
-        />
-      </label>
-      <label htmlFor={classId}>
-        Class
-        <select
-          id={classId}
-          value={characterClass ? characterClass.name : ""}
-          onChange={(event) => {
-            const c = Classes.find((cls) => cls.name === event.target.value);
-            setCharacterClass(c ?? "");
-          }}
-          required
-        >
-          <option value="">Select class</option>
-          {Classes.map((c) => (
-            <option
-              key={c.name}
-              value={c.name}
-              style={{ color: c.color ? `#${c.color}` : undefined }}
+    <Box>
+      <Typography variant="subtitle1" sx={{ mb: 1 }}>
+        New character
+      </Typography>
+      <form onSubmit={onSubmit} noValidate>
+        <Stack spacing={2} sx={{ maxWidth: 480 }}>
+          <TextField
+            label="Name"
+            name="characterName"
+            value={name}
+            onChange={(event) => {
+              onNameChange(event.target.value);
+            }}
+            required
+            autoComplete="off"
+            slotProps={{
+              htmlInput: { maxLength: MAX_CHARACTER_NAME_LENGTH },
+            }}
+            helperText={`${name.length}/${MAX_CHARACTER_NAME_LENGTH}`}
+          />
+          <FormControl required>
+            <InputLabel id="character-class-label">Class</InputLabel>
+            <Select
+              labelId="character-class-label"
+              label="Class"
+              name="characterClass"
+              value={characterClass === "" ? "" : characterClass.name}
+              renderValue={(selectedName) => {
+                if (!selectedName) {
+                  return "";
+                }
+                const selectedClass = Classes.find(
+                  (option) => option.name === selectedName,
+                );
+                if (!selectedClass) {
+                  return selectedName;
+                }
+                return <ClassOptionLabel characterClass={selectedClass} />;
+              }}
+              onChange={(event) => {
+                const selectedName = event.target.value;
+                const selectedClass = Classes.find(
+                  (option) => option.name === selectedName,
+                );
+                onClassChange(selectedClass ?? "");
+              }}
             >
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <button type="submit" className="add-character-btn">
-        Add character
-      </button>
-    </form>
+              {Classes.map((option) => (
+                <MenuItem key={option.name} value={option.name}>
+                  <ClassOptionLabel characterClass={option} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Button variant="contained" color="primary" type="submit">
+            Add character
+          </Button>
+          {error ? (
+            <Typography color="error" variant="body2">
+              {error}
+            </Typography>
+          ) : null}
+        </Stack>
+      </form>
+    </Box>
   );
 }

@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-05-28
+
+### Added
+
+- **Raid tracker table (`RaidTrackerTable`):** MUI table with sticky header, horizontal scroll for character columns, and a pinned left block (delete, dungeon name, size, mode, item level, completion count).
+- **Sorting:** Click column headers to sort by dungeon name, size, mode, item level (starting ilvl), or completion count; click a character header to sort rows by that character’s toggles (completed first / last).
+- **Dungeon name search:** Filter field in the dungeon name header (substring match, case-insensitive).
+- **GearScore-style colors:** Item level values and dungeon names use the same tier palette (grey → blue → violet → orange → red).
+- **Completion counts in the table:** Per-character `done/total` under each header; per-dungeon `done/total` in the completion column (no separate summary panel).
+- **Icon actions:** MUI icons with tooltips — delete dungeon (`Delete`), reset character toggles (`RestartAlt`), remove character (`Delete`); completions column header uses `SportsScore`.
+- **Add from template** when the dungeon list is empty (toolbar).
+- **Character name limit:** Max 12 characters in the add-character form (input cap + submit validation).
+- **`@mui/icons-material`** for table and toolbar icon buttons.
+
+### Changed
+
+- **App wired to `useRaidTracker`:** Characters, dungeons, toggles, and forms use the shared hook; data persists to `localStorage` (debounced save).
+- **Layout:** Main content is full width (not centered); footer stays centered.
+- **Add forms:** Only one of character or dungeon form can be open at a time; successful submit closes the form.
+- **Mode column:** Table header label is **Mode** (values remain Normal / Heroic); stored field is still `difficulty`.
+- **Compact table:** Tighter cell padding, small switches, fixed character column width (fits 12-character names + class icon).
+- **WoW class styling:** Character headers and class picker show icon + class-colored name (`characterNameDisplaySx`).
+
+### Removed
+
+- **Completion summary** block above the table (counts live in the table headers and completion column).
+
+### Fixed
+
+- **localStorage:** Load/save dungeons with `difficulty`; older saves that only had **`mode`** map to Normal or Heroic on import.
+- **MUI buttons:** Global `button` styles in `index.css` no longer override Material UI button hover/background (fixes white-on-white hover on toolbar actions).
+
 ## [1.2.0] - 2026-05-12
 
 ### Changed

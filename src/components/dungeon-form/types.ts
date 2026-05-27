@@ -1,6 +1,18 @@
-import type { DungeonRecord } from "../../types/dungeons.ts";
+import type { SubmitEvent } from "react";
+import type {
+  DungeonDifficulty,
+  DungeonSize,
+} from "../../types/dungeons.ts";
 
 export type DungeonFormProps = {
-  onSubmit: (dungeon: Omit<DungeonRecord, "id">) => void;
-  existingDungeons: DungeonRecord[];
+  name: string;
+  size: DungeonSize;
+  itemLevelText: string;
+  difficulty: DungeonDifficulty;
+  error: string;
+  onNameChange: (name: string) => void;
+  onSizeChange: (size: DungeonSize) => void;
+  onItemLevelTextChange: (text: string) => void;
+  onDifficultyChange: (difficulty: DungeonDifficulty) => void;
+  onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
 };

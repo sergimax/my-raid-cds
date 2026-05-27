@@ -1,11 +1,11 @@
-export const DungeonMode = {
-  HEROIC: "Heroic",
+export const DungeonDifficulty = {
   NORMAL: "Normal",
+  HEROIC: "Heroic",
 } as const;
 
-export type DungeonMode = (typeof DungeonMode)[keyof typeof DungeonMode];
+export type DungeonDifficulty = (typeof DungeonDifficulty)[keyof typeof DungeonDifficulty];
 
-export const DungeonSizes = [10, 20, 25, 40] as const;
+export const DungeonSizes = [5, 10, 20, 25, 40] as const;
 
 export type DungeonSize = (typeof DungeonSizes)[number];
 
@@ -13,7 +13,7 @@ export type Dungeon = {
   name: string;
   size: DungeonSize;
   itemLevel: Array<number>;
-  mode: DungeonMode;
+  difficulty: DungeonDifficulty;
 };
 
 export type DungeonRecord = Dungeon & { id: string };
