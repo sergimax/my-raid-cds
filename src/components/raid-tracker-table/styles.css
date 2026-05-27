@@ -52,3 +52,22 @@
   color: var(--mui-palette-text-secondary, #71717a);
   font-weight: 400;
 }
+
+/* Compact table density */
+.raid-tracker-table .MuiTableCell-sizeSmall {
+  padding: 4px 8px;
+}
+
+.raid-tracker-table .MuiTableCell-head {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.raid-tracker-table .MuiTableSortLabel-root {
+  font-size: 0.85rem;
+}
+
+.raid-tracker-table .MuiTableSortLabel-icon {
+  font-size: 1rem;
+  margin-left: 2px;
+}

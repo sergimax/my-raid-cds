@@ -59,12 +59,12 @@ const PINNED_CELL_BASE_SX = {
 
 // Keep these widths stable so sticky offsets work predictably.
 const PINNED_WIDTHS = {
-  actions: 44,
-  name: 220,
-  size: 72,
-  difficulty: 92,
-  itemLevel: 120,
-  complete: 90,
+  actions: 36,
+  name: 200,
+  size: 60,
+  difficulty: 84,
+  itemLevel: 104,
+  complete: 78,
 } as const;
 
 const PINNED_LEFT = {
@@ -390,6 +390,7 @@ export function RaidTrackerTable({
               {characters.map((character: CharacterRecord) => (
                 <TableCell key={character.id} align="center">
                   <Switch
+                    size="small"
                     checked={
                       dungeonToggles[character.id]?.[dungeon.id] ?? false
                     }
