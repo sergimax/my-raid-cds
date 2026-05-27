@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  IconButton,
   Stack,
   Switch,
   Table,
@@ -10,6 +11,7 @@ import {
   TableHead,
   TableSortLabel,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
@@ -308,25 +310,30 @@ export function RaidTrackerTable({
                     /{dungeonCount}
                   </Typography>
                   <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap", justifyContent: "center" }}>
-                    <Button
-                      size="small"
-                      color="inherit"
-                      onClick={() => {
-                        onResetCharacterToggles(character.id);
-                      }}
-                      aria-label={`Reset toggles for ${character.name}`}
-                    >
-                      Reset
-                    </Button>
-                    <Button
-                      size="small"
-                      color="error"
-                      onClick={() => {
-                        onDeleteCharacter(character.id);
-                      }}
-                    >
-                      Remove
-                    </Button>
+                    <Tooltip title={`Reset toggles for ${character.name}`}>
+                      <IconButton
+                        size="small"
+                        color="default"
+                        onClick={() => {
+                          onResetCharacterToggles(character.id);
+                        }}
+                        aria-label={`Reset toggles for ${character.name}`}
+                      >
+                        🔄️
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={`Remove character ${character.name}`}>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => {
+                          onDeleteCharacter(character.id);
+                        }}
+                        aria-label={`Remove character ${character.name}`}
+                      >
+                        ❌
+                      </IconButton>
+                    </Tooltip>
                   </Stack>
                 </Stack>
               </TableCell>
@@ -337,18 +344,20 @@ export function RaidTrackerTable({
           {sortedDungeons.map((dungeon: DungeonRecord) => (
             <TableRow key={dungeon.id} hover>
               <TableCell sx={pinnedCellSx(PINNED_LEFT.actions, PINNED_WIDTHS.actions)}>
-                <Button
-                  size="small"
-                  color="error"
-                  variant="text"
-                  onClick={() => {
-                    onDeleteDungeon(dungeon.id);
-                  }}
-                  aria-label="Delete dungeon"
-                  sx={{ minWidth: 0, padding: 0.5, lineHeight: 1 }}
-                >
-                  🗑️
-                </Button>
+                <Tooltip title={`Delete dungeon: ${dungeon.name}`}>
+                  <Button
+                    size="small"
+                    color="error"
+                    variant="text"
+                    onClick={() => {
+                      onDeleteDungeon(dungeon.id);
+                    }}
+                    aria-label={`Delete dungeon: ${dungeon.name}`}
+                    sx={{ minWidth: 0, padding: 0.5, lineHeight: 1 }}
+                  >
+                    🗑️
+                  </Button>
+                </Tooltip>
               </TableCell>
               {STATIC_COLUMNS.map((column) => (
                 <TableCell

@@ -3,35 +3,16 @@ import {
   AppHeader,
   AppIntro,
   CharacterForm,
-  CompletionSummary,
   DungeonForm,
   RaidTrackerTable,
   TrackerControls,
 } from "./components/index.ts";
 import "./App.css";
 import { Alert, Container, Stack } from "@mui/material";
-import { useMemo } from "react";
-import { countCompletedForCharacter } from "./utils/completion-counts.ts";
 import { useRaidTracker } from "./hooks/use-raid-tracker.ts";
 
 function App() {
   const tracker = useRaidTracker();
-
-  const { totalCells, totalCompleted } = useMemo(() => {
-    const totalCells =
-      tracker.characters.length * tracker.dungeons.length;
-    const totalCompleted = tracker.characters.reduce(
-      (sum, character) =>
-        sum +
-        countCompletedForCharacter(
-          character.id,
-          tracker.dungeons,
-          tracker.dungeonToggles,
-        ),
-      0,
-    );
-    return { totalCells, totalCompleted };
-  }, [tracker.characters, tracker.dungeons, tracker.dungeonToggles]);
 
   const showIntro =
     tracker.characters.length === 0 && tracker.dungeons.length === 0;
