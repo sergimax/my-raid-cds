@@ -47,7 +47,7 @@ const STATIC_COLUMNS: ReadonlyArray<{
 }> = [
   { key: "name", sortKey: "name", label: "Dungeon name" },
   { key: "size", sortKey: "size", label: "Size" },
-  { key: "difficulty", sortKey: "difficulty", label: "Difficulty" },
+  { key: "difficulty", sortKey: "difficulty", label: "Mode" },
   { key: "itemLevel", sortKey: "itemLevel", label: "Item level" },
 ];
 
