@@ -8,6 +8,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TableSortLabel,
   TableRow,
   Typography,
 } from "@mui/material";
@@ -96,8 +97,12 @@ export function RaidTrackerTable({
   const characterCount = characters.length;
   const [sortKey, setSortKey] = useState<DungeonSortKey>("itemLevel");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [characterSortId, setCharacterSortId] = useState<string | null>(null);
+  const [characterSortDirection, setCharacterSortDirection] =
+    useState<SortDirection>("desc");
 
   const handleSort = useCallback((nextSortKey: DungeonSortKey) => {
+    setCharacterSortId(null);
     if (nextSortKey === sortKey) {
       setSortDirection((previous) => (previous === "asc" ? "desc" : "asc"));
     } else {
@@ -105,6 +110,19 @@ export function RaidTrackerTable({
       setSortDirection(defaultSortDirectionForKey(nextSortKey));
     }
   }, [sortKey]);
+
+  const handleCharacterSort = useCallback((nextCharacterId: string) => {
+    setSortKey("itemLevel");
+    setSortDirection("desc");
+    if (characterSortId === nextCharacterId) {
+      setCharacterSortDirection((previous) =>
+        previous === "asc" ? "desc" : "asc",
+      );
+    } else {
+      setCharacterSortId(nextCharacterId);
+      setCharacterSortDirection("desc");
+    }
+  }, [characterSortId]);
 
   const completionsByDungeonId = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -118,10 +136,33 @@ export function RaidTrackerTable({
     return counts;
   }, [characters, dungeonToggles, dungeons]);
 
-  const sortedDungeons = useMemo(
-    () => sortDungeons(dungeons, sortKey, sortDirection, completionsByDungeonId),
-    [completionsByDungeonId, dungeons, sortDirection, sortKey],
-  );
+  const sortedDungeons = useMemo(() => {
+    if (characterSortId) {
+      const sorted = [...dungeons].sort((firstDungeon, secondDungeon) => {
+        const firstValue = dungeonToggles[characterSortId]?.[firstDungeon.id]
+          ? 1
+          : 0;
+        const secondValue = dungeonToggles[characterSortId]?.[secondDungeon.id]
+          ? 1
+          : 0;
+        const comparison =
+          firstValue - secondValue ||
+          firstDungeon.name.localeCompare(secondDungeon.name) ||
+          firstDungeon.size - secondDungeon.size;
+        return characterSortDirection === "asc" ? comparison : -comparison;
+      });
+      return sorted;
+    }
+    return sortDungeons(dungeons, sortKey, sortDirection, completionsByDungeonId);
+  }, [
+    characterSortDirection,
+    characterSortId,
+    completionsByDungeonId,
+    dungeonToggles,
+    dungeons,
+    sortDirection,
+    sortKey,
+  ]);
 
   return (
     <TableContainer sx={{ overflowX: "auto" }}>
@@ -149,28 +190,41 @@ export function RaidTrackerTable({
             {characters.map((character: CharacterRecord) => (
               <TableCell key={character.id} align="center">
                 <Stack spacing={0.5} sx={{ alignItems: "center" }}>
-                  <Stack
-                    direction="row"
-                    spacing={0.5}
-                    sx={{ alignItems: "center", justifyContent: "center" }}
+                  <TableSortLabel
+                    active={characterSortId === character.id}
+                    direction={
+                      characterSortId === character.id
+                        ? characterSortDirection
+                        : "asc"
+                    }
+                    onClick={() => {
+                      handleCharacterSort(character.id);
+                    }}
+                    sx={{ "& .MuiTableSortLabel-icon": { marginLeft: "2px" } }}
                   >
-                    {character.class ? (
-                      <Box
-                        component="img"
-                        src={character.class.icon}
-                        alt=""
-                        width={18}
-                        height={18}
-                        sx={{ borderRadius: "4px", flexShrink: 0 }}
-                      />
-                    ) : null}
-                    <Typography
-                      variant="caption"
-                      sx={characterNameDisplaySx(character.class)}
+                    <Stack
+                      direction="row"
+                      spacing={0.5}
+                      sx={{ alignItems: "center", justifyContent: "center" }}
                     >
-                      {character.name}
-                    </Typography>
-                  </Stack>
+                      {character.class ? (
+                        <Box
+                          component="img"
+                          src={character.class.icon}
+                          alt=""
+                          width={18}
+                          height={18}
+                          sx={{ borderRadius: "4px", flexShrink: 0 }}
+                        />
+                      ) : null}
+                      <Typography
+                        variant="caption"
+                        sx={characterNameDisplaySx(character.class)}
+                      >
+                        {character.name}
+                      </Typography>
+                    </Stack>
+                  </TableSortLabel>
                   <Typography variant="caption" color="text.secondary">
                     {countCompletedForCharacter(
                       character.id,
