@@ -33,7 +33,9 @@ import {
   type DungeonSortKey,
   type SortDirection,
 } from "../../utils/sort-dungeons.ts";
+import { DungeonNameHeaderCell } from "./dungeon-name-header-cell.tsx";
 import { SortableHeaderCell } from "./sortable-header-cell.tsx";
+import { filterDungeonsByName } from "../../utils/filter-dungeons-by-name.ts";
 import type { RaidTrackerTableProps } from "./types.ts";
 import "./styles.css";
 
@@ -194,6 +196,7 @@ export function RaidTrackerTable({
   const [characterSortId, setCharacterSortId] = useState<string | null>(null);
   const [characterSortDirection, setCharacterSortDirection] =
     useState<SortDirection>("desc");
+  const [dungeonNameSearch, setDungeonNameSearch] = useState("");
 
   const handleSort = useCallback((nextSortKey: DungeonSortKey) => {
     setCharacterSortId(null);
@@ -218,6 +221,11 @@ export function RaidTrackerTable({
     }
   }, [characterSortId]);
 
+  const filteredDungeons = useMemo(
+    () => filterDungeonsByName(dungeons, dungeonNameSearch),
+    [dungeons, dungeonNameSearch],
+  );
+
   const completionsByDungeonId = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const dungeon of dungeons) {
@@ -232,7 +240,7 @@ export function RaidTrackerTable({
 
   const sortedDungeons = useMemo(() => {
     if (characterSortId) {
-      const sorted = [...dungeons].sort((firstDungeon, secondDungeon) => {
+      const sorted = [...filteredDungeons].sort((firstDungeon, secondDungeon) => {
         const firstValue = dungeonToggles[characterSortId]?.[firstDungeon.id]
           ? 1
           : 0;
@@ -247,13 +255,18 @@ export function RaidTrackerTable({
       });
       return sorted;
     }
-    return sortDungeons(dungeons, sortKey, sortDirection, completionsByDungeonId);
+    return sortDungeons(
+      filteredDungeons,
+      sortKey,
+      sortDirection,
+      completionsByDungeonId,
+    );
   }, [
     characterSortDirection,
     characterSortId,
     completionsByDungeonId,
     dungeonToggles,
-    dungeons,
+    filteredDungeons,
     sortDirection,
     sortKey,
   ]);
@@ -267,18 +280,27 @@ export function RaidTrackerTable({
               sx={pinnedHeaderCellSx(PINNED_LEFT.actions, PINNED_WIDTHS.actions)}
               aria-label="Row actions"
             />
-            {STATIC_COLUMNS.map((column) => (
-              <SortableHeaderCell
-                key={column.key}
-                label={column.label}
-                sortKey={column.sortKey}
-                activeSortKey={sortKey}
-                sortDirection={sortDirection}
-                onSort={handleSort}
-                sx={
-                  column.key === "name"
-                    ? pinnedHeaderCellSx(PINNED_LEFT.name, PINNED_WIDTHS.name)
-                    : column.key === "size"
+            {STATIC_COLUMNS.map((column) =>
+              column.key === "name" ? (
+                <DungeonNameHeaderCell
+                  key={column.key}
+                  activeSortKey={sortKey}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                  searchQuery={dungeonNameSearch}
+                  onSearchQueryChange={setDungeonNameSearch}
+                  sx={pinnedHeaderCellSx(PINNED_LEFT.name, PINNED_WIDTHS.name)}
+                />
+              ) : (
+                <SortableHeaderCell
+                  key={column.key}
+                  label={column.label}
+                  sortKey={column.sortKey}
+                  activeSortKey={sortKey}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                  sx={
+                    column.key === "size"
                       ? pinnedHeaderCellSx(PINNED_LEFT.size, PINNED_WIDTHS.size)
                       : column.key === "difficulty"
                         ? pinnedHeaderCellSx(
@@ -291,9 +313,10 @@ export function RaidTrackerTable({
                               PINNED_WIDTHS.itemLevel,
                             )
                           : undefined
-                }
-              />
-            ))}
+                  }
+                />
+              ),
+            )}
             <SortableHeaderCell
               label={COMPLETE_COLUMN.label}
               sortKey={COMPLETE_COLUMN.sortKey}

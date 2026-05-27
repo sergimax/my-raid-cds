@@ -87,3 +87,11 @@
   font-size: 1rem;
   margin-left: 2px;
 }
+
+.raid-tracker-table__dungeon-search .MuiInputBase-root {
+  font-size: 0.8rem;
+}
+
+.raid-tracker-table__dungeon-search .MuiInputBase-input {
+  padding: 4px 8px;
+}
