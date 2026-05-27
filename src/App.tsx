@@ -89,11 +89,6 @@ function App() {
             />
           ) : null}
 
-          <CompletionSummary
-            totalCompleted={totalCompleted}
-            totalCells={totalCells}
-          />
-
           <RaidTrackerTable
             characters={tracker.characters}
             dungeons={tracker.dungeons}
