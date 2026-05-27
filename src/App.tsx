@@ -38,7 +38,12 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Container className="app-main" component="main" maxWidth="lg">
+      <Container
+        className="app-main"
+        component="main"
+        maxWidth={false}
+        disableGutters
+      >
         <Stack spacing={2}>
           <AppHeader />
           <AppIntro visible={showIntro} />
