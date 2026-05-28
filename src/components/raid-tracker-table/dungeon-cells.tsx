@@ -6,6 +6,16 @@ import {
   itemLevelTierClassName,
 } from "../../utils/item-level-tier.ts";
 
+type SizeChipColor = "success" | "info" | "secondary" | "warning" | "error";
+
+function sizeChipColor(size: number): SizeChipColor {
+  if (size <= 5) return "success";
+  if (size <= 10) return "info";
+  if (size <= 20) return "secondary";
+  if (size <= 25) return "warning";
+  return "error";
+}
+
 export function DungeonNameCell({
   name,
   itemLevels,
@@ -54,15 +64,18 @@ export function ItemLevelCell({ itemLevels }: { itemLevels: number[] }) {
 }
 
 export function DungeonSizeCell({ size }: { size: number }) {
+  const chipColor = sizeChipColor(size);
+
   return (
     <Chip
       size="small"
       variant="filled"
-      color="info"
+      color={chipColor}
       label={size}
       sx={{
         maxWidth: "100%",
         "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" },
+        "& .MuiChip-icon": { opacity: 0.9 },
       }}
     />
   );
