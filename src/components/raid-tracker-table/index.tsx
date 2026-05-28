@@ -1,33 +1,21 @@
 import SportsScoreIcon from "@mui/icons-material/SportsScore";
 import DeleteIcon from "@mui/icons-material/Delete";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import {
-  Box,
   IconButton,
-  Stack,
   Switch,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
-  TableSortLabel,
   TableRow,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-import { characterNameDisplaySx, type CharacterRecord } from "../../types/characters.ts";
+import { type CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
-import {
-  countCompletedForCharacter,
-  countCompletedForDungeon,
-} from "../../utils/completion-counts.ts";
-import {
-  dungeonNameTierClassName,
-  getItemLevelTier,
-  itemLevelTierClassName,
-} from "../../utils/item-level-tier.ts";
+import { countCompletedForDungeon } from "../../utils/completion-counts.ts";
 import {
   defaultSortDirectionForKey,
   sortDungeons,
@@ -39,147 +27,18 @@ import { SortableHeaderCell } from "./sortable-header-cell.tsx";
 import { filterDungeonsByName } from "../../utils/filter-dungeons-by-name.ts";
 import type { RaidTrackerTableProps } from "./types.ts";
 import "./styles.css";
-
-const STATIC_COLUMNS: ReadonlyArray<{
-  key: keyof Pick<DungeonRecord, "name" | "size" | "difficulty" | "itemLevel">;
-  sortKey: DungeonSortKey;
-  label: string;
-}> = [
-  { key: "name", sortKey: "name", label: "Dungeon name" },
-  { key: "size", sortKey: "size", label: "Size" },
-  { key: "difficulty", sortKey: "difficulty", label: "Mode" },
-  { key: "itemLevel", sortKey: "itemLevel", label: "Item level" },
-];
-
-const COMPLETE_COLUMN = {
-  key: "complete" as const,
-  sortKey: "completions" as const,
-  label: "Complete",
-};
-
-const PINNED_CELL_BASE_SX = {
-  position: "sticky",
-  zIndex: 1,
-  backgroundColor: "background.paper",
-  boxShadow: "1px 0 0 rgba(0,0,0,0.08)",
-} as const;
-
-// Keep these widths stable so sticky offsets work predictably.
-const PINNED_WIDTHS = {
-  actions: 36,
-  name: 200,
-  size: 60,
-  difficulty: 84,
-  itemLevel: 104,
-  complete: 78,
-} as const;
-
-const CHARACTER_COLUMN_WIDTH = 132;
-
-const PINNED_LEFT = {
-  actions: 0,
-  name: PINNED_WIDTHS.actions,
-  size: PINNED_WIDTHS.actions + PINNED_WIDTHS.name,
-  difficulty: PINNED_WIDTHS.actions + PINNED_WIDTHS.name + PINNED_WIDTHS.size,
-  itemLevel:
-    PINNED_WIDTHS.actions +
-    PINNED_WIDTHS.name +
-    PINNED_WIDTHS.size +
-    PINNED_WIDTHS.difficulty,
-  complete:
-    PINNED_WIDTHS.actions +
-    PINNED_WIDTHS.name +
-    PINNED_WIDTHS.size +
-    PINNED_WIDTHS.difficulty +
-    PINNED_WIDTHS.itemLevel,
-} as const;
-
-function pinnedCellSx(left: number, width: number) {
-  return {
-    ...PINNED_CELL_BASE_SX,
-    left,
-    width,
-    minWidth: width,
-    maxWidth: width,
-  } as const;
-}
-
-function pinnedHeaderCellSx(left: number, width: number) {
-  return {
-    ...pinnedCellSx(left, width),
-    zIndex: 4,
-  } as const;
-}
-
-const CHARACTER_HEADER_CELL_SX = {
-  width: CHARACTER_COLUMN_WIDTH,
-  minWidth: CHARACTER_COLUMN_WIDTH,
-  maxWidth: CHARACTER_COLUMN_WIDTH,
-  paddingLeft: "6px",
-  paddingRight: "6px",
-} as const;
-
-const CHARACTER_BODY_CELL_SX = {
-  width: CHARACTER_COLUMN_WIDTH,
-  minWidth: CHARACTER_COLUMN_WIDTH,
-  maxWidth: CHARACTER_COLUMN_WIDTH,
-  paddingLeft: "6px",
-  paddingRight: "6px",
-} as const;
-
-function formatDungeonCell(
-  dungeon: DungeonRecord,
-  columnKey: (typeof STATIC_COLUMNS)[number]["key"],
-): string {
-  return String(dungeon[columnKey]);
-}
-
-function DungeonNameCell({
-  name,
-  itemLevels,
-}: {
-  name: string;
-  itemLevels: number[];
-}) {
-  const tierClass = dungeonNameTierClassName(getItemLevelTier(itemLevels));
-
-  return (
-    <Typography
-      component="span"
-      variant="body2"
-      className={`raid-tracker-table__dungeon-name ${tierClass}`}
-    >
-      {name}
-    </Typography>
-  );
-}
-
-function ItemLevelCell({ itemLevels }: { itemLevels: number[] }) {
-  if (itemLevels.length === 0) {
-    return (
-      <Typography component="span" variant="body2" color="text.secondary">
-        —
-      </Typography>
-    );
-  }
-
-  return (
-    <>
-      {itemLevels.map((itemLevel, index) => (
-        <span key={`${itemLevel}-${index}`}>
-          {index > 0 ? (
-            <span className="raid-tracker-table__ilvl-separator"> / </span>
-          ) : null}
-          <span
-            className={`raid-tracker-table__ilvl ${itemLevelTierClassName(getItemLevelTier(itemLevel))}`}
-          >
-            {itemLevel}
-          </span>
-        </span>
-      ))}
-    </>
-  );
-}
+import {
+  CHARACTER_BODY_CELL_SX,
+  COMPLETE_COLUMN,
+  PINNED_LEFT,
+  PINNED_WIDTHS,
+  STATIC_COLUMNS,
+  pinnedCellSx,
+  pinnedHeaderCellSx,
+} from "./table-layout.ts";
+import { CharacterHeaderCell } from "./character-header-cell.tsx";
+import { DungeonNameCell, ItemLevelCell } from "./dungeon-cells.tsx";
+import { formatDungeonCell } from "./format-dungeon-cell.ts";
 
 export function RaidTrackerTable({
   characters,
@@ -330,83 +189,22 @@ export function RaidTrackerTable({
               sx={pinnedHeaderCellSx(PINNED_LEFT.complete, PINNED_WIDTHS.complete)}
             />
             {characters.map((character: CharacterRecord) => (
-              <TableCell
+              <CharacterHeaderCell
                 key={character.id}
-                align="center"
-                sx={CHARACTER_HEADER_CELL_SX}
-              >
-                <Stack spacing={0.5} sx={{ alignItems: "center" }}>
-                  <TableSortLabel
-                    active={characterSortId === character.id}
-                    direction={
-                      characterSortId === character.id
-                        ? characterSortDirection
-                        : "asc"
-                    }
-                    onClick={() => {
-                      handleCharacterSort(character.id);
-                    }}
-                    sx={{ "& .MuiTableSortLabel-icon": { marginLeft: "2px" } }}
-                  >
-                    <Stack
-                      direction="row"
-                      spacing={0.5}
-                      sx={{ alignItems: "center", justifyContent: "center" }}
-                    >
-                      {character.class ? (
-                        <Box
-                          component="img"
-                          src={character.class.icon}
-                          alt=""
-                          width={18}
-                          height={18}
-                          sx={{ borderRadius: "4px", flexShrink: 0 }}
-                        />
-                      ) : null}
-                      <Typography
-                        variant="caption"
-                        sx={characterNameDisplaySx(character.class)}
-                      >
-                        {character.name}
-                      </Typography>
-                    </Stack>
-                  </TableSortLabel>
-                  <Typography variant="caption" color="text.secondary">
-                    {countCompletedForCharacter(
-                      character.id,
-                      dungeons,
-                      dungeonToggles,
-                    )}
-                    /{dungeonCount}
-                  </Typography>
-                  <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap", justifyContent: "center" }}>
-                    <Tooltip title={`Reset toggles for ${character.name}`}>
-                      <IconButton
-                        size="small"
-                        color="default"
-                        onClick={() => {
-                          onResetCharacterToggles(character.id);
-                        }}
-                        aria-label={`Reset toggles for ${character.name}`}
-                      >
-                        <RestartAltIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title={`Remove character ${character.name}`}>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => {
-                          onDeleteCharacter(character.id);
-                        }}
-                        aria-label={`Remove character ${character.name}`}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Stack>
-                </Stack>
-              </TableCell>
+                character={character}
+                dungeonCount={dungeonCount}
+                dungeons={dungeons}
+                dungeonToggles={dungeonToggles}
+                isActiveSort={characterSortId === character.id}
+                sortDirection={
+                  characterSortId === character.id ? characterSortDirection : "asc"
+                }
+                onSort={() => {
+                  handleCharacterSort(character.id);
+                }}
+                onResetCharacterToggles={onResetCharacterToggles}
+                onDeleteCharacter={onDeleteCharacter}
+              />
             ))}
           </TableRow>
         </TableHead>
