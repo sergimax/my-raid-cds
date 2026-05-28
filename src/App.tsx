@@ -26,23 +26,25 @@ function App() {
         disableGutters
       >
         <Stack spacing={2}>
-          <AppHeader />
+          <AppHeader
+            actions={
+              <TrackerControls
+                showCharacterForm={tracker.showCharacterForm}
+                showDungeonForm={tracker.showDungeonForm}
+                onToggleCharacterForm={tracker.toggleCharacterForm}
+                onToggleDungeonForm={tracker.toggleDungeonForm}
+                onResetAllToggles={tracker.handleResetAllToggles}
+                resetAllTogglesDisabled={!tracker.canResetAllToggles}
+                showAddFromTemplate={tracker.dungeons.length === 0}
+                onAddFromTemplate={tracker.handleAddFromTemplate}
+              />
+            }
+          />
           <AppIntro visible={showIntro} />
 
           {tracker.storageError ? (
             <Alert severity="error">{tracker.storageError}</Alert>
           ) : null}
-
-          <TrackerControls
-            showCharacterForm={tracker.showCharacterForm}
-            showDungeonForm={tracker.showDungeonForm}
-            onToggleCharacterForm={tracker.toggleCharacterForm}
-            onToggleDungeonForm={tracker.toggleDungeonForm}
-            onResetAllToggles={tracker.handleResetAllToggles}
-            resetAllTogglesDisabled={!tracker.canResetAllToggles}
-            showAddFromTemplate={tracker.dungeons.length === 0}
-            onAddFromTemplate={tracker.handleAddFromTemplate}
-          />
 
           {tracker.showCharacterForm ? (
             <CharacterForm
