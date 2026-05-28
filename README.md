@@ -36,13 +36,14 @@ Open [http://localhost:5173](http://localhost:5173).
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
 5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows.
 6. **Search** — Use the search field under **Dungeon name** to filter rows by substring.
-7. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
-8. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
-9. **Delete** — Delete icon on each dungeon row removes that dungeon; remove icon in a character header removes that character.
+7. **Emblem icons** — Template raids show a small emblem beside the name (Triumph for legacy WotLK raids, Frost for Icecrown Citadel and Ruby Sanctum). Custom dungeons have no emblem unless you set one in data.
+8. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
+9. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
+10. **Delete** — Delete icon on each dungeon row removes that dungeon; remove icon in a character header removes that character.
 
 The footer shows the app version (from `package.json`, injected at build time), a link to the author on GitHub, and a link to Cursor.
 
-Data is saved automatically to `localStorage` under the key `my-raid-cds`.
+Data is saved automatically (debounced) to `localStorage` under the key `my-raid-cds`.
 
 ## Data Model
 
@@ -62,9 +63,10 @@ Data is saved automatically to `localStorage` under the key `my-raid-cds`.
 | `name` | `string` | Dungeon name |
 | `size` | `5 \| 10 \| 20 \| 25 \| 40` | Raid size |
 | `itemLevel` | `number[]` | Item level(s), e.g. `[200, 213]` |
-| `difficulty` | `"Normal" \| "Heroic"` | Raid mode (shown as **Mode** in the table) |
+| `difficulty` | `"Normal" \| "Heroic"` | Raid mode; **Mode** column shows **N** or **H** chips |
+| `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows, optional for custom dungeons |
 
-Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
+Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load. If `emblem` is missing, template raid names are matched against `data/dungeons.ts` (`RaidNames`) on load.
 
 ### Dungeon Toggles
 
@@ -79,14 +81,16 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 ```
 src/
-├── components/       # app-footer, app-header, app-intro, character-form, dungeon-form,
-│                     # raid-tracker-table, tracker-controls, …
+├── components/       # app-footer, app-header, app-intro, character-form, class-option-label,
+│                     # dungeon-form, raid-tracker-table (+ dungeon-cells, header cells), tracker-controls, …
 ├── hooks/            # use-raid-tracker.ts (useRaidTracker)
 ├── types/            # characters, dungeons
-├── data/             # dungeons.ts (DungeonList template)
-├── utils/            # completion-counts, filter/sort dungeons, item-level tiers, …
-├── assets/           # class icons
+├── data/             # dungeons.ts (RaidNames, DungeonList template)
+├── utils/            # completion-counts, filter/sort dungeons, item-level tiers, parse-item-level-input, …
+├── assets/           # class-icons/, emblems/
 ├── storage.ts        # localStorage load/save
 ├── uuid.ts           # generateUUID
 └── vite-env.d.ts     # __APP_VERSION__ declaration
 ```
+
+Production builds split vendor code into separate chunks (React, MUI, icons) via `vite.config.ts` `manualChunks`.

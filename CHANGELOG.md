@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Production build:** Split vendor bundles (React, MUI, MUI icons) with Rollup `manualChunks` for smaller app chunks and better caching.
+
+### Removed
+
+- **dungeon-mode-icons:** Unused SVG assets and module (mode column uses MUI chips instead).
+
 ## [1.4.0] - 2026-05-28
 
 ### Added

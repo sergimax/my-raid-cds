@@ -71,8 +71,9 @@ Example: `feat(auth): add login form`
 - WoW raid cooldown tracker: characters, dungeons, per-character–dungeon toggles
 - Domain state in `useRaidTracker`; persistence via `storage.ts` (`my-raid-cds` key); dungeons list starts empty
 - Main table UI: `components/raid-tracker-table/` (`RaidTrackerTable`); sort/search UI state may live in that component
-- `data/dungeons.ts` — `DungeonList` template (WoW WotLK raids, Russian names)
-- Dungeons use `difficulty` (Normal/Heroic); legacy saves with `mode` are migrated on load
+- `data/dungeons.ts` — `RaidNames`, `DungeonList` template (WoW WotLK raids, Russian names; per-raid `emblem` preset)
+- Dungeons use `difficulty` (Normal/Heroic); optional `emblem` for display; legacy saves with `mode` are migrated on load; missing `emblem` backfilled from `RaidNames` on load
+- Production `vite.config.ts` uses `manualChunks` for React / MUI vendor splits
 - App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`)
 - Follow existing patterns; check README before adding dependencies
 
@@ -87,19 +88,21 @@ Example: `feat(auth): add login form`
 ## Component Structure
 
 - **kebab-case** for component dirs (e.g. `character-form/`)
-- Each component: `index.tsx`, `types.ts`, `styles.css`
+- Typical folder: `index.tsx`; add `types.ts` and/or `styles.css` when needed (not every component has all three)
+- complex components like `raid-tracker-table/` may include colocated subcomponents (e.g. `dungeon-cells.tsx`, `character-header-cell.tsx`)
+- **`completion-summary/`** is legacy — not rendered in `App`; completion counts live in the table only
 - Domain state lives in `useRaidTracker`; components receive data and mutation handlers via props. Ephemeral UI state (e.g. table sort, name search query) may live in leaf components.
 
 ## Project Structure
 
 ```
 src/
-├── components/   # app-footer, character-form, dungeon-form, raid-tracker-table, tracker-controls, …
+├── components/   # app-footer, app-header, character-form, dungeon-form, raid-tracker-table, tracker-controls, …
 ├── hooks/        # use-raid-tracker.ts (useRaidTracker)
 ├── types/        # characters, dungeons
-├── data/         # dungeons.ts (DungeonList template)
+├── data/         # dungeons.ts (RaidNames, DungeonList)
 ├── utils/        # completion-counts, filter/sort dungeons, item-level tiers, …
-├── assets/       # class icons
+├── assets/       # class-icons/, emblems/
 ├── storage.ts    # localStorage load/save
 ├── uuid.ts       # generateUUID
 └── vite-env.d.ts # __APP_VERSION__ declaration
