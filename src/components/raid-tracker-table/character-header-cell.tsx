@@ -40,7 +40,7 @@ export function CharacterHeaderCell({
 }: CharacterHeaderCellProps) {
   return (
     <TableCell key={character.id} align="center" sx={CHARACTER_HEADER_CELL_SX}>
-      <Stack spacing={0.5} sx={{ alignItems: "center" }}>
+      <Stack spacing={0.5} sx={{ alignItems: "center", minWidth: 0, width: "100%" }}>
         <TableSortLabel
           active={isActiveSort}
           direction={isActiveSort ? sortDirection : "asc"}
@@ -50,7 +50,12 @@ export function CharacterHeaderCell({
           <Stack
             direction="row"
             spacing={0.5}
-            sx={{ alignItems: "center", justifyContent: "center" }}
+            sx={{
+              alignItems: "center",
+              justifyContent: "center",
+              minWidth: 0,
+              maxWidth: "100%",
+            }}
           >
             {character.class ? (
               <Box
@@ -62,7 +67,16 @@ export function CharacterHeaderCell({
                 sx={{ borderRadius: "4px", flexShrink: 0 }}
               />
             ) : null}
-            <Typography variant="caption" sx={characterNameDisplaySx(character.class)}>
+            <Typography
+              variant="caption"
+              sx={{
+                ...characterNameDisplaySx(character.class),
+                minWidth: 0,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
               {character.name}
             </Typography>
           </Stack>
