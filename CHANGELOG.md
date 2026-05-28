@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-05-28
+
+### Added
+
+- **Emblem icons** beside template raid names in the dungeon column (Triumph for legacy raids, Frost for Icecrown Citadel and Ruby Sanctum); stored on dungeon rows and restored from raid name when loading older saves.
+- **Color-coded raid size chips** in the size column (distinct MUI chip color per group size).
+- **Heroic mode styling** in the mode column (stronger visual distinction for Heroic vs Normal).
+
+### Changed
+
+- **App header:** Toolbar actions are passed in as props for a cleaner header layout (`Stack`).
+- **Raid tracker table:** Tighter pinned-column layout and dedicated cells for size and mode; character header moved into its own subcomponent.
+
 ## [1.3.0] - 2026-05-28
 
 ### Added
