@@ -133,7 +133,12 @@ export function RaidTrackerTable({
 
   return (
     <TableContainer sx={{ overflowX: "auto" }}>
-      <Table className="raid-tracker-table" size="small" stickyHeader>
+      <Table
+        className="raid-tracker-table"
+        size="small"
+        stickyHeader
+        sx={{ tableLayout: "fixed", width: "max-content" }}
+      >
         <TableHead>
           <TableRow>
             <TableCell

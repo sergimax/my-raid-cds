@@ -23,6 +23,10 @@ const PINNED_CELL_BASE_SX = {
   zIndex: 1,
   backgroundColor: "background.paper",
   boxShadow: "1px 0 0 rgba(0,0,0,0.08)",
+  boxSizing: "border-box",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 } as const;
 
 // Keep these widths stable so sticky offsets work predictably.
@@ -78,6 +82,10 @@ export const CHARACTER_HEADER_CELL_SX = {
   maxWidth: CHARACTER_COLUMN_WIDTH,
   paddingLeft: "6px",
   paddingRight: "6px",
+  boxSizing: "border-box",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 } as const;
 
 export const CHARACTER_BODY_CELL_SX = {
@@ -86,5 +94,9 @@ export const CHARACTER_BODY_CELL_SX = {
   maxWidth: CHARACTER_COLUMN_WIDTH,
   paddingLeft: "6px",
   paddingRight: "6px",
+  boxSizing: "border-box",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 } as const;
 
