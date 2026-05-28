@@ -1,10 +1,11 @@
-import { Chip, Typography } from "@mui/material";
+import { Box, Chip, Stack, Typography } from "@mui/material";
 import { DungeonDifficulty, type DungeonDifficulty as DungeonDifficultyType } from "../../types/dungeons.ts";
 import {
   dungeonNameTierClassName,
   getItemLevelTier,
   itemLevelTierClassName,
 } from "../../utils/item-level-tier.ts";
+import { emblemIcons, type EmblemKey } from "../../assets/emblems/emblem-icons.ts";
 
 type SizeChipColor = "success" | "info" | "secondary" | "warning" | "error";
 
@@ -19,20 +20,37 @@ function sizeChipColor(size: number): SizeChipColor {
 export function DungeonNameCell({
   name,
   itemLevels,
+  emblem,
 }: {
   name: string;
   itemLevels: number[];
+  emblem: EmblemKey | null;
 }) {
   const tierClass = dungeonNameTierClassName(getItemLevelTier(itemLevels));
 
   return (
-    <Typography
-      component="span"
-      variant="body2"
-      className={`raid-tracker-table__dungeon-name ${tierClass}`}
+    <Stack
+      direction="row"
+      spacing={0.75}
+      sx={{ alignItems: "center", overflow: "hidden", minWidth: 0 }}
     >
-      {name}
-    </Typography>
+      {emblem ? (
+        <Box
+          component="img"
+          src={emblemIcons[emblem]}
+          alt=""
+          sx={{ width: 18, height: 18, flexShrink: 0, borderRadius: "4px" }}
+        />
+      ) : null}
+      <Typography
+        component="span"
+        variant="body2"
+        className={`raid-tracker-table__dungeon-name ${tierClass}`}
+        sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+      >
+        {name}
+      </Typography>
+    </Stack>
   );
 }
 
@@ -75,7 +93,6 @@ export function DungeonSizeCell({ size }: { size: number }) {
       sx={{
         maxWidth: "100%",
         "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" },
-        "& .MuiChip-icon": { opacity: 0.9 },
       }}
     />
   );

@@ -1,3 +1,5 @@
+import { EmblemKey, type EmblemKey as EmblemKeyType } from "./assets/emblems/emblem-icons.ts";
+import { ruRaidNameToEmblem } from "./data/dungeons.ts";
 import { Classes, type CharacterRecord } from "./types/characters.ts";
 import {
   DungeonDifficulty,
@@ -19,10 +21,20 @@ type StoredDungeon = {
   name: string;
   size: DungeonRecord["size"];
   itemLevel: number[];
+  emblem?: string;
   /** Legacy key from older saves */
   mode?: string;
   difficulty?: string;
 };
+
+const VALID_EMBLEM_KEYS = new Set<string>(Object.values(EmblemKey));
+
+function parseStoredEmblem(stored: StoredDungeon): EmblemKeyType | undefined {
+  if (typeof stored.emblem === "string" && VALID_EMBLEM_KEYS.has(stored.emblem)) {
+    return stored.emblem as EmblemKeyType;
+  }
+  return ruRaidNameToEmblem[stored.name];
+}
 
 type StoredData = {
   characters: StoredCharacter[];
@@ -73,12 +85,14 @@ function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {
   if (!Array.isArray(stored.itemLevel) || !stored.itemLevel.every(Number.isFinite)) {
     return null;
   }
+  const emblem = parseStoredEmblem(stored);
   return {
     id: stored.id,
     name: stored.name,
     size,
     itemLevel: stored.itemLevel as number[],
     difficulty,
+    ...(emblem ? { emblem } : {}),
   };
 }
 
@@ -157,6 +171,7 @@ export function saveRaidTrackerState(
     size: dungeon.size,
     itemLevel: dungeon.itemLevel,
     difficulty: dungeon.difficulty,
+    ...(dungeon.emblem ? { emblem: dungeon.emblem } : {}),
   }));
 
   const storedToggles: Record<string, Record<string, boolean>> = {};

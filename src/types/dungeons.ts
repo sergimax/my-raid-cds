@@ -1,3 +1,5 @@
+import type { EmblemKey } from "../assets/emblems/emblem-icons.ts";
+
 export const DungeonDifficulty = {
   NORMAL: "Normal",
   HEROIC: "Heroic",
@@ -14,6 +16,8 @@ export type Dungeon = {
   size: DungeonSize;
   itemLevel: Array<number>;
   difficulty: DungeonDifficulty;
+  /** WotLK emblem primarily rewarded by this raid (display only). */
+  emblem?: EmblemKey;
 };
 
 export type DungeonRecord = Dungeon & { id: string };

@@ -260,6 +260,7 @@ export function RaidTrackerTable({
                     <DungeonNameCell
                       name={dungeon.name}
                       itemLevels={dungeon.itemLevel}
+                      emblem={dungeon.emblem ?? null}
                     />
                   ) : column.key === "size" ? (
                     <DungeonSizeCell size={dungeon.size} />
