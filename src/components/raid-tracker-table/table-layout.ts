@@ -25,7 +25,6 @@ const PINNED_CELL_BASE_SX = {
   boxShadow: "1px 0 0 rgba(0,0,0,0.08)",
   boxSizing: "border-box",
   overflow: "hidden",
-  textOverflow: "ellipsis",
   whiteSpace: "nowrap",
 } as const;
 
