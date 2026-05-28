@@ -37,7 +37,12 @@ import {
   pinnedHeaderCellSx,
 } from "./table-layout.ts";
 import { CharacterHeaderCell } from "./character-header-cell.tsx";
-import { DungeonNameCell, ItemLevelCell } from "./dungeon-cells.tsx";
+import {
+  DungeonDifficultyCell,
+  DungeonNameCell,
+  DungeonSizeCell,
+  ItemLevelCell,
+} from "./dungeon-cells.tsx";
 import { formatDungeonCell } from "./format-dungeon-cell.ts";
 
 export function RaidTrackerTable({
@@ -256,6 +261,10 @@ export function RaidTrackerTable({
                       name={dungeon.name}
                       itemLevels={dungeon.itemLevel}
                     />
+                  ) : column.key === "size" ? (
+                    <DungeonSizeCell size={dungeon.size} />
+                  ) : column.key === "difficulty" ? (
+                    <DungeonDifficultyCell difficulty={dungeon.difficulty} />
                   ) : column.key === "itemLevel" ? (
                     <ItemLevelCell itemLevels={dungeon.itemLevel} />
                   ) : (

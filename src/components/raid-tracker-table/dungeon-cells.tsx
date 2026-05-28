@@ -1,4 +1,5 @@
-import { Typography } from "@mui/material";
+import { Chip, Typography } from "@mui/material";
+import { DungeonDifficulty, type DungeonDifficulty as DungeonDifficultyType } from "../../types/dungeons.ts";
 import {
   dungeonNameTierClassName,
   getItemLevelTier,
@@ -49,6 +50,43 @@ export function ItemLevelCell({ itemLevels }: { itemLevels: number[] }) {
         </span>
       ))}
     </>
+  );
+}
+
+export function DungeonSizeCell({ size }: { size: number }) {
+  return (
+    <Chip
+      size="small"
+      variant="filled"
+      color="info"
+      label={size}
+      sx={{
+        maxWidth: "100%",
+        "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" },
+      }}
+    />
+  );
+}
+
+export function DungeonDifficultyCell({
+  difficulty,
+}: {
+  difficulty: DungeonDifficultyType;
+}) {
+  const isHeroic = difficulty === DungeonDifficulty.HEROIC;
+  const label = isHeroic ? "H ☠️" : "N";
+
+  return (
+    <Chip
+      size="small"
+      variant="filled"
+      color={isHeroic ? "warning" : "success"}
+      label={label}
+      sx={{
+        maxWidth: "100%",
+        "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" },
+      }}
+    />
   );
 }
 
