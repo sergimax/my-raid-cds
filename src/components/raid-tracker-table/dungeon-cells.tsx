@@ -97,6 +97,12 @@ export function DungeonDifficultyCell({
       label={label}
       sx={{
         maxWidth: "100%",
+        ...(isHeroic
+          ? {
+              backgroundColor: (theme) => theme.palette.error.dark,
+              color: (theme) => theme.palette.error.contrastText,
+            }
+          : {}),
         "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" },
       }}
     />
