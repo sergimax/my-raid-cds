@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Responsive header:** Below `md`, tracker actions use a menu icon instead of a wrapped button stack; toolbar stays a single row on narrow screens.
+- **Add character / Add dungeon forms:** Cancel and submit sit in one action row on all viewports (right-aligned).
+
+### Fixed
+
+- **Form Cancel:** Cancel closes the form via dedicated close handlers; dungeon and character forms no longer use toggle for dismiss.
+
 ## [1.7.0] - 2026-05-29
 
 ### Changed
