@@ -19,9 +19,9 @@
 }
 
 .app-footer a {
-  color: #2563eb;
+  color: var(--link);
 }
 
 .app-footer a:hover {
-  color: #1d4ed8;
+  color: var(--link-hover);
 }
