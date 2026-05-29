@@ -36,7 +36,7 @@ Open [http://localhost:5173](http://localhost:5173).
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
 5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows.
 6. **Search** — Use the search field under **Dungeon name** to filter rows by substring.
-7. **Emblem icons** — Template raids show a small emblem beside the name (Triumph for legacy WotLK raids, Frost for Icecrown Citadel and Ruby Sanctum). Custom dungeons have no emblem unless you set one in data.
+7. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
 8. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
 9. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
 10. **Delete** — Delete icon on each dungeon row removes that dungeon; remove icon in a character header removes that character.
@@ -67,7 +67,7 @@ Data is saved automatically (debounced) to `localStorage` under the key `my-raid
 | `difficulty` | `"Normal" \| "Heroic"` | Raid mode; **Mode** column shows **N** or **H** chips |
 | `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows, optional for custom dungeons |
 
-Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load. If `emblem` is missing, template raid names are matched against `data/dungeons.ts` (`RaidNames`) on load.
+Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 ### Dungeon Toggles
 

@@ -1,5 +1,4 @@
 import { EmblemKey, type EmblemKey as EmblemKeyType } from "./assets/emblems/emblem-icons.ts";
-import { ruRaidNameToEmblem } from "./data/dungeons.ts";
 import { Classes, type CharacterRecord } from "./types/characters.ts";
 import {
   DungeonDifficulty,
@@ -33,7 +32,7 @@ function parseStoredEmblem(stored: StoredDungeon): EmblemKeyType | undefined {
   if (typeof stored.emblem === "string" && VALID_EMBLEM_KEYS.has(stored.emblem)) {
     return stored.emblem as EmblemKeyType;
   }
-  return ruRaidNameToEmblem[stored.name];
+  return undefined;
 }
 
 type StoredData = {

@@ -27,6 +27,11 @@ export function createAppTheme(mode: PaletteMode) {
             },
           }
         : {
+            primary: {
+              main: "#60a5fa",
+              light: "#93c5fd",
+              dark: "#2563eb",
+            },
             background: {
               default: "#18181b",
               paper: "#27272a",
@@ -41,5 +46,28 @@ export function createAppTheme(mode: PaletteMode) {
       fontFamily,
     },
     shape: { borderRadius: 8 },
+    components: {
+      MuiSwitch: {
+        styleOverrides: {
+          switchBase: ({ theme }) =>
+            theme.palette.mode === "dark"
+              ? {
+                  color: "#52525b",
+                  "& + .MuiSwitch-track": {
+                    backgroundColor: "#27272a",
+                    opacity: 1,
+                  },
+                  "&.Mui-checked": {
+                    color: "#ffffff",
+                    "& + .MuiSwitch-track": {
+                      backgroundColor: theme.palette.primary.main,
+                      opacity: 1,
+                    },
+                  },
+                }
+              : {},
+        },
+      },
+    },
   });
 }

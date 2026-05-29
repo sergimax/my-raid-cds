@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-05-29
+
+### Changed
+
+- **Item level tier colors:** Progression grey → green → cyan → blue → violet → orange → red for item level values and matching dungeon names; separate light and dark palettes via CSS variables.
+- **Template raid emblems:** Frost emblem on Icecrown Citadel and Ruby Sanctum template rows only (3.3.5a); Triumph removed from the default template list.
+- **Emblem persistence:** Emblems load only from the `emblem` field on each dungeon row (no raid-name backfill on load).
+- **Dark mode:** Primary palette (`#60a5fa`) and `Switch` styling for cooldown toggles (zinc off state, primary track when on).
+
 ## [1.6.0] - 2026-05-29
 
 ### Added

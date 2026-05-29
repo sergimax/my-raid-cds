@@ -21,4 +21,3 @@ export const emblemIcons: Record<EmblemKey, string> = {
   [EmblemKey.TRIUMPH]: triumphIcon,
   [EmblemKey.VALOR]: valorIcon,
 };
-
