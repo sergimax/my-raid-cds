@@ -12,6 +12,7 @@ import {
 import { characterNameDisplaySx, type CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 import { countCompletedForCharacter } from "../../utils/completion-counts.ts";
+import { CompletionCountChip } from "./dungeon-cells.tsx";
 import type { SortDirection } from "../../utils/sort-dungeons.ts";
 import { CHARACTER_HEADER_CELL_SX } from "./table-layout.ts";
 
@@ -82,10 +83,14 @@ export function CharacterHeaderCell({
           </Stack>
         </TableSortLabel>
 
-        <Typography variant="caption" color="text.secondary">
-          {countCompletedForCharacter(character.id, dungeons, dungeonToggles)}/
-          {dungeonCount}
-        </Typography>
+        <CompletionCountChip
+          completed={countCompletedForCharacter(
+            character.id,
+            dungeons,
+            dungeonToggles,
+          )}
+          total={dungeonCount}
+        />
 
         <Stack
           direction="row"

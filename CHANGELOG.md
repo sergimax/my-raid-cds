@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-05-29
+
+### Added
+
+- **Completion count chips** in the dungeon completions column and character headers (`done/total` with ratio-based color gradation).
+
+### Changed
+
+- **Completion display:** Plain text replaced with filled MUI `Chip`; colors progress gray → red → yellow → blue → green with WCAG AA contrast for small labels.
+
 ## [1.5.0] - 2026-05-29
 
 ### Added
