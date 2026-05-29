@@ -3,9 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="description" content="Track raid cooldowns for your characters and dungeons. Manage characters, dungeon lockouts, and cooldown toggles." />
     <meta name="theme-color" content="#f4f4f5" />
+    <!-- Sync theme before paint (same key/logic as use-color-mode) to avoid a light flash. -->
+    <script>
+      (function () {
+        var storageKey = "my-raid-cds-color-mode";
+        var mode = "light";
+
+        try {
+          var stored = localStorage.getItem(storageKey);
+          if (stored === "light" || stored === "dark") {
+            mode = stored;
+          } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            mode = "dark";
+          }
+        } catch (error) {
+          void error;
+        }
+
+        // Drives :root[data-color-mode] CSS vars in index.css.
+        document.documentElement.dataset.colorMode = mode;
+        // Match browser chrome (address bar, etc.) to --page-bg for each mode.
+        var themeMeta = document.querySelector('meta[name="theme-color"]');
+        if (themeMeta) {
+          themeMeta.setAttribute("content", mode === "dark" ? "#18181b" : "#f4f4f5");
+        }
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <title>My Raid CDs – Raid Cooldown Tracker</title>
     <meta property="og:title" content="My Raid CDs – Raid Cooldown Tracker" />

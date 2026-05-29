@@ -5,6 +5,7 @@ import {
   CharacterForm,
   DungeonForm,
   RaidTrackerTable,
+  ThemeModeToggle,
   TrackerControls,
 } from "./components/index.ts";
 import "./App.css";
@@ -28,7 +29,13 @@ function App() {
         <Stack spacing={2}>
           <AppHeader
             actions={
-              <TrackerControls
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: "center", flexWrap: "wrap" }}
+              >
+                <ThemeModeToggle />
+                <TrackerControls
                 showCharacterForm={tracker.showCharacterForm}
                 showDungeonForm={tracker.showDungeonForm}
                 onToggleCharacterForm={tracker.toggleCharacterForm}
@@ -38,6 +45,7 @@ function App() {
                 showAddFromTemplate={tracker.dungeons.length === 0}
                 onAddFromTemplate={tracker.handleAddFromTemplate}
               />
+              </Stack>
             }
           />
           <AppIntro visible={showIntro} />
