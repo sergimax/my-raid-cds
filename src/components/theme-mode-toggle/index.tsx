@@ -1,7 +1,7 @@
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { IconButton, Tooltip } from "@mui/material";
-import { useColorMode } from "../../hooks/use-color-mode.tsx";
+import { useColorMode } from "../../hooks/use-color-mode.ts";
 
 export function ThemeModeToggle() {
   const { mode, toggleMode } = useColorMode();
