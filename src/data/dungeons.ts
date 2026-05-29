@@ -31,10 +31,6 @@ export const ruRaidNameToEn: Readonly<Record<string, string>> = Object.fromEntri
   Object.values(RaidNames).map((pair) => [pair.ru, pair.en])
 );
 
-/** Lookup for emblem on load when older saves omit `emblem`. */
-export const ruRaidNameToEmblem: Readonly<Record<string, (typeof RaidNames)[keyof typeof RaidNames]["emblem"]>> =
-  Object.fromEntries(Object.values(RaidNames).map((pair) => [pair.ru, pair.emblem]));
-
 /** Russian name with original English in parentheses when known (template raids). */
 export function formatRaidNameRuWithEn(ruName: string): string {
   const en = ruRaidNameToEn[ruName];
@@ -49,98 +45,84 @@ export const DungeonList: Array<Dungeon> = [
     size: 10,
     itemLevel: [200],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.naxxramas.emblem,
   },
   {
     name: R.naxxramas.ru,
     size: 25,
     itemLevel: [213],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.naxxramas.emblem,
   },
   {
     name: R.obsidianSanctum.ru,
     size: 10,
     itemLevel: [200, 213],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.obsidianSanctum.emblem,
   },
   {
     name: R.obsidianSanctum.ru,
     size: 25,
     itemLevel: [213, 226],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.obsidianSanctum.emblem,
   },
   {
     name: R.onyxiasLair.ru,
     size: 10,
     itemLevel: [232],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.onyxiasLair.emblem,
   },
   {
     name: R.onyxiasLair.ru,
     size: 25,
     itemLevel: [245],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.onyxiasLair.emblem,
   },
   {
     name: R.vaultOfArchavon.ru,
     size: 10,
     itemLevel: [232, 251],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.vaultOfArchavon.emblem,
   },
   {
     name: R.vaultOfArchavon.ru,
     size: 25,
     itemLevel: [245, 264],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.vaultOfArchavon.emblem,
   },
   {
     name: R.trialOfTheCrusader.ru,
     size: 10,
     itemLevel: [232],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.trialOfTheCrusader.emblem,
   },
   {
     name: R.trialOfTheCrusader.ru,
     size: 10,
     itemLevel: [245],
     difficulty: DungeonDifficulty.HEROIC,
-    emblem: R.trialOfTheCrusader.emblem,
   },
   {
     name: R.trialOfTheCrusader.ru,
     size: 25,
     itemLevel: [245],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.trialOfTheCrusader.emblem,
   },
   {
     name: R.trialOfTheCrusader.ru,
     size: 25,
     itemLevel: [258],
     difficulty: DungeonDifficulty.HEROIC,
-    emblem: R.trialOfTheCrusader.emblem,
   },
   {
     name: R.ulduar.ru,
     size: 10,
     itemLevel: [219, 232],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.ulduar.emblem,
   },
   {
     name: R.ulduar.ru,
     size: 25,
     itemLevel: [226, 239],
     difficulty: DungeonDifficulty.NORMAL,
-    emblem: R.ulduar.emblem,
   },
   {
     name: R.icecrownCitadel.ru,
