@@ -50,7 +50,7 @@ if (typeof document !== "undefined") {
 }
 
 export function ColorModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setModeState] = useState<ColorMode>(getInitialColorMode);
+  const [mode, setModeState] = useState<ColorMode>(() => getInitialColorMode());
 
   useEffect(() => {
     document.documentElement.dataset.colorMode = mode;
