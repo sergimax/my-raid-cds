@@ -5,26 +5,29 @@ export type CompletionChipFill = {
   color: string;
 };
 
-/** Ratio thresholds: red → orange → amber → yellow → sky → blue → cyan → green. */
+const DARK_TEXT = "#422006";
+
+/**
+ * Ratio thresholds: gray (none) → red → orange → amber/yellow → gold → sky → blue → cyan → green.
+ * Pairs target WCAG AA contrast (≥4.5:1) for small chip labels.
+ */
 const PROGRESS_STOPS: readonly { minRatio: number; backgroundColor: string; color: string }[] =
   [
     { minRatio: 0.001, backgroundColor: "#dc2626", color: "#ffffff" },
-    { minRatio: 0.125, backgroundColor: "#ea580c", color: "#ffffff" },
-    { minRatio: 0.25, backgroundColor: "#f59e0b", color: "#ffffff" },
-    { minRatio: 0.375, backgroundColor: "#eab308", color: "#422006" },
-    { minRatio: 0.5, backgroundColor: "#ca8a04", color: "#ffffff" },
-    { minRatio: 0.625, backgroundColor: "#0ea5e9", color: "#ffffff" },
+    { minRatio: 0.125, backgroundColor: "#c2410c", color: "#ffffff" },
+    { minRatio: 0.25, backgroundColor: "#f59e0b", color: DARK_TEXT },
+    { minRatio: 0.375, backgroundColor: "#eab308", color: DARK_TEXT },
+    { minRatio: 0.5, backgroundColor: "#a16207", color: "#ffffff" },
+    { minRatio: 0.625, backgroundColor: "#0369a1", color: "#ffffff" },
     { minRatio: 0.75, backgroundColor: "#2563eb", color: "#ffffff" },
-    { minRatio: 0.875, backgroundColor: "#06b6d4", color: "#ffffff" },
-    { minRatio: 1, backgroundColor: "#16a34a", color: "#ffffff" },
+    { minRatio: 0.875, backgroundColor: "#0e7490", color: "#ffffff" },
+    { minRatio: 1, backgroundColor: "#15803d", color: "#ffffff" },
   ];
 
 function grayFill(theme: Theme): CompletionChipFill {
-  const isDark = theme.palette.mode === "dark";
-  return {
-    backgroundColor: isDark ? theme.palette.grey[700] : theme.palette.grey[400],
-    color: isDark ? theme.palette.grey[100] : theme.palette.grey[900],
-  };
+  return theme.palette.mode === "dark"
+    ? { backgroundColor: "#52525b", color: "#fafafa" }
+    : { backgroundColor: "#9ca3af", color: "#111827" };
 }
 
 function progressFill(ratio: number): CompletionChipFill {
