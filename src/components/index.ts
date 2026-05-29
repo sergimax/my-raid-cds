@@ -1,5 +1,5 @@
-export { AppFooter } from "./app-footer/index.tsx";
 export { AppHeader } from "./app-header/index.tsx";
+export { AppMetaInfo, AppVersionLabel } from "./app-meta-info/index.tsx";
 export { AppIntro } from "./app-intro/index.tsx";
 export { CharacterForm } from "./character-form/index.tsx";
 export { CompletionSummary } from "./completion-summary/index.tsx";
