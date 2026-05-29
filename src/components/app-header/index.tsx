@@ -1,4 +1,4 @@
-import { AppBar, Box, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Container, Toolbar, Typography } from "@mui/material";
 import { AppMetaInfo, AppVersionLabel } from "../app-meta-info/index.tsx";
 import { ThemeModeToggle } from "../theme-mode-toggle/index.tsx";
 import type { AppHeaderProps } from "./types.ts";
@@ -17,54 +17,51 @@ export function AppHeader({ center }: AppHeaderProps) {
         borderColor: "divider",
       }}
     >
-      <Toolbar
-        disableGutters
-        sx={{
-          px: { xs: 2, sm: 3 },
-          py: 1,
-          gap: 1.5,
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: 0.75,
-            flexShrink: 0,
-          }}
-        >
-          <Typography component="h1" variant="h5">
-            My Raid CDs
-          </Typography>
-          <AppVersionLabel />
-        </Box>
-        {center ? (
+      <Container maxWidth={false} disableGutters sx={{ px: { xs: 2, sm: 3 } }}>
+        <Toolbar disableGutters sx={{ gap: 2, minHeight: { xs: 56, sm: 64 } }}>
           <Box
             sx={{
               display: "flex",
-              flexWrap: "wrap",
               alignItems: "center",
               gap: 1,
+              flexShrink: 0,
+              mr: 1,
             }}
           >
-            {center}
+            <Typography component="h1" variant="h6" noWrap>
+              My Raid CDs
+            </Typography>
+            <AppVersionLabel />
           </Box>
-        ) : null}
-        <Box
-          sx={{
-            ml: "auto",
-            flexShrink: 0,
-            display: "flex",
-            alignItems: "center",
-            gap: 0.25,
-          }}
-        >
-          <ThemeModeToggle />
-          <AppMetaInfo />
-        </Box>
-      </Toolbar>
+
+          {center ? (
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap",
+                gap: 1,
+                minWidth: 0,
+              }}
+            >
+              {center}
+            </Box>
+          ) : null}
+
+          <Box
+            sx={{
+              flexGrow: 0,
+              display: "flex",
+              alignItems: "center",
+              flexShrink: 0,
+            }}
+          >
+            <ThemeModeToggle />
+            <AppMetaInfo />
+          </Box>
+        </Toolbar>
+      </Container>
     </AppBar>
   );
 }

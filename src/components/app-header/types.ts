@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
 export type AppHeaderProps = {
-  /** Tracker controls (toolbar, after title). */
+  /** Tracker actions in the toolbar center (flexGrow), like MUI responsive AppBar nav. */
   center?: ReactNode;
 };
