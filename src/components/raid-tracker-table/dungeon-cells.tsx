@@ -1,5 +1,6 @@
-import { Box, Chip, Stack, Typography } from "@mui/material";
+import { Box, Chip, Stack, Typography, useTheme } from "@mui/material";
 import { DungeonDifficulty, type DungeonDifficulty as DungeonDifficultyType } from "../../types/dungeons.ts";
+import { completionChipFill } from "../../utils/completion-chip-color.ts";
 import {
   dungeonNameTierClassName,
   getItemLevelTier,
@@ -92,6 +93,32 @@ export function DungeonSizeCell({ size }: { size: number }) {
       label={size}
       sx={{
         maxWidth: "100%",
+        "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" },
+      }}
+    />
+  );
+}
+
+export function CompletionCountChip({
+  completed,
+  total,
+}: {
+  completed: number;
+  total: number;
+}) {
+  const theme = useTheme();
+  const fill = completionChipFill(completed, total, theme);
+
+  return (
+    <Chip
+      size="small"
+      variant="filled"
+      label={`${completed}/${total}`}
+      sx={{
+        fontVariantNumeric: "tabular-nums",
+        maxWidth: "100%",
+        bgcolor: fill.backgroundColor,
+        color: fill.color,
         "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" },
       }}
     />

@@ -10,7 +10,6 @@ import {
   TableHead,
   TableRow,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { type CharacterRecord } from "../../types/characters.ts";
@@ -38,6 +37,7 @@ import {
 } from "./table-layout.ts";
 import { CharacterHeaderCell } from "./character-header-cell.tsx";
 import {
+  CompletionCountChip,
   DungeonDifficultyCell,
   DungeonNameCell,
   DungeonSizeCell,
@@ -278,9 +278,10 @@ export function RaidTrackerTable({
                 align="center"
                 sx={pinnedCellSx(PINNED_LEFT.complete, PINNED_WIDTHS.complete)}
               >
-                <Typography variant="body2" color="text.secondary">
-                  {completionsByDungeonId[dungeon.id] ?? 0}/{characterCount}
-                </Typography>
+                <CompletionCountChip
+                  completed={completionsByDungeonId[dungeon.id] ?? 0}
+                  total={characterCount}
+                />
               </TableCell>
               {characters.map((character: CharacterRecord) => (
                 <TableCell
