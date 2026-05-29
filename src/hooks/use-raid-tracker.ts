@@ -206,10 +206,25 @@ export function useRaidTracker() {
     return false;
   }, [dungeonToggles]);
 
+  const closeCharacterForm = useCallback(() => {
+    setShowCharacterForm(false);
+    setCharacterFormError("");
+  }, []);
+
+  const closeDungeonForm = useCallback(() => {
+    setShowDungeonForm(false);
+    setDungeonFormError("");
+  }, []);
+
   const toggleCharacterForm = useCallback(() => {
     setShowCharacterForm((previous) => {
       const next = !previous;
-      if (next) setShowDungeonForm(false);
+      if (!next) {
+        setCharacterFormError("");
+      } else {
+        setShowDungeonForm(false);
+        setDungeonFormError("");
+      }
       return next;
     });
   }, []);
@@ -217,7 +232,12 @@ export function useRaidTracker() {
   const toggleDungeonForm = useCallback(() => {
     setShowDungeonForm((previous) => {
       const next = !previous;
-      if (next) setShowCharacterForm(false);
+      if (!next) {
+        setDungeonFormError("");
+      } else {
+        setShowCharacterForm(false);
+        setCharacterFormError("");
+      }
       return next;
     });
   }, []);
@@ -266,6 +286,8 @@ export function useRaidTracker() {
 
     showCharacterForm,
     showDungeonForm,
+    closeCharacterForm,
+    closeDungeonForm,
     toggleCharacterForm,
     toggleDungeonForm,
 

@@ -7,5 +7,6 @@ export type CharacterFormProps = {
   error: string;
   onNameChange: (name: string) => void;
   onClassChange: (characterClass: CharacterClass | "") => void;
+  onCancel: () => void;
   onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
 };

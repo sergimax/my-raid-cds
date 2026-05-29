@@ -14,5 +14,6 @@ export type DungeonFormProps = {
   onSizeChange: (size: DungeonSize) => void;
   onItemLevelTextChange: (text: string) => void;
   onDifficultyChange: (difficulty: DungeonDifficulty) => void;
+  onCancel: () => void;
   onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
 };
