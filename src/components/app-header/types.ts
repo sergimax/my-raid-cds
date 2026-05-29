@@ -1,2 +1,6 @@
-/** Reserved — `AppHeader` currently takes no props. */
-export type AppHeaderProps = Record<string, never>;
+import type { ReactNode } from "react";
+
+export type AppHeaderProps = {
+  /** Tracker actions in the toolbar center (flexGrow), like MUI responsive AppBar nav. */
+  center?: ReactNode;
+};

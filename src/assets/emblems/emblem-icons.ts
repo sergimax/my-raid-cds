@@ -1,8 +1,8 @@
-import conquestIcon from "./conquest.png";
-import frostIcon from "./frost.png";
-import heroismIcon from "./heroism.png";
-import triumphIcon from "./triumph.png";
-import valorIcon from "./valor.png";
+import conquestIcon from "./conquest.webp";
+import frostIcon from "./frost.webp";
+import heroismIcon from "./heroism.webp";
+import triumphIcon from "./triumph.webp";
+import valorIcon from "./valor.webp";
 
 export const EmblemKey = {
   CONQUEST: "conquest",

@@ -15,21 +15,35 @@
   --text-muted: #52525b;
   --border: #e4e4e7;
   --surface: #ffffff;
+  --page-bg: #f4f4f5;
+  --link: #2563eb;
+  --link-hover: #1d4ed8;
 
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light;
   color: var(--text);
-  background-color: #f4f4f5;
+  background-color: var(--page-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root[data-color-mode="dark"] {
+  --text: #fafafa;
+  --text-muted: #a1a1aa;
+  --border: #3f3f46;
+  --surface: #27272a;
+  --page-bg: #18181b;
+  --link: #60a5fa;
+  --link-hover: #93c5fd;
+  color-scheme: dark;
+}
+
 a {
-  color: #2563eb;
+  color: var(--link);
   text-decoration: none;
 }
 

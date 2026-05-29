@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-05-29
+
+### Added
+
+- **Light/dark theme:** Toolbar toggle; preference saved to `localStorage` (`my-raid-cds-color-mode`); falls back to system `prefers-color-scheme` when unset.
+- **Pre-paint theme sync** in `index.html` (same storage key) to avoid a light flash on load; updates `theme-color` meta and `data-color-mode` on `<html>`.
+- **Sticky MUI AppBar** header: app name, version label (`v.x.y.z`), tracker actions, theme toggle, and GitHub link (tooltip: author attribution).
+
+### Changed
+
+- **App header:** Rebuilt with MUI `AppBar` / `Toolbar` (responsive nav-style layout); tracker controls use compact toolbar buttons.
+- **Author/version UI:** Moved from footer into the header (`AppVersionLabel`, `AppMetaInfo` with GitHub icon).
+- **Theming:** MUI theme via `AppThemeProvider` and `createAppTheme`; global CSS variables in `index.css` switch with `data-color-mode`.
+- **Emblem assets:** PNG emblems replaced with WebP.
+- **Dev experience:** Split color mode provider/hook into separate modules to satisfy Fast Refresh rules.
+- **Scrolling:** Add `scroll-padding-top` to account for the sticky header; share header min-height via `--app-toolbar-min-height`.
+
+### Removed
+
+- **`AppFooter`** and footer styles (metadata now in the header).
+
 ## [1.4.0] - 2026-05-28
 
 ### Added

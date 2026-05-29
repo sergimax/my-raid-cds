@@ -40,8 +40,9 @@ Open [http://localhost:5173](http://localhost:5173).
 8. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
 9. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
 10. **Delete** — Delete icon on each dungeon row removes that dungeon; remove icon in a character header removes that character.
+11. **Theme** — Sun/moon icon in the header toggles light/dark mode (saved in `localStorage`; uses system preference when unset).
 
-The footer shows the app version (from `package.json`, injected at build time), a link to the author on GitHub, and a link to Cursor.
+The sticky header shows the app name, version (`v.x.y.z` from `package.json` at build time), tracker actions, theme toggle, and a GitHub icon (tooltip: author attribution).
 
 Data is saved automatically (debounced) to `localStorage` under the key `my-raid-cds`.
 
@@ -81,9 +82,10 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 ```
 src/
-├── components/       # app-footer, app-header, app-intro, character-form, class-option-label,
-│                     # dungeon-form, raid-tracker-table (+ dungeon-cells, header cells), tracker-controls, …
-├── hooks/            # use-raid-tracker.ts (useRaidTracker)
+├── components/       # app-header, app-meta-info, app-theme-provider, app-intro, character-form,
+│                     # theme-mode-toggle, dungeon-form, raid-tracker-table, tracker-controls, …
+├── hooks/            # use-raid-tracker.ts, color-mode.ts, color-mode-provider.tsx, use-color-mode.ts
+├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons
 ├── data/             # dungeons.ts (RaidNames, DungeonList template)
 ├── utils/            # completion-counts, filter/sort dungeons, item-level tiers, parse-item-level-input, …

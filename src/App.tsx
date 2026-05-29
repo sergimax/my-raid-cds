@@ -1,5 +1,4 @@
 import {
-  AppFooter,
   AppHeader,
   AppIntro,
   CharacterForm,
@@ -19,6 +18,20 @@ function App() {
 
   return (
     <div className="app-shell">
+      <AppHeader
+        center={
+          <TrackerControls
+            showCharacterForm={tracker.showCharacterForm}
+            showDungeonForm={tracker.showDungeonForm}
+            onToggleCharacterForm={tracker.toggleCharacterForm}
+            onToggleDungeonForm={tracker.toggleDungeonForm}
+            onResetAllToggles={tracker.handleResetAllToggles}
+            resetAllTogglesDisabled={!tracker.canResetAllToggles}
+            showAddFromTemplate={tracker.dungeons.length === 0}
+            onAddFromTemplate={tracker.handleAddFromTemplate}
+          />
+        }
+      />
       <Container
         className="app-main"
         component="main"
@@ -26,20 +39,6 @@ function App() {
         disableGutters
       >
         <Stack spacing={2}>
-          <AppHeader
-            actions={
-              <TrackerControls
-                showCharacterForm={tracker.showCharacterForm}
-                showDungeonForm={tracker.showDungeonForm}
-                onToggleCharacterForm={tracker.toggleCharacterForm}
-                onToggleDungeonForm={tracker.toggleDungeonForm}
-                onResetAllToggles={tracker.handleResetAllToggles}
-                resetAllTogglesDisabled={!tracker.canResetAllToggles}
-                showAddFromTemplate={tracker.dungeons.length === 0}
-                onAddFromTemplate={tracker.handleAddFromTemplate}
-              />
-            }
-          />
           <AppIntro visible={showIntro} />
 
           {tracker.storageError ? (
@@ -83,8 +82,6 @@ function App() {
           />
         </Stack>
       </Container>
-
-      <AppFooter />
     </div>
   );
 }
