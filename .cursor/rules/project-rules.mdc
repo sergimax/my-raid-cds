@@ -40,7 +40,7 @@ Example: `feat(auth): add login form`
 ## Versioning & Changelog
 
 - Use [Semantic Versioning](https://semver.org/): MAJOR.MINOR.PATCH
-- Version lives in `package.json`; shown in footer via Vite `define`
+- Version lives in `package.json`; shown in the app header via Vite `define` (`AppVersionLabel`)
 - When releasing: bump `package.json` version, then add a `CHANGELOG.md` entry
 - Changelog entries must describe **actual user-facing changes** included in the release (derived from commits/diff since the previous release), not just “bump version”
 
@@ -74,7 +74,9 @@ Example: `feat(auth): add login form`
 - `data/dungeons.ts` — `RaidNames`, `DungeonList` template (WoW WotLK raids, Russian names; per-raid `emblem` preset)
 - Dungeons use `difficulty` (Normal/Heroic); optional `emblem` for display; legacy saves with `mode` are migrated on load; missing `emblem` backfilled from `RaidNames` on load
 - Production `vite.config.ts` uses `manualChunks` for React / MUI vendor splits
-- App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`)
+- App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`; label in `app-meta-info`)
+- Light/dark mode: `ColorModeProvider` + `useColorMode`; `localStorage` key `my-raid-cds-color-mode`; pre-paint script in `index.html`; CSS vars via `:root[data-color-mode]` in `index.css`
+- Sticky header: MUI `AppBar` in `app-header/` (tracker actions, theme toggle, GitHub meta)
 - Follow existing patterns; check README before adding dependencies
 
 ## Key Behaviors
@@ -97,8 +99,9 @@ Example: `feat(auth): add login form`
 
 ```
 src/
-├── components/   # app-footer, app-header, character-form, dungeon-form, raid-tracker-table, tracker-controls, …
-├── hooks/        # use-raid-tracker.ts (useRaidTracker)
+├── components/   # app-header, app-meta-info, app-theme-provider, theme-mode-toggle, character-form, raid-tracker-table, tracker-controls, …
+├── hooks/        # use-raid-tracker.ts, color-mode.ts, color-mode-provider.tsx, use-color-mode.ts
+├── theme/        # create-app-theme.ts
 ├── types/        # characters, dungeons
 ├── data/         # dungeons.ts (RaidNames, DungeonList)
 ├── utils/        # completion-counts, filter/sort dungeons, item-level tiers, …
