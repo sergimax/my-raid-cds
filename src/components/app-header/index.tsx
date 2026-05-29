@@ -18,7 +18,10 @@ export function AppHeader({ center }: AppHeaderProps) {
       }}
     >
       <Container maxWidth={false} disableGutters sx={{ px: { xs: 2, sm: 3 } }}>
-        <Toolbar disableGutters sx={{ gap: 2, minHeight: { xs: 56, sm: 64 } }}>
+        <Toolbar
+          disableGutters
+          sx={{ gap: 2, minHeight: "var(--app-toolbar-min-height)" }}
+        >
           <Box
             sx={{
               display: "flex",

@@ -1,3 +1,19 @@
+/* Match app-header Toolbar minHeight (xs: 56, sm: 64). */
+:root {
+  --app-toolbar-min-height: 56px;
+}
+
+@media (min-width: 600px) {
+  :root {
+    --app-toolbar-min-height: 64px;
+  }
+}
+
+/* Sticky AppBar: keep scrolled content from sitting under the toolbar. */
+html {
+  scroll-padding-top: var(--app-toolbar-min-height);
+}
+
 .app-shell {
   min-height: 100vh;
   display: flex;
@@ -6,8 +22,10 @@
 
 .app-main {
   flex: 1;
-  padding-top: 1.5rem;
+  /* Header is a sibling in normal flow; this is gap below the bar, not bar height. */
+  padding-top: 2rem;
   padding-bottom: 1rem;
   padding-left: 1.5rem;
   padding-right: 1.5rem;
+  scroll-margin-top: var(--app-toolbar-min-height);
 }
