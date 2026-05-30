@@ -237,11 +237,11 @@ export function useRaidTracker() {
         resetCharacterFormFields();
       } else {
         setShowDungeonForm(false);
-        setDungeonFormError("");
+        resetDungeonFormFields();
       }
       return next;
     });
-  }, [resetCharacterFormFields]);
+  }, [resetCharacterFormFields, resetDungeonFormFields]);
 
   const toggleDungeonForm = useCallback(() => {
     setShowDungeonForm((previous) => {
@@ -250,11 +250,11 @@ export function useRaidTracker() {
         resetDungeonFormFields();
       } else {
         setShowCharacterForm(false);
-        setCharacterFormError("");
+        resetCharacterFormFields();
       }
       return next;
     });
-  }, [resetDungeonFormFields]);
+  }, [resetDungeonFormFields, resetCharacterFormFields]);
 
   const setNewCharacterNameWithClear = useCallback((name: string) => {
     setNewCharacterName(name);
