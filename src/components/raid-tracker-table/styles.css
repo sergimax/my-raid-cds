@@ -123,3 +123,11 @@
 .raid-tracker-table__dungeon-search .MuiInputBase-input {
   padding: 4px 8px;
 }
+
+.raid-tracker-table--compact .raid-tracker-table__dungeon-name-header .MuiTableSortLabel-root {
+  font-size: 0.8rem;
+}
+
+.raid-tracker-table--compact .raid-tracker-table__dungeon-search .MuiInputBase-root {
+  font-size: 0.75rem;
+}
