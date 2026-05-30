@@ -206,41 +206,55 @@ export function useRaidTracker() {
     return false;
   }, [dungeonToggles]);
 
-  const closeCharacterForm = useCallback(() => {
-    setShowCharacterForm(false);
+  const resetCharacterFormFields = useCallback(() => {
+    setNewCharacterName("");
+    setNewCharacterClass("");
     setCharacterFormError("");
   }, []);
 
-  const closeDungeonForm = useCallback(() => {
-    setShowDungeonForm(false);
+  const resetDungeonFormFields = useCallback(() => {
+    setNewDungeonName("");
+    setNewDungeonSize(10);
+    setNewDungeonItemLevelText("200");
+    setNewDungeonDifficulty(DungeonDifficulty.NORMAL);
     setDungeonFormError("");
   }, []);
+
+  const closeCharacterForm = useCallback(() => {
+    setShowCharacterForm(false);
+    resetCharacterFormFields();
+  }, [resetCharacterFormFields]);
+
+  const closeDungeonForm = useCallback(() => {
+    setShowDungeonForm(false);
+    resetDungeonFormFields();
+  }, [resetDungeonFormFields]);
 
   const toggleCharacterForm = useCallback(() => {
     setShowCharacterForm((previous) => {
       const next = !previous;
       if (!next) {
-        setCharacterFormError("");
+        resetCharacterFormFields();
       } else {
         setShowDungeonForm(false);
         setDungeonFormError("");
       }
       return next;
     });
-  }, []);
+  }, [resetCharacterFormFields]);
 
   const toggleDungeonForm = useCallback(() => {
     setShowDungeonForm((previous) => {
       const next = !previous;
       if (!next) {
-        setDungeonFormError("");
+        resetDungeonFormFields();
       } else {
         setShowCharacterForm(false);
         setCharacterFormError("");
       }
       return next;
     });
-  }, []);
+  }, [resetDungeonFormFields]);
 
   const setNewCharacterNameWithClear = useCallback((name: string) => {
     setNewCharacterName(name);
