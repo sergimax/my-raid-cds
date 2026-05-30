@@ -15,8 +15,6 @@ export function AppVersionLabel() {
         fontVariantNumeric: "tabular-nums",
         lineHeight: 1,
         display: "inline-block",
-        transform: "rotate(0deg)",
-        transformOrigin: "center",
       }}
     >
       v.{__APP_VERSION__}
