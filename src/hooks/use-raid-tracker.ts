@@ -206,21 +206,55 @@ export function useRaidTracker() {
     return false;
   }, [dungeonToggles]);
 
+  const resetCharacterFormFields = useCallback(() => {
+    setNewCharacterName("");
+    setNewCharacterClass("");
+    setCharacterFormError("");
+  }, []);
+
+  const resetDungeonFormFields = useCallback(() => {
+    setNewDungeonName("");
+    setNewDungeonSize(10);
+    setNewDungeonItemLevelText("200");
+    setNewDungeonDifficulty(DungeonDifficulty.NORMAL);
+    setDungeonFormError("");
+  }, []);
+
+  const closeCharacterForm = useCallback(() => {
+    setShowCharacterForm(false);
+    resetCharacterFormFields();
+  }, [resetCharacterFormFields]);
+
+  const closeDungeonForm = useCallback(() => {
+    setShowDungeonForm(false);
+    resetDungeonFormFields();
+  }, [resetDungeonFormFields]);
+
   const toggleCharacterForm = useCallback(() => {
     setShowCharacterForm((previous) => {
       const next = !previous;
-      if (next) setShowDungeonForm(false);
+      if (!next) {
+        resetCharacterFormFields();
+      } else {
+        setShowDungeonForm(false);
+        resetDungeonFormFields();
+      }
       return next;
     });
-  }, []);
+  }, [resetCharacterFormFields, resetDungeonFormFields]);
 
   const toggleDungeonForm = useCallback(() => {
     setShowDungeonForm((previous) => {
       const next = !previous;
-      if (next) setShowCharacterForm(false);
+      if (!next) {
+        resetDungeonFormFields();
+      } else {
+        setShowCharacterForm(false);
+        resetCharacterFormFields();
+      }
       return next;
     });
-  }, []);
+  }, [resetDungeonFormFields, resetCharacterFormFields]);
 
   const setNewCharacterNameWithClear = useCallback((name: string) => {
     setNewCharacterName(name);
@@ -266,6 +300,8 @@ export function useRaidTracker() {
 
     showCharacterForm,
     showDungeonForm,
+    closeCharacterForm,
+    closeDungeonForm,
     toggleCharacterForm,
     toggleDungeonForm,
 

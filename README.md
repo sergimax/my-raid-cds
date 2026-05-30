@@ -30,11 +30,11 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ## Usage
 
-1. **Add a character** — Click **Add character**, enter name (max 12 characters) and class, submit. Only one add form is open at a time.
-2. **Add a dungeon** — Click **Add dungeon**, enter name, size (5/10/20/25/40), item level(s) (e.g. `200` or `200 / 213`), and difficulty (Normal/Heroic), submit.
+1. **Add a character** — Click **Add character**, enter name (max 12 characters) and class, then **Add character** or **Cancel**. Only one add form is open at a time; closing or switching forms clears entered values.
+2. **Add a dungeon** — Click **Add dungeon**, enter name, size (5/10/20/25/40), item level(s) (e.g. `200` or `200 / 213`), and difficulty (Normal/Heroic), then **Add dungeon** or **Cancel**. Same single-form and reset rules as the character form.
 3. **Add from template** — When the dungeon list is empty, click **Add from template** to load WoW WotLK raids.
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
-5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows.
+5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows. On narrow screens (below `md`), the table shows only the actions column, dungeon name, and character toggles; size, mode, item level, and completion columns are hidden.
 6. **Search** — Use the search field under **Dungeon name** to filter rows by substring.
 7. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
 8. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
@@ -42,7 +42,7 @@ Open [http://localhost:5173](http://localhost:5173).
 10. **Delete** — Delete icon on each dungeon row removes that dungeon; remove icon in a character header removes that character.
 11. **Theme** — Sun/moon icon in the header toggles light/dark mode (saved in `localStorage`; uses system preference when unset).
 
-The sticky header shows the app name, version (`v.x.y.z` from `package.json` at build time), tracker actions, theme toggle, and a GitHub icon (tooltip: author attribution).
+The sticky header shows the app name, tracker actions (on narrow screens below `md`, a menu icon opens **Add from template**, **Add character**, **Add dungeon**, and **Reset all toggles**), theme toggle, a GitHub icon (tooltip: author attribution), and the version label (`v.x.y.z` from `package.json` at build time) on the right.
 
 Data is saved automatically (debounced) to `localStorage` under the key `my-raid-cds`.
 

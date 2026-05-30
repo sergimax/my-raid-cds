@@ -19,6 +19,7 @@ export function CharacterForm({
   error,
   onNameChange,
   onClassChange,
+  onCancel,
   onSubmit,
 }: CharacterFormProps) {
   const MAX_CHARACTER_NAME_LENGTH = 12;
@@ -78,9 +79,21 @@ export function CharacterForm({
               ))}
             </Select>
           </FormControl>
-          <Button variant="contained" color="primary" type="submit">
-            Add character
-          </Button>
+          <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
+            <Button
+              variant="text"
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                onCancel();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" type="submit">
+              Add character
+            </Button>
+          </Stack>
           {error ? (
             <Typography color="error" variant="body2">
               {error}

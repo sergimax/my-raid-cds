@@ -52,6 +52,7 @@ function App() {
               error={tracker.characterFormError}
               onNameChange={tracker.setNewCharacterName}
               onClassChange={tracker.setNewCharacterClass}
+              onCancel={tracker.closeCharacterForm}
               onSubmit={tracker.handleCharacterFormSubmit}
             />
           ) : null}
@@ -67,6 +68,7 @@ function App() {
               onSizeChange={tracker.setNewDungeonSize}
               onItemLevelTextChange={tracker.setNewDungeonItemLevelText}
               onDifficultyChange={tracker.setNewDungeonDifficulty}
+              onCancel={tracker.closeDungeonForm}
               onSubmit={tracker.handleDungeonFormSubmit}
             />
           ) : null}

@@ -20,7 +20,11 @@ export function AppHeader({ center }: AppHeaderProps) {
       <Container maxWidth={false} disableGutters sx={{ px: { xs: 2, sm: 3 } }}>
         <Toolbar
           disableGutters
-          sx={{ gap: 2, minHeight: "var(--app-toolbar-min-height)" }}
+          sx={{
+            gap: { xs: 1, sm: 2 },
+            minHeight: "var(--app-toolbar-min-height)",
+            flexWrap: "nowrap",
+          }}
         >
           <Box
             sx={{
@@ -31,10 +35,14 @@ export function AppHeader({ center }: AppHeaderProps) {
               mr: 1,
             }}
           >
-            <Typography component="h1" variant="h6" noWrap>
+            <Typography
+              component="h1"
+              variant="h6"
+              noWrap
+              sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+            >
               My Raid CDs
             </Typography>
-            <AppVersionLabel />
           </Box>
 
           {center ? (
@@ -43,7 +51,8 @@ export function AppHeader({ center }: AppHeaderProps) {
                 flexGrow: 1,
                 display: "flex",
                 alignItems: "center",
-                flexWrap: "wrap",
+                justifyContent: { xs: "flex-end", md: "center" },
+                flexWrap: "nowrap",
                 gap: 1,
                 minWidth: 0,
               }}
@@ -58,10 +67,12 @@ export function AppHeader({ center }: AppHeaderProps) {
               display: "flex",
               alignItems: "center",
               flexShrink: 0,
+              gap: 0.5,
             }}
           >
             <ThemeModeToggle />
             <AppMetaInfo />
+            <AppVersionLabel />
           </Box>
         </Toolbar>
       </Container>

@@ -27,6 +27,7 @@ export function DungeonForm({
   onSizeChange,
   onItemLevelTextChange,
   onDifficultyChange,
+  onCancel,
   onSubmit,
 }: DungeonFormProps) {
   return (
@@ -96,9 +97,21 @@ export function DungeonForm({
               </MenuItem>
             </Select>
           </FormControl>
-          <Button variant="contained" color="primary" type="submit">
-            Add dungeon
-          </Button>
+          <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
+            <Button
+              variant="text"
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                onCancel();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button variant="contained" color="primary" type="submit">
+              Add dungeon
+            </Button>
+          </Stack>
           {error ? (
             <Typography color="error" variant="body2">
               {error}

@@ -10,6 +10,8 @@ import {
   TableHead,
   TableRow,
   Tooltip,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { type CharacterRecord } from "../../types/characters.ts";
@@ -28,12 +30,10 @@ import type { RaidTrackerTableProps } from "./types.ts";
 import "./styles.css";
 import {
   CHARACTER_BODY_CELL_SX,
-  COMPLETE_COLUMN,
-  PINNED_LEFT,
-  PINNED_WIDTHS,
-  STATIC_COLUMNS,
-  pinnedCellSx,
-  pinnedHeaderCellSx,
+  pinnedActionsColumnSx,
+  pinnedBodySxForColumn,
+  pinnedColumnsForLayout,
+  pinnedHeaderSxForColumn,
 } from "./table-layout.ts";
 import { CharacterHeaderCell } from "./character-header-cell.tsx";
 import {
@@ -54,6 +54,13 @@ export function RaidTrackerTable({
   onDeleteDungeon,
   onResetCharacterToggles,
 }: RaidTrackerTableProps) {
+  const theme = useTheme();
+  const compactTable = useMediaQuery(theme.breakpoints.down("md"));
+  const visiblePinnedColumns = useMemo(
+    () => pinnedColumnsForLayout(compactTable),
+    [compactTable],
+  );
+
   const dungeonCount = dungeons.length;
   const characterCount = characters.length;
   const [sortKey, setSortKey] = useState<DungeonSortKey>("itemLevel");
@@ -139,7 +146,11 @@ export function RaidTrackerTable({
   return (
     <TableContainer sx={{ overflowX: "auto" }}>
       <Table
-        className="raid-tracker-table"
+        className={
+          compactTable
+            ? "raid-tracker-table raid-tracker-table--compact"
+            : "raid-tracker-table"
+        }
         size="small"
         stickyHeader
         sx={{ tableLayout: "fixed", width: "max-content" }}
@@ -147,10 +158,10 @@ export function RaidTrackerTable({
         <TableHead>
           <TableRow>
             <TableCell
-              sx={pinnedHeaderCellSx(PINNED_LEFT.actions, PINNED_WIDTHS.actions)}
+              sx={pinnedActionsColumnSx(compactTable, true)}
               aria-label="Row actions"
             />
-            {STATIC_COLUMNS.map((column) =>
+            {visiblePinnedColumns.map((column) =>
               column.key === "name" ? (
                 <DungeonNameHeaderCell
                   key={column.key}
@@ -159,7 +170,19 @@ export function RaidTrackerTable({
                   onSort={handleSort}
                   searchQuery={dungeonNameSearch}
                   onSearchQueryChange={setDungeonNameSearch}
-                  sx={pinnedHeaderCellSx(PINNED_LEFT.name, PINNED_WIDTHS.name)}
+                  sx={pinnedHeaderSxForColumn(column.key, compactTable)}
+                />
+              ) : column.key === "complete" ? (
+                <SortableHeaderCell
+                  key={column.key}
+                  label={<SportsScoreIcon fontSize="small" />}
+                  sortKey={column.sortKey}
+                  sortAriaLabel={column.label}
+                  activeSortKey={sortKey}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                  align="center"
+                  sx={pinnedHeaderSxForColumn(column.key, compactTable)}
                 />
               ) : (
                 <SortableHeaderCell
@@ -170,34 +193,10 @@ export function RaidTrackerTable({
                   activeSortKey={sortKey}
                   sortDirection={sortDirection}
                   onSort={handleSort}
-                  sx={
-                    column.key === "size"
-                      ? pinnedHeaderCellSx(PINNED_LEFT.size, PINNED_WIDTHS.size)
-                      : column.key === "difficulty"
-                        ? pinnedHeaderCellSx(
-                            PINNED_LEFT.difficulty,
-                            PINNED_WIDTHS.difficulty,
-                          )
-                        : column.key === "itemLevel"
-                          ? pinnedHeaderCellSx(
-                              PINNED_LEFT.itemLevel,
-                              PINNED_WIDTHS.itemLevel,
-                            )
-                          : undefined
-                  }
+                  sx={pinnedHeaderSxForColumn(column.key, compactTable)}
                 />
               ),
             )}
-            <SortableHeaderCell
-              label={<SportsScoreIcon fontSize="small" />}
-              sortKey={COMPLETE_COLUMN.sortKey}
-              sortAriaLabel={COMPLETE_COLUMN.label}
-              activeSortKey={sortKey}
-              sortDirection={sortDirection}
-              onSort={handleSort}
-              align="center"
-              sx={pinnedHeaderCellSx(PINNED_LEFT.complete, PINNED_WIDTHS.complete)}
-            />
             {characters.map((character: CharacterRecord) => (
               <CharacterHeaderCell
                 key={character.id}
@@ -221,7 +220,7 @@ export function RaidTrackerTable({
         <TableBody>
           {sortedDungeons.map((dungeon: DungeonRecord) => (
             <TableRow key={dungeon.id} hover>
-              <TableCell sx={pinnedCellSx(PINNED_LEFT.actions, PINNED_WIDTHS.actions)}>
+              <TableCell sx={pinnedActionsColumnSx(compactTable, false)}>
                 <Tooltip title={`Delete dungeon: ${dungeon.name}`}>
                   <IconButton
                     size="small"
@@ -235,26 +234,11 @@ export function RaidTrackerTable({
                   </IconButton>
                 </Tooltip>
               </TableCell>
-              {STATIC_COLUMNS.map((column) => (
+              {visiblePinnedColumns.map((column) => (
                 <TableCell
                   key={column.key}
-                  sx={
-                    column.key === "name"
-                      ? pinnedCellSx(PINNED_LEFT.name, PINNED_WIDTHS.name)
-                      : column.key === "size"
-                        ? pinnedCellSx(PINNED_LEFT.size, PINNED_WIDTHS.size)
-                        : column.key === "difficulty"
-                          ? pinnedCellSx(
-                              PINNED_LEFT.difficulty,
-                              PINNED_WIDTHS.difficulty,
-                            )
-                          : column.key === "itemLevel"
-                            ? pinnedCellSx(
-                                PINNED_LEFT.itemLevel,
-                                PINNED_WIDTHS.itemLevel,
-                              )
-                            : undefined
-                  }
+                  align={column.key === "complete" ? "center" : undefined}
+                  sx={pinnedBodySxForColumn(column.key, compactTable)}
                 >
                   {column.key === "name" ? (
                     <DungeonNameCell
@@ -268,21 +252,16 @@ export function RaidTrackerTable({
                     <DungeonDifficultyCell difficulty={dungeon.difficulty} />
                   ) : column.key === "itemLevel" ? (
                     <ItemLevelCell itemLevels={dungeon.itemLevel} />
+                  ) : column.key === "complete" ? (
+                    <CompletionCountChip
+                      completed={completionsByDungeonId[dungeon.id] ?? 0}
+                      total={characterCount}
+                    />
                   ) : (
                     formatDungeonCell(dungeon, column.key)
                   )}
                 </TableCell>
               ))}
-              <TableCell
-                key={COMPLETE_COLUMN.key}
-                align="center"
-                sx={pinnedCellSx(PINNED_LEFT.complete, PINNED_WIDTHS.complete)}
-              >
-                <CompletionCountChip
-                  completed={completionsByDungeonId[dungeon.id] ?? 0}
-                  total={characterCount}
-                />
-              </TableCell>
               {characters.map((character: CharacterRecord) => (
                 <TableCell
                   key={character.id}
