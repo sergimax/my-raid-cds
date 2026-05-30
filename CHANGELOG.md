@@ -7,14 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-05-30
+
 ### Changed
 
 - **Responsive header:** Below `md`, tracker actions use a menu icon instead of a wrapped button stack; toolbar stays a single row on narrow screens.
+- **Version label:** Moved to the header right (next to the GitHub link).
 - **Add character / Add dungeon forms:** Cancel and submit sit in one action row on all viewports (right-aligned).
+- **Raid tracker table (compact):** Below `md`, pinned size, difficulty, item level, and completion columns are hidden; dungeon name column and search/header controls use tighter spacing.
 
 ### Fixed
 
-- **Form Cancel:** Cancel closes the form via dedicated close handlers; dungeon and character forms no longer use toggle for dismiss.
+- **Add forms:** Cancel, toolbar dismiss, and opening the other form reset entered fields; Cancel uses dedicated close handlers instead of toggle.
 
 ## [1.7.0] - 2026-05-29
 
