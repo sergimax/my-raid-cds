@@ -11,7 +11,13 @@ export function AppVersionLabel() {
       variant="caption"
       color="text.secondary"
       aria-label={`Version ${__APP_VERSION__}`}
-      sx={{ fontVariantNumeric: "tabular-nums", lineHeight: 1 }}
+      sx={{
+        fontVariantNumeric: "tabular-nums",
+        lineHeight: 1,
+        display: "inline-block",
+        transform: "rotate(0deg)",
+        transformOrigin: "center",
+      }}
     >
       v.{__APP_VERSION__}
     </Typography>

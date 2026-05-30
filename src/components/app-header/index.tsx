@@ -43,7 +43,6 @@ export function AppHeader({ center }: AppHeaderProps) {
             >
               My Raid CDs
             </Typography>
-            <AppVersionLabel />
           </Box>
 
           {center ? (
@@ -68,10 +67,12 @@ export function AppHeader({ center }: AppHeaderProps) {
               display: "flex",
               alignItems: "center",
               flexShrink: 0,
+              gap: 0.5,
             }}
           >
             <ThemeModeToggle />
             <AppMetaInfo />
+            <AppVersionLabel />
           </Box>
         </Toolbar>
       </Container>
