@@ -26,17 +26,6 @@ export const RaidNames = {
   rubySanctum: { ru: "Рубиновое святилище", en: "The Ruby Sanctum", emblem: EmblemKey.FROST },
 } as const;
 
-/** Lookup for English display: stored `Dungeon.name` (RU) → EN. */
-export const ruRaidNameToEn: Readonly<Record<string, string>> = Object.fromEntries(
-  Object.values(RaidNames).map((pair) => [pair.ru, pair.en])
-);
-
-/** Russian name with original English in parentheses when known (template raids). */
-export function formatRaidNameRuWithEn(ruName: string): string {
-  const en = ruRaidNameToEn[ruName];
-  return en ? `${ruName} (${en})` : ruName;
-}
-
 const R = RaidNames;
 
 export const DungeonList: Array<Dungeon> = [
