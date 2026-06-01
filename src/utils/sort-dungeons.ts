@@ -2,6 +2,7 @@ import {
   DungeonDifficulty,
   type DungeonDifficulty as DungeonDifficultyValue,
   type DungeonRecord,
+  type DungeonToggles,
 } from "../types/dungeons.ts";
 import { getStartingItemLevel } from "./item-level-tier.ts";
 
@@ -68,6 +69,24 @@ export function sortDungeons(
         firstDungeon.name.localeCompare(secondDungeon.name) ||
         firstDungeon.size - secondDungeon.size;
     }
+    return direction === "asc" ? comparison : -comparison;
+  });
+  return sorted;
+}
+
+export function sortDungeonsByCharacterToggle(
+  list: DungeonRecord[],
+  characterId: string,
+  direction: SortDirection,
+  dungeonToggles: DungeonToggles,
+): DungeonRecord[] {
+  const sorted = [...list].sort((firstDungeon, secondDungeon) => {
+    const firstValue = dungeonToggles[characterId]?.[firstDungeon.id] ? 1 : 0;
+    const secondValue = dungeonToggles[characterId]?.[secondDungeon.id] ? 1 : 0;
+    const comparison =
+      firstValue - secondValue ||
+      firstDungeon.name.localeCompare(secondDungeon.name) ||
+      firstDungeon.size - secondDungeon.size;
     return direction === "asc" ? comparison : -comparison;
   });
   return sorted;
