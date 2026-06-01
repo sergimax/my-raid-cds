@@ -12,6 +12,7 @@ import { MAX_CHARACTER_NAME_LENGTH } from "../../constants/character.ts";
 import { Classes } from "../../types/characters.ts";
 import { ClassOptionLabel } from "../class-option-label/index.tsx";
 import { FormActionsRow } from "../form-actions-row/index.tsx";
+import { FormErrorMessage } from "../form-error-message/index.tsx";
 import type { CharacterFormProps } from "./types.ts";
 
 export function CharacterForm({
@@ -80,11 +81,7 @@ export function CharacterForm({
             </Select>
           </FormControl>
           <FormActionsRow submitLabel="Add character" onCancel={onCancel} />
-          {error ? (
-            <Typography color="error" variant="body2">
-              {error}
-            </Typography>
-          ) : null}
+          {error ? <FormErrorMessage message={error} /> : null}
         </Stack>
       </form>
     </Box>

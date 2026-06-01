@@ -1,23 +1,18 @@
 import { TableCell, TableRow, Typography } from "@mui/material";
 import {
+  emptyStateMessage,
+  type RaidTrackerTableEmptyVariant,
+} from "./raid-tracker-table-empty-state.ts";
+import {
   raidTrackerTableColumnCount,
   type PinnedColumnDef,
 } from "./table-layout.ts";
-
-export type RaidTrackerTableEmptyVariant = "no-dungeons" | "no-search-matches";
 
 type RaidTrackerTableEmptyStateProps = {
   variant: RaidTrackerTableEmptyVariant;
   visiblePinnedColumns: ReadonlyArray<PinnedColumnDef>;
   characterCount: number;
 };
-
-function emptyStateMessage(variant: RaidTrackerTableEmptyVariant): string {
-  if (variant === "no-dungeons") {
-    return "Add a dungeon or use Add from template to get started.";
-  }
-  return "No dungeons match your search.";
-}
 
 export function RaidTrackerTableEmptyState({
   variant,
@@ -32,7 +27,12 @@ export function RaidTrackerTableEmptyState({
   return (
     <TableRow>
       <TableCell colSpan={columnCount} align="center" sx={{ py: 3 }}>
-        <Typography variant="body2" color="text.secondary">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          role="status"
+          aria-live="polite"
+        >
           {emptyStateMessage(variant)}
         </Typography>
       </TableCell>

@@ -3,6 +3,7 @@ import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import { DungeonTableRow } from "./dungeon-table-row.tsx";
 import { RaidTrackerDeleteDialog } from "./raid-tracker-delete-dialog.tsx";
+import { raidTrackerTableAriaLabel } from "./raid-tracker-table-empty-state.ts";
 import { RaidTrackerTableEmptyState } from "./raid-tracker-table-empty-state.tsx";
 import { RaidTrackerTableHead } from "./raid-tracker-table-head.tsx";
 import "./styles.css";
@@ -54,6 +55,7 @@ export function RaidTrackerTable() {
   return (
     <TableContainer sx={{ overflowX: "auto" }}>
       <Table
+        aria-label={raidTrackerTableAriaLabel(dungeons.length, sortedDungeons.length)}
         className={
           compactTable
             ? "raid-tracker-table raid-tracker-table--compact"

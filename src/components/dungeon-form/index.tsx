@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { FormActionsRow } from "../form-actions-row/index.tsx";
+import { FormErrorMessage } from "../form-error-message/index.tsx";
 import {
   DungeonDifficulty,
   DungeonSizes,
@@ -98,11 +99,7 @@ export function DungeonForm({
             </Select>
           </FormControl>
           <FormActionsRow submitLabel="Add dungeon" onCancel={onCancel} />
-          {error ? (
-            <Typography color="error" variant="body2">
-              {error}
-            </Typography>
-          ) : null}
+          {error ? <FormErrorMessage message={error} /> : null}
         </Stack>
       </form>
     </Box>

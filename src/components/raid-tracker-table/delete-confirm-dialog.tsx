@@ -24,6 +24,7 @@ export function DeleteConfirmDialog({
   onConfirm,
   onCancel,
 }: DeleteConfirmDialogProps) {
+  // MUI Dialog → Modal: focus trap, scroll lock, Escape to close, restore focus on exit.
   return (
     <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
       <DialogTitle>{title}</DialogTitle>
