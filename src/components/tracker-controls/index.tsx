@@ -9,18 +9,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { useCallback, useId, useState, type MouseEvent } from "react";
-import type { TrackerControlsProps } from "./types.ts";
+import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 
-export function TrackerControls({
-  showCharacterForm,
-  showDungeonForm,
-  onToggleCharacterForm,
-  onToggleDungeonForm,
-  onResetAllToggles,
-  resetAllTogglesDisabled = false,
-  showAddFromTemplate = false,
-  onAddFromTemplate,
-}: TrackerControlsProps) {
+export function TrackerControls() {
+  const tracker = useRaidTrackerContext();
+  const showAddFromTemplate = tracker.dungeons.length === 0;
+  const resetAllTogglesDisabled = !tracker.canResetAllToggles;
+
   const theme = useTheme();
   const menuLayout = useMediaQuery(theme.breakpoints.down("md"));
   const menuId = useId();
@@ -55,10 +50,10 @@ export function TrackerControls({
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           transformOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          {showAddFromTemplate && onAddFromTemplate ? (
+          {showAddFromTemplate ? (
             <MenuItem
               onClick={() => {
-                onAddFromTemplate();
+                tracker.handleAddFromTemplate();
                 closeMenu();
               }}
             >
@@ -66,18 +61,18 @@ export function TrackerControls({
             </MenuItem>
           ) : null}
           <MenuItem
-            selected={showCharacterForm}
+            selected={tracker.showCharacterForm}
             onClick={() => {
-              onToggleCharacterForm();
+              tracker.toggleCharacterForm();
               closeMenu();
             }}
           >
             Add character
           </MenuItem>
           <MenuItem
-            selected={showDungeonForm}
+            selected={tracker.showDungeonForm}
             onClick={() => {
-              onToggleDungeonForm();
+              tracker.toggleDungeonForm();
               closeMenu();
             }}
           >
@@ -86,7 +81,7 @@ export function TrackerControls({
           <MenuItem
             disabled={resetAllTogglesDisabled}
             onClick={() => {
-              onResetAllToggles();
+              tracker.handleResetAllToggles();
               closeMenu();
             }}
             sx={{ color: resetAllTogglesDisabled ? undefined : "warning.main" }}
@@ -110,31 +105,31 @@ export function TrackerControls({
         minWidth: 0,
       }}
     >
-      {showAddFromTemplate && onAddFromTemplate ? (
+      {showAddFromTemplate ? (
         <Button
           size="small"
           variant="contained"
           color="secondary"
-          onClick={onAddFromTemplate}
+          onClick={tracker.handleAddFromTemplate}
         >
           Add from template
         </Button>
       ) : null}
       <Button
         size="small"
-        variant={showCharacterForm ? "contained" : "outlined"}
+        variant={tracker.showCharacterForm ? "contained" : "outlined"}
         color="inherit"
-        aria-expanded={showCharacterForm}
-        onClick={onToggleCharacterForm}
+        aria-expanded={tracker.showCharacterForm}
+        onClick={tracker.toggleCharacterForm}
       >
         Add character
       </Button>
       <Button
         size="small"
-        variant={showDungeonForm ? "contained" : "outlined"}
+        variant={tracker.showDungeonForm ? "contained" : "outlined"}
         color="inherit"
-        aria-expanded={showDungeonForm}
-        onClick={onToggleDungeonForm}
+        aria-expanded={tracker.showDungeonForm}
+        onClick={tracker.toggleDungeonForm}
       >
         Add dungeon
       </Button>
@@ -143,7 +138,7 @@ export function TrackerControls({
         variant="text"
         color="warning"
         disabled={resetAllTogglesDisabled}
-        onClick={onResetAllToggles}
+        onClick={tracker.handleResetAllToggles}
       >
         Reset all toggles
       </Button>

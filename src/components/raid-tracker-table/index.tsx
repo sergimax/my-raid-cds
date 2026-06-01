@@ -1,21 +1,24 @@
 import { Table, TableBody, TableContainer } from "@mui/material";
+import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog.tsx";
 import { DungeonTableRow } from "./dungeon-table-row.tsx";
 import { RaidTrackerTableHead } from "./raid-tracker-table-head.tsx";
 import "./styles.css";
-import type { RaidTrackerTableProps } from "./types.ts";
 import { useRaidTrackerTableState } from "./use-raid-tracker-table-state.ts";
 
-export function RaidTrackerTable({
-  characters,
-  dungeons,
-  dungeonToggles,
-  onDungeonToggle,
-  onDeleteCharacter,
-  onDeleteDungeon,
-  onResetCharacterToggles,
-}: RaidTrackerTableProps) {
+export function RaidTrackerTable() {
+  const tracker = useRaidTrackerContext();
+  const {
+    characters,
+    dungeons,
+    dungeonToggles,
+    handleDungeonToggle: onDungeonToggle,
+    handleDeleteCharacter: onDeleteCharacter,
+    handleDeleteDungeon: onDeleteDungeon,
+    handleResetCharacterToggles: onResetCharacterToggles,
+  } = tracker;
+
   const tableState = useRaidTrackerTableState({
     characters,
     dungeons,

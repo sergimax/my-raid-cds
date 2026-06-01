@@ -136,3 +136,5 @@ export function useRaidTracker() {
     canResetAllToggles,
   };
 }
+
+export type RaidTrackerState = ReturnType<typeof useRaidTracker>;
