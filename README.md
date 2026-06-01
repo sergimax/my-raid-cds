@@ -83,8 +83,10 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 ```
 src/
 ├── components/       # app-header, app-meta-info, app-theme-provider, app-intro, character-form,
-│                     # theme-mode-toggle, dungeon-form, raid-tracker-table, tracker-controls, …
-├── hooks/            # use-raid-tracker.ts, color-mode.ts, color-mode-provider.tsx, use-color-mode.ts
+│                     # theme-mode-toggle, dungeon-form, tracker-controls, …
+│   raid-tracker-table/   # main grid: index, use-raid-tracker-table-state, raid-tracker-table-head,
+│                         # dungeon-table-row, pinned-column-renderers, dungeon-cells, table-layout, …
+├── hooks/            # use-raid-tracker.ts, use-pending-delete.ts, color-mode, use-color-mode, …
 ├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons
 ├── data/             # dungeons.ts (RaidNames, DungeonList template)
@@ -94,5 +96,7 @@ src/
 ├── uuid.ts           # generateUUID
 └── vite-env.d.ts     # __APP_VERSION__ declaration
 ```
+
+Domain state (`characters`, `dungeons`, toggles, forms) lives in `useRaidTracker`. Table-only UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
 
 Production builds split vendor code into separate chunks (React, MUI, icons) via `vite.config.ts` `manualChunks`.

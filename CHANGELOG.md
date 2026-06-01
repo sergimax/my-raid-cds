@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.1] - 2026-06-02
+
 ### Changed
 
 - **Raid tracker table:** Internal refactor only — table UI and behavior are unchanged. Logic moved into `useRaidTrackerTableState` (sort, search, layout, derived rows); pinned columns use a single render registry; body rows use `DungeonTableRow`; the header row uses `RaidTrackerTableHead`.
