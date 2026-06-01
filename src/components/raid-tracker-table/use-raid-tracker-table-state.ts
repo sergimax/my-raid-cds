@@ -3,8 +3,8 @@
  * name search, delete confirmation, responsive pinned-column layout, and
  * derived row data (filtered/sorted dungeons, per-dungeon completion counts).
  */
-import { useMediaQuery, useTheme } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
+import { useCompactLayout } from "../../hooks/use-compact-layout.ts";
 import { usePendingDelete } from "../../hooks/use-pending-delete.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import {
@@ -38,8 +38,7 @@ export function useRaidTrackerTableState({
   onDeleteCharacter,
   onDeleteDungeon,
 }: UseRaidTrackerTableStateParams) {
-  const theme = useTheme();
-  const compactTable = useMediaQuery(theme.breakpoints.down("md"));
+  const compactTable = useCompactLayout();
   const visiblePinnedColumns = useMemo(
     () => pinnedColumnsForLayout(compactTable),
     [compactTable],

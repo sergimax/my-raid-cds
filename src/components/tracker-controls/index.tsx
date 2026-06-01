@@ -1,12 +1,7 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import {
-  Box,
-  IconButton,
-  Menu,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, IconButton, Menu } from "@mui/material";
 import { useCallback, useId, useMemo, useState, type MouseEvent } from "react";
+import { useCompactLayout } from "../../hooks/use-compact-layout.ts";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import { buildTrackerActions } from "./actions.ts";
 import { renderTrackerAction } from "./render-tracker-action.tsx";
@@ -15,8 +10,7 @@ export function TrackerControls() {
   const tracker = useRaidTrackerContext();
   const actions = useMemo(() => buildTrackerActions(tracker), [tracker]);
 
-  const theme = useTheme();
-  const menuLayout = useMediaQuery(theme.breakpoints.down("md"));
+  const menuLayout = useCompactLayout();
   const menuId = useId();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const menuOpen = Boolean(menuAnchor);
