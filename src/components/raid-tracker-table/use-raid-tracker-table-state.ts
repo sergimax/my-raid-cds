@@ -5,6 +5,7 @@
  */
 import { useMediaQuery, useTheme } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
+import { usePendingDelete } from "../../hooks/use-pending-delete.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import { countCompletedForDungeon } from "../../utils/completion-counts.ts";
 import { filterDungeonsByName } from "../../utils/filter-dungeons-by-name.ts";
@@ -16,11 +17,7 @@ import {
   type SortDirection,
 } from "../../utils/sort-dungeons.ts";
 import { pinnedColumnsForLayout } from "./table-layout.ts";
-import type { RaidTrackerTableProps } from "./types.ts";
-
-export type PendingDelete =
-  | { kind: "character"; id: string; name: string }
-  | { kind: "dungeon"; id: string; name: string };
+import type { RaidTrackerPendingDelete, RaidTrackerTableProps } from "./types.ts";
 
 type UseRaidTrackerTableStateParams = Pick<
   RaidTrackerTableProps,
@@ -53,44 +50,48 @@ export function useRaidTrackerTableState({
   const [characterSortDirection, setCharacterSortDirection] =
     useState<SortDirection>("desc");
   const [dungeonNameSearch, setDungeonNameSearch] = useState("");
-  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(
-    null,
+
+  const handleConfirmPendingDelete = useCallback(
+    (item: RaidTrackerPendingDelete) => {
+      if (item.kind === "character") {
+        onDeleteCharacter(item.id);
+      } else {
+        onDeleteDungeon(item.id);
+      }
+    },
+    [onDeleteCharacter, onDeleteDungeon],
   );
+
+  const {
+    pendingDelete,
+    requestDelete,
+    cancelDelete,
+    confirmDelete,
+  } = usePendingDelete<RaidTrackerPendingDelete>(handleConfirmPendingDelete);
 
   const handleRequestDeleteCharacter = useCallback(
     (characterId: string) => {
       const character = characters.find((entry) => entry.id === characterId);
       if (!character) return;
-      setPendingDelete({
+      requestDelete({
         kind: "character",
         id: characterId,
         name: character.name,
       });
     },
-    [characters],
+    [characters, requestDelete],
   );
 
-  const handleRequestDeleteDungeon = useCallback((dungeon: DungeonRecord) => {
-    setPendingDelete({
-      kind: "dungeon",
-      id: dungeon.id,
-      name: dungeon.name,
-    });
-  }, []);
-
-  const handleCancelDelete = useCallback(() => {
-    setPendingDelete(null);
-  }, []);
-
-  const handleConfirmDelete = useCallback(() => {
-    if (!pendingDelete) return;
-    if (pendingDelete.kind === "character") {
-      onDeleteCharacter(pendingDelete.id);
-    } else {
-      onDeleteDungeon(pendingDelete.id);
-    }
-    setPendingDelete(null);
-  }, [pendingDelete, onDeleteCharacter, onDeleteDungeon]);
+  const handleRequestDeleteDungeon = useCallback(
+    (dungeon: DungeonRecord) => {
+      requestDelete({
+        kind: "dungeon",
+        id: dungeon.id,
+        name: dungeon.name,
+      });
+    },
+    [requestDelete],
+  );
 
   const handleSort = useCallback(
     (nextSortKey: DungeonSortKey) => {
@@ -181,7 +182,7 @@ export function useRaidTrackerTableState({
     handleCharacterSort,
     handleRequestDeleteCharacter,
     handleRequestDeleteDungeon,
-    handleCancelDelete,
-    handleConfirmDelete,
+    handleCancelDelete: cancelDelete,
+    handleConfirmDelete: confirmDelete,
   };
 }

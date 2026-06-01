@@ -1,20 +1,9 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
-import { Fragment } from "react";
-import { type CharacterRecord } from "../../types/characters.ts";
+import { Table, TableBody, TableContainer } from "@mui/material";
 import type { DungeonRecord } from "../../types/dungeons.ts";
-import { CharacterHeaderCell } from "./character-header-cell.tsx";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog.tsx";
 import { DungeonTableRow } from "./dungeon-table-row.tsx";
-import { renderPinnedColumnHeader } from "./pinned-column-renderers.tsx";
+import { RaidTrackerTableHead } from "./raid-tracker-table-head.tsx";
 import "./styles.css";
-import { pinnedActionsColumnSx } from "./table-layout.ts";
 import type { RaidTrackerTableProps } from "./types.ts";
 import { useRaidTrackerTableState } from "./use-raid-tracker-table-state.ts";
 
@@ -69,45 +58,24 @@ export function RaidTrackerTable({
         stickyHeader
         sx={{ tableLayout: "fixed", width: "max-content" }}
       >
-        <TableHead>
-          <TableRow>
-            <TableCell
-              sx={pinnedActionsColumnSx(compactTable, true)}
-              aria-label="Row actions"
-            />
-            {visiblePinnedColumns.map((column) => (
-              <Fragment key={column.key}>
-                {renderPinnedColumnHeader({
-                  column,
-                  compactTable,
-                  sortKey,
-                  sortDirection,
-                  onSort: handleSort,
-                  dungeonNameSearch,
-                  onDungeonNameSearchChange: setDungeonNameSearch,
-                })}
-              </Fragment>
-            ))}
-            {characters.map((character: CharacterRecord) => (
-              <CharacterHeaderCell
-                key={character.id}
-                character={character}
-                dungeonCount={dungeonCount}
-                dungeons={dungeons}
-                dungeonToggles={dungeonToggles}
-                isActiveSort={characterSortId === character.id}
-                sortDirection={
-                  characterSortId === character.id ? characterSortDirection : "asc"
-                }
-                onSort={() => {
-                  handleCharacterSort(character.id);
-                }}
-                onResetCharacterToggles={onResetCharacterToggles}
-                onDeleteCharacter={handleRequestDeleteCharacter}
-              />
-            ))}
-          </TableRow>
-        </TableHead>
+        <RaidTrackerTableHead
+          compactTable={compactTable}
+          visiblePinnedColumns={visiblePinnedColumns}
+          characters={characters}
+          dungeons={dungeons}
+          dungeonToggles={dungeonToggles}
+          dungeonCount={dungeonCount}
+          sortKey={sortKey}
+          sortDirection={sortDirection}
+          characterSortId={characterSortId}
+          characterSortDirection={characterSortDirection}
+          dungeonNameSearch={dungeonNameSearch}
+          onDungeonNameSearchChange={setDungeonNameSearch}
+          onSort={handleSort}
+          onCharacterSort={handleCharacterSort}
+          onResetCharacterToggles={onResetCharacterToggles}
+          onRequestDeleteCharacter={handleRequestDeleteCharacter}
+        />
         <TableBody>
           {sortedDungeons.map((dungeon: DungeonRecord) => (
             <DungeonTableRow
