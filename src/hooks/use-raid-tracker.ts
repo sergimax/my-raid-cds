@@ -1,21 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DungeonList } from "../data/dungeons.ts";
-import { loadRaidTrackerState, saveRaidTrackerState } from "../storage.ts";
+import { loadRaidTrackerState, saveRaidTrackerState } from "../storage/index.ts";
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
 import { generateUUID } from "../uuid.ts";
 import { useTrackerForms } from "./use-tracker-forms.ts";
 
 export function useRaidTracker() {
-  const [initialState] = useState(loadRaidTrackerState);
+  const [initialLoad] = useState(loadRaidTrackerState);
   const [characters, setCharacters] = useState<CharacterRecord[]>(
-    initialState.characters,
+    initialLoad.state.characters,
   );
-  const [dungeons, setDungeons] = useState<DungeonRecord[]>(initialState.dungeons);
+  const [dungeons, setDungeons] = useState<DungeonRecord[]>(
+    initialLoad.state.dungeons,
+  );
   const [dungeonToggles, setDungeonToggles] = useState<DungeonToggles>(
-    initialState.dungeonToggles,
+    initialLoad.state.dungeonToggles,
   );
-  const [storageError, setStorageError] = useState<string | null>(null);
+  const [storageError, setStorageError] = useState<string | null>(
+    initialLoad.loadWarning,
+  );
 
   useEffect(() => {
     const timeout = setTimeout(() => {

@@ -15,10 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Character column headers:** Per-character completion counts are precomputed in `useRaidTrackerTableState` (`completionsByCharacterId`); header chips show the same values without recounting on each render.
 - **Delete confirmation:** Character and dungeon remove/delete dialog copy is centralized in `getRaidTrackerDeleteDialogProps` / `RaidTrackerDeleteDialog` (same titles, messages, and buttons as before).
 - **Responsive layout:** Toolbar menu and compact table columns both use `useCompactLayout()` (below `md`); same breakpoint as before, defined in one place.
+- **Local storage:** Load and save logic split into `storage/parse.ts` and `storage/persist.ts`; new saves include `schemaVersion` (1). Emblems still load only from each dungeon’s saved `emblem` field (no raid-name backfill).
 
 ### Fixed
 
 - **Add from template:** Loading the WotLK raid template is a one-shot fill when the dungeon list is empty; calling it again after dungeons exist no longer appends duplicate rows (toolbar still hides the action when the list is not empty).
+- **Corrupted save:** Invalid or unreadable local data shows an error and resets the tracker instead of failing silently with an empty table.
 
 ### Removed
 

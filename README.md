@@ -65,9 +65,9 @@ Data is saved automatically (debounced) to `localStorage` under the key `my-raid
 | `size` | `5 \| 10 \| 20 \| 25 \| 40` | Raid size |
 | `itemLevel` | `number[]` | Item level(s), e.g. `[200, 213]` |
 | `difficulty` | `"Normal" \| "Heroic"` | Raid mode; **Mode** column shows **N** or **H** chips |
-| `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows, optional for custom dungeons |
+| `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows, optional for custom dungeons; loaded only from this field (no raid-name backfill) |
 
-Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
+Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load. Saves include `schemaVersion` (currently `1`). Corrupted local data is reset and an error is shown on load.
 
 ### Dungeon Toggles
 
@@ -92,7 +92,7 @@ src/
 ├── data/             # dungeons.ts (RaidNames, DungeonList template)
 ├── utils/            # completion-counts, filter/sort dungeons, item-level tiers, parse-item-level-input, …
 ├── assets/           # class-icons/, emblems/
-├── storage.ts        # localStorage load/save
+├── storage/          # index.ts (public API), parse, persist, types, constants
 ├── uuid.ts           # generateUUID
 └── vite-env.d.ts     # __APP_VERSION__ declaration
 ```

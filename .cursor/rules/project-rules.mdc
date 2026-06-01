@@ -69,10 +69,10 @@ Example: `feat(auth): add login form`
 
 - React 19 + TypeScript + Vite app with Material UI (`@mui/material`, `@mui/icons-material`)
 - WoW raid cooldown tracker: characters, dungeons, per-character–dungeon toggles
-- Domain state in `useRaidTracker`; persistence via `storage.ts` (`my-raid-cds` key); dungeons list starts empty
+- Domain state in `useRaidTracker`; persistence via `storage/index.ts` + `storage/parse.ts` / `storage/persist.ts` (`my-raid-cds` key, `schemaVersion` in saves); dungeons list starts empty; corrupted saves reset with a load warning
 - Main table UI: `components/raid-tracker-table/` (`RaidTrackerTable`); sort/search/delete UI state in `use-raid-tracker-table-state.ts`; shared confirm-before-delete in `hooks/use-pending-delete.ts`
 - `data/dungeons.ts` — `RaidNames`, `DungeonList` template (WoW WotLK raids, Russian names; per-raid `emblem` preset)
-- Dungeons use `difficulty` (Normal/Heroic); optional `emblem` for display; legacy saves with `mode` are migrated on load; missing `emblem` backfilled from `RaidNames` on load
+- Dungeons use `difficulty` (Normal/Heroic); optional `emblem` for display; legacy saves with `mode` are migrated on load; `emblem` loads only from the saved field (template rows include it in `DungeonList`; no raid-name backfill on load)
 - Production `vite.config.ts` uses `manualChunks` for React / MUI vendor splits
 - App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`; label in `app-meta-info`)
 - Light/dark mode: `ColorModeProvider` + `useColorMode`; `localStorage` key `my-raid-cds-color-mode`; pre-paint script in `index.html`; CSS vars via `:root[data-color-mode]` in `index.css`
@@ -107,7 +107,7 @@ src/
 ├── data/         # dungeons.ts (RaidNames, DungeonList)
 ├── utils/        # completion-counts, filter/sort dungeons, validate-character/dungeon, item-level tiers, …
 ├── assets/       # class-icons/, emblems/
-├── storage.ts    # localStorage load/save
+├── storage/      # index.ts (public API), parse.ts, persist.ts, types, constants
 ├── uuid.ts       # generateUUID
 └── vite-env.d.ts # __APP_VERSION__ declaration
 ```
