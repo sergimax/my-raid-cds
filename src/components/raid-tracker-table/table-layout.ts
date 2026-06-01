@@ -99,6 +99,14 @@ export function pinnedColumnsForLayout(compact: boolean): ReadonlyArray<PinnedCo
   );
 }
 
+/** Actions column + pinned dungeon columns + character columns. */
+export function raidTrackerTableColumnCount(
+  visiblePinnedColumns: ReadonlyArray<PinnedColumnDef>,
+  characterCount: number,
+): number {
+  return 1 + visiblePinnedColumns.length + characterCount;
+}
+
 function pinnedPositionForColumn(
   columnKey: PinnedColumnKey,
   compact: boolean,

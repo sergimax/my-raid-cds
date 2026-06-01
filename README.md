@@ -31,11 +31,11 @@ Open [http://localhost:5173](http://localhost:5173).
 ## Usage
 
 1. **Add a character** — Click **Add character**, enter name (max 12 characters) and class, then **Add character** or **Cancel**. Only one add form is open at a time; closing or switching forms clears entered values.
-2. **Add a dungeon** — Click **Add dungeon**, enter name, size (5/10/20/25/40), item level(s) (e.g. `200` or `200 / 213`), and difficulty (Normal/Heroic), then **Add dungeon** or **Cancel**. Same single-form and reset rules as the character form.
-3. **Add from template** — When the dungeon list is empty, click **Add from template** to load WoW WotLK raids.
+2. **Add a dungeon** — Click **Add dungeon**, enter name, size (5/10/20/25/40), item level(s) (e.g. `200` or `200 / 213`), and difficulty (Normal/Heroic), then **Add dungeon** or **Cancel**. Duplicate names (case-insensitive) are rejected. Same single-form and reset rules as the character form.
+3. **Add from template** — When the dungeon list is empty, click **Add from template** to load WoW WotLK raids (one-shot; the action is hidden once any dungeon exists).
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
 5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows. On narrow screens (below `md`), the table shows only the actions column, dungeon name, and character toggles; size, mode, item level, and completion columns are hidden.
-6. **Search** — Use the search field under **Dungeon name** to filter rows by substring.
+6. **Search** — Use the search field under **Dungeon name** to filter rows by substring. If nothing matches, the table shows a “No dungeons match your search” hint.
 7. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
 8. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
 9. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
@@ -44,7 +44,9 @@ Open [http://localhost:5173](http://localhost:5173).
 
 The sticky header shows the app name, tracker actions (on narrow screens below `md`, a menu icon opens **Add from template**, **Add character**, **Add dungeon**, and **Reset all toggles**), theme toggle, a GitHub icon (tooltip: author attribution), and the version label (`v.x.y.z` from `package.json` at build time) on the right.
 
-Data is saved automatically (debounced) to `localStorage` under the key `my-raid-cds`.
+Data is saved automatically (debounced) to `localStorage` under the key `my-raid-cds`. If saved data is corrupted or unreadable, an error alert appears and the tracker resets to empty.
+
+When there are no dungeons, the table body shows a hint to add a dungeon or use **Add from template**.
 
 ## Data Model
 
@@ -65,9 +67,9 @@ Data is saved automatically (debounced) to `localStorage` under the key `my-raid
 | `size` | `5 \| 10 \| 20 \| 25 \| 40` | Raid size |
 | `itemLevel` | `number[]` | Item level(s), e.g. `[200, 213]` |
 | `difficulty` | `"Normal" \| "Heroic"` | Raid mode; **Mode** column shows **N** or **H** chips |
-| `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows, optional for custom dungeons |
+| `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows, optional for custom dungeons; loaded only from this field (no raid-name backfill) |
 
-Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
+Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load. Saves include `schemaVersion` (currently `1`). Corrupted local data is reset and an error is shown on load.
 
 ### Dungeon Toggles
 
@@ -82,21 +84,21 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 ```
 src/
-├── components/       # app-header, app-meta-info, app-theme-provider, app-intro, character-form,
-│                     # theme-mode-toggle, dungeon-form, tracker-controls, …
-│   raid-tracker-table/   # main grid: index, use-raid-tracker-table-state, raid-tracker-table-head,
-│                         # dungeon-table-row, pinned-column-renderers, dungeon-cells, table-layout, …
-├── hooks/            # use-raid-tracker.ts, use-pending-delete.ts, color-mode, use-color-mode, …
+├── components/       # app-header, raid-tracker-main, character-form, dungeon-form, tracker-controls, …
+│   raid-tracker-table/   # grid, use-raid-tracker-table-state, head/row, pinned-column-renderers, …
+├── constants/        # character.ts, dungeon-form-defaults.ts
+├── contexts/         # raid-tracker-provider, raid-tracker-context
+├── hooks/            # use-raid-tracker.ts, use-tracker-forms.ts, use-compact-layout.ts, …
 ├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons
-├── data/             # dungeons.ts (RaidNames, DungeonList template)
-├── utils/            # completion-counts, filter/sort dungeons, item-level tiers, parse-item-level-input, …
+├── data/             # raid-names.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts
+├── utils/            # validate-character/dungeon, sort/filter, item-level tiers, …
 ├── assets/           # class-icons/, emblems/
-├── storage.ts        # localStorage load/save
+├── storage/          # index.ts (public API), parse, persist, types, constants
 ├── uuid.ts           # generateUUID
 └── vite-env.d.ts     # __APP_VERSION__ declaration
 ```
 
-Domain state (`characters`, `dungeons`, toggles, forms) lives in `useRaidTracker`. Table-only UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
+`RaidTrackerProvider` wraps the app; domain state (`characters`, `dungeons`, toggles, forms) comes from `useRaidTracker` via `useRaidTrackerContext()`. Table-only UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
 
 Production builds split vendor code into separate chunks (React, MUI, icons) via `vite.config.ts` `manualChunks`.

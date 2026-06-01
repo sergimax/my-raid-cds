@@ -5,7 +5,6 @@
 import { Fragment } from "react";
 import { TableCell, TableHead, TableRow } from "@mui/material";
 import type { CharacterRecord } from "../../types/characters.ts";
-import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 import type { DungeonSortKey, SortDirection } from "../../utils/sort-dungeons.ts";
 import { CharacterHeaderCell } from "./character-header-cell.tsx";
 import { renderPinnedColumnHeader } from "./pinned-column-renderers.tsx";
@@ -15,8 +14,7 @@ type RaidTrackerTableHeadProps = {
   compactTable: boolean;
   visiblePinnedColumns: ReadonlyArray<PinnedColumnDef>;
   characters: CharacterRecord[];
-  dungeons: DungeonRecord[];
-  dungeonToggles: DungeonToggles;
+  completionsByCharacterId: Readonly<Record<string, number>>;
   dungeonCount: number;
   sortKey: DungeonSortKey;
   sortDirection: SortDirection;
@@ -34,8 +32,7 @@ export function RaidTrackerTableHead({
   compactTable,
   visiblePinnedColumns,
   characters,
-  dungeons,
-  dungeonToggles,
+  completionsByCharacterId,
   dungeonCount,
   sortKey,
   sortDirection,
@@ -72,9 +69,8 @@ export function RaidTrackerTableHead({
           <CharacterHeaderCell
             key={character.id}
             character={character}
+            completedCount={completionsByCharacterId[character.id] ?? 0}
             dungeonCount={dungeonCount}
-            dungeons={dungeons}
-            dungeonToggles={dungeonToggles}
             isActiveSort={characterSortId === character.id}
             sortDirection={
               characterSortId === character.id ? characterSortDirection : "asc"

@@ -69,10 +69,10 @@ Example: `feat(auth): add login form`
 
 - React 19 + TypeScript + Vite app with Material UI (`@mui/material`, `@mui/icons-material`)
 - WoW raid cooldown tracker: characters, dungeons, per-character–dungeon toggles
-- Domain state in `useRaidTracker`; persistence via `storage.ts` (`my-raid-cds` key); dungeons list starts empty
+- Domain state in `useRaidTracker`; persistence via `storage/index.ts` + `storage/parse.ts` / `storage/persist.ts` (`my-raid-cds` key, `schemaVersion` in saves); dungeons list starts empty; corrupted saves reset with a load warning
 - Main table UI: `components/raid-tracker-table/` (`RaidTrackerTable`); sort/search/delete UI state in `use-raid-tracker-table-state.ts`; shared confirm-before-delete in `hooks/use-pending-delete.ts`
-- `data/dungeons.ts` — `RaidNames`, `DungeonList` template (WoW WotLK raids, Russian names; per-raid `emblem` preset)
-- Dungeons use `difficulty` (Normal/Heroic); optional `emblem` for display; legacy saves with `mode` are migrated on load; missing `emblem` backfilled from `RaidNames` on load
+- `data/raid-names.ts`, `data/dungeon-list.ts`, `create-template-dungeon.ts` — WotLK template raids (`RaidNames` metadata + `DungeonList`; re-exported from `data/dungeons.ts`)
+- Dungeons use `difficulty` (Normal/Heroic); optional `emblem` for display; legacy saves with `mode` are migrated on load; `emblem` loads only from the saved field (template rows include it in `DungeonList`; no raid-name backfill on load)
 - Production `vite.config.ts` uses `manualChunks` for React / MUI vendor splits
 - App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`; label in `app-meta-info`)
 - Light/dark mode: `ColorModeProvider` + `useColorMode`; `localStorage` key `my-raid-cds-color-mode`; pre-paint script in `index.html`; CSS vars via `:root[data-color-mode]` in `index.css`
@@ -81,32 +81,34 @@ Example: `feat(auth): add login form`
 
 ## Key Behaviors
 
-- **Add from template** — loads `DungeonList` into the table when the dungeon list is empty
+- **Add from template** — one-shot: loads `DungeonList` only when the dungeon list is empty; `handleAddFromTemplate` no-ops if dungeons already exist (UI hides the action; guard covers other callers)
 - **Reset all toggles** — toolbar control clears all cooldown toggles (keeps characters and dungeons)
 - **Delete dungeon** — per-row delete icon in the pinned actions column removes that dungeon and its toggles
 - **Reset per character** — icon in the character column header clears toggles for that character only
-- **Add forms** — only one of character or dungeon form open at a time; submit closes the form
+- **Add forms** — only one of character or dungeon form open at a time; submit closes the form; duplicate character (name + class) and duplicate dungeon name (case-insensitive) are rejected
+- **Empty table** — no dungeons: body hint to add or use template; search with no matches: “No dungeons match your search” row (`raid-tracker-table-empty-state`)
 
 ## Component Structure
 
 - **kebab-case** for component dirs (e.g. `character-form/`)
 - Typical folder: `index.tsx`; add `types.ts` and/or `styles.css` when needed (not every component has all three)
 - complex components like `raid-tracker-table/` may include colocated subcomponents (e.g. `dungeon-cells.tsx`, `character-header-cell.tsx`, `raid-tracker-table-head.tsx`, `dungeon-table-row.tsx`, `pinned-column-renderers.tsx`, `use-raid-tracker-table-state.ts`)
-- **`completion-summary/`** is legacy — not rendered in `App`; completion counts live in the table only
-- Domain state lives in `useRaidTracker`; components receive data and mutation handlers via props. Ephemeral table UI state (sort, search, pending delete, compact columns) lives in `useRaidTrackerTableState` colocated with the table.
+- Domain state lives in `useRaidTracker` (persistence, toggles, deletes, template); `RaidTrackerProvider` + `useRaidTrackerContext()` (see `contexts/raid-tracker-provider.tsx`, `hooks/use-raid-tracker-context.ts`) supply it to `TrackerControls`, `RaidTrackerMain`, and `RaidTrackerTable`. Add-form state in `useTrackerForms` + `useCharacterFormState` / `useDungeonFormState`; validation in `utils/validate-character.ts` and `utils/validate-dungeon.ts`. `CharacterForm` / `DungeonForm` stay presentational; `App` mounts provider + layout only. Ephemeral table UI state (sort, search, pending delete, compact columns) lives in `useRaidTrackerTableState` colocated with the table.
 
 ## Project Structure
 
 ```
 src/
-├── components/   # app-header, app-meta-info, app-theme-provider, theme-mode-toggle, character-form, raid-tracker-table, tracker-controls, …
-├── hooks/        # use-raid-tracker.ts, use-pending-delete.ts, color-mode.ts, color-mode-provider.tsx, use-color-mode.ts
+├── components/   # app-header, raid-tracker-main, character-form, raid-tracker-table, tracker-controls (+ actions.ts), …
+├── constants/    # character.ts, dungeon-form-defaults.ts
+├── contexts/     # raid-tracker-context.ts, raid-tracker-provider.tsx
+├── hooks/        # use-raid-tracker.ts (composer), use-compact-layout.ts, use-raid-tracker-context.ts, use-tracker-forms.ts, use-*-form-state.ts, color-mode …
 ├── theme/        # create-app-theme.ts
 ├── types/        # characters, dungeons
-├── data/         # dungeons.ts (RaidNames, DungeonList)
-├── utils/        # completion-counts, filter/sort dungeons, item-level tiers, …
+├── data/         # raid-names.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts (barrel)
+├── utils/        # completion-counts, filter/sort dungeons, validate-character/dungeon, item-level tiers, …
 ├── assets/       # class-icons/, emblems/
-├── storage.ts    # localStorage load/save
+├── storage/      # index.ts (public API), parse.ts, persist.ts, types, constants
 ├── uuid.ts       # generateUUID
 └── vite-env.d.ts # __APP_VERSION__ declaration
 ```

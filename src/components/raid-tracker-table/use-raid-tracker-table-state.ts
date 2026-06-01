@@ -3,11 +3,14 @@
  * name search, delete confirmation, responsive pinned-column layout, and
  * derived row data (filtered/sorted dungeons, per-dungeon completion counts).
  */
-import { useMediaQuery, useTheme } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
+import { useCompactLayout } from "../../hooks/use-compact-layout.ts";
 import { usePendingDelete } from "../../hooks/use-pending-delete.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
-import { countCompletedForDungeon } from "../../utils/completion-counts.ts";
+import {
+  countCompletedForCharacter,
+  countCompletedForDungeon,
+} from "../../utils/completion-counts.ts";
 import { filterDungeonsByName } from "../../utils/filter-dungeons-by-name.ts";
 import {
   defaultSortDirectionForKey,
@@ -35,8 +38,7 @@ export function useRaidTrackerTableState({
   onDeleteCharacter,
   onDeleteDungeon,
 }: UseRaidTrackerTableStateParams) {
-  const theme = useTheme();
-  const compactTable = useMediaQuery(theme.breakpoints.down("md"));
+  const compactTable = useCompactLayout();
   const visiblePinnedColumns = useMemo(
     () => pinnedColumnsForLayout(compactTable),
     [compactTable],
@@ -139,6 +141,18 @@ export function useRaidTrackerTableState({
     return counts;
   }, [characters, dungeonToggles, dungeons]);
 
+  const completionsByCharacterId = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const character of characters) {
+      counts[character.id] = countCompletedForCharacter(
+        character.id,
+        dungeons,
+        dungeonToggles,
+      );
+    }
+    return counts;
+  }, [characters, dungeonToggles, dungeons]);
+
   const sortedDungeons = useMemo(() => {
     if (characterSortId) {
       return sortDungeonsByCharacterToggle(
@@ -178,6 +192,7 @@ export function useRaidTrackerTableState({
     pendingDelete,
     sortedDungeons,
     completionsByDungeonId,
+    completionsByCharacterId,
     handleSort,
     handleCharacterSort,
     handleRequestDeleteCharacter,

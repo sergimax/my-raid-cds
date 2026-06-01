@@ -1,48 +1,25 @@
-import type { SubmitEvent } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DungeonList } from "../data/dungeons.ts";
-import { loadRaidTrackerState, saveRaidTrackerState } from "../storage.ts";
-import {
-  type CharacterClass,
-  type CharacterRecord,
-} from "../types/characters.ts";
-import {
-  DungeonDifficulty,
-  type DungeonDifficulty as DungeonDifficultyValue,
-  type DungeonRecord,
-  type DungeonSize,
-  type DungeonToggles,
-} from "../types/dungeons.ts";
-import { parseItemLevelInput } from "../utils/parse-item-level-input.ts";
+import { loadRaidTrackerState, saveRaidTrackerState } from "../storage/index.ts";
+import type { CharacterRecord } from "../types/characters.ts";
+import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
 import { generateUUID } from "../uuid.ts";
+import { useTrackerForms } from "./use-tracker-forms.ts";
 
 export function useRaidTracker() {
-  const MAX_CHARACTER_NAME_LENGTH = 12;
-  const [initialState] = useState(loadRaidTrackerState);
+  const [initialLoad] = useState(loadRaidTrackerState);
   const [characters, setCharacters] = useState<CharacterRecord[]>(
-    initialState.characters,
+    initialLoad.state.characters,
   );
-  const [dungeons, setDungeons] = useState<DungeonRecord[]>(initialState.dungeons);
+  const [dungeons, setDungeons] = useState<DungeonRecord[]>(
+    initialLoad.state.dungeons,
+  );
   const [dungeonToggles, setDungeonToggles] = useState<DungeonToggles>(
-    initialState.dungeonToggles,
+    initialLoad.state.dungeonToggles,
   );
-  const [storageError, setStorageError] = useState<string | null>(null);
-
-  const [showCharacterForm, setShowCharacterForm] = useState(false);
-  const [showDungeonForm, setShowDungeonForm] = useState(false);
-
-  const [newCharacterName, setNewCharacterName] = useState("");
-  const [newCharacterClass, setNewCharacterClass] = useState<CharacterClass | "">(
-    "",
+  const [storageError, setStorageError] = useState<string | null>(
+    initialLoad.loadWarning,
   );
-  const [characterFormError, setCharacterFormError] = useState("");
-
-  const [newDungeonName, setNewDungeonName] = useState("");
-  const [newDungeonSize, setNewDungeonSize] = useState<DungeonSize>(10);
-  const [newDungeonItemLevelText, setNewDungeonItemLevelText] = useState("200");
-  const [newDungeonDifficulty, setNewDungeonDifficulty] =
-    useState<DungeonDifficultyValue>(DungeonDifficulty.NORMAL);
-  const [dungeonFormError, setDungeonFormError] = useState("");
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -55,6 +32,21 @@ export function useRaidTracker() {
     }, 400);
     return () => clearTimeout(timeout);
   }, [characters, dungeons, dungeonToggles]);
+
+  const onCharacterAdded = useCallback((character: CharacterRecord) => {
+    setCharacters((previous) => [...previous, character]);
+  }, []);
+
+  const onDungeonAdded = useCallback((dungeon: DungeonRecord) => {
+    setDungeons((previous) => [...previous, dungeon]);
+  }, []);
+
+  const forms = useTrackerForms({
+    characters,
+    dungeons,
+    onCharacterAdded,
+    onDungeonAdded,
+  });
 
   const handleDungeonToggle = useCallback(
     (characterId: string, dungeonId: string) => {
@@ -73,90 +65,16 @@ export function useRaidTracker() {
     [],
   );
 
-  const handleCharacterFormSubmit = useCallback(
-    (event: SubmitEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      setCharacterFormError("");
-      const trimmedName = newCharacterName.trim();
-      if (!trimmedName || !newCharacterClass) {
-        setCharacterFormError("Enter a name and choose a class.");
-        return;
-      }
-      if (trimmedName.length > MAX_CHARACTER_NAME_LENGTH) {
-        setCharacterFormError(
-          `Character name must be at most ${MAX_CHARACTER_NAME_LENGTH} characters.`,
-        );
-        return;
-      }
-      const isDuplicate = characters.some(
-        (existing) =>
-          existing.name.toLowerCase() === trimmedName.toLowerCase() &&
-          existing.class?.name === newCharacterClass.name,
-      );
-      if (isDuplicate) {
-        setCharacterFormError(
-          "A character with this name and class already exists.",
-        );
-        return;
-      }
-      const newCharacter: CharacterRecord = {
-        id: generateUUID(),
-        name: trimmedName,
-        class: newCharacterClass,
-      };
-      setCharacters((previous) => [...previous, newCharacter]);
-      setNewCharacterName("");
-      setNewCharacterClass("");
-      setShowCharacterForm(false);
-    },
-    [MAX_CHARACTER_NAME_LENGTH, characters, newCharacterClass, newCharacterName],
-  );
-
-  const handleDungeonFormSubmit = useCallback(
-    (event: SubmitEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      setDungeonFormError("");
-      const trimmedName = newDungeonName.trim();
-      if (!trimmedName) {
-        setDungeonFormError("Enter a dungeon name.");
-        return;
-      }
-      const itemLevels = parseItemLevelInput(newDungeonItemLevelText);
-      if (itemLevels.length === 0) {
-        setDungeonFormError(
-          "Enter at least one item level (e.g. 200 or range like 200 / 213).",
-        );
-        return;
-      }
-      const newDungeon: DungeonRecord = {
-        id: generateUUID(),
-        name: trimmedName,
-        size: newDungeonSize,
-        itemLevel: itemLevels,
-        difficulty: newDungeonDifficulty,
-      };
-      setDungeons((previous) => [...previous, newDungeon]);
-      setNewDungeonName("");
-      setNewDungeonSize(10);
-      setNewDungeonItemLevelText("200");
-      setNewDungeonDifficulty(DungeonDifficulty.NORMAL);
-      setShowDungeonForm(false);
-    },
-    [
-      newDungeonDifficulty,
-      newDungeonItemLevelText,
-      newDungeonName,
-      newDungeonSize,
-    ],
-  );
-
+  /** One-shot: fills the table from `DungeonList` only while it has no dungeons. */
   const handleAddFromTemplate = useCallback(() => {
     setDungeons((previousDungeons) => {
-      const templateDungeons = DungeonList.map((templateDungeon) => ({
+      if (previousDungeons.length > 0) {
+        return previousDungeons;
+      }
+      return DungeonList.map((templateDungeon) => ({
         ...templateDungeon,
         id: generateUUID(),
       }));
-      return [...previousDungeons, ...templateDungeons];
     });
   }, []);
 
@@ -206,122 +124,13 @@ export function useRaidTracker() {
     return false;
   }, [dungeonToggles]);
 
-  const resetCharacterFormFields = useCallback(() => {
-    setNewCharacterName("");
-    setNewCharacterClass("");
-    setCharacterFormError("");
-  }, []);
-
-  const resetDungeonFormFields = useCallback(() => {
-    setNewDungeonName("");
-    setNewDungeonSize(10);
-    setNewDungeonItemLevelText("200");
-    setNewDungeonDifficulty(DungeonDifficulty.NORMAL);
-    setDungeonFormError("");
-  }, []);
-
-  const closeCharacterForm = useCallback(() => {
-    setShowCharacterForm(false);
-    resetCharacterFormFields();
-  }, [resetCharacterFormFields]);
-
-  const closeDungeonForm = useCallback(() => {
-    setShowDungeonForm(false);
-    resetDungeonFormFields();
-  }, [resetDungeonFormFields]);
-
-  const toggleCharacterForm = useCallback(() => {
-    setShowCharacterForm((previous) => {
-      const next = !previous;
-      if (!next) {
-        resetCharacterFormFields();
-      } else {
-        setShowDungeonForm(false);
-        resetDungeonFormFields();
-      }
-      return next;
-    });
-  }, [resetCharacterFormFields, resetDungeonFormFields]);
-
-  const toggleDungeonForm = useCallback(() => {
-    setShowDungeonForm((previous) => {
-      const next = !previous;
-      if (!next) {
-        resetDungeonFormFields();
-      } else {
-        setShowCharacterForm(false);
-        resetCharacterFormFields();
-      }
-      return next;
-    });
-  }, [resetDungeonFormFields, resetCharacterFormFields]);
-
-  const setNewCharacterNameWithClear = useCallback((name: string) => {
-    setNewCharacterName(name);
-    setCharacterFormError("");
-  }, []);
-
-  const setNewCharacterClassWithClear = useCallback(
-    (characterClass: CharacterClass | "") => {
-      setNewCharacterClass(characterClass);
-      setCharacterFormError("");
-    },
-    [],
-  );
-
-  const setNewDungeonNameWithClear = useCallback((name: string) => {
-    setNewDungeonName(name);
-    setDungeonFormError("");
-  }, []);
-
-  const setNewDungeonSizeWithClear = useCallback((size: DungeonSize) => {
-    setNewDungeonSize(size);
-    setDungeonFormError("");
-  }, []);
-
-  const setNewDungeonItemLevelTextWithClear = useCallback((text: string) => {
-    setNewDungeonItemLevelText(text);
-    setDungeonFormError("");
-  }, []);
-
-  const setNewDungeonDifficultyWithClear = useCallback(
-    (difficulty: DungeonDifficultyValue) => {
-      setNewDungeonDifficulty(difficulty);
-      setDungeonFormError("");
-    },
-    [],
-  );
-
   return {
     characters,
     dungeons,
     dungeonToggles,
     storageError,
 
-    showCharacterForm,
-    showDungeonForm,
-    closeCharacterForm,
-    closeDungeonForm,
-    toggleCharacterForm,
-    toggleDungeonForm,
-
-    newCharacterName,
-    setNewCharacterName: setNewCharacterNameWithClear,
-    newCharacterClass,
-    setNewCharacterClass: setNewCharacterClassWithClear,
-    characterFormError,
-    handleCharacterFormSubmit,
-
-    newDungeonName,
-    setNewDungeonName: setNewDungeonNameWithClear,
-    newDungeonSize,
-    setNewDungeonSize: setNewDungeonSizeWithClear,
-    newDungeonItemLevelText,
-    setNewDungeonItemLevelText: setNewDungeonItemLevelTextWithClear,
-    newDungeonDifficulty,
-    setNewDungeonDifficulty: setNewDungeonDifficultyWithClear,
-    dungeonFormError,
-    handleDungeonFormSubmit,
+    ...forms,
 
     handleDungeonToggle,
     handleDeleteCharacter,
@@ -332,3 +141,5 @@ export function useRaidTracker() {
     canResetAllToggles,
   };
 }
+
+export type RaidTrackerState = ReturnType<typeof useRaidTracker>;
