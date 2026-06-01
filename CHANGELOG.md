@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Raid tracker table:** Refactored into a dedicated state hook, pinned-column render registry, and per-dungeon row component; sorting, search, delete confirmation, and layout behave the same as before.
+- **Raid tracker table:** Internal refactor only — table UI and behavior are unchanged. Logic moved into `useRaidTrackerTableState` (sort, search, layout, derived rows); pinned columns use a single render registry; body rows use `DungeonTableRow`; the header row uses `RaidTrackerTableHead`.
+- **Delete confirmation:** Character and dungeon delete flows use shared `usePendingDelete`; dialog text and confirm/cancel behavior are the same as in 1.9.0.
 
 ## [1.9.0] - 2026-06-01
 
