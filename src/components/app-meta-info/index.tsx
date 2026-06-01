@@ -1,7 +1,7 @@
 import GitHubIcon from "@mui/icons-material/GitHub";
 import { IconButton, Tooltip, Typography } from "@mui/material";
 
-const GITHUB_PROFILE_URL = "https://github.com/sergimax";
+const GITHUB_REPO_URL = "https://github.com/sergimax/my-raid-cds";
 const AUTHOR_HINT = "by sergimax via cursor";
 
 export function AppVersionLabel() {
@@ -27,7 +27,7 @@ export function AppMetaInfo() {
     <Tooltip title={AUTHOR_HINT}>
       <IconButton
         component="a"
-        href={GITHUB_PROFILE_URL}
+        href={GITHUB_REPO_URL}
         target="_blank"
         rel="noopener noreferrer"
         size="small"
