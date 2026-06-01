@@ -150,13 +150,16 @@ export function useRaidTracker() {
     ],
   );
 
+  /** One-shot: fills the table from `DungeonList` only while it has no dungeons. */
   const handleAddFromTemplate = useCallback(() => {
     setDungeons((previousDungeons) => {
-      const templateDungeons = DungeonList.map((templateDungeon) => ({
+      if (previousDungeons.length > 0) {
+        return previousDungeons;
+      }
+      return DungeonList.map((templateDungeon) => ({
         ...templateDungeon,
         id: generateUUID(),
       }));
-      return [...previousDungeons, ...templateDungeons];
     });
   }, []);
 

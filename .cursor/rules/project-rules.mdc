@@ -81,7 +81,7 @@ Example: `feat(auth): add login form`
 
 ## Key Behaviors
 
-- **Add from template** — loads `DungeonList` into the table when the dungeon list is empty
+- **Add from template** — one-shot: loads `DungeonList` only when the dungeon list is empty; `handleAddFromTemplate` no-ops if dungeons already exist (UI hides the action; guard covers other callers)
 - **Reset all toggles** — toolbar control clears all cooldown toggles (keeps characters and dungeons)
 - **Delete dungeon** — per-row delete icon in the pinned actions column removes that dungeon and its toggles
 - **Reset per character** — icon in the character column header clears toggles for that character only
