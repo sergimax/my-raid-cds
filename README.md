@@ -89,7 +89,7 @@ src/
 ├── hooks/            # use-raid-tracker.ts, use-pending-delete.ts, color-mode, use-color-mode, …
 ├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons
-├── data/             # dungeons.ts (RaidNames, DungeonList template)
+├── data/             # raid-names.ts, dungeon-list.ts, create-template-dungeon.ts
 ├── utils/            # completion-counts, filter/sort dungeons, item-level tiers, parse-item-level-input, …
 ├── assets/           # class-icons/, emblems/
 ├── storage/          # index.ts (public API), parse, persist, types, constants

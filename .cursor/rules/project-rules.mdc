@@ -71,7 +71,7 @@ Example: `feat(auth): add login form`
 - WoW raid cooldown tracker: characters, dungeons, per-character–dungeon toggles
 - Domain state in `useRaidTracker`; persistence via `storage/index.ts` + `storage/parse.ts` / `storage/persist.ts` (`my-raid-cds` key, `schemaVersion` in saves); dungeons list starts empty; corrupted saves reset with a load warning
 - Main table UI: `components/raid-tracker-table/` (`RaidTrackerTable`); sort/search/delete UI state in `use-raid-tracker-table-state.ts`; shared confirm-before-delete in `hooks/use-pending-delete.ts`
-- `data/dungeons.ts` — `RaidNames`, `DungeonList` template (WoW WotLK raids, Russian names; per-raid `emblem` preset)
+- `data/raid-names.ts`, `data/dungeon-list.ts`, `create-template-dungeon.ts` — WotLK template raids (`RaidNames` metadata + `DungeonList`; re-exported from `data/dungeons.ts`)
 - Dungeons use `difficulty` (Normal/Heroic); optional `emblem` for display; legacy saves with `mode` are migrated on load; `emblem` loads only from the saved field (template rows include it in `DungeonList`; no raid-name backfill on load)
 - Production `vite.config.ts` uses `manualChunks` for React / MUI vendor splits
 - App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`; label in `app-meta-info`)
@@ -104,7 +104,7 @@ src/
 ├── hooks/        # use-raid-tracker.ts (composer), use-compact-layout.ts, use-raid-tracker-context.ts, use-tracker-forms.ts, use-*-form-state.ts, color-mode …
 ├── theme/        # create-app-theme.ts
 ├── types/        # characters, dungeons
-├── data/         # dungeons.ts (RaidNames, DungeonList)
+├── data/         # raid-names.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts (barrel)
 ├── utils/        # completion-counts, filter/sort dungeons, validate-character/dungeon, item-level tiers, …
 ├── assets/       # class-icons/, emblems/
 ├── storage/      # index.ts (public API), parse.ts, persist.ts, types, constants

@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Responsive layout:** Toolbar menu and compact table columns both use `useCompactLayout()` (below `md`); same breakpoint as before, defined in one place.
 - **Local storage:** Load and save logic split into `storage/parse.ts` and `storage/persist.ts` (public API in `storage/index.ts`); new saves include `schemaVersion` (1). Emblems still load only from each dungeon’s saved `emblem` field (no raid-name backfill).
 - **Item level tier colors:** Light/dark palettes live in `item-level-tier.ts` and apply via MUI `sx` (same GearScore-style colors as before; less duplicated CSS in the raid tracker table stylesheet).
+- **WotLK template data:** `RaidNames` and `DungeonList` split into `raid-names.ts` and `dungeon-list.ts`; rows built with `createTemplateDungeon` (same template raids and emblems as before; `data/dungeons.ts` re-exports).
 
 ### Fixed
 
