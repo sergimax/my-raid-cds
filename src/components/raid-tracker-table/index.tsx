@@ -3,6 +3,7 @@ import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import { DungeonTableRow } from "./dungeon-table-row.tsx";
 import { RaidTrackerDeleteDialog } from "./raid-tracker-delete-dialog.tsx";
+import { RaidTrackerTableEmptyState } from "./raid-tracker-table-empty-state.tsx";
 import { RaidTrackerTableHead } from "./raid-tracker-table-head.tsx";
 import "./styles.css";
 import { useRaidTrackerTableState } from "./use-raid-tracker-table-state.ts";
@@ -80,20 +81,34 @@ export function RaidTrackerTable() {
           onRequestDeleteCharacter={handleRequestDeleteCharacter}
         />
         <TableBody>
-          {sortedDungeons.map((dungeon: DungeonRecord) => (
-            <DungeonTableRow
-              key={dungeon.id}
-              dungeon={dungeon}
-              characters={characters}
-              compactTable={compactTable}
+          {dungeons.length === 0 ? (
+            <RaidTrackerTableEmptyState
+              variant="no-dungeons"
               visiblePinnedColumns={visiblePinnedColumns}
-              completionsByDungeonId={completionsByDungeonId}
               characterCount={characterCount}
-              dungeonToggles={dungeonToggles}
-              onDungeonToggle={onDungeonToggle}
-              onRequestDeleteDungeon={handleRequestDeleteDungeon}
             />
-          ))}
+          ) : sortedDungeons.length === 0 ? (
+            <RaidTrackerTableEmptyState
+              variant="no-search-matches"
+              visiblePinnedColumns={visiblePinnedColumns}
+              characterCount={characterCount}
+            />
+          ) : (
+            sortedDungeons.map((dungeon: DungeonRecord) => (
+              <DungeonTableRow
+                key={dungeon.id}
+                dungeon={dungeon}
+                characters={characters}
+                compactTable={compactTable}
+                visiblePinnedColumns={visiblePinnedColumns}
+                completionsByDungeonId={completionsByDungeonId}
+                characterCount={characterCount}
+                dungeonToggles={dungeonToggles}
+                onDungeonToggle={onDungeonToggle}
+                onRequestDeleteDungeon={handleRequestDeleteDungeon}
+              />
+            ))
+          )}
         </TableBody>
       </Table>
       <RaidTrackerDeleteDialog
