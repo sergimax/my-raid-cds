@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Raid tracker state:** Internal refactor only — add-character and add-dungeon forms behave the same. Form state lives in dedicated hooks; validation moved to `validate-character` / `validate-dungeon` utilities; `useRaidTracker` composes persistence, toggles, and forms.
+
 ### Fixed
 
 - **Add from template:** Loading the WotLK raid template is a one-shot fill when the dungeon list is empty; calling it again after dungeons exist no longer appends duplicate rows (toolbar still hides the action when the list is not empty).
@@ -14,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Legacy **CompletionSummary** component (was not shown in the app; per-row and per-character completion counts remain in the raid tracker table).
+- Unused `ruRaidNameToEn` / `formatRaidNameRuWithEn` helpers from raid template data (English names remain on `RaidNames` for templates and emblem backfill).
 
 ## [1.9.1] - 2026-06-02
 

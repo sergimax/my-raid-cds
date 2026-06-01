@@ -92,18 +92,19 @@ Example: `feat(auth): add login form`
 - **kebab-case** for component dirs (e.g. `character-form/`)
 - Typical folder: `index.tsx`; add `types.ts` and/or `styles.css` when needed (not every component has all three)
 - complex components like `raid-tracker-table/` may include colocated subcomponents (e.g. `dungeon-cells.tsx`, `character-header-cell.tsx`, `raid-tracker-table-head.tsx`, `dungeon-table-row.tsx`, `pinned-column-renderers.tsx`, `use-raid-tracker-table-state.ts`)
-- Domain state lives in `useRaidTracker`; components receive data and mutation handlers via props. Ephemeral table UI state (sort, search, pending delete, compact columns) lives in `useRaidTrackerTableState` colocated with the table.
+- Domain state lives in `useRaidTracker` (persistence, toggles, deletes, template); add-form state in `useTrackerForms` + `useCharacterFormState` / `useDungeonFormState`; validation in `utils/validate-character.ts` and `utils/validate-dungeon.ts`. Components receive data and mutation handlers via props. Ephemeral table UI state (sort, search, pending delete, compact columns) lives in `useRaidTrackerTableState` colocated with the table.
 
 ## Project Structure
 
 ```
 src/
 ├── components/   # app-header, app-meta-info, app-theme-provider, theme-mode-toggle, character-form, raid-tracker-table, tracker-controls, …
-├── hooks/        # use-raid-tracker.ts, use-pending-delete.ts, color-mode.ts, color-mode-provider.tsx, use-color-mode.ts
+├── constants/    # character.ts (MAX_CHARACTER_NAME_LENGTH)
+├── hooks/        # use-raid-tracker.ts (composer), use-tracker-forms.ts, use-*-form-state.ts, use-pending-delete.ts, color-mode …
 ├── theme/        # create-app-theme.ts
 ├── types/        # characters, dungeons
 ├── data/         # dungeons.ts (RaidNames, DungeonList)
-├── utils/        # completion-counts, filter/sort dungeons, item-level tiers, …
+├── utils/        # completion-counts, filter/sort dungeons, validate-character/dungeon, item-level tiers, …
 ├── assets/       # class-icons/, emblems/
 ├── storage.ts    # localStorage load/save
 ├── uuid.ts       # generateUUID

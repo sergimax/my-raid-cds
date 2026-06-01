@@ -9,6 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { MAX_CHARACTER_NAME_LENGTH } from "../../constants/character.ts";
 import { Classes } from "../../types/characters.ts";
 import { ClassOptionLabel } from "../class-option-label/index.tsx";
 import type { CharacterFormProps } from "./types.ts";
@@ -22,7 +23,6 @@ export function CharacterForm({
   onCancel,
   onSubmit,
 }: CharacterFormProps) {
-  const MAX_CHARACTER_NAME_LENGTH = 12;
 
   return (
     <Box>
