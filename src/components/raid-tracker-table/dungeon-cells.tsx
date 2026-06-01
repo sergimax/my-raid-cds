@@ -2,9 +2,9 @@ import { Box, Chip, Stack, Typography, useTheme } from "@mui/material";
 import { DungeonDifficulty, type DungeonDifficulty as DungeonDifficultyType } from "../../types/dungeons.ts";
 import { completionChipFill } from "../../utils/completion-chip-color.ts";
 import {
-  dungeonNameTierClassName,
   getItemLevelTier,
-  itemLevelTierClassName,
+  getItemLevelTierColor,
+  itemLevelTierSx,
 } from "../../utils/item-level-tier.ts";
 import { emblemIcons, type EmblemKey } from "../../assets/emblems/emblem-icons.ts";
 
@@ -27,7 +27,7 @@ export function DungeonNameCell({
   itemLevels: number[];
   emblem: EmblemKey | null;
 }) {
-  const tierClass = dungeonNameTierClassName(getItemLevelTier(itemLevels));
+  const nameTier = getItemLevelTier(itemLevels);
 
   return (
     <Stack
@@ -46,8 +46,15 @@ export function DungeonNameCell({
       <Typography
         component="span"
         variant="body2"
-        className={`raid-tracker-table__dungeon-name ${tierClass}`}
-        sx={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+        className="raid-tracker-table__dungeon-name"
+        sx={(theme) => ({
+          color: getItemLevelTierColor(nameTier, theme.palette.mode),
+          fontWeight: 600,
+          lineHeight: 1.3,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        })}
       >
         {name}
       </Typography>
@@ -71,11 +78,13 @@ export function ItemLevelCell({ itemLevels }: { itemLevels: number[] }) {
           {index > 0 ? (
             <span className="raid-tracker-table__ilvl-separator"> / </span>
           ) : null}
-          <span
-            className={`raid-tracker-table__ilvl ${itemLevelTierClassName(getItemLevelTier(itemLevel))}`}
+          <Box
+            component="span"
+            className="raid-tracker-table__ilvl"
+            sx={itemLevelTierSx(getItemLevelTier(itemLevel))}
           >
             {itemLevel}
-          </span>
+          </Box>
         </span>
       ))}
     </>
