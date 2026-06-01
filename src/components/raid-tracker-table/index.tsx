@@ -41,6 +41,7 @@ export function RaidTrackerTable() {
     pendingDelete,
     sortedDungeons,
     completionsByDungeonId,
+    completionsByCharacterId,
     handleSort,
     handleCharacterSort,
     handleRequestDeleteCharacter,
@@ -65,8 +66,7 @@ export function RaidTrackerTable() {
           compactTable={compactTable}
           visiblePinnedColumns={visiblePinnedColumns}
           characters={characters}
-          dungeons={dungeons}
-          dungeonToggles={dungeonToggles}
+          completionsByCharacterId={completionsByCharacterId}
           dungeonCount={dungeonCount}
           sortKey={sortKey}
           sortDirection={sortDirection}

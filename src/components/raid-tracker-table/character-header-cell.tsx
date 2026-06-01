@@ -10,17 +10,14 @@ import {
   Typography,
 } from "@mui/material";
 import { characterNameDisplaySx, type CharacterRecord } from "../../types/characters.ts";
-import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
-import { countCompletedForCharacter } from "../../utils/completion-counts.ts";
 import { CompletionCountChip } from "./dungeon-cells.tsx";
 import type { SortDirection } from "../../utils/sort-dungeons.ts";
 import { CHARACTER_HEADER_CELL_SX } from "./table-layout.ts";
 
 type CharacterHeaderCellProps = {
   character: CharacterRecord;
+  completedCount: number;
   dungeonCount: number;
-  dungeons: DungeonRecord[];
-  dungeonToggles: DungeonToggles;
   isActiveSort: boolean;
   sortDirection: SortDirection;
   onSort: () => void;
@@ -30,9 +27,8 @@ type CharacterHeaderCellProps = {
 
 export function CharacterHeaderCell({
   character,
+  completedCount,
   dungeonCount,
-  dungeons,
-  dungeonToggles,
   isActiveSort,
   sortDirection,
   onSort,
@@ -83,14 +79,7 @@ export function CharacterHeaderCell({
           </Stack>
         </TableSortLabel>
 
-        <CompletionCountChip
-          completed={countCompletedForCharacter(
-            character.id,
-            dungeons,
-            dungeonToggles,
-          )}
-          total={dungeonCount}
-        />
+        <CompletionCountChip completed={completedCount} total={dungeonCount} />
 
         <Stack
           direction="row"

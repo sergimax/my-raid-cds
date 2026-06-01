@@ -7,7 +7,10 @@ import { useMediaQuery, useTheme } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { usePendingDelete } from "../../hooks/use-pending-delete.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
-import { countCompletedForDungeon } from "../../utils/completion-counts.ts";
+import {
+  countCompletedForCharacter,
+  countCompletedForDungeon,
+} from "../../utils/completion-counts.ts";
 import { filterDungeonsByName } from "../../utils/filter-dungeons-by-name.ts";
 import {
   defaultSortDirectionForKey,
@@ -139,6 +142,18 @@ export function useRaidTrackerTableState({
     return counts;
   }, [characters, dungeonToggles, dungeons]);
 
+  const completionsByCharacterId = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const character of characters) {
+      counts[character.id] = countCompletedForCharacter(
+        character.id,
+        dungeons,
+        dungeonToggles,
+      );
+    }
+    return counts;
+  }, [characters, dungeonToggles, dungeons]);
+
   const sortedDungeons = useMemo(() => {
     if (characterSortId) {
       return sortDungeonsByCharacterToggle(
@@ -178,6 +193,7 @@ export function useRaidTrackerTableState({
     pendingDelete,
     sortedDungeons,
     completionsByDungeonId,
+    completionsByCharacterId,
     handleSort,
     handleCharacterSort,
     handleRequestDeleteCharacter,
