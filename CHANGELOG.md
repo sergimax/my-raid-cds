@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-06-01
+
+### Added
+
+- **Delete confirmation:** Removing a character or deleting a dungeon opens an MUI dialog with the entity name, a warning that toggles are removed and the action cannot be undone, and **Cancel** / **Remove** (character) or **Delete** (dungeon) actions.
+
 ## [1.8.0] - 2026-05-30
 
 ### Changed
