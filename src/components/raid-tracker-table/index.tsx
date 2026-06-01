@@ -44,6 +44,11 @@ import {
   ItemLevelCell,
 } from "./dungeon-cells.tsx";
 import { formatDungeonCell } from "./format-dungeon-cell.ts";
+import { DeleteConfirmDialog } from "./delete-confirm-dialog.tsx";
+
+type PendingDelete =
+  | { kind: "character"; id: string; name: string }
+  | { kind: "dungeon"; id: string; name: string };
 
 export function RaidTrackerTable({
   characters,
@@ -69,6 +74,46 @@ export function RaidTrackerTable({
   const [characterSortDirection, setCharacterSortDirection] =
     useState<SortDirection>("desc");
   const [dungeonNameSearch, setDungeonNameSearch] = useState("");
+  const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(
+    null,
+  );
+
+  const handleRequestDeleteCharacter = useCallback(
+    (characterId: string) => {
+      const character = characters.find(
+        (entry) => entry.id === characterId,
+      );
+      if (!character) return;
+      setPendingDelete({
+        kind: "character",
+        id: characterId,
+        name: character.name,
+      });
+    },
+    [characters],
+  );
+
+  const handleRequestDeleteDungeon = useCallback((dungeon: DungeonRecord) => {
+    setPendingDelete({
+      kind: "dungeon",
+      id: dungeon.id,
+      name: dungeon.name,
+    });
+  }, []);
+
+  const handleCancelDelete = useCallback(() => {
+    setPendingDelete(null);
+  }, []);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (!pendingDelete) return;
+    if (pendingDelete.kind === "character") {
+      onDeleteCharacter(pendingDelete.id);
+    } else {
+      onDeleteDungeon(pendingDelete.id);
+    }
+    setPendingDelete(null);
+  }, [pendingDelete, onDeleteCharacter, onDeleteDungeon]);
 
   const handleSort = useCallback((nextSortKey: DungeonSortKey) => {
     setCharacterSortId(null);
@@ -212,7 +257,7 @@ export function RaidTrackerTable({
                   handleCharacterSort(character.id);
                 }}
                 onResetCharacterToggles={onResetCharacterToggles}
-                onDeleteCharacter={onDeleteCharacter}
+                onDeleteCharacter={handleRequestDeleteCharacter}
               />
             ))}
           </TableRow>
@@ -226,7 +271,7 @@ export function RaidTrackerTable({
                     size="small"
                     color="error"
                     onClick={() => {
-                      onDeleteDungeon(dungeon.id);
+                      handleRequestDeleteDungeon(dungeon);
                     }}
                     aria-label={`Delete dungeon: ${dungeon.name}`}
                   >
@@ -288,6 +333,26 @@ export function RaidTrackerTable({
           ))}
         </TableBody>
       </Table>
+      <DeleteConfirmDialog
+        open={pendingDelete !== null}
+        title={
+          pendingDelete?.kind === "character"
+            ? "Remove character?"
+            : "Delete dungeon?"
+        }
+        message={
+          pendingDelete?.kind === "character"
+            ? `Remove "${pendingDelete.name}" and all cooldown toggles for this character? This cannot be undone.`
+            : pendingDelete?.kind === "dungeon"
+              ? `Delete "${pendingDelete.name}" and all cooldown toggles for this dungeon? This cannot be undone.`
+              : ""
+        }
+        confirmLabel={
+          pendingDelete?.kind === "character" ? "Remove" : "Delete"
+        }
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </TableContainer>
   );
 }
