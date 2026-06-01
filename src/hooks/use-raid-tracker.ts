@@ -43,6 +43,7 @@ export function useRaidTracker() {
 
   const forms = useTrackerForms({
     characters,
+    dungeons,
     onCharacterAdded,
     onDungeonAdded,
   });

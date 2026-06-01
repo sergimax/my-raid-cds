@@ -1,37 +1,33 @@
-import {
-  DungeonDifficulty,
-  type DungeonDifficulty as DungeonDifficultyValue,
-  type DungeonSize,
-} from "../types/dungeons.ts";
+import type { DungeonFormValues } from "../constants/dungeon-form-defaults.ts";
+import type { DungeonRecord } from "../types/dungeons.ts";
 import { parseItemLevelInput } from "./parse-item-level-input.ts";
 
-export type DungeonFormValues = {
-  name: string;
-  size: DungeonSize;
-  itemLevelText: string;
-  difficulty: DungeonDifficultyValue;
-};
+export type { DungeonFormValues } from "../constants/dungeon-form-defaults.ts";
 
 export type ParsedDungeonFormFields = {
   name: string;
-  size: DungeonSize;
+  size: DungeonRecord["size"];
   itemLevel: number[];
-  difficulty: DungeonDifficultyValue;
+  difficulty: DungeonRecord["difficulty"];
 };
 
 export type ParseDungeonFormResult =
   | { ok: true; fields: ParsedDungeonFormFields }
   | { ok: false; error: string };
 
-export const DEFAULT_DUNGEON_FORM_SIZE: DungeonSize = 10;
-export const DEFAULT_DUNGEON_ITEM_LEVEL_TEXT = "200";
-export const DEFAULT_DUNGEON_DIFFICULTY: DungeonDifficultyValue =
-  DungeonDifficulty.NORMAL;
-
-export function parseDungeonForm(values: DungeonFormValues): ParseDungeonFormResult {
+export function parseDungeonForm(
+  values: DungeonFormValues,
+  existingDungeons: DungeonRecord[],
+): ParseDungeonFormResult {
   const trimmedName = values.name.trim();
   if (!trimmedName) {
     return { ok: false, error: "Enter a dungeon name." };
+  }
+  const isDuplicate = existingDungeons.some(
+    (existing) => existing.name.toLowerCase() === trimmedName.toLowerCase(),
+  );
+  if (isDuplicate) {
+    return { ok: false, error: "A dungeon with this name already exists." };
   }
   const itemLevels = parseItemLevelInput(values.itemLevelText);
   if (itemLevels.length === 0) {
@@ -48,14 +44,5 @@ export function parseDungeonForm(values: DungeonFormValues): ParseDungeonFormRes
       itemLevel: itemLevels,
       difficulty: values.difficulty,
     },
-  };
-}
-
-export function defaultDungeonFormValues(): DungeonFormValues {
-  return {
-    name: "",
-    size: DEFAULT_DUNGEON_FORM_SIZE,
-    itemLevelText: DEFAULT_DUNGEON_ITEM_LEVEL_TEXT,
-    difficulty: DEFAULT_DUNGEON_DIFFICULTY,
   };
 }

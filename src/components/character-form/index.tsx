@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   FormControl,
   InputLabel,
   MenuItem,
@@ -12,6 +11,7 @@ import {
 import { MAX_CHARACTER_NAME_LENGTH } from "../../constants/character.ts";
 import { Classes } from "../../types/characters.ts";
 import { ClassOptionLabel } from "../class-option-label/index.tsx";
+import { FormActionsRow } from "../form-actions-row/index.tsx";
 import type { CharacterFormProps } from "./types.ts";
 
 export function CharacterForm({
@@ -79,21 +79,7 @@ export function CharacterForm({
               ))}
             </Select>
           </FormControl>
-          <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
-            <Button
-              variant="text"
-              type="button"
-              onClick={(event) => {
-                event.preventDefault();
-                onCancel();
-              }}
-            >
-              Cancel
-            </Button>
-            <Button variant="contained" color="primary" type="submit">
-              Add character
-            </Button>
-          </Stack>
+          <FormActionsRow submitLabel="Add character" onCancel={onCancel} />
           {error ? (
             <Typography color="error" variant="body2">
               {error}

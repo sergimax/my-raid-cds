@@ -6,6 +6,7 @@ import { useDungeonFormState } from "./use-dungeon-form-state.ts";
 
 type UseTrackerFormsOptions = {
   characters: CharacterRecord[];
+  dungeons: DungeonRecord[];
   onCharacterAdded: (character: CharacterRecord) => void;
   onDungeonAdded: (dungeon: DungeonRecord) => void;
 };
@@ -13,11 +14,12 @@ type UseTrackerFormsOptions = {
 /** Character and dungeon add forms with mutual exclusivity when toggled open. */
 export function useTrackerForms({
   characters,
+  dungeons,
   onCharacterAdded,
   onDungeonAdded,
 }: UseTrackerFormsOptions) {
   const characterForm = useCharacterFormState({ characters, onCharacterAdded });
-  const dungeonForm = useDungeonFormState({ onDungeonAdded });
+  const dungeonForm = useDungeonFormState({ dungeons, onDungeonAdded });
 
   const toggleCharacterForm = useCallback(() => {
     if (characterForm.isOpen) {

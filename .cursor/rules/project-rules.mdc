@@ -99,7 +99,7 @@ Example: `feat(auth): add login form`
 ```
 src/
 ├── components/   # app-header, app-meta-info, app-theme-provider, theme-mode-toggle, character-form, raid-tracker-table, tracker-controls, …
-├── constants/    # character.ts (MAX_CHARACTER_NAME_LENGTH)
+├── constants/    # character.ts, dungeon-form-defaults.ts
 ├── contexts/     # raid-tracker-context.ts, raid-tracker-provider.tsx
 ├── hooks/        # use-raid-tracker.ts (composer), use-compact-layout.ts, use-raid-tracker-context.ts, use-tracker-forms.ts, use-*-form-state.ts, color-mode …
 ├── theme/        # create-app-theme.ts

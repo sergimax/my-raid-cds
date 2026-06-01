@@ -1,40 +1,39 @@
 import type { SubmitEvent } from "react";
 import { useCallback, useState } from "react";
+import { defaultDungeonFormValues } from "../constants/dungeon-form-defaults.ts";
 import type {
   DungeonDifficulty as DungeonDifficultyValue,
   DungeonRecord,
   DungeonSize,
 } from "../types/dungeons.ts";
-import {
-  defaultDungeonFormValues,
-  parseDungeonForm,
-} from "../utils/validate-dungeon.ts";
+import { parseDungeonForm } from "../utils/validate-dungeon.ts";
 import { generateUUID } from "../uuid.ts";
 
 type UseDungeonFormStateOptions = {
+  dungeons: DungeonRecord[];
   onDungeonAdded: (dungeon: DungeonRecord) => void;
 };
 
-export function useDungeonFormState({ onDungeonAdded }: UseDungeonFormStateOptions) {
+export function useDungeonFormState({
+  dungeons,
+  onDungeonAdded,
+}: UseDungeonFormStateOptions) {
+  const defaults = defaultDungeonFormValues();
   const [isOpen, setIsOpen] = useState(false);
-  const [name, setNameState] = useState("");
-  const [size, setSizeState] = useState<DungeonSize>(
-    defaultDungeonFormValues().size,
-  );
-  const [itemLevelText, setItemLevelTextState] = useState(
-    defaultDungeonFormValues().itemLevelText,
-  );
+  const [name, setNameState] = useState(defaults.name);
+  const [size, setSizeState] = useState<DungeonSize>(defaults.size);
+  const [itemLevelText, setItemLevelTextState] = useState(defaults.itemLevelText);
   const [difficulty, setDifficultyState] = useState<DungeonDifficultyValue>(
-    defaultDungeonFormValues().difficulty,
+    defaults.difficulty,
   );
   const [error, setError] = useState("");
 
   const resetFields = useCallback(() => {
-    const defaults = defaultDungeonFormValues();
-    setNameState(defaults.name);
-    setSizeState(defaults.size);
-    setItemLevelTextState(defaults.itemLevelText);
-    setDifficultyState(defaults.difficulty);
+    const nextDefaults = defaultDungeonFormValues();
+    setNameState(nextDefaults.name);
+    setSizeState(nextDefaults.size);
+    setItemLevelTextState(nextDefaults.itemLevelText);
+    setDifficultyState(nextDefaults.difficulty);
     setError("");
   }, []);
 
@@ -71,12 +70,10 @@ export function useDungeonFormState({ onDungeonAdded }: UseDungeonFormStateOptio
     (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
       setError("");
-      const result = parseDungeonForm({
-        name,
-        size,
-        itemLevelText,
-        difficulty,
-      });
+      const result = parseDungeonForm(
+        { name, size, itemLevelText, difficulty },
+        dungeons,
+      );
       if (!result.ok) {
         setError(result.error);
         return;
@@ -88,7 +85,7 @@ export function useDungeonFormState({ onDungeonAdded }: UseDungeonFormStateOptio
       setIsOpen(false);
       resetFields();
     },
-    [difficulty, itemLevelText, name, onDungeonAdded, resetFields, size],
+    [difficulty, dungeons, itemLevelText, name, onDungeonAdded, resetFields, size],
   );
 
   return {
