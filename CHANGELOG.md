@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Raid tracker table:** Refactored into a dedicated state hook, pinned-column render registry, and per-dungeon row component; sorting, search, delete confirmation, and layout behave the same as before.
+
 ## [1.9.0] - 2026-06-01
 
 ### Added
