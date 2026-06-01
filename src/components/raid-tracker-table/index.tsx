@@ -1,8 +1,8 @@
 import { Table, TableBody, TableContainer } from "@mui/material";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
-import { DeleteConfirmDialog } from "./delete-confirm-dialog.tsx";
 import { DungeonTableRow } from "./dungeon-table-row.tsx";
+import { RaidTrackerDeleteDialog } from "./raid-tracker-delete-dialog.tsx";
 import { RaidTrackerTableHead } from "./raid-tracker-table-head.tsx";
 import "./styles.css";
 import { useRaidTrackerTableState } from "./use-raid-tracker-table-state.ts";
@@ -96,23 +96,8 @@ export function RaidTrackerTable() {
           ))}
         </TableBody>
       </Table>
-      <DeleteConfirmDialog
-        open={pendingDelete !== null}
-        title={
-          pendingDelete?.kind === "character"
-            ? "Remove character?"
-            : "Delete dungeon?"
-        }
-        message={
-          pendingDelete?.kind === "character"
-            ? `Remove "${pendingDelete.name}" and all cooldown toggles for this character? This cannot be undone.`
-            : pendingDelete?.kind === "dungeon"
-              ? `Delete "${pendingDelete.name}" and all cooldown toggles for this dungeon? This cannot be undone.`
-              : ""
-        }
-        confirmLabel={
-          pendingDelete?.kind === "character" ? "Remove" : "Delete"
-        }
+      <RaidTrackerDeleteDialog
+        pendingDelete={pendingDelete}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
       />
