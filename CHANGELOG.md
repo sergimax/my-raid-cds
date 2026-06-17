@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.2] - 2026-06-17
+
+### Fixed
+
+- **Add dungeon:** Removed duplicate-name validation so the same raid can be added multiple times with different difficulty or size.
+
 ## [1.10.1] - 2026-06-04
 
 ### Changed

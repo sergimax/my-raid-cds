@@ -85,7 +85,7 @@ Example: `feat(auth): add login form`
 - **Reset all toggles** — toolbar control clears all cooldown toggles (keeps characters and dungeons)
 - **Delete dungeon** — per-row delete icon in the pinned actions column removes that dungeon and its toggles
 - **Reset per character** — icon in the character column header clears toggles for that character only
-- **Add forms** — only one of character or dungeon form open at a time; submit closes the form; duplicate character (name + class) and duplicate dungeon name (case-insensitive) are rejected
+- **Add forms** — only one of character or dungeon form open at a time; submit closes the form; duplicate character (name + class) is rejected
 - **Empty table** — no dungeons: body hint to add or use template; search with no matches: “No dungeons match your search” row (`raid-tracker-table-empty-state`)
 
 ## Component Structure
