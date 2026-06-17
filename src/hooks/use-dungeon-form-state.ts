@@ -10,12 +10,10 @@ import { parseDungeonForm } from "../utils/validate-dungeon.ts";
 import { generateUUID } from "../uuid.ts";
 
 type UseDungeonFormStateOptions = {
-  dungeons: DungeonRecord[];
   onDungeonAdded: (dungeon: DungeonRecord) => void;
 };
 
 export function useDungeonFormState({
-  dungeons,
   onDungeonAdded,
 }: UseDungeonFormStateOptions) {
   const defaults = defaultDungeonFormValues();
@@ -70,10 +68,12 @@ export function useDungeonFormState({
     (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
       setError("");
-      const result = parseDungeonForm(
-        { name, size, itemLevelText, difficulty },
-        dungeons,
-      );
+      const result = parseDungeonForm({
+        name,
+        size,
+        itemLevelText,
+        difficulty,
+      });
       if (!result.ok) {
         setError(result.error);
         return;
@@ -85,7 +85,7 @@ export function useDungeonFormState({
       setIsOpen(false);
       resetFields();
     },
-    [difficulty, dungeons, itemLevelText, name, onDungeonAdded, resetFields, size],
+    [difficulty, itemLevelText, name, onDungeonAdded, resetFields, size],
   );
 
   return {

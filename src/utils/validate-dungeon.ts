@@ -17,17 +17,10 @@ export type ParseDungeonFormResult =
 
 export function parseDungeonForm(
   values: DungeonFormValues,
-  existingDungeons: DungeonRecord[],
 ): ParseDungeonFormResult {
   const trimmedName = values.name.trim();
   if (!trimmedName) {
     return { ok: false, error: "Enter a dungeon name." };
-  }
-  const isDuplicate = existingDungeons.some(
-    (existing) => existing.name.toLowerCase() === trimmedName.toLowerCase(),
-  );
-  if (isDuplicate) {
-    return { ok: false, error: "A dungeon with this name already exists." };
   }
   const itemLevels = parseItemLevelInput(values.itemLevelText);
   if (itemLevels.length === 0) {
