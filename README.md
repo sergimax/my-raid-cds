@@ -31,11 +31,11 @@ Open [http://localhost:5173](http://localhost:5173).
 ## Usage
 
 1. **Add a character** — Click **Add character**, enter name (max 12 characters) and class, then **Add character** or **Cancel**. Only one add form is open at a time; closing or switching forms clears entered values.
-2. **Add a dungeon** — Click **Add dungeon**, enter name, size (5/10/20/25/40), item level(s) (e.g. `200` or `200 / 213`), and difficulty (Normal/Heroic), then **Add dungeon** or **Cancel**. Duplicate names (case-insensitive) are rejected. Same single-form and reset rules as the character form.
+2. **Add a dungeon** — Click **Add dungeon**, enter name, optional short name (max 12 characters; shown in compact table view), size (5/10/20/25/40), item level(s) (e.g. `200` or `200 / 213`), and difficulty (Normal/Heroic), then **Add dungeon** or **Cancel**. When short name is left blank, a default abbreviation is applied for known WotLK raid names. Same single-form and reset rules as the character form.
 3. **Add from template** — When the dungeon list is empty, click **Add from template** to load WoW WotLK raids (one-shot; the action is hidden once any dungeon exists).
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
-5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows. On narrow screens (below `md`), the table shows only the actions column, dungeon name, and character toggles; size, mode, item level, and completion columns are hidden.
-6. **Search** — Use the search field under **Dungeon name** to filter rows by substring. If nothing matches, the table shows a “No dungeons match your search” hint.
+5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows. On narrow screens (below `md`), the table shows only the actions column, dungeon name, and character toggles; size, mode, item level, and completion columns are hidden. In that compact layout, the name column shows the short name when set (tooltip with full name).
+6. **Search** — Use the search field under **Dungeon name** to filter rows by substring (matches full name or short name). If nothing matches, the table shows a “No dungeons match your search” hint.
 7. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
 8. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
 9. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
@@ -64,12 +64,13 @@ When there are no dungeons, the table body shows a hint to add a dungeon or use 
 |-------|------|-------------|
 | `id` | `string` | UUID |
 | `name` | `string` | Dungeon name |
+| `shortName` | optional string | Abbreviation for compact table display; template rows and known raid names get defaults from `RaidNames` (`shortRu` / `shortEn`); user override via add form or saved field |
 | `size` | `5 \| 10 \| 20 \| 25 \| 40` | Raid size |
 | `itemLevel` | `number[]` | Item level(s), e.g. `[200, 213]` |
 | `difficulty` | `"Normal" \| "Heroic"` | Raid mode; **Mode** column shows **N** or **H** chips |
 | `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows, optional for custom dungeons; loaded only from this field (no raid-name backfill) |
 
-Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load. Saves include `schemaVersion` (currently `1`). Corrupted local data is reset and an error is shown on load.
+Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load. Saves include `schemaVersion` (currently `1`). Missing `shortName` on load is backfilled when the dungeon name matches a known template raid (Russian or English). Corrupted local data is reset and an error is shown on load.
 
 ### Dungeon Toggles
 
@@ -92,7 +93,7 @@ src/
 ├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons
 ├── data/             # raid-names.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts
-├── utils/            # validate-character/dungeon, sort/filter, item-level tiers, …
+├── utils/            # validate-character/dungeon, dungeon-short-name, sort/filter, item-level tiers, …
 ├── assets/           # class-icons/, emblems/
 ├── storage/          # index.ts (public API), parse, persist, types, constants
 ├── uuid.ts           # generateUUID
