@@ -24,6 +24,7 @@ export function createTemplateDungeon({
   const raid = RaidNames[raidKey];
   return {
     name: raid.ru,
+    ...(raid.shortRu ? { shortName: raid.shortRu } : {}),
     size,
     itemLevel,
     difficulty,
