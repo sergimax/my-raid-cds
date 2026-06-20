@@ -13,6 +13,8 @@ export type DungeonSize = (typeof DungeonSizes)[number];
 
 export type Dungeon = {
   name: string;
+  /** Optional abbreviation; shown in compact table when set. */
+  shortName?: string;
   size: DungeonSize;
   itemLevel: Array<number>;
   difficulty: DungeonDifficulty;
