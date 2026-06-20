@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-06-21
+
+### Added
+
+- **Import:** Toolbar **Import** action builds copy-ready text from dungeons currently shown in the table (respects name search). One line per matching raid lists characters still without CD (toggle off), e.g. `ICC25H - Char1, Char2` or `ЦЛК25хм - Char1, Char2`. Character checkboxes limit who is included; heroic suffix is `H` for Latin short names and `хм` for Cyrillic.
+
 ## [1.11.0] - 2026-06-20
 
 ### Added

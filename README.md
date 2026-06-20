@@ -36,13 +36,14 @@ Open [http://localhost:5173](http://localhost:5173).
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
 5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows. On narrow screens (below `md`), the table shows only the actions column, dungeon name, and character toggles; size, mode, item level, and completion columns are hidden. In that compact layout, the name column shows the short name when set (tooltip with full name).
 6. **Search** — Use the search field under **Dungeon name** to filter rows by substring (matches full name or short name). If nothing matches, the table shows a “No dungeons match your search” hint.
-7. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
-8. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
-9. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
-10. **Delete** — Delete icon on each dungeon row or remove icon in a character header opens a confirmation dialog (entity name, irreversible warning); confirm with **Delete** / **Remove** or dismiss with **Cancel**.
-11. **Theme** — Sun/moon icon in the header toggles light/dark mode (saved in `localStorage`; uses system preference when unset).
+7. **Import** — Filter dungeons with search (e.g. `ICC` or `ЦЛК`), then click **Import** in the toolbar. The panel lists one line per visible raid with characters still without CD (toggle off), ready to copy — e.g. `ICC25H - Char1, Char2` and `ICC25 - Char1, Char3`, or `ЦЛК25хм - …` / `ЦЛК25 - …` for Russian short names. Heroic lines use suffix `H` (Latin) or `хм` (Cyrillic). Character checkboxes limit who is included; raids where everyone has CD are omitted.
+8. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
+9. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
+10. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
+11. **Delete** — Delete icon on each dungeon row or remove icon in a character header opens a confirmation dialog (entity name, irreversible warning); confirm with **Delete** / **Remove** or dismiss with **Cancel**.
+12. **Theme** — Sun/moon icon in the header toggles light/dark mode (saved in `localStorage`; uses system preference when unset).
 
-The sticky header shows the app name, tracker actions (on narrow screens below `md`, a menu icon opens **Add from template**, **Add character**, **Add dungeon**, and **Reset all toggles**), theme toggle, a GitHub icon (tooltip: author attribution), and the version label (`v.x.y.z` from `package.json` at build time) on the right.
+The sticky header shows the app name, tracker actions (on narrow screens below `md`, a menu icon opens **Add from template**, **Add character**, **Add dungeon**, **Import**, and **Reset all toggles**), theme toggle, a GitHub icon (tooltip: author attribution), and the version label (`v.x.y.z` from `package.json` at build time) on the right.
 
 Data is saved automatically (debounced) to `localStorage` under the key `my-raid-cds`. If saved data is corrupted or unreadable, an error alert appears and the tracker resets to empty.
 
@@ -85,15 +86,15 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 ```
 src/
-├── components/       # app-header, raid-tracker-main, character-form, dungeon-form, tracker-controls, …
+├── components/       # app-header, raid-tracker-main, character-form, dungeon-form, import-panel, tracker-controls, …
 │   raid-tracker-table/   # grid, use-raid-tracker-table-state, head/row, pinned-column-renderers, …
 ├── constants/        # character.ts, dungeon-form-defaults.ts
 ├── contexts/         # raid-tracker-provider, raid-tracker-context
-├── hooks/            # use-raid-tracker.ts, use-tracker-forms.ts, use-compact-layout.ts, …
+├── hooks/            # use-raid-tracker.ts, use-tracker-forms.ts, use-import-panel-state.ts, use-compact-layout.ts, …
 ├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons
 ├── data/             # raid-names.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts
-├── utils/            # validate-character/dungeon, dungeon-short-name, sort/filter, item-level tiers, …
+├── utils/            # validate-character/dungeon, build-import-status, format-dungeon-label, dungeon-short-name, sort/filter, …
 ├── assets/           # class-icons/, emblems/
 ├── storage/          # index.ts (public API), parse, persist, types, constants
 ├── uuid.ts           # generateUUID

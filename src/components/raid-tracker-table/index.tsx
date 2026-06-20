@@ -1,4 +1,5 @@
-import { Table, TableBody, TableContainer } from "@mui/material";
+import { Stack, Table, TableBody, TableContainer } from "@mui/material";
+import { ImportPanel } from "../import-panel/index.tsx";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import { DungeonTableRow } from "./dungeon-table-row.tsx";
@@ -15,6 +16,8 @@ export function RaidTrackerTable() {
     characters,
     dungeons,
     dungeonToggles,
+    showImportPanel,
+    closeImportPanel,
     handleDungeonToggle: onDungeonToggle,
     handleDeleteCharacter: onDeleteCharacter,
     handleDeleteDungeon: onDeleteDungeon,
@@ -53,7 +56,17 @@ export function RaidTrackerTable() {
   } = tableState;
 
   return (
-    <TableContainer sx={{ overflowX: "auto" }}>
+    <Stack spacing={2}>
+      {showImportPanel ? (
+        <ImportPanel
+          key="import-panel"
+          characters={characters}
+          visibleDungeons={sortedDungeons}
+          dungeonToggles={dungeonToggles}
+          onClose={closeImportPanel}
+        />
+      ) : null}
+      <TableContainer sx={{ overflowX: "auto" }}>
       <Table
         aria-label={raidTrackerTableAriaLabel(dungeons.length, sortedDungeons.length)}
         className={
@@ -119,5 +132,6 @@ export function RaidTrackerTable() {
         onCancel={handleCancelDelete}
       />
     </TableContainer>
+    </Stack>
   );
 }
