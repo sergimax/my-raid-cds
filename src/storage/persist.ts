@@ -24,6 +24,7 @@ export function saveRaidTrackerState(
     size: dungeon.size,
     itemLevel: dungeon.itemLevel,
     difficulty: dungeon.difficulty,
+    ...(dungeon.shortName ? { shortName: dungeon.shortName } : {}),
     ...(dungeon.emblem ? { emblem: dungeon.emblem } : {}),
   }));
 

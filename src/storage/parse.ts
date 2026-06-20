@@ -1,4 +1,5 @@
 import { EmblemKey, type EmblemKey as EmblemKeyType } from "../assets/emblems/emblem-icons.ts";
+import { defaultShortNameForDungeonName } from "../utils/dungeon-short-name.ts";
 import { Classes, type CharacterRecord } from "../types/characters.ts";
 import {
   DungeonDifficulty,
@@ -98,12 +99,17 @@ function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {
   }
 
   const emblem = parseStoredEmblem(stored);
+  const shortName =
+    typeof stored.shortName === "string" && stored.shortName.trim() !== ""
+      ? stored.shortName.trim()
+      : defaultShortNameForDungeonName(stored.name);
   return {
     id: stored.id,
     name: stored.name,
     size,
     itemLevel: stored.itemLevel as number[],
     difficulty,
+    ...(shortName ? { shortName } : {}),
     ...(emblem ? { emblem } : {}),
   };
 }

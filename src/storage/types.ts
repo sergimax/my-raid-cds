@@ -21,6 +21,7 @@ export type StoredCharacter = {
 export type StoredDungeon = {
   id: string;
   name: string;
+  shortName?: string;
   size: DungeonRecord["size"];
   itemLevel: number[];
   emblem?: string;
