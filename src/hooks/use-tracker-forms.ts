@@ -54,6 +54,8 @@ export function useTrackerForms({
 
     newDungeonName: dungeonForm.name,
     setNewDungeonName: dungeonForm.setName,
+    newDungeonShortName: dungeonForm.shortName,
+    setNewDungeonShortName: dungeonForm.setShortName,
     newDungeonSize: dungeonForm.size,
     setNewDungeonSize: dungeonForm.setSize,
     newDungeonItemLevelText: dungeonForm.itemLevelText,

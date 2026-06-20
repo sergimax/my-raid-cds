@@ -19,6 +19,7 @@ export function useDungeonFormState({
   const defaults = defaultDungeonFormValues();
   const [isOpen, setIsOpen] = useState(false);
   const [name, setNameState] = useState(defaults.name);
+  const [shortName, setShortNameState] = useState(defaults.shortName);
   const [size, setSizeState] = useState<DungeonSize>(defaults.size);
   const [itemLevelText, setItemLevelTextState] = useState(defaults.itemLevelText);
   const [difficulty, setDifficultyState] = useState<DungeonDifficultyValue>(
@@ -29,6 +30,7 @@ export function useDungeonFormState({
   const resetFields = useCallback(() => {
     const nextDefaults = defaultDungeonFormValues();
     setNameState(nextDefaults.name);
+    setShortNameState(nextDefaults.shortName);
     setSizeState(nextDefaults.size);
     setItemLevelTextState(nextDefaults.itemLevelText);
     setDifficultyState(nextDefaults.difficulty);
@@ -46,6 +48,11 @@ export function useDungeonFormState({
 
   const setName = useCallback((nextName: string) => {
     setNameState(nextName);
+    setError("");
+  }, []);
+
+  const setShortName = useCallback((nextShortName: string) => {
+    setShortNameState(nextShortName);
     setError("");
   }, []);
 
@@ -70,6 +77,7 @@ export function useDungeonFormState({
       setError("");
       const result = parseDungeonForm({
         name,
+        shortName,
         size,
         itemLevelText,
         difficulty,
@@ -85,7 +93,7 @@ export function useDungeonFormState({
       setIsOpen(false);
       resetFields();
     },
-    [difficulty, itemLevelText, name, onDungeonAdded, resetFields, size],
+    [difficulty, itemLevelText, name, onDungeonAdded, resetFields, shortName, size],
   );
 
   return {
@@ -95,6 +103,8 @@ export function useDungeonFormState({
     resetFields,
     name,
     setName,
+    shortName,
+    setShortName,
     size,
     setSize,
     itemLevelText,

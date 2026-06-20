@@ -99,13 +99,15 @@ function renderPinnedBody(
   columnKey: PinnedColumnKey,
   context: PinnedColumnBodyContext,
 ): ReactNode {
-  const { dungeon, completionsByDungeonId, characterCount } = context;
+  const { compactTable, dungeon, completionsByDungeonId, characterCount } = context;
 
   switch (columnKey) {
     case "name":
       return (
         <DungeonNameCell
           name={dungeon.name}
+          shortName={dungeon.shortName}
+          compact={compactTable}
           itemLevels={dungeon.itemLevel}
           emblem={dungeon.emblem ?? null}
         />

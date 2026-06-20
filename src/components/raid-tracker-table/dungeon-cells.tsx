@@ -1,5 +1,6 @@
-import { Box, Chip, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Chip, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import { DungeonDifficulty, type DungeonDifficulty as DungeonDifficultyType } from "../../types/dungeons.ts";
+import { getDungeonDisplayName } from "../../utils/dungeon-short-name.ts";
 import { completionChipFill } from "../../utils/completion-chip-color.ts";
 import {
   getItemLevelTier,
@@ -20,14 +21,38 @@ function sizeChipColor(size: number): SizeChipColor {
 
 export function DungeonNameCell({
   name,
+  shortName,
+  compact,
   itemLevels,
   emblem,
 }: {
   name: string;
+  shortName?: string;
+  compact: boolean;
   itemLevels: number[];
   emblem: EmblemKey | null;
 }) {
   const nameTier = getItemLevelTier(itemLevels);
+  const displayName = getDungeonDisplayName({ name, shortName }, compact);
+  const showFullNameTooltip = compact && shortName != null && shortName !== name;
+
+  const nameLabel = (
+    <Typography
+      component="span"
+      variant="body2"
+      className="raid-tracker-table__dungeon-name"
+      sx={(theme) => ({
+        color: getItemLevelTierColor(nameTier, theme.palette.mode),
+        fontWeight: 600,
+        lineHeight: 1.3,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      })}
+    >
+      {displayName}
+    </Typography>
+  );
 
   return (
     <Stack
@@ -43,21 +68,13 @@ export function DungeonNameCell({
           sx={{ width: 18, height: 18, flexShrink: 0, borderRadius: "4px" }}
         />
       ) : null}
-      <Typography
-        component="span"
-        variant="body2"
-        className="raid-tracker-table__dungeon-name"
-        sx={(theme) => ({
-          color: getItemLevelTierColor(nameTier, theme.palette.mode),
-          fontWeight: 600,
-          lineHeight: 1.3,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-        })}
-      >
-        {name}
-      </Typography>
+      {showFullNameTooltip ? (
+        <Tooltip title={name}>
+          <span className="raid-tracker-table__dungeon-name-wrap">{nameLabel}</span>
+        </Tooltip>
+      ) : (
+        nameLabel
+      )}
     </Stack>
   );
 }
