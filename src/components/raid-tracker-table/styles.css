@@ -39,3 +39,9 @@
 .raid-tracker-table--compact .raid-tracker-table__dungeon-search .MuiInputBase-root {
   font-size: 0.75rem;
 }
+
+.raid-tracker-table__dungeon-name-wrap {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+}

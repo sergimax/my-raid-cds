@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-06-20
+
+### Added
+
+- **Dungeon short names:** Each dungeon can have an optional short name (abbreviation). WotLK template raids include preset Russian and English abbreviations (e.g. Накс / Naxx, ЦЛК / ICC).
+- **Add dungeon:** Optional **Short name** field; when left blank, a default abbreviation is applied for known raid names.
+- **Compact table:** Shows the short name on narrow screens with a tooltip for the full dungeon name.
+- **Dungeon search:** Matches both full name and short name.
+
+### Changed
+
+- **Local storage:** Saves optional `shortName` on dungeon records; existing saves backfill defaults when the name matches a known template raid.
+
 ## [1.10.2] - 2026-06-17
 
 ### Fixed

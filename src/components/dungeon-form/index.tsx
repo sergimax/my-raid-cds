@@ -8,23 +8,26 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { FormActionsRow } from "../form-actions-row/index.tsx";
-import { FormErrorMessage } from "../form-error-message/index.tsx";
+import { MAX_DUNGEON_SHORT_NAME_LENGTH } from "../../constants/dungeon-form-defaults.ts";
 import {
   DungeonDifficulty,
   DungeonSizes,
   type DungeonDifficulty as DungeonDifficultyValue,
   type DungeonSize,
 } from "../../types/dungeons.ts";
+import { FormActionsRow } from "../form-actions-row/index.tsx";
+import { FormErrorMessage } from "../form-error-message/index.tsx";
 import type { DungeonFormProps } from "./types.ts";
 
 export function DungeonForm({
   name,
+  shortName,
   size,
   itemLevelText,
   difficulty,
   error,
   onNameChange,
+  onShortNameChange,
   onSizeChange,
   onItemLevelTextChange,
   onDifficultyChange,
@@ -46,6 +49,17 @@ export function DungeonForm({
               onNameChange(event.target.value);
             }}
             required
+            autoComplete="off"
+          />
+          <TextField
+            label="Short name"
+            name="dungeonShortName"
+            value={shortName}
+            onChange={(event) => {
+              onShortNameChange(event.target.value);
+            }}
+            helperText="Optional abbreviation shown in compact table view. Leave blank to use a default for known raids."
+            slotProps={{ htmlInput: { maxLength: MAX_DUNGEON_SHORT_NAME_LENGTH } }}
             autoComplete="off"
           />
           <FormControl required>

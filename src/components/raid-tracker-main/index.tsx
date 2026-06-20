@@ -33,11 +33,13 @@ export function RaidTrackerMain() {
       {tracker.showDungeonForm ? (
         <DungeonForm
           name={tracker.newDungeonName}
+          shortName={tracker.newDungeonShortName}
           size={tracker.newDungeonSize}
           itemLevelText={tracker.newDungeonItemLevelText}
           difficulty={tracker.newDungeonDifficulty}
           error={tracker.dungeonFormError}
           onNameChange={tracker.setNewDungeonName}
+          onShortNameChange={tracker.setNewDungeonShortName}
           onSizeChange={tracker.setNewDungeonSize}
           onItemLevelTextChange={tracker.setNewDungeonItemLevelText}
           onDifficultyChange={tracker.setNewDungeonDifficulty}
