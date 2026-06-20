@@ -6,6 +6,7 @@ export type TrackerActionId =
   | "addFromTemplate"
   | "addCharacter"
   | "addDungeon"
+  | "importStatus"
   | "resetAllToggles";
 
 export type TrackerAction = {
@@ -51,6 +52,16 @@ export function buildTrackerActions(tracker: RaidTrackerContextValue): TrackerAc
       buttonVariant: tracker.showDungeonForm ? "contained" : "outlined",
       buttonColor: "inherit",
       ariaExpanded: tracker.showDungeonForm,
+    },
+    {
+      id: "importStatus",
+      label: "Import",
+      onClick: tracker.toggleImportPanel,
+      selected: tracker.showImportPanel,
+      buttonVariant: tracker.showImportPanel ? "contained" : "outlined",
+      buttonColor: "inherit",
+      ariaExpanded: tracker.showImportPanel,
+      disabled: tracker.characters.length === 0 || tracker.dungeons.length === 0,
     },
     {
       id: "resetAllToggles",

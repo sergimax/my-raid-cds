@@ -4,6 +4,7 @@ import { loadRaidTrackerState, saveRaidTrackerState } from "../storage/index.ts"
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
 import { generateUUID } from "../uuid.ts";
+import { useImportPanelState } from "./use-import-panel-state.ts";
 import { useTrackerForms } from "./use-tracker-forms.ts";
 
 export function useRaidTracker() {
@@ -41,11 +42,24 @@ export function useRaidTracker() {
     setDungeons((previous) => [...previous, dungeon]);
   }, []);
 
+  const importPanel = useImportPanelState();
+
   const forms = useTrackerForms({
     characters,
     onCharacterAdded,
     onDungeonAdded,
+    closeImportPanel: importPanel.closeImportPanel,
   });
+
+  const toggleImportPanel = useCallback(() => {
+    if (importPanel.showImportPanel) {
+      importPanel.closeImportPanel();
+      return;
+    }
+    forms.closeCharacterForm();
+    forms.closeDungeonForm();
+    importPanel.openImportPanel();
+  }, [forms, importPanel]);
 
   const handleDungeonToggle = useCallback(
     (characterId: string, dungeonId: string) => {
@@ -130,6 +144,10 @@ export function useRaidTracker() {
     storageError,
 
     ...forms,
+
+    showImportPanel: importPanel.showImportPanel,
+    toggleImportPanel,
+    closeImportPanel: importPanel.closeImportPanel,
 
     handleDungeonToggle,
     handleDeleteCharacter,
