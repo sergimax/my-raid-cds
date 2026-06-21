@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.2] - 2026-06-22
+
+### Changed
+
+- **Internal:** Added Vitest test suite (utils, storage parse/persist, character/dungeon forms, table empty state). CI runs `npm run test:run` after lint. Colocated `*.test.ts` / `*.test.tsx` files; shared helpers in `src/test/`.
+
 ## [1.12.1] - 2026-06-22
 
 ### Fixed

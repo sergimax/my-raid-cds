@@ -73,7 +73,8 @@ Example: `feat(auth): add login form`
 - Main table UI: `components/raid-tracker-table/` (`RaidTrackerTable`); sort/search/delete UI state in `use-raid-tracker-table-state.ts`; shared confirm-before-delete in `hooks/use-pending-delete.ts`; toggle helpers in `utils/dungeon-toggles.ts`
 - `data/raid-names.ts`, `data/dungeon-list.ts`, `create-template-dungeon.ts` — WotLK template raids (`RaidNames` metadata with `ru`/`en` names, `shortRu`/`shortEn` abbreviations, emblem + `DungeonList`; re-exported from `data/dungeons.ts`)
 - Dungeons use `difficulty` (Normal/Heroic); optional `shortName` for compact display; optional `emblem` for display; legacy saves with `mode` are migrated on load; `emblem` loads only from the saved field (template rows include it in `DungeonList`; no raid-name backfill on load); missing `shortName` backfills from `RaidNames` when the name matches on load
-- Production `vite.config.ts` uses `manualChunks` for React / MUI vendor splits
+- Production `vite.config.ts` uses `manualChunks` for React / MUI vendor splits; Vitest configured in the same file (`test` block, jsdom, `src/test/setup.ts`)
+- Tests: Vitest + jsdom + Testing Library; colocated `*.test.ts` / `*.test.tsx`; shared helpers in `src/test/` (`fixtures.ts`, `render-with-theme.tsx`); CI runs `npm run test:run` after lint
 - App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`; label in `app-meta-info`)
 - Light/dark mode: `ColorModeProvider` in `contexts/color-mode-provider.tsx` + `useColorMode`; `localStorage` key `my-raid-cds-color-mode`; pre-paint script in `index.html`; CSS vars via `:root[data-color-mode]` in `index.css`
 - Sticky header: MUI `AppBar` in `app-header/` (tracker actions, theme toggle, GitHub meta)
@@ -111,9 +112,12 @@ src/
 ├── utils/        # completion-counts, dungeon-toggles, character-display, filter/sort dungeons, validate-character/dungeon, dungeon-short-name, item-level tiers, build-import-status, …
 ├── assets/       # class-icons/, emblems/
 ├── storage/      # index.ts (public API), parse.ts, persist.ts, types, constants
+├── test/         # setup.ts, fixtures.ts, render-with-theme.tsx, test-providers.tsx
 ├── uuid.ts       # generateUUID
 └── vite-env.d.ts # __APP_VERSION__ declaration
 ```
+
+Colocate tests as `*.test.ts` / `*.test.tsx` beside the module under test; use `src/test/fixtures.ts` for sample characters/dungeons/toggles and `renderWithTheme` for MUI component tests.
 
 ## Communication
 

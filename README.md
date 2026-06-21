@@ -83,6 +83,7 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 - React 19 + TypeScript + Vite
 - [Material UI](https://mui.com/) (`@mui/material`, `@mui/icons-material`) with Emotion
+- [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/) for unit and component tests
 
 ## Project Structure
 
@@ -99,9 +100,12 @@ src/
 ├── utils/            # validate-character/dungeon, dungeon-toggles, character-display, build-import-status, format-dungeon-label, dungeon-short-name, sort/filter, …
 ├── assets/           # class-icons/, emblems/
 ├── storage/          # index.ts (public API), parse, persist, types, constants
+├── test/             # setup.ts, fixtures.ts, render-with-theme.tsx (Vitest + Testing Library)
 ├── uuid.ts           # generateUUID
 └── vite-env.d.ts     # __APP_VERSION__ declaration
 ```
+
+Tests live next to source as `*.test.ts` / `*.test.tsx` (e.g. `utils/dungeon-toggles.test.ts`, `storage/parse.test.ts`).
 
 `App` mounts `RaidTrackerProvider` (domain state via `useTrackerDomain` + `useRaidTrackerContext()`) and `TrackerLayout` (toolbar, forms, import panel orchestration). `RaidTrackerMain` renders add forms; `RaidTrackerTable` reads domain context only. Table UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
 
