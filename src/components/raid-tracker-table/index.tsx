@@ -133,12 +133,12 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
             )}
           </TableBody>
         </Table>
-        <RaidTrackerDeleteDialog
-          pendingDelete={pendingDelete}
-          onConfirm={handleConfirmDelete}
-          onCancel={handleCancelDelete}
-        />
       </TableContainer>
+      <RaidTrackerDeleteDialog
+        pendingDelete={pendingDelete}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </Stack>
   );
 });
