@@ -110,3 +110,5 @@ Tests live next to source as `*.test.ts` / `*.test.tsx` (e.g. `utils/dungeon-tog
 `App` mounts `RaidTrackerProvider` (domain state via `useTrackerDomain` + `useRaidTrackerContext()`) and `TrackerLayout` (toolbar, forms, import panel orchestration). `RaidTrackerMain` renders add forms; `RaidTrackerTable` reads domain context only. Table UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
 
 Production builds split vendor code into separate chunks (React, MUI, icons) via `vite.config.ts` `manualChunks`.
+
+test new rule for main
