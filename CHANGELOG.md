@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Internal:** Renamed persisted storage type to `PersistedTrackerState` and hook/context type to `RaidTrackerStore` to avoid a naming collision; replaced unused table props type with explicit table-state params; consolidated dungeon name tier styling via `dungeonNameTierSx`. No user-visible behavior change.
+- **Internal:** Renamed persisted storage type to `PersistedTrackerState` and hook/context type to `RaidTrackerStore` to avoid a naming collision; replaced unused table props type with explicit table-state params; consolidated dungeon name tier styling via `dungeonNameTierSx`.
+- **Internal:** Extracted dungeon toggle logic into `utils/dungeon-toggles.ts` (`isCooldownOn`, flip/remove/prune helpers); hook, storage, and table code now share one implementation. No user-visible behavior change.
 
 ## [1.12.0] - 2026-06-21
 
