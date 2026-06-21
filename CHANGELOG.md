@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Internal:** Renamed persisted storage type to `PersistedTrackerState` and hook/context type to `RaidTrackerStore` to avoid a naming collision; replaced unused table props type with explicit table-state params; consolidated dungeon name tier styling via `dungeonNameTierSx`.
 - **Internal:** Extracted dungeon toggle logic into `utils/dungeon-toggles.ts` (`isCooldownOn`, flip/remove/prune helpers); hook, storage, and table code now share one implementation.
-- **Internal:** Split tracker state into domain (`useTrackerDomain` + context) and UI orchestration (`TrackerLayout`: forms, import panel, toolbar). Context exposes domain only; add-form field state lives outside context so typing in forms no longer re-renders the toolbar or table. No user-visible behavior change.
+- **Internal:** Split tracker state into domain (`useTrackerDomain` + context) and UI orchestration (`TrackerLayout`: forms, import panel, toolbar). Context exposes domain only; add-form field state lives outside context so typing in forms no longer re-renders the toolbar or table.
+- **Internal:** Moved character name display helpers to `utils/character-display.ts`; `ColorModeProvider` to `contexts/`; delete confirmation dialog outside the table scroll container; tightened pending-delete and `StoredDungeon.emblem` types. No user-visible behavior change.
 
 ## [1.12.0] - 2026-06-21
 
