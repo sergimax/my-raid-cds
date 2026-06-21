@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { characterNameDisplaySx } from "../../types/characters.ts";
+import { characterNameDisplaySx } from "../../utils/character-display.ts";
 import type { ClassOptionLabelProps } from "./types.ts";
 
 export function ClassOptionLabel({

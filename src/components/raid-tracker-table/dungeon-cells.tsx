@@ -3,8 +3,8 @@ import { DungeonDifficulty, type DungeonDifficulty as DungeonDifficultyType } fr
 import { getDungeonDisplayName } from "../../utils/dungeon-short-name.ts";
 import { completionChipFill } from "../../utils/completion-chip-color.ts";
 import {
+  dungeonNameTierSx,
   getItemLevelTier,
-  getItemLevelTierColor,
   itemLevelTierSx,
 } from "../../utils/item-level-tier.ts";
 import { emblemIcons, type EmblemKey } from "../../assets/emblems/emblem-icons.ts";
@@ -41,14 +41,7 @@ export function DungeonNameCell({
       component="span"
       variant="body2"
       className="raid-tracker-table__dungeon-name"
-      sx={(theme) => ({
-        color: getItemLevelTierColor(nameTier, theme.palette.mode),
-        fontWeight: 600,
-        lineHeight: 1.3,
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-      })}
+      sx={dungeonNameTierSx(nameTier)}
     >
       {displayName}
     </Typography>

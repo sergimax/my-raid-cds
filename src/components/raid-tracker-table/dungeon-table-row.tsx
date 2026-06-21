@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton, Switch, TableCell, TableRow, Tooltip } from "@mui/material";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
+import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
 import {
   pinnedColumnBodyAlign,
   pinnedColumnBodySx,
@@ -79,7 +80,7 @@ export function DungeonTableRow({
         >
           <Switch
             size="small"
-            checked={dungeonToggles[character.id]?.[dungeon.id] ?? false}
+            checked={isCooldownOn(dungeonToggles, character.id, dungeon.id)}
             onChange={() => {
               onDungeonToggle(character.id, dungeon.id);
             }}

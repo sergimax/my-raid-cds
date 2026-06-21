@@ -49,24 +49,30 @@ export function useTrackerForms({
     toggleCharacterForm,
     toggleDungeonForm,
 
-    newCharacterName: characterForm.name,
-    setNewCharacterName: characterForm.setName,
-    newCharacterClass: characterForm.characterClass,
-    setNewCharacterClass: characterForm.setCharacterClass,
-    characterFormError: characterForm.error,
-    handleCharacterFormSubmit: characterForm.handleSubmit,
+    characterForm: {
+      name: characterForm.name,
+      setName: characterForm.setName,
+      characterClass: characterForm.characterClass,
+      setCharacterClass: characterForm.setCharacterClass,
+      error: characterForm.error,
+      handleSubmit: characterForm.handleSubmit,
+    },
 
-    newDungeonName: dungeonForm.name,
-    setNewDungeonName: dungeonForm.setName,
-    newDungeonShortName: dungeonForm.shortName,
-    setNewDungeonShortName: dungeonForm.setShortName,
-    newDungeonSize: dungeonForm.size,
-    setNewDungeonSize: dungeonForm.setSize,
-    newDungeonItemLevelText: dungeonForm.itemLevelText,
-    setNewDungeonItemLevelText: dungeonForm.setItemLevelText,
-    newDungeonDifficulty: dungeonForm.difficulty,
-    setNewDungeonDifficulty: dungeonForm.setDifficulty,
-    dungeonFormError: dungeonForm.error,
-    handleDungeonFormSubmit: dungeonForm.handleSubmit,
+    dungeonForm: {
+      name: dungeonForm.name,
+      setName: dungeonForm.setName,
+      shortName: dungeonForm.shortName,
+      setShortName: dungeonForm.setShortName,
+      size: dungeonForm.size,
+      setSize: dungeonForm.setSize,
+      itemLevelText: dungeonForm.itemLevelText,
+      setItemLevelText: dungeonForm.setItemLevelText,
+      difficulty: dungeonForm.difficulty,
+      setDifficulty: dungeonForm.setDifficulty,
+      error: dungeonForm.error,
+      handleSubmit: dungeonForm.handleSubmit,
+    },
   };
 }
+
+export type TrackerFormsState = ReturnType<typeof useTrackerForms>;

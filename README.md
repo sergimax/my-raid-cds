@@ -36,7 +36,7 @@ Open [http://localhost:5173](http://localhost:5173).
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
 5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows. On narrow screens (below `md`), the table shows only the actions column, dungeon name, and character toggles; size, mode, item level, and completion columns are hidden. In that compact layout, the name column shows the short name when set (tooltip with full name).
 6. **Search** — Use the search field under **Dungeon name** to filter rows by substring (matches full name or short name). If nothing matches, the table shows a “No dungeons match your search” hint.
-7. **Import** — Filter dungeons with search (e.g. `ICC` or `ЦЛК`), then click **Import** in the toolbar. The panel lists one line per visible raid with characters still without CD (toggle off), ready to copy — e.g. `ICC25H - Char1, Char2` and `ICC25 - Char1, Char3`, or `ЦЛК25хм - …` / `ЦЛК25 - …` for Russian short names. Heroic lines use suffix `H` (Latin) or `хм` (Cyrillic). Character checkboxes limit who is included; raids where everyone has CD are omitted.
+7. **Import** — Filter dungeons with search (e.g. `ICC` or `ЦЛК`), then click **Import** in the toolbar. The panel lists one line per visible raid with characters still without CD (toggle off), ready to copy — e.g. `ICC25H - Char1, Char2` and `ICC25 - Char1, Char3`, or `ЦЛК25хм - …` / `ЦЛК25 - …` for Russian short names. Heroic lines use suffix `H` (Latin) or `хм` (Cyrillic). Character checkboxes limit who is included (new characters are selected by default while the panel is open); raids where everyone has CD are omitted.
 8. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
 9. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
 10. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
@@ -86,21 +86,21 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 ```
 src/
-├── components/       # app-header, raid-tracker-main, character-form, dungeon-form, import-panel, tracker-controls, …
+├── components/       # app-header, tracker-layout, raid-tracker-main, character-form, dungeon-form, import-panel, tracker-controls, …
 │   raid-tracker-table/   # grid, use-raid-tracker-table-state, head/row, pinned-column-renderers, …
 ├── constants/        # character.ts, dungeon-form-defaults.ts
-├── contexts/         # raid-tracker-provider, raid-tracker-context
-├── hooks/            # use-raid-tracker.ts, use-tracker-forms.ts, use-import-panel-state.ts, use-compact-layout.ts, …
+├── contexts/         # raid-tracker-provider, raid-tracker-context, color-mode-provider
+├── hooks/            # use-tracker-domain.ts, use-tracker-forms.ts, use-import-panel-state.ts, use-compact-layout.ts, color-mode.ts, …
 ├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons
 ├── data/             # raid-names.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts
-├── utils/            # validate-character/dungeon, build-import-status, format-dungeon-label, dungeon-short-name, sort/filter, …
+├── utils/            # validate-character/dungeon, dungeon-toggles, character-display, build-import-status, format-dungeon-label, dungeon-short-name, sort/filter, …
 ├── assets/           # class-icons/, emblems/
 ├── storage/          # index.ts (public API), parse, persist, types, constants
 ├── uuid.ts           # generateUUID
 └── vite-env.d.ts     # __APP_VERSION__ declaration
 ```
 
-`RaidTrackerProvider` wraps the app; domain state (`characters`, `dungeons`, toggles, forms) comes from `useRaidTracker` via `useRaidTrackerContext()`. Table-only UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
+`App` mounts `RaidTrackerProvider` (domain state via `useTrackerDomain` + `useRaidTrackerContext()`) and `TrackerLayout` (toolbar, forms, import panel orchestration). `RaidTrackerMain` renders add forms; `RaidTrackerTable` reads domain context only. Table UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
 
 Production builds split vendor code into separate chunks (React, MUI, icons) via `vite.config.ts` `manualChunks`.

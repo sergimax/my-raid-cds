@@ -1,5 +1,6 @@
 import { EmblemKey, type EmblemKey as EmblemKeyType } from "../assets/emblems/emblem-icons.ts";
 import { defaultShortNameForDungeonName } from "../utils/dungeon-short-name.ts";
+import { pruneToggles } from "../utils/dungeon-toggles.ts";
 import { Classes, type CharacterRecord } from "../types/characters.ts";
 import {
   DungeonDifficulty,
@@ -146,17 +147,10 @@ function parseDungeonToggles(
   storedToggles: Record<string, Record<string, boolean>>,
   dungeonIds: Set<string>,
 ): DungeonToggles {
-  const result: DungeonToggles = {};
-  for (const [charId, toggles] of Object.entries(storedToggles)) {
-    if (!toggles || typeof toggles !== "object") continue;
-    result[charId] = {};
-    for (const [dungeonId, value] of Object.entries(toggles)) {
-      if (dungeonIds.has(dungeonId) && typeof value === "boolean") {
-        result[charId][dungeonId] = value;
-      }
-    }
-  }
-  return result;
+  return pruneToggles(storedToggles, {
+    dungeonIds,
+    requireBooleanValues: true,
+  });
 }
 
 function parsePayload(payload: StoredPayload): LoadRaidTrackerResult["state"] {

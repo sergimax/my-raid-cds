@@ -2,10 +2,11 @@ import {
   CURRENT_SCHEMA_VERSION,
   STORAGE_KEY,
 } from "./constants.ts";
-import type { RaidTrackerState, StoredCharacter, StoredDungeon, StoredPayload } from "./types.ts";
+import { pruneToggles } from "../utils/dungeon-toggles.ts";
+import type { PersistedTrackerState, StoredCharacter, StoredDungeon, StoredPayload } from "./types.ts";
 
 export function saveRaidTrackerState(
-  state: RaidTrackerState,
+  state: PersistedTrackerState,
   onError?: (message: string | null) => void,
 ): void {
   const { characters, dungeons, dungeonToggles } = state;
@@ -28,17 +29,11 @@ export function saveRaidTrackerState(
     ...(dungeon.emblem ? { emblem: dungeon.emblem } : {}),
   }));
 
-  const storedToggles: Record<string, Record<string, boolean>> = {};
-  for (const [charId, toggles] of Object.entries(dungeonToggles)) {
-    if (!characterIds.has(charId) || !toggles) continue;
-    const filtered: Record<string, boolean> = {};
-    for (const [dungeonId, value] of Object.entries(toggles)) {
-      if (dungeonIds.has(dungeonId)) filtered[dungeonId] = value;
-    }
-    if (Object.keys(filtered).length > 0) {
-      storedToggles[charId] = filtered;
-    }
-  }
+  const storedToggles = pruneToggles(dungeonToggles, {
+    characterIds,
+    dungeonIds,
+    omitEmptyCharacters: true,
+  });
 
   const payload: StoredPayload = {
     schemaVersion: CURRENT_SCHEMA_VERSION,

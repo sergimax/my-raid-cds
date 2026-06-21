@@ -1,13 +1,15 @@
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
+import { isCooldownOn } from "./dungeon-toggles.ts";
 
 export function countCompletedForCharacter(
   characterId: string,
   dungeons: DungeonRecord[],
   dungeonToggles: DungeonToggles,
 ): number {
-  const togglesForCharacter = dungeonToggles[characterId] ?? {};
-  return dungeons.filter((dungeon) => togglesForCharacter[dungeon.id]).length;
+  return dungeons.filter((dungeon) =>
+    isCooldownOn(dungeonToggles, characterId, dungeon.id),
+  ).length;
 }
 
 export function countCompletedForDungeon(
@@ -15,7 +17,7 @@ export function countCompletedForDungeon(
   characters: CharacterRecord[],
   dungeonToggles: DungeonToggles,
 ): number {
-  return characters.filter(
-    (character) => dungeonToggles[character.id]?.[dungeonId],
+  return characters.filter((character) =>
+    isCooldownOn(dungeonToggles, character.id, dungeonId),
   ).length;
 }

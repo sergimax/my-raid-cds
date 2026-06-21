@@ -9,7 +9,8 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { characterNameDisplaySx, type CharacterRecord } from "../../types/characters.ts";
+import { characterNameDisplaySx } from "../../utils/character-display.ts";
+import type { CharacterRecord } from "../../types/characters.ts";
 import { CompletionCountChip } from "./dungeon-cells.tsx";
 import type { SortDirection } from "../../utils/sort-dungeons.ts";
 import { CHARACTER_HEADER_CELL_SX } from "./table-layout.ts";

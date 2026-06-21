@@ -1,54 +1,68 @@
 import { Alert, Stack } from "@mui/material";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
+import type { TrackerFormsState } from "../../hooks/use-tracker-forms.ts";
 import { AppIntro } from "../app-intro/index.tsx";
 import { CharacterForm } from "../character-form/index.tsx";
 import { DungeonForm } from "../dungeon-form/index.tsx";
 import { RaidTrackerTable } from "../raid-tracker-table/index.tsx";
 
-export function RaidTrackerMain() {
-  const tracker = useRaidTrackerContext();
+type RaidTrackerMainProps = {
+  forms: TrackerFormsState;
+  showImportPanel: boolean;
+  closeImportPanel: () => void;
+};
+
+export function RaidTrackerMain({
+  forms,
+  showImportPanel,
+  closeImportPanel,
+}: RaidTrackerMainProps) {
+  const domain = useRaidTrackerContext();
   const showIntro =
-    tracker.characters.length === 0 && tracker.dungeons.length === 0;
+    domain.characters.length === 0 && domain.dungeons.length === 0;
 
   return (
     <Stack spacing={2}>
       <AppIntro visible={showIntro} />
 
-      {tracker.storageError ? (
-        <Alert severity="error">{tracker.storageError}</Alert>
+      {domain.storageError ? (
+        <Alert severity="error">{domain.storageError}</Alert>
       ) : null}
 
-      {tracker.showCharacterForm ? (
+      {forms.showCharacterForm ? (
         <CharacterForm
-          name={tracker.newCharacterName}
-          characterClass={tracker.newCharacterClass}
-          error={tracker.characterFormError}
-          onNameChange={tracker.setNewCharacterName}
-          onClassChange={tracker.setNewCharacterClass}
-          onCancel={tracker.closeCharacterForm}
-          onSubmit={tracker.handleCharacterFormSubmit}
+          name={forms.characterForm.name}
+          characterClass={forms.characterForm.characterClass}
+          error={forms.characterForm.error}
+          onNameChange={forms.characterForm.setName}
+          onClassChange={forms.characterForm.setCharacterClass}
+          onCancel={forms.closeCharacterForm}
+          onSubmit={forms.characterForm.handleSubmit}
         />
       ) : null}
 
-      {tracker.showDungeonForm ? (
+      {forms.showDungeonForm ? (
         <DungeonForm
-          name={tracker.newDungeonName}
-          shortName={tracker.newDungeonShortName}
-          size={tracker.newDungeonSize}
-          itemLevelText={tracker.newDungeonItemLevelText}
-          difficulty={tracker.newDungeonDifficulty}
-          error={tracker.dungeonFormError}
-          onNameChange={tracker.setNewDungeonName}
-          onShortNameChange={tracker.setNewDungeonShortName}
-          onSizeChange={tracker.setNewDungeonSize}
-          onItemLevelTextChange={tracker.setNewDungeonItemLevelText}
-          onDifficultyChange={tracker.setNewDungeonDifficulty}
-          onCancel={tracker.closeDungeonForm}
-          onSubmit={tracker.handleDungeonFormSubmit}
+          name={forms.dungeonForm.name}
+          shortName={forms.dungeonForm.shortName}
+          size={forms.dungeonForm.size}
+          itemLevelText={forms.dungeonForm.itemLevelText}
+          difficulty={forms.dungeonForm.difficulty}
+          error={forms.dungeonForm.error}
+          onNameChange={forms.dungeonForm.setName}
+          onShortNameChange={forms.dungeonForm.setShortName}
+          onSizeChange={forms.dungeonForm.setSize}
+          onItemLevelTextChange={forms.dungeonForm.setItemLevelText}
+          onDifficultyChange={forms.dungeonForm.setDifficulty}
+          onCancel={forms.closeDungeonForm}
+          onSubmit={forms.dungeonForm.handleSubmit}
         />
       ) : null}
 
-      <RaidTrackerTable />
+      <RaidTrackerTable
+        showImportPanel={showImportPanel}
+        closeImportPanel={closeImportPanel}
+      />
     </Stack>
   );
 }

@@ -80,5 +80,8 @@ export function dungeonNameTierSx(tier: number): SxProps<Theme> {
     color: getItemLevelTierColor(tier, theme.palette.mode),
     fontWeight: 600,
     lineHeight: 1.3,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   });
 }

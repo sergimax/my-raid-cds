@@ -5,7 +5,7 @@
  * localStorage → prefers-color-scheme → "light".
  *
  * Kept separate from the provider/hook so Fast Refresh can treat
- * color-mode-provider.tsx as components-only.
+ * contexts/color-mode-provider.tsx as components-only.
  */
 import { createContext } from "react";
 import type { PaletteMode } from "@mui/material";
