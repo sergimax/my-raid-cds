@@ -3,6 +3,13 @@ import { DungeonList } from "../data/dungeons.ts";
 import { loadRaidTrackerState, saveRaidTrackerState } from "../storage/index.ts";
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
+import {
+  flipCooldown,
+  hasAnyCooldownOn,
+  removeCharacterFromToggles,
+  removeDungeonFromToggles,
+  resetCharacterToggles,
+} from "../utils/dungeon-toggles.ts";
 import { generateUUID } from "../uuid.ts";
 import { useImportPanelState } from "./use-import-panel-state.ts";
 import { useTrackerForms } from "./use-tracker-forms.ts";
@@ -63,17 +70,9 @@ export function useRaidTracker() {
 
   const handleDungeonToggle = useCallback(
     (characterId: string, dungeonId: string) => {
-      setDungeonToggles((previous) => {
-        const previousForCharacter = previous[characterId] ?? {};
-        const nextValue = !(previousForCharacter[dungeonId] ?? false);
-        return {
-          ...previous,
-          [characterId]: {
-            ...previousForCharacter,
-            [dungeonId]: nextValue,
-          },
-        };
-      });
+      setDungeonToggles((previous) =>
+        flipCooldown(previous, characterId, dungeonId),
+      );
     },
     [],
   );
@@ -95,26 +94,18 @@ export function useRaidTracker() {
     setCharacters((previous) =>
       previous.filter((character) => character.id !== characterId),
     );
-    setDungeonToggles((previous) => {
-      const next = { ...previous };
-      delete next[characterId];
-      return next;
-    });
+    setDungeonToggles((previous) =>
+      removeCharacterFromToggles(previous, characterId),
+    );
   }, []);
 
   const handleDeleteDungeon = useCallback((dungeonId: string) => {
     setDungeons((previous) =>
       previous.filter((dungeon) => dungeon.id !== dungeonId),
     );
-    setDungeonToggles((previous) => {
-      const next: DungeonToggles = {};
-      for (const [characterId, togglesByDungeon] of Object.entries(previous)) {
-        const nextForCharacter = { ...togglesByDungeon };
-        delete nextForCharacter[dungeonId];
-        next[characterId] = nextForCharacter;
-      }
-      return next;
-    });
+    setDungeonToggles((previous) =>
+      removeDungeonFromToggles(previous, dungeonId),
+    );
   }, []);
 
   const handleResetAllToggles = useCallback(() => {
@@ -122,20 +113,15 @@ export function useRaidTracker() {
   }, []);
 
   const handleResetCharacterToggles = useCallback((characterId: string) => {
-    setDungeonToggles((previous) => ({
-      ...previous,
-      [characterId]: {},
-    }));
+    setDungeonToggles((previous) =>
+      resetCharacterToggles(previous, characterId),
+    );
   }, []);
 
-  const canResetAllToggles = useMemo(() => {
-    for (const toggles of Object.values(dungeonToggles)) {
-      for (const value of Object.values(toggles)) {
-        if (value) return true;
-      }
-    }
-    return false;
-  }, [dungeonToggles]);
+  const canResetAllToggles = useMemo(
+    () => hasAnyCooldownOn(dungeonToggles),
+    [dungeonToggles],
+  );
 
   return {
     characters,

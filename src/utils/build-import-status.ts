@@ -1,6 +1,7 @@
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
 import { formatDungeonImportLabel } from "./format-dungeon-label.ts";
+import { isCooldownOn } from "./dungeon-toggles.ts";
 
 export type BuildImportStatusParams = {
   characters: CharacterRecord[];
@@ -25,7 +26,8 @@ export function buildImportStatusString({
 
   for (const dungeon of dungeons) {
     const charactersWithoutCd = characters.filter(
-      (character) => !(dungeonToggles[character.id]?.[dungeon.id] ?? false),
+      (character) =>
+        !isCooldownOn(dungeonToggles, character.id, dungeon.id),
     );
     if (charactersWithoutCd.length === 0) {
       continue;

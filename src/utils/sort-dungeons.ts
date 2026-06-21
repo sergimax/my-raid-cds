@@ -5,6 +5,7 @@ import {
   type DungeonToggles,
 } from "../types/dungeons.ts";
 import { getStartingItemLevel } from "./item-level-tier.ts";
+import { isCooldownOn } from "./dungeon-toggles.ts";
 
 export type DungeonSortKey =
   | "name"
@@ -81,8 +82,16 @@ export function sortDungeonsByCharacterToggle(
   dungeonToggles: DungeonToggles,
 ): DungeonRecord[] {
   const sorted = [...list].sort((firstDungeon, secondDungeon) => {
-    const firstValue = dungeonToggles[characterId]?.[firstDungeon.id] ? 1 : 0;
-    const secondValue = dungeonToggles[characterId]?.[secondDungeon.id] ? 1 : 0;
+    const firstValue = isCooldownOn(dungeonToggles, characterId, firstDungeon.id)
+      ? 1
+      : 0;
+    const secondValue = isCooldownOn(
+      dungeonToggles,
+      characterId,
+      secondDungeon.id,
+    )
+      ? 1
+      : 0;
     const comparison =
       firstValue - secondValue ||
       firstDungeon.name.localeCompare(secondDungeon.name) ||
