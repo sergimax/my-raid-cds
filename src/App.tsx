@@ -1,22 +1,11 @@
-import { AppHeader, RaidTrackerMain, TrackerControls } from "./components/index.ts";
-import "./App.css";
-import { Container } from "@mui/material";
 import { RaidTrackerProvider } from "./contexts/raid-tracker-provider.tsx";
+import { TrackerLayout } from "./components/tracker-layout/index.tsx";
+import "./App.css";
 
 function App() {
   return (
     <RaidTrackerProvider>
-      <div className="app-shell">
-        <AppHeader center={<TrackerControls />} />
-        <Container
-          className="app-main"
-          component="main"
-          maxWidth={false}
-          disableGutters
-        >
-          <RaidTrackerMain />
-        </Container>
-      </div>
+      <TrackerLayout />
     </RaidTrackerProvider>
   );
 }

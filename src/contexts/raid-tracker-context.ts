@@ -1,7 +1,7 @@
 import { createContext } from "react";
-import type { RaidTrackerStore } from "../hooks/use-raid-tracker.ts";
+import type { TrackerDomainStore } from "../hooks/use-tracker-domain.ts";
 
-export type RaidTrackerContextValue = RaidTrackerStore;
+export type RaidTrackerContextValue = TrackerDomainStore;
 
 export const RaidTrackerContext = createContext<RaidTrackerContextValue | null>(
   null,

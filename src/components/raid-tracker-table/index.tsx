@@ -1,4 +1,5 @@
 import { Stack, Table, TableBody, TableContainer } from "@mui/material";
+import { memo } from "react";
 import { ImportPanel } from "../import-panel/index.tsx";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
@@ -10,19 +11,25 @@ import { RaidTrackerTableHead } from "./raid-tracker-table-head.tsx";
 import "./styles.css";
 import { useRaidTrackerTableState } from "./use-raid-tracker-table-state.ts";
 
-export function RaidTrackerTable() {
-  const tracker = useRaidTrackerContext();
+type RaidTrackerTableProps = {
+  showImportPanel: boolean;
+  closeImportPanel: () => void;
+};
+
+export const RaidTrackerTable = memo(function RaidTrackerTable({
+  showImportPanel,
+  closeImportPanel,
+}: RaidTrackerTableProps) {
+  const domain = useRaidTrackerContext();
   const {
     characters,
     dungeons,
     dungeonToggles,
-    showImportPanel,
-    closeImportPanel,
     handleDungeonToggle: onDungeonToggle,
     handleDeleteCharacter: onDeleteCharacter,
     handleDeleteDungeon: onDeleteDungeon,
     handleResetCharacterToggles: onResetCharacterToggles,
-  } = tracker;
+  } = domain;
 
   const tableState = useRaidTrackerTableState({
     characters,
@@ -67,71 +74,71 @@ export function RaidTrackerTable() {
         />
       ) : null}
       <TableContainer sx={{ overflowX: "auto" }}>
-      <Table
-        aria-label={raidTrackerTableAriaLabel(dungeons.length, sortedDungeons.length)}
-        className={
-          compactTable
-            ? "raid-tracker-table raid-tracker-table--compact"
-            : "raid-tracker-table"
-        }
-        size="small"
-        stickyHeader
-        sx={{ tableLayout: "fixed", width: "max-content" }}
-      >
-        <RaidTrackerTableHead
-          compactTable={compactTable}
-          visiblePinnedColumns={visiblePinnedColumns}
-          characters={characters}
-          completionsByCharacterId={completionsByCharacterId}
-          dungeonCount={dungeonCount}
-          sortKey={sortKey}
-          sortDirection={sortDirection}
-          characterSortId={characterSortId}
-          characterSortDirection={characterSortDirection}
-          dungeonNameSearch={dungeonNameSearch}
-          onDungeonNameSearchChange={setDungeonNameSearch}
-          onSort={handleSort}
-          onCharacterSort={handleCharacterSort}
-          onResetCharacterToggles={onResetCharacterToggles}
-          onRequestDeleteCharacter={handleRequestDeleteCharacter}
-        />
-        <TableBody>
-          {dungeons.length === 0 ? (
-            <RaidTrackerTableEmptyState
-              variant="no-dungeons"
-              visiblePinnedColumns={visiblePinnedColumns}
-              characterCount={characterCount}
-            />
-          ) : sortedDungeons.length === 0 ? (
-            <RaidTrackerTableEmptyState
-              variant="no-search-matches"
-              visiblePinnedColumns={visiblePinnedColumns}
-              characterCount={characterCount}
-            />
-          ) : (
-            sortedDungeons.map((dungeon: DungeonRecord) => (
-              <DungeonTableRow
-                key={dungeon.id}
-                dungeon={dungeon}
-                characters={characters}
-                compactTable={compactTable}
+        <Table
+          aria-label={raidTrackerTableAriaLabel(dungeons.length, sortedDungeons.length)}
+          className={
+            compactTable
+              ? "raid-tracker-table raid-tracker-table--compact"
+              : "raid-tracker-table"
+          }
+          size="small"
+          stickyHeader
+          sx={{ tableLayout: "fixed", width: "max-content" }}
+        >
+          <RaidTrackerTableHead
+            compactTable={compactTable}
+            visiblePinnedColumns={visiblePinnedColumns}
+            characters={characters}
+            completionsByCharacterId={completionsByCharacterId}
+            dungeonCount={dungeonCount}
+            sortKey={sortKey}
+            sortDirection={sortDirection}
+            characterSortId={characterSortId}
+            characterSortDirection={characterSortDirection}
+            dungeonNameSearch={dungeonNameSearch}
+            onDungeonNameSearchChange={setDungeonNameSearch}
+            onSort={handleSort}
+            onCharacterSort={handleCharacterSort}
+            onResetCharacterToggles={onResetCharacterToggles}
+            onRequestDeleteCharacter={handleRequestDeleteCharacter}
+          />
+          <TableBody>
+            {dungeons.length === 0 ? (
+              <RaidTrackerTableEmptyState
+                variant="no-dungeons"
                 visiblePinnedColumns={visiblePinnedColumns}
-                completionsByDungeonId={completionsByDungeonId}
                 characterCount={characterCount}
-                dungeonToggles={dungeonToggles}
-                onDungeonToggle={onDungeonToggle}
-                onRequestDeleteDungeon={handleRequestDeleteDungeon}
               />
-            ))
-          )}
-        </TableBody>
-      </Table>
-      <RaidTrackerDeleteDialog
-        pendingDelete={pendingDelete}
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-      />
-    </TableContainer>
+            ) : sortedDungeons.length === 0 ? (
+              <RaidTrackerTableEmptyState
+                variant="no-search-matches"
+                visiblePinnedColumns={visiblePinnedColumns}
+                characterCount={characterCount}
+              />
+            ) : (
+              sortedDungeons.map((dungeon: DungeonRecord) => (
+                <DungeonTableRow
+                  key={dungeon.id}
+                  dungeon={dungeon}
+                  characters={characters}
+                  compactTable={compactTable}
+                  visiblePinnedColumns={visiblePinnedColumns}
+                  completionsByDungeonId={completionsByDungeonId}
+                  characterCount={characterCount}
+                  dungeonToggles={dungeonToggles}
+                  onDungeonToggle={onDungeonToggle}
+                  onRequestDeleteDungeon={handleRequestDeleteDungeon}
+                />
+              ))
+            )}
+          </TableBody>
+        </Table>
+        <RaidTrackerDeleteDialog
+          pendingDelete={pendingDelete}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      </TableContainer>
     </Stack>
   );
-}
+});

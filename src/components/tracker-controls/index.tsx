@@ -1,14 +1,19 @@
 import MenuIcon from "@mui/icons-material/Menu";
 import { Box, IconButton, Menu } from "@mui/material";
-import { useCallback, useId, useMemo, useState, type MouseEvent } from "react";
+import { memo, useCallback, useId, useMemo, useState, type MouseEvent } from "react";
 import { useCompactLayout } from "../../hooks/use-compact-layout.ts";
-import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import { buildTrackerActions } from "./actions.ts";
 import { renderTrackerAction } from "./render-tracker-action.tsx";
+import type { TrackerControlsSource } from "./types.ts";
 
-export function TrackerControls() {
-  const tracker = useRaidTrackerContext();
-  const actions = useMemo(() => buildTrackerActions(tracker), [tracker]);
+type TrackerControlsProps = {
+  source: TrackerControlsSource;
+};
+
+export const TrackerControls = memo(function TrackerControls({
+  source,
+}: TrackerControlsProps) {
+  const actions = useMemo(() => buildTrackerActions(source), [source]);
 
   const menuLayout = useCompactLayout();
   const menuId = useId();
@@ -66,4 +71,4 @@ export function TrackerControls() {
       {actions.map((action) => renderTrackerAction(action, "button"))}
     </Box>
   );
-}
+});

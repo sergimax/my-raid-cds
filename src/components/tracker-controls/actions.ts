@@ -1,6 +1,8 @@
 import type { ButtonProps } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
-import type { RaidTrackerContextValue } from "../../hooks/use-raid-tracker-context.ts";
+import type { TrackerControlsSource } from "./types.ts";
+
+export type { TrackerControlsSource } from "./types.ts";
 
 export type TrackerActionId =
   | "addFromTemplate"
@@ -22,15 +24,17 @@ export type TrackerAction = {
   menuItemSx?: SxProps<Theme>;
 };
 
-export function buildTrackerActions(tracker: RaidTrackerContextValue): TrackerAction[] {
-  const showAddFromTemplate = tracker.dungeons.length === 0;
-  const resetAllTogglesDisabled = !tracker.canResetAllToggles;
+export function buildTrackerActions(
+  source: TrackerControlsSource,
+): TrackerAction[] {
+  const showAddFromTemplate = source.dungeonsCount === 0;
+  const resetAllTogglesDisabled = !source.canResetAllToggles;
 
   return [
     {
       id: "addFromTemplate",
       label: "Add from template",
-      onClick: tracker.handleAddFromTemplate,
+      onClick: source.handleAddFromTemplate,
       visible: showAddFromTemplate,
       buttonVariant: "contained",
       buttonColor: "secondary",
@@ -38,35 +42,35 @@ export function buildTrackerActions(tracker: RaidTrackerContextValue): TrackerAc
     {
       id: "addCharacter",
       label: "Add character",
-      onClick: tracker.toggleCharacterForm,
-      selected: tracker.showCharacterForm,
-      buttonVariant: tracker.showCharacterForm ? "contained" : "outlined",
+      onClick: source.toggleCharacterForm,
+      selected: source.showCharacterForm,
+      buttonVariant: source.showCharacterForm ? "contained" : "outlined",
       buttonColor: "inherit",
-      ariaExpanded: tracker.showCharacterForm,
+      ariaExpanded: source.showCharacterForm,
     },
     {
       id: "addDungeon",
       label: "Add dungeon",
-      onClick: tracker.toggleDungeonForm,
-      selected: tracker.showDungeonForm,
-      buttonVariant: tracker.showDungeonForm ? "contained" : "outlined",
+      onClick: source.toggleDungeonForm,
+      selected: source.showDungeonForm,
+      buttonVariant: source.showDungeonForm ? "contained" : "outlined",
       buttonColor: "inherit",
-      ariaExpanded: tracker.showDungeonForm,
+      ariaExpanded: source.showDungeonForm,
     },
     {
       id: "importStatus",
       label: "Import",
-      onClick: tracker.toggleImportPanel,
-      selected: tracker.showImportPanel,
-      buttonVariant: tracker.showImportPanel ? "contained" : "outlined",
+      onClick: source.toggleImportPanel,
+      selected: source.showImportPanel,
+      buttonVariant: source.showImportPanel ? "contained" : "outlined",
       buttonColor: "inherit",
-      ariaExpanded: tracker.showImportPanel,
-      disabled: tracker.characters.length === 0 || tracker.dungeons.length === 0,
+      ariaExpanded: source.showImportPanel,
+      disabled: source.charactersCount === 0 || source.dungeonsCount === 0,
     },
     {
       id: "resetAllToggles",
       label: "Reset all toggles",
-      onClick: tracker.handleResetAllToggles,
+      onClick: source.handleResetAllToggles,
       disabled: resetAllTogglesDisabled,
       buttonVariant: "text",
       buttonColor: "warning",
