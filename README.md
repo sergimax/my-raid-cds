@@ -27,6 +27,8 @@ Open [http://localhost:5173](http://localhost:5173).
 | `npm run build` | Build for production |
 | `npm run preview` | Preview production build |
 | `npm run lint` | Run ESLint |
+| `npm run test` | Run tests in watch mode |
+| `npm run test:run` | Run tests once (CI) |
 
 ## Usage
 
