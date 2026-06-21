@@ -4,8 +4,10 @@
  */
 import { useCallback, useState } from "react";
 
+export type PendingDeleteKind = "character" | "dungeon";
+
 export type PendingDeleteItem = {
-  kind: string;
+  kind: PendingDeleteKind;
   id: string;
   name: string;
 };

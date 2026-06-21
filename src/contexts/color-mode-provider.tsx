@@ -17,7 +17,7 @@ import {
   getInitialColorMode,
   type ColorMode,
   type ColorModeContextValue,
-} from "./color-mode.ts";
+} from "../hooks/color-mode.ts";
 
 export function ColorModeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<ColorMode>(() => getInitialColorMode());

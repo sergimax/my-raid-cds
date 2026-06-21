@@ -1,3 +1,4 @@
+import type { EmblemKey } from "../assets/emblems/emblem-icons.ts";
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
 
@@ -24,7 +25,7 @@ export type StoredDungeon = {
   shortName?: string;
   size: DungeonRecord["size"];
   itemLevel: number[];
-  emblem?: string;
+  emblem?: EmblemKey;
   /** Legacy key from older saves */
   mode?: string;
   difficulty?: string;

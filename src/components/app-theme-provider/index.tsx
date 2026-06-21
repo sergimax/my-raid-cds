@@ -1,6 +1,6 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { useMemo, type ReactNode } from "react";
-import { ColorModeProvider } from "../../hooks/color-mode-provider.tsx";
+import { ColorModeProvider } from "../../contexts/color-mode-provider.tsx";
 import { useColorMode } from "../../hooks/use-color-mode.ts";
 import { createAppTheme } from "../../theme/create-app-theme.ts";
 
