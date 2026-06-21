@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Import:** Character checkboxes stay in sync when characters are added or removed while the Import panel is open (new characters are selected by default).
+
+### Changed
+
+- **Internal:** Renamed persisted storage type to `PersistedTrackerState` and hook/context type to `RaidTrackerStore` to avoid a naming collision; replaced unused table props type with explicit table-state params; consolidated dungeon name tier styling via `dungeonNameTierSx`. No user-visible behavior change.
+
 ## [1.12.0] - 2026-06-21
 
 ### Added
