@@ -20,16 +20,7 @@ import {
   type SortDirection,
 } from "../../utils/sort-dungeons.ts";
 import { pinnedColumnsForLayout } from "./table-layout.ts";
-import type { RaidTrackerPendingDelete, RaidTrackerTableProps } from "./types.ts";
-
-type UseRaidTrackerTableStateParams = Pick<
-  RaidTrackerTableProps,
-  | "characters"
-  | "dungeons"
-  | "dungeonToggles"
-  | "onDeleteCharacter"
-  | "onDeleteDungeon"
->;
+import type { RaidTrackerPendingDelete, UseRaidTrackerTableStateParams } from "./types.ts";
 
 export function useRaidTrackerTableState({
   characters,

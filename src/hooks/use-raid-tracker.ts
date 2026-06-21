@@ -159,4 +159,4 @@ export function useRaidTracker() {
   };
 }
 
-export type RaidTrackerState = ReturnType<typeof useRaidTracker>;
+export type RaidTrackerStore = ReturnType<typeof useRaidTracker>;

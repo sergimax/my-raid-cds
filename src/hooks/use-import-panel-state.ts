@@ -11,14 +11,9 @@ export function useImportPanelState() {
     setIsOpen(false);
   }, []);
 
-  const toggle = useCallback(() => {
-    setIsOpen((previous) => !previous);
-  }, []);
-
   return {
     showImportPanel: isOpen,
     openImportPanel: open,
     closeImportPanel: close,
-    toggleImportPanel: toggle,
   };
 }

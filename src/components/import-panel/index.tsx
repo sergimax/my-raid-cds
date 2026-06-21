@@ -18,9 +18,24 @@ export function ImportPanel({
   dungeonToggles,
   onClose,
 }: ImportPanelProps) {
-  const [selectedCharacterIds, setSelectedCharacterIds] = useState<Set<string>>(
+  const characterIds = useMemo(
     () => new Set(characters.map((character) => character.id)),
+    [characters],
   );
+
+  const [deselectedCharacterIds, setDeselectedCharacterIds] = useState<
+    Set<string>
+  >(() => new Set());
+
+  const selectedCharacterIds = useMemo(() => {
+    const selected = new Set<string>();
+    for (const characterId of characterIds) {
+      if (!deselectedCharacterIds.has(characterId)) {
+        selected.add(characterId);
+      }
+    }
+    return selected;
+  }, [characterIds, deselectedCharacterIds]);
 
   const selectedCharacters = useMemo(
     () => characters.filter((character) => selectedCharacterIds.has(character.id)),
@@ -38,12 +53,12 @@ export function ImportPanel({
   );
 
   const toggleCharacter = (characterId: string, checked: boolean) => {
-    setSelectedCharacterIds((previous) => {
+    setDeselectedCharacterIds((previous) => {
       const next = new Set(previous);
       if (checked) {
-        next.add(characterId);
-      } else {
         next.delete(characterId);
+      } else {
+        next.add(characterId);
       }
       return next;
     });

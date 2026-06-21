@@ -2,10 +2,10 @@ import {
   CURRENT_SCHEMA_VERSION,
   STORAGE_KEY,
 } from "./constants.ts";
-import type { RaidTrackerState, StoredCharacter, StoredDungeon, StoredPayload } from "./types.ts";
+import type { PersistedTrackerState, StoredCharacter, StoredDungeon, StoredPayload } from "./types.ts";
 
 export function saveRaidTrackerState(
-  state: RaidTrackerState,
+  state: PersistedTrackerState,
   onError?: (message: string | null) => void,
 ): void {
   const { characters, dungeons, dungeonToggles } = state;
