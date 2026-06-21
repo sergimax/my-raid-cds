@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Import:** Character checkboxes stay in sync when characters are added or removed while the Import panel is open (new characters are selected by default).
 
+### Changed
+
+- **Internal:** Refactored tracker architecture — domain state in `useTrackerDomain` (context); forms and import panel in `TrackerLayout` (no form keystroke re-renders in toolbar/table); toggle logic in `utils/dungeon-toggles.ts`; character display in `utils/character-display.ts`; `ColorModeProvider` in `contexts/`; type renames (`PersistedTrackerState`, `RaidTrackerStore`). No user-visible behavior change.
+
 ## [1.12.0] - 2026-06-21
 
 ### Added
