@@ -1,0 +1,129 @@
+import { describe, expect, it } from "vitest";
+import { EmblemKey } from "../assets/emblems/emblem-icons.ts";
+import { RaidNames } from "../data/raid-names.ts";
+import { Classes } from "../types/characters.ts";
+import { DungeonDifficulty } from "../types/dungeons.ts";
+import {
+  LOAD_WARNING_CORRUPTED_SAVE,
+  STORAGE_KEY,
+} from "./constants.ts";
+import { loadRaidTrackerState } from "./parse.ts";
+import type { StoredPayload } from "./types.ts";
+import { EMPTY_STATE } from "./types.ts";
+
+function writeStoredPayload(payload: StoredPayload): void {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+}
+
+describe("loadRaidTrackerState", () => {
+  it("returns empty state when storage key is missing", () => {
+    expect(loadRaidTrackerState()).toEqual({
+      state: EMPTY_STATE,
+      loadWarning: null,
+    });
+  });
+
+  it("returns corrupted warning for invalid JSON", () => {
+    localStorage.setItem(STORAGE_KEY, "{not-json");
+    expect(loadRaidTrackerState()).toEqual({
+      state: EMPTY_STATE,
+      loadWarning: LOAD_WARNING_CORRUPTED_SAVE,
+    });
+  });
+
+  it("maps legacy mode to difficulty", () => {
+    writeStoredPayload({
+      schemaVersion: 1,
+      characters: [],
+      dungeons: [
+        {
+          id: "dungeon-1",
+          name: "Raid",
+          size: 25,
+          itemLevel: [200],
+          mode: DungeonDifficulty.HEROIC,
+        },
+      ],
+      dungeonToggles: {},
+    });
+
+    const result = loadRaidTrackerState();
+    expect(result.state.dungeons[0]?.difficulty).toBe(DungeonDifficulty.HEROIC);
+  });
+
+  it("drops invalid emblem values", () => {
+    writeStoredPayload({
+      schemaVersion: 1,
+      characters: [],
+      dungeons: [
+        {
+          id: "dungeon-1",
+          name: "Raid",
+          size: 25,
+          itemLevel: [200],
+          difficulty: DungeonDifficulty.NORMAL,
+          emblem: "invalid-emblem" as EmblemKey,
+        },
+      ],
+      dungeonToggles: {},
+    });
+
+    const result = loadRaidTrackerState();
+    expect(result.state.dungeons[0]?.emblem).toBeUndefined();
+  });
+
+  it("backfills shortName from known raid names", () => {
+    writeStoredPayload({
+      schemaVersion: 1,
+      characters: [],
+      dungeons: [
+        {
+          id: "dungeon-1",
+          name: RaidNames.icecrownCitadel.en,
+          size: 25,
+          itemLevel: [264],
+          difficulty: DungeonDifficulty.NORMAL,
+        },
+      ],
+      dungeonToggles: {},
+    });
+
+    const result = loadRaidTrackerState();
+    expect(result.state.dungeons[0]?.shortName).toBe(
+      RaidNames.icecrownCitadel.shortEn,
+    );
+  });
+
+  it("prunes non-boolean toggle values on load", () => {
+    writeStoredPayload({
+      schemaVersion: 1,
+      characters: [
+        {
+          id: "character-1",
+          name: "Alpha",
+          className: Classes[0].name,
+        },
+      ],
+      dungeons: [
+        {
+          id: "dungeon-1",
+          name: "Raid",
+          size: 25,
+          itemLevel: [200],
+          difficulty: DungeonDifficulty.NORMAL,
+        },
+      ],
+      dungeonToggles: {
+        "character-1": {
+          "dungeon-1": true,
+          "dungeon-2": "yes" as unknown as boolean,
+        },
+      },
+    });
+
+    const result = loadRaidTrackerState();
+    expect(result.state.dungeonToggles).toEqual({
+      "character-1": { "dungeon-1": true },
+    });
+  });
+});
