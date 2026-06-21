@@ -69,13 +69,13 @@ Example: `feat(auth): add login form`
 
 - React 19 + TypeScript + Vite app with Material UI (`@mui/material`, `@mui/icons-material`)
 - WoW raid cooldown tracker: characters, dungeons, per-character–dungeon toggles
-- Domain state in `useRaidTracker`; persistence via `storage/index.ts` + `storage/parse.ts` / `storage/persist.ts` (`my-raid-cds` key, `schemaVersion` in saves); dungeons list starts empty; corrupted saves reset with a load warning
-- Main table UI: `components/raid-tracker-table/` (`RaidTrackerTable`); sort/search/delete UI state in `use-raid-tracker-table-state.ts`; shared confirm-before-delete in `hooks/use-pending-delete.ts`
+- Domain state in `useTrackerDomain` (alias `useRaidTracker`); persistence via `storage/index.ts` + `storage/parse.ts` / `storage/persist.ts` (`my-raid-cds` key, `schemaVersion` in saves; persisted snapshot type `PersistedTrackerState`); dungeons list starts empty; corrupted saves reset with a load warning
+- Main table UI: `components/raid-tracker-table/` (`RaidTrackerTable`); sort/search/delete UI state in `use-raid-tracker-table-state.ts`; shared confirm-before-delete in `hooks/use-pending-delete.ts`; toggle helpers in `utils/dungeon-toggles.ts`
 - `data/raid-names.ts`, `data/dungeon-list.ts`, `create-template-dungeon.ts` — WotLK template raids (`RaidNames` metadata with `ru`/`en` names, `shortRu`/`shortEn` abbreviations, emblem + `DungeonList`; re-exported from `data/dungeons.ts`)
 - Dungeons use `difficulty` (Normal/Heroic); optional `shortName` for compact display; optional `emblem` for display; legacy saves with `mode` are migrated on load; `emblem` loads only from the saved field (template rows include it in `DungeonList`; no raid-name backfill on load); missing `shortName` backfills from `RaidNames` when the name matches on load
 - Production `vite.config.ts` uses `manualChunks` for React / MUI vendor splits
 - App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`; label in `app-meta-info`)
-- Light/dark mode: `ColorModeProvider` + `useColorMode`; `localStorage` key `my-raid-cds-color-mode`; pre-paint script in `index.html`; CSS vars via `:root[data-color-mode]` in `index.css`
+- Light/dark mode: `ColorModeProvider` in `contexts/color-mode-provider.tsx` + `useColorMode`; `localStorage` key `my-raid-cds-color-mode`; pre-paint script in `index.html`; CSS vars via `:root[data-color-mode]` in `index.css`
 - Sticky header: MUI `AppBar` in `app-header/` (tracker actions, theme toggle, GitHub meta)
 - Follow existing patterns; check README before adding dependencies
 
@@ -87,6 +87,7 @@ Example: `feat(auth): add login form`
 - **Reset per character** — icon in the character column header clears toggles for that character only
 - **Add forms** — only one of character or dungeon form open at a time; submit closes the form; duplicate character (name + class) is rejected; dungeon form accepts optional short name (defaults from `RaidNames` when name matches a known raid)
 - **Compact table** — below `md`, pinned columns are actions + name only; name cell shows `shortName` when set (full name in tooltip)
+- **Import** — filter dungeons with table search, then **Import** in toolbar; one line per visible raid lists characters without CD; character checkboxes limit inclusion (see `build-import-status.ts`, `format-dungeon-label.ts`)
 - **Empty table** — no dungeons: body hint to add or use template; search with no matches: “No dungeons match your search” row (`raid-tracker-table-empty-state`)
 
 ## Component Structure
@@ -94,20 +95,20 @@ Example: `feat(auth): add login form`
 - **kebab-case** for component dirs (e.g. `character-form/`)
 - Typical folder: `index.tsx`; add `types.ts` and/or `styles.css` when needed (not every component has all three)
 - complex components like `raid-tracker-table/` may include colocated subcomponents (e.g. `dungeon-cells.tsx`, `character-header-cell.tsx`, `raid-tracker-table-head.tsx`, `dungeon-table-row.tsx`, `pinned-column-renderers.tsx`, `use-raid-tracker-table-state.ts`)
-- Domain state lives in `useRaidTracker` (persistence, toggles, deletes, template); `RaidTrackerProvider` + `useRaidTrackerContext()` (see `contexts/raid-tracker-provider.tsx`, `hooks/use-raid-tracker-context.ts`) supply it to `TrackerControls`, `RaidTrackerMain`, and `RaidTrackerTable`. Add-form state in `useTrackerForms` + `useCharacterFormState` / `useDungeonFormState`; validation in `utils/validate-character.ts` and `utils/validate-dungeon.ts`. `CharacterForm` / `DungeonForm` stay presentational; `App` mounts provider + layout only. Ephemeral table UI state (sort, search, pending delete, compact columns) lives in `useRaidTrackerTableState` colocated with the table.
+- Domain state lives in `useTrackerDomain` (persistence, toggles, deletes, template); `RaidTrackerProvider` + `useRaidTrackerContext()` expose domain to the table and main content. `TrackerLayout` composes toolbar (`TrackerControls`), `useTrackerForms`, and import panel state; add-form field state is not in context (avoids re-rendering toolbar/table on keystrokes). Validation in `utils/validate-character.ts` and `utils/validate-dungeon.ts`. `CharacterForm` / `DungeonForm` stay presentational. `App` mounts provider + `TrackerLayout` only. Ephemeral table UI state (sort, search, pending delete, compact columns) lives in `useRaidTrackerTableState` colocated with the table. Character name display sx in `utils/character-display.ts`.
 
 ## Project Structure
 
 ```
 src/
-├── components/   # app-header, raid-tracker-main, character-form, raid-tracker-table, tracker-controls (+ actions.ts), …
+├── components/   # app-header, tracker-layout, raid-tracker-main, character-form, raid-tracker-table, tracker-controls (+ actions.ts), import-panel, …
 ├── constants/    # character.ts, dungeon-form-defaults.ts
-├── contexts/     # raid-tracker-context.ts, raid-tracker-provider.tsx
-├── hooks/        # use-raid-tracker.ts (composer), use-compact-layout.ts, use-raid-tracker-context.ts, use-tracker-forms.ts, use-*-form-state.ts, color-mode …
+├── contexts/     # raid-tracker-context.ts, raid-tracker-provider.tsx, color-mode-provider.tsx
+├── hooks/        # use-tracker-domain.ts, use-compact-layout.ts, use-raid-tracker-context.ts, use-tracker-forms.ts, use-*-form-state.ts, color-mode.ts, …
 ├── theme/        # create-app-theme.ts
 ├── types/        # characters, dungeons
 ├── data/         # raid-names.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts (barrel)
-├── utils/        # completion-counts, filter/sort dungeons, validate-character/dungeon, dungeon-short-name, item-level tiers, …
+├── utils/        # completion-counts, dungeon-toggles, character-display, filter/sort dungeons, validate-character/dungeon, dungeon-short-name, item-level tiers, build-import-status, …
 ├── assets/       # class-icons/, emblems/
 ├── storage/      # index.ts (public API), parse.ts, persist.ts, types, constants
 ├── uuid.ts       # generateUUID
