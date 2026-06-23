@@ -24,3 +24,37 @@ export function isSpecValidForClass(
 ): boolean {
   return ClassSpecs[className].includes(spec);
 }
+
+/** Short spec labels for compact import / roster strings. */
+export const SpecShortNames: Record<string, string> = {
+  Affliction: "Affli",
+  Arcane: "Arcane",
+  Arms: "Arms",
+  Assassination: "Assasin",
+  Balance: "Balance",
+  "Beast Mastery": "BM",
+  Blood: "Blood",
+  Combat: "Combat",
+  Demonology: "Demo",
+  Destruction: "Dest",
+  Discipline: "Disc",
+  Elemental: "Ele",
+  Enhancement: "Enh",
+  Feral: "Feral",
+  Fire: "Fire",
+  Frost: "Frost",
+  Fury: "Fury",
+  Holy: "Holy",
+  Marksmanship: "MM",
+  Protection: "Prot",
+  Restoration: "Resto",
+  Retribution: "Ret",
+  Shadow: "SP",
+  Subtlety: "Sub",
+  Survival: "Surv",
+  Unholy: "Udk",
+};
+
+export function shortSpecName(spec: string): string {
+  return SpecShortNames[spec] ?? spec;
+}

@@ -1,5 +1,6 @@
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
+import { formatCharacterImportLabel } from "./format-character-import.ts";
 import { formatDungeonImportLabel } from "./format-dungeon-label.ts";
 import { isCooldownOn } from "./dungeon-toggles.ts";
 
@@ -33,7 +34,9 @@ export function buildImportStatusString({
       continue;
     }
     const label = formatDungeonImportLabel(dungeon);
-    const names = charactersWithoutCd.map((character) => character.name).join(", ");
+    const names = charactersWithoutCd
+      .map((character) => formatCharacterImportLabel(character))
+      .join(", ");
     lines.push(`${label} - ${names}`);
   }
 
