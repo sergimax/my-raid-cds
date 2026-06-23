@@ -1,9 +1,12 @@
 import { shortSpecName } from "../data/class-specs.ts";
-import type { CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
+import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import { formatCompactGearScore } from "./format-character-details.ts";
 
-function formatSpecImportPart(specGear: CharacterSpecGear): string {
-  const shortName = shortSpecName(specGear.spec);
+function formatSpecImportPart(
+  className: ClassName,
+  specGear: CharacterSpecGear,
+): string {
+  const shortName = shortSpecName(className, specGear.spec);
   if (specGear.gearScore !== undefined) {
     return `${shortName} ${formatCompactGearScore(specGear.gearScore)}`;
   }
@@ -12,12 +15,15 @@ function formatSpecImportPart(specGear: CharacterSpecGear): string {
 
 /** Compact roster label: Name MainShort mainGs \\ OffShort offGs */
 export function formatCharacterImportLabel(character: CharacterRecord): string {
-  const mainPart = character.mainSpec
-    ? formatSpecImportPart(character.mainSpec)
-    : null;
-  const offPart = character.offSpec
-    ? formatSpecImportPart(character.offSpec)
-    : null;
+  const className = character.class?.name;
+  const mainPart =
+    character.mainSpec && className
+      ? formatSpecImportPart(className, character.mainSpec)
+      : null;
+  const offPart =
+    character.offSpec && className
+      ? formatSpecImportPart(className, character.offSpec)
+      : null;
 
   if (mainPart && offPart) {
     return `${character.name} ${mainPart} \\ ${offPart}`;
