@@ -7,7 +7,17 @@ import { createTestCharacter } from "../test/fixtures.ts";
 describe("parseCharacterForm", () => {
   it("rejects missing name or class", () => {
     expect(
-      parseCharacterForm({ name: "", characterClass: "" }, []),
+      parseCharacterForm(
+        {
+          name: "",
+          characterClass: "",
+          mainSpec: "",
+          mainGearScoreText: "",
+          offSpec: "",
+          offGearScoreText: "",
+        },
+        [],
+      ),
     ).toEqual({
       ok: false,
       error: "Enter a name and choose a class.",
@@ -18,7 +28,14 @@ describe("parseCharacterForm", () => {
     const longName = "a".repeat(MAX_CHARACTER_NAME_LENGTH + 1);
     expect(
       parseCharacterForm(
-        { name: longName, characterClass: Classes[0] },
+        {
+          name: longName,
+          characterClass: Classes[0],
+          mainSpec: "",
+          mainGearScoreText: "",
+          offSpec: "",
+          offGearScoreText: "",
+        },
         [],
       ),
     ).toEqual({
@@ -34,7 +51,14 @@ describe("parseCharacterForm", () => {
     });
     expect(
       parseCharacterForm(
-        { name: "  alpha  ", characterClass: Classes[1] },
+        {
+          name: "  alpha  ",
+          characterClass: Classes[1],
+          mainSpec: "",
+          mainGearScoreText: "",
+          offSpec: "",
+          offGearScoreText: "",
+        },
         [existing],
       ),
     ).toEqual({
@@ -43,15 +67,60 @@ describe("parseCharacterForm", () => {
     });
   });
 
-  it("accepts valid input with trimmed name", () => {
+  it("accepts valid input with spec + gear score pairs", () => {
     const result = parseCharacterForm(
-      { name: "  Beta  ", characterClass: Classes[2] },
+      {
+        name: "  Beta  ",
+        characterClass: Classes[0],
+        mainSpec: "Blood",
+        mainGearScoreText: "5800",
+        offSpec: "Frost",
+        offGearScoreText: "5200",
+      },
       [],
     );
     expect(result).toEqual({
       ok: true,
       name: "Beta",
-      characterClass: Classes[2],
+      characterClass: Classes[0],
+      mainSpec: { spec: "Blood", gearScore: 5800 },
+      offSpec: { spec: "Frost", gearScore: 5200 },
+    });
+  });
+
+  it("rejects gear score without a spec", () => {
+    const result = parseCharacterForm(
+      {
+        name: "Beta",
+        characterClass: Classes[0],
+        mainSpec: "",
+        mainGearScoreText: "5800",
+        offSpec: "",
+        offGearScoreText: "",
+      },
+      [],
+    );
+    expect(result).toEqual({
+      ok: false,
+      error: "Choose a main spec specialization to attach a gear score.",
+    });
+  });
+
+  it("rejects matching main and off spec", () => {
+    const result = parseCharacterForm(
+      {
+        name: "Beta",
+        characterClass: Classes[0],
+        mainSpec: "Blood",
+        mainGearScoreText: "",
+        offSpec: "Blood",
+        offGearScoreText: "",
+      },
+      [],
+    );
+    expect(result).toEqual({
+      ok: false,
+      error: "Main and off specialization must be different.",
     });
   });
 });
