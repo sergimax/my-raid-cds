@@ -110,6 +110,7 @@ export function CharacterHeaderCell({
                 gearScore={character.mainSpec.gearScore}
                 iconSize={14}
                 variant="caption"
+                showSpecName={false}
               />
             ) : null}
             {character.mainSpec && character.offSpec ? (
@@ -124,6 +125,7 @@ export function CharacterHeaderCell({
                 gearScore={character.offSpec.gearScore}
                 iconSize={14}
                 variant="caption"
+                showSpecName={false}
               />
             ) : null}
           </Stack>
