@@ -30,7 +30,11 @@ describe("buildImportStatusString", () => {
 
   it("lists characters without CD per dungeon", () => {
     const alpha = createTestCharacter({ id: "character-1", name: "Alpha" });
-    const beta = createTestCharacter({ id: "character-2", name: "Beta" });
+    const beta = createTestCharacter({
+      id: "character-2",
+      name: "Beta",
+      mainSpec: { spec: "Shadow", gearScore: 5800 },
+    });
     const dungeon = createTestDungeon({
       id: "dungeon-1",
       shortName: "ICC",
@@ -48,7 +52,7 @@ describe("buildImportStatusString", () => {
         dungeons: [dungeon],
         dungeonToggles: toggles,
       }),
-    ).toBe("ICC25H - Beta");
+    ).toBe("ICC25H - Beta Shad 5.8k");
   });
 
   it("returns all-have-CD message when every selected character has CD", () => {
