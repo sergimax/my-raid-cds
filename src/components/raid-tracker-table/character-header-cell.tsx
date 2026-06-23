@@ -11,11 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import { characterNameDisplaySx } from "../../utils/character-display.ts";
-import {
-  formatCharacterDetailsTooltip,
-  formatCharacterSpecGearSummary,
-} from "../../utils/format-character-details.ts";
+import { formatCharacterDetailsTooltip } from "../../utils/format-character-details.ts";
 import type { CharacterRecord } from "../../types/characters.ts";
+import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
 import { CompletionCountChip } from "./dungeon-cells.tsx";
 import type { SortDirection } from "../../utils/sort-dungeons.ts";
 import { CHARACTER_HEADER_CELL_SX } from "./table-layout.ts";
@@ -43,7 +41,7 @@ export function CharacterHeaderCell({
   onEditCharacter,
   onDeleteCharacter,
 }: CharacterHeaderCellProps) {
-  const specGearSummary = formatCharacterSpecGearSummary(character);
+  const hasSpecGear = character.mainSpec !== undefined || character.offSpec !== undefined;
   const detailsTooltip = formatCharacterDetailsTooltip(character);
 
   return (
@@ -92,21 +90,43 @@ export function CharacterHeaderCell({
           </TableSortLabel>
         </Tooltip>
 
-        {specGearSummary ? (
-          <Typography
-            variant="caption"
-            color="text.secondary"
+        {hasSpecGear && character.class ? (
+          <Stack
+            direction="row"
+            spacing={0.5}
             sx={{
+              alignItems: "center",
+              justifyContent: "center",
+              flexWrap: "wrap",
               minWidth: 0,
               maxWidth: "100%",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
               lineHeight: 1.2,
             }}
           >
-            {specGearSummary}
-          </Typography>
+            {character.mainSpec ? (
+              <CharacterSpecGearLabel
+                characterClass={character.class}
+                spec={character.mainSpec.spec}
+                gearScore={character.mainSpec.gearScore}
+                iconSize={14}
+                variant="caption"
+              />
+            ) : null}
+            {character.mainSpec && character.offSpec ? (
+              <Typography variant="caption" color="text.secondary" component="span">
+                /
+              </Typography>
+            ) : null}
+            {character.offSpec ? (
+              <CharacterSpecGearLabel
+                characterClass={character.class}
+                spec={character.offSpec.spec}
+                gearScore={character.offSpec.gearScore}
+                iconSize={14}
+                variant="caption"
+              />
+            ) : null}
+          </Stack>
         ) : null}
 
         <CompletionCountChip completed={completedCount} total={dungeonCount} />
