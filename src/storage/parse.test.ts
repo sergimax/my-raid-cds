@@ -94,6 +94,83 @@ describe("loadRaidTrackerState", () => {
     );
   });
 
+  it("loads optional character spec + gear score pairs", () => {
+    writeStoredPayload({
+      schemaVersion: 3,
+      characters: [
+        {
+          id: "character-1",
+          name: "Alpha",
+          className: Classes[0].name,
+          mainSpec: { spec: "Blood", gearScore: 5800 },
+          offSpec: { spec: "Unholy", gearScore: 5200 },
+        },
+      ],
+      dungeons: [],
+      dungeonToggles: {},
+    });
+
+    const result = loadRaidTrackerState();
+    expect(result.state.characters[0]).toEqual({
+      id: "character-1",
+      name: "Alpha",
+      class: Classes[0],
+      mainSpec: { spec: "Blood", gearScore: 5800 },
+      offSpec: { spec: "Unholy", gearScore: 5200 },
+    });
+  });
+
+  it("migrates legacy v2 flat spec and gear score fields", () => {
+    writeStoredPayload({
+      schemaVersion: 2,
+      characters: [
+        {
+          id: "character-1",
+          name: "Alpha",
+          className: Classes[0].name,
+          mainSpec: "Blood",
+          offSpec: "Unholy",
+          gearScore: 5800,
+        },
+      ],
+      dungeons: [],
+      dungeonToggles: {},
+    });
+
+    const result = loadRaidTrackerState();
+    expect(result.state.characters[0]).toEqual({
+      id: "character-1",
+      name: "Alpha",
+      class: Classes[0],
+      mainSpec: { spec: "Blood", gearScore: 5800 },
+      offSpec: { spec: "Unholy" },
+    });
+  });
+
+  it("drops invalid character spec values on load", () => {
+    writeStoredPayload({
+      schemaVersion: 2,
+      characters: [
+        {
+          id: "character-1",
+          name: "Alpha",
+          className: Classes[0].name,
+          mainSpec: "Fire",
+          offSpec: "Arcane",
+        },
+      ],
+      dungeons: [],
+      dungeonToggles: {},
+    });
+
+    const result = loadRaidTrackerState();
+    expect(result.state.characters[0]).toEqual({
+      id: "character-1",
+      name: "Alpha",
+      class: Classes[0],
+    });
+  });
+
   it("prunes non-boolean toggle values on load", () => {
     writeStoredPayload({
       schemaVersion: 1,

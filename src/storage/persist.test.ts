@@ -16,6 +16,8 @@ describe("saveRaidTrackerState", () => {
       id: "character-1",
       name: "Alpha",
       class: Classes[2],
+      mainSpec: { spec: "Beast Mastery", gearScore: 5800 },
+      offSpec: { spec: "Survival", gearScore: 5200 },
     });
     const dungeon = createTestDungeon({
       id: "dungeon-1",

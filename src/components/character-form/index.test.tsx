@@ -4,18 +4,26 @@ import { CharacterForm } from "./index.tsx";
 import { renderWithTheme, screen } from "../../test/render-with-theme.tsx";
 
 describe("CharacterForm", () => {
+  const defaultProps = {
+    name: "",
+    characterClass: "" as const,
+    mainSpec: "",
+    mainGearScoreText: "",
+    offSpec: "",
+    offGearScoreText: "",
+    error: "",
+    onNameChange: vi.fn(),
+    onClassChange: vi.fn(),
+    onMainSpecChange: vi.fn(),
+    onMainGearScoreTextChange: vi.fn(),
+    onOffSpecChange: vi.fn(),
+    onOffGearScoreTextChange: vi.fn(),
+    onCancel: vi.fn(),
+    onSubmit: vi.fn(),
+  };
+
   it("renders name and class fields", () => {
-    renderWithTheme(
-      <CharacterForm
-        name=""
-        characterClass=""
-        error=""
-        onNameChange={vi.fn()}
-        onClassChange={vi.fn()}
-        onCancel={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    renderWithTheme(<CharacterForm {...defaultProps} />);
 
     expect(screen.getByRole("textbox", { name: /^Name/ })).toBeInTheDocument();
     expect(screen.getByRole("combobox", { name: /^Class/ })).toBeInTheDocument();
@@ -25,13 +33,8 @@ describe("CharacterForm", () => {
   it("displays validation error", () => {
     renderWithTheme(
       <CharacterForm
-        name=""
-        characterClass=""
+        {...defaultProps}
         error="Enter a name and choose a class."
-        onNameChange={vi.fn()}
-        onClassChange={vi.fn()}
-        onCancel={vi.fn()}
-        onSubmit={vi.fn()}
       />,
     );
 
@@ -48,12 +51,8 @@ describe("CharacterForm", () => {
 
     renderWithTheme(
       <CharacterForm
+        {...defaultProps}
         name="Alpha"
-        characterClass=""
-        error=""
-        onNameChange={vi.fn()}
-        onClassChange={vi.fn()}
-        onCancel={vi.fn()}
         onSubmit={onSubmit}
       />,
     );
