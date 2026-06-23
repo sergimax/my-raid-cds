@@ -1,7 +1,8 @@
 import { EmblemKey, type EmblemKey as EmblemKeyType } from "../assets/emblems/emblem-icons.ts";
+import { isSpecValidForClass } from "../data/class-specs.ts";
 import { defaultShortNameForDungeonName } from "../utils/dungeon-short-name.ts";
 import { pruneToggles } from "../utils/dungeon-toggles.ts";
-import { Classes, type CharacterRecord } from "../types/characters.ts";
+import { Classes, type ClassName, type CharacterRecord, type CharacterSpecGear } from "../types/characters.ts";
 import {
   DungeonDifficulty,
   DungeonSizes,
@@ -115,6 +116,57 @@ function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {
   };
 }
 
+function parseOptionalStoredInteger(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || !Number.isInteger(value)) {
+    return undefined;
+  }
+  return value > 0 ? value : undefined;
+}
+
+function parseOptionalStoredSpec(
+  className: ClassName,
+  value: unknown,
+): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  if (!trimmed || !isSpecValidForClass(className, trimmed)) {
+    return undefined;
+  }
+  return trimmed;
+}
+
+function parseStoredSpecGearPair(
+  className: ClassName,
+  storedValue: unknown,
+  legacyGearScore?: number,
+): CharacterSpecGear | undefined {
+  if (storedValue === null || storedValue === undefined) {
+    return undefined;
+  }
+
+  if (typeof storedValue === "object" && !Array.isArray(storedValue)) {
+    const record = storedValue as Record<string, unknown>;
+    const spec = parseOptionalStoredSpec(className, record.spec);
+    if (!spec) {
+      return undefined;
+    }
+    const gearScore = parseOptionalStoredInteger(record.gearScore);
+    return gearScore !== undefined ? { spec, gearScore } : { spec };
+  }
+
+  if (typeof storedValue === "string") {
+    const spec = parseOptionalStoredSpec(className, storedValue);
+    if (!spec) {
+      return undefined;
+    }
+    return legacyGearScore !== undefined ? { spec, gearScore: legacyGearScore } : { spec };
+  }
+
+  return undefined;
+}
+
 function parseCharacters(storedCharacters: StoredCharacter[]): CharacterRecord[] {
   return storedCharacters
     .map((stored) => {
@@ -125,10 +177,21 @@ function parseCharacters(storedCharacters: StoredCharacter[]): CharacterRecord[]
         (candidate) => candidate.name === stored.className,
       );
       if (!charClass) return null;
+
+      const legacyGearScore = parseOptionalStoredInteger(stored.gearScore);
+      const mainSpec = parseStoredSpecGearPair(
+        charClass.name,
+        stored.mainSpec,
+        legacyGearScore,
+      );
+      const offSpec = parseStoredSpecGearPair(charClass.name, stored.offSpec);
+
       return {
         id: stored.id,
         name: stored.name,
         class: charClass,
+        ...(mainSpec ? { mainSpec } : {}),
+        ...(offSpec && offSpec.spec !== mainSpec?.spec ? { offSpec } : {}),
       } as CharacterRecord;
     })
     .filter((character): character is CharacterRecord => character !== null);

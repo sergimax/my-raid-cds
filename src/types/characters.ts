@@ -34,9 +34,22 @@ export const Classes: Array<CharacterClass> = [
   { name: ClassName.Warrior, icon: classIcons.Warrior, color: "C69B6D" },
 ];
 
+/** Talent specialization with optional GearScore for that spec's gear set. */
+export type CharacterSpecGear = {
+  spec: string;
+  gearScore?: number;
+};
+
 export type Character = {
   name: string;
   class?: CharacterClass;
+  mainSpec?: CharacterSpecGear;
+  offSpec?: CharacterSpecGear;
 };
 
 export type CharacterRecord = Character & { id: string };
+
+export type CharacterSpecGearUpdate = {
+  mainSpec?: CharacterSpecGear;
+  offSpec?: CharacterSpecGear;
+};

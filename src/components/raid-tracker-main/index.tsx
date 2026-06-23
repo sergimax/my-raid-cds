@@ -33,9 +33,17 @@ export function RaidTrackerMain({
         <CharacterForm
           name={forms.characterForm.name}
           characterClass={forms.characterForm.characterClass}
+          mainSpec={forms.characterForm.mainSpec}
+          mainGearScoreText={forms.characterForm.mainGearScoreText}
+          offSpec={forms.characterForm.offSpec}
+          offGearScoreText={forms.characterForm.offGearScoreText}
           error={forms.characterForm.error}
           onNameChange={forms.characterForm.setName}
           onClassChange={forms.characterForm.setCharacterClass}
+          onMainSpecChange={forms.characterForm.setMainSpec}
+          onMainGearScoreTextChange={forms.characterForm.setMainGearScoreText}
+          onOffSpecChange={forms.characterForm.setOffSpec}
+          onOffGearScoreTextChange={forms.characterForm.setOffGearScoreText}
           onCancel={forms.closeCharacterForm}
           onSubmit={forms.characterForm.handleSubmit}
         />

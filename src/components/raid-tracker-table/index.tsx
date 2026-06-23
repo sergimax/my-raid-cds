@@ -1,6 +1,7 @@
 import { Stack, Table, TableBody, TableContainer } from "@mui/material";
-import { memo } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { ImportPanel } from "../import-panel/index.tsx";
+import { CharacterEditDialog } from "../character-edit-dialog/index.tsx";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import { DungeonTableRow } from "./dungeon-table-row.tsx";
@@ -29,7 +30,24 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
     handleDeleteCharacter: onDeleteCharacter,
     handleDeleteDungeon: onDeleteDungeon,
     handleResetCharacterToggles: onResetCharacterToggles,
+    updateCharacter,
   } = domain;
+
+  const [editingCharacterId, setEditingCharacterId] = useState<string | null>(
+    null,
+  );
+  const editingCharacter = useMemo(
+    () => characters.find((character) => character.id === editingCharacterId) ?? null,
+    [characters, editingCharacterId],
+  );
+
+  const handleEditCharacter = useCallback((characterId: string) => {
+    setEditingCharacterId(characterId);
+  }, []);
+
+  const handleCloseEditCharacter = useCallback(() => {
+    setEditingCharacterId(null);
+  }, []);
 
   const tableState = useRaidTrackerTableState({
     characters,
@@ -100,6 +118,7 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
             onSort={handleSort}
             onCharacterSort={handleCharacterSort}
             onResetCharacterToggles={onResetCharacterToggles}
+            onEditCharacter={handleEditCharacter}
             onRequestDeleteCharacter={handleRequestDeleteCharacter}
           />
           <TableBody>
@@ -138,6 +157,11 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
         pendingDelete={pendingDelete}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
+      />
+      <CharacterEditDialog
+        character={editingCharacter}
+        onClose={handleCloseEditCharacter}
+        onSave={updateCharacter}
       />
     </Stack>
   );

@@ -13,10 +13,19 @@ export type LoadRaidTrackerResult = {
   loadWarning: string | null;
 };
 
+export type StoredCharacterSpecGear = {
+  spec: string;
+  gearScore?: number;
+};
+
 export type StoredCharacter = {
   id: string;
   name: string;
   className: string;
+  mainSpec?: StoredCharacterSpecGear | string;
+  offSpec?: StoredCharacterSpecGear | string;
+  /** Legacy v2 flat gear score — migrated to main spec on load. */
+  gearScore?: number;
 };
 
 export type StoredDungeon = {

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DungeonList } from "../data/dungeons.ts";
 import { loadRaidTrackerState, saveRaidTrackerState } from "../storage/index.ts";
-import type { CharacterRecord } from "../types/characters.ts";
+import type { CharacterRecord, CharacterSpecGearUpdate } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
 import {
   flipCooldown,
@@ -43,6 +43,31 @@ export function useTrackerDomain() {
   const addCharacter = useCallback((character: CharacterRecord) => {
     setCharacters((previous) => [...previous, character]);
   }, []);
+
+  const updateCharacter = useCallback(
+    (characterId: string, specGear: CharacterSpecGearUpdate) => {
+      setCharacters((previous) =>
+        previous.map((character) => {
+          if (character.id !== characterId) {
+            return character;
+          }
+          const next: CharacterRecord = {
+            id: character.id,
+            name: character.name,
+            class: character.class,
+          };
+          if (specGear.mainSpec !== undefined) {
+            next.mainSpec = specGear.mainSpec;
+          }
+          if (specGear.offSpec !== undefined) {
+            next.offSpec = specGear.offSpec;
+          }
+          return next;
+        }),
+      );
+    },
+    [],
+  );
 
   const addDungeon = useCallback((dungeon: DungeonRecord) => {
     setDungeons((previous) => [...previous, dungeon]);
@@ -109,6 +134,7 @@ export function useTrackerDomain() {
     dungeonToggles,
     storageError,
     addCharacter,
+    updateCharacter,
     addDungeon,
     handleDungeonToggle,
     handleDeleteCharacter,

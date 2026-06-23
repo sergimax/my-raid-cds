@@ -25,6 +25,7 @@ type RaidTrackerTableHeadProps = {
   onSort: (sortKey: DungeonSortKey) => void;
   onCharacterSort: (characterId: string) => void;
   onResetCharacterToggles: (characterId: string) => void;
+  onEditCharacter: (characterId: string) => void;
   onRequestDeleteCharacter: (characterId: string) => void;
 };
 
@@ -43,6 +44,7 @@ export function RaidTrackerTableHead({
   onSort,
   onCharacterSort,
   onResetCharacterToggles,
+  onEditCharacter,
   onRequestDeleteCharacter,
 }: RaidTrackerTableHeadProps) {
   return (
@@ -79,6 +81,7 @@ export function RaidTrackerTableHead({
               onCharacterSort(character.id);
             }}
             onResetCharacterToggles={onResetCharacterToggles}
+            onEditCharacter={onEditCharacter}
             onDeleteCharacter={onRequestDeleteCharacter}
           />
         ))}
