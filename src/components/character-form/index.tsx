@@ -11,6 +11,7 @@ import {
 import { MAX_CHARACTER_NAME_LENGTH } from "../../constants/character.ts";
 import { Classes } from "../../types/characters.ts";
 import { ClassOptionLabel } from "../class-option-label/index.tsx";
+import { CharacterSpecGearFields } from "../character-spec-gear-fields/index.tsx";
 import { FormActionsRow } from "../form-actions-row/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 import type { CharacterFormProps } from "./types.ts";
@@ -18,13 +19,20 @@ import type { CharacterFormProps } from "./types.ts";
 export function CharacterForm({
   name,
   characterClass,
+  mainSpec,
+  mainGearScoreText,
+  offSpec,
+  offGearScoreText,
   error,
   onNameChange,
   onClassChange,
+  onMainSpecChange,
+  onMainGearScoreTextChange,
+  onOffSpecChange,
+  onOffGearScoreTextChange,
   onCancel,
   onSubmit,
 }: CharacterFormProps) {
-
   return (
     <Box>
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
@@ -80,6 +88,17 @@ export function CharacterForm({
               ))}
             </Select>
           </FormControl>
+          <CharacterSpecGearFields
+            characterClass={characterClass}
+            mainSpec={mainSpec}
+            mainGearScoreText={mainGearScoreText}
+            offSpec={offSpec}
+            offGearScoreText={offGearScoreText}
+            onMainSpecChange={onMainSpecChange}
+            onMainGearScoreTextChange={onMainGearScoreTextChange}
+            onOffSpecChange={onOffSpecChange}
+            onOffGearScoreTextChange={onOffGearScoreTextChange}
+          />
           <FormActionsRow submitLabel="Add character" onCancel={onCancel} />
           {error ? <FormErrorMessage message={error} /> : null}
         </Stack>

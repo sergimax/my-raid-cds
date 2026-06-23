@@ -1,0 +1,135 @@
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { specsForClass } from "../../data/class-specs.ts";
+import type { CharacterClass } from "../../types/characters.ts";
+
+export type CharacterSpecGearFieldsProps = {
+  characterClass: CharacterClass | "";
+  mainSpec: string;
+  mainGearScoreText: string;
+  offSpec: string;
+  offGearScoreText: string;
+  onMainSpecChange: (value: string) => void;
+  onMainGearScoreTextChange: (value: string) => void;
+  onOffSpecChange: (value: string) => void;
+  onOffGearScoreTextChange: (value: string) => void;
+};
+
+function SpecGearRow({
+  label,
+  spec,
+  gearScoreText,
+  specName,
+  gearScoreName,
+  specLabelId,
+  classSpecs,
+  disabled,
+  onSpecChange,
+  onGearScoreTextChange,
+}: {
+  label: string;
+  spec: string;
+  gearScoreText: string;
+  specName: string;
+  gearScoreName: string;
+  specLabelId: string;
+  classSpecs: readonly string[];
+  disabled: boolean;
+  onSpecChange: (value: string) => void;
+  onGearScoreTextChange: (value: string) => void;
+}) {
+  return (
+    <Stack spacing={0.5}>
+      <Typography variant="body2" color="text.secondary">
+        {label}
+      </Typography>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+        <FormControl sx={{ flex: 1 }} disabled={disabled}>
+          <InputLabel id={specLabelId}>Spec</InputLabel>
+          <Select
+            labelId={specLabelId}
+            label="Spec"
+            name={specName}
+            value={spec}
+            onChange={(event) => {
+              onSpecChange(event.target.value);
+            }}
+          >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            {classSpecs.map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <TextField
+          label="Gear score"
+          name={gearScoreName}
+          value={gearScoreText}
+          onChange={(event) => {
+            onGearScoreTextChange(event.target.value);
+          }}
+          autoComplete="off"
+          helperText="Optional — from GearScore addon"
+          disabled={disabled}
+          sx={{ flex: 1 }}
+        />
+      </Stack>
+    </Stack>
+  );
+}
+
+export function CharacterSpecGearFields({
+  characterClass,
+  mainSpec,
+  mainGearScoreText,
+  offSpec,
+  offGearScoreText,
+  onMainSpecChange,
+  onMainGearScoreTextChange,
+  onOffSpecChange,
+  onOffGearScoreTextChange,
+}: CharacterSpecGearFieldsProps) {
+  const classSpecs =
+    characterClass === "" ? [] : specsForClass(characterClass.name);
+  const specsDisabled = characterClass === "";
+
+  return (
+    <Stack spacing={2}>
+      <SpecGearRow
+        label="Main"
+        spec={mainSpec}
+        gearScoreText={mainGearScoreText}
+        specName="mainSpec"
+        gearScoreName="mainGearScore"
+        specLabelId="character-main-spec-label"
+        classSpecs={classSpecs}
+        disabled={specsDisabled}
+        onSpecChange={onMainSpecChange}
+        onGearScoreTextChange={onMainGearScoreTextChange}
+      />
+      <SpecGearRow
+        label="Off"
+        spec={offSpec}
+        gearScoreText={offGearScoreText}
+        specName="offSpec"
+        gearScoreName="offGearScore"
+        specLabelId="character-off-spec-label"
+        classSpecs={classSpecs}
+        disabled={specsDisabled}
+        onSpecChange={onOffSpecChange}
+        onGearScoreTextChange={onOffGearScoreTextChange}
+      />
+    </Stack>
+  );
+}

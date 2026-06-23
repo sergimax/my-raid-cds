@@ -1,6 +1,7 @@
 import type { SubmitEvent } from "react";
 import { useCallback, useState } from "react";
 import type { CharacterClass, CharacterRecord } from "../types/characters.ts";
+import { isSpecValidForClass } from "../data/class-specs.ts";
 import { parseCharacterForm } from "../utils/validate-character.ts";
 import { generateUUID } from "../uuid.ts";
 
@@ -8,6 +9,13 @@ type UseCharacterFormStateOptions = {
   characters: CharacterRecord[];
   onCharacterAdded: (character: CharacterRecord) => void;
 };
+
+const EMPTY_SPEC_GEAR_FIELDS = {
+  mainSpec: "",
+  mainGearScoreText: "",
+  offSpec: "",
+  offGearScoreText: "",
+} as const;
 
 export function useCharacterFormState({
   characters,
@@ -18,11 +26,19 @@ export function useCharacterFormState({
   const [characterClass, setCharacterClassState] = useState<CharacterClass | "">(
     "",
   );
+  const [mainSpec, setMainSpecState] = useState("");
+  const [mainGearScoreText, setMainGearScoreTextState] = useState("");
+  const [offSpec, setOffSpecState] = useState("");
+  const [offGearScoreText, setOffGearScoreTextState] = useState("");
   const [error, setError] = useState("");
 
   const resetFields = useCallback(() => {
     setNameState("");
     setCharacterClassState("");
+    setMainSpecState(EMPTY_SPEC_GEAR_FIELDS.mainSpec);
+    setMainGearScoreTextState(EMPTY_SPEC_GEAR_FIELDS.mainGearScoreText);
+    setOffSpecState(EMPTY_SPEC_GEAR_FIELDS.offSpec);
+    setOffGearScoreTextState(EMPTY_SPEC_GEAR_FIELDS.offGearScoreText);
     setError("");
   }, []);
 
@@ -42,6 +58,37 @@ export function useCharacterFormState({
 
   const setCharacterClass = useCallback((nextClass: CharacterClass | "") => {
     setCharacterClassState(nextClass);
+    if (nextClass === "") {
+      setMainSpecState("");
+      setOffSpecState("");
+    } else {
+      setMainSpecState((previous) =>
+        isSpecValidForClass(nextClass.name, previous) ? previous : "",
+      );
+      setOffSpecState((previous) =>
+        isSpecValidForClass(nextClass.name, previous) ? previous : "",
+      );
+    }
+    setError("");
+  }, []);
+
+  const setMainSpec = useCallback((value: string) => {
+    setMainSpecState(value);
+    setError("");
+  }, []);
+
+  const setMainGearScoreText = useCallback((value: string) => {
+    setMainGearScoreTextState(value);
+    setError("");
+  }, []);
+
+  const setOffSpec = useCallback((value: string) => {
+    setOffSpecState(value);
+    setError("");
+  }, []);
+
+  const setOffGearScoreText = useCallback((value: string) => {
+    setOffGearScoreTextState(value);
     setError("");
   }, []);
 
@@ -50,7 +97,14 @@ export function useCharacterFormState({
       event.preventDefault();
       setError("");
       const result = parseCharacterForm(
-        { name, characterClass },
+        {
+          name,
+          characterClass,
+          mainSpec,
+          mainGearScoreText,
+          offSpec,
+          offGearScoreText,
+        },
         characters,
       );
       if (!result.ok) {
@@ -61,11 +115,23 @@ export function useCharacterFormState({
         id: generateUUID(),
         name: result.name,
         class: result.characterClass,
+        ...(result.mainSpec ? { mainSpec: result.mainSpec } : {}),
+        ...(result.offSpec ? { offSpec: result.offSpec } : {}),
       });
       setIsOpen(false);
       resetFields();
     },
-    [characterClass, characters, name, onCharacterAdded, resetFields],
+    [
+      characterClass,
+      characters,
+      mainGearScoreText,
+      mainSpec,
+      name,
+      offGearScoreText,
+      offSpec,
+      onCharacterAdded,
+      resetFields,
+    ],
   );
 
   return {
@@ -77,6 +143,14 @@ export function useCharacterFormState({
     setName,
     characterClass,
     setCharacterClass,
+    mainSpec,
+    setMainSpec,
+    mainGearScoreText,
+    setMainGearScoreText,
+    offSpec,
+    setOffSpec,
+    offGearScoreText,
+    setOffGearScoreText,
     error,
     handleSubmit,
   };
