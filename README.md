@@ -32,18 +32,19 @@ Open [http://localhost:5173](http://localhost:5173).
 
 ## Usage
 
-1. **Add a character** — Click **Add character**, enter name (max 12 characters) and class, then **Add character** or **Cancel**. Only one add form is open at a time; closing or switching forms clears entered values.
+1. **Add a character** — Click **Add character**, enter name (max 12 characters), class, and optional main/off spec with gear score (from GearScore addon), then **Add character** or **Cancel**. Only one add form is open at a time; closing or switching forms clears entered values.
 2. **Add a dungeon** — Click **Add dungeon**, enter name, optional short name (max 12 characters; shown in compact table view), size (5/10/20/25/40), item level(s) (e.g. `200` or `200 / 213`), and difficulty (Normal/Heroic), then **Add dungeon** or **Cancel**. When short name is left blank, a default abbreviation is applied for known WotLK raid names. Same single-form and reset rules as the character form.
 3. **Add from template** — When the dungeon list is empty, click **Add from template** to load WoW WotLK raids (one-shot; the action is hidden once any dungeon exists).
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
 5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows. On narrow screens (below `md`), the table shows only the actions column, dungeon name, and character toggles; size, mode, item level, and completion columns are hidden. In that compact layout, the name column shows the short name when set (tooltip with full name).
 6. **Search** — Use the search field under **Dungeon name** to filter rows by substring (matches full name or short name). If nothing matches, the table shows a “No dungeons match your search” hint.
-7. **Import** — Filter dungeons with search (e.g. `ICC` or `ЦЛК`), then click **Import** in the toolbar. The panel lists one line per visible raid with characters still without CD (toggle off), ready to copy — e.g. `ICC25H - Char1, Char2` and `ICC25 - Char1, Char3`, or `ЦЛК25хм - …` / `ЦЛК25 - …` for Russian short names. Heroic lines use suffix `H` (Latin) or `хм` (Cyrillic). Character checkboxes limit who is included (new characters are selected by default while the panel is open); raids where everyone has CD are omitted.
-8. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
-9. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
-10. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
-11. **Delete** — Delete icon on each dungeon row or remove icon in a character header opens a confirmation dialog (entity name, irreversible warning); confirm with **Delete** / **Remove** or dismiss with **Cancel**.
-12. **Theme** — Sun/moon icon in the header toggles light/dark mode (saved in `localStorage`; uses system preference when unset).
+7. **Import** — Filter dungeons with search (e.g. `ICC` or `ЦЛК`), then click **Import** in the toolbar. The panel lists one line per visible raid with characters still without CD (toggle off), ready to copy — e.g. `ICC25H - Elst Udk 6.6k \ Blood 6k` (spec short labels + compact gear score when set), or `ЦЛК25хм - …` for Russian short raid names. Heroic lines use suffix `H` (Latin) or `хм` (Cyrillic). Character checkboxes limit who is included (new characters are selected by default while the panel is open); raids where everyone has CD are omitted.
+8. **Edit character** — **Edit** icon in a character column header opens a dialog to update main/off spec and gear score (name and class stay fixed).
+9. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
+10. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
+11. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
+12. **Delete** — Delete icon on each dungeon row or remove icon in a character header opens a confirmation dialog (entity name, irreversible warning); confirm with **Delete** / **Remove** or dismiss with **Cancel**.
+13. **Theme** — Sun/moon icon in the header toggles light/dark mode (saved in `localStorage`; uses system preference when unset).
 
 The sticky header shows the app name, tracker actions (on narrow screens below `md`, a menu icon opens **Add from template**, **Add character**, **Add dungeon**, **Import**, and **Reset all toggles**), theme toggle, a GitHub icon (tooltip: author attribution), and the version label (`v.x.y.z` from `package.json` at build time) on the right.
 
@@ -60,6 +61,8 @@ When there are no dungeons, the table body shows a hint to add a dungeon or use 
 | `id` | `string` | UUID |
 | `name` | `string` | Character name (max 12 characters in the form) |
 | `class` | `CharacterClass` | WoW class (name, color, icon) |
+| `mainSpec` | optional `{ spec, gearScore? }` | Main talent spec and optional gear score |
+| `offSpec` | optional `{ spec, gearScore? }` | Off spec and optional gear score (must differ from main when both set) |
 
 ### Dungeon
 
@@ -73,7 +76,7 @@ When there are no dungeons, the table body shows a hint to add a dungeon or use 
 | `difficulty` | `"Normal" \| "Heroic"` | Raid mode; **Mode** column shows **N** or **H** chips |
 | `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows, optional for custom dungeons; loaded only from this field (no raid-name backfill) |
 
-Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load. Saves include `schemaVersion` (currently `1`). Missing `shortName` on load is backfilled when the dungeon name matches a known template raid (Russian or English). Corrupted local data is reset and an error is shown on load.
+Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load. Saves include `schemaVersion` (currently `3`). Missing `shortName` on load is backfilled when the dungeon name matches a known template raid (Russian or English). Legacy character saves (`schemaVersion` 2) with flat `mainSpec`/`offSpec` strings or a single `gearScore` migrate to nested spec objects on load. Corrupted local data is reset and an error is shown on load.
 
 ### Dungeon Toggles
 
@@ -89,16 +92,16 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 ```
 src/
-├── components/       # app-header, tracker-layout, raid-tracker-main, character-form, dungeon-form, import-panel, tracker-controls, …
-│   raid-tracker-table/   # grid, use-raid-tracker-table-state, head/row, pinned-column-renderers, …
+├── components/       # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, import-panel, tracker-controls, …
+│   raid-tracker-table/   # grid, use-raid-tracker-table-state, head/row, character-header-cell, pinned-column-renderers, …
 ├── constants/        # character.ts, dungeon-form-defaults.ts
 ├── contexts/         # raid-tracker-provider, raid-tracker-context, color-mode-provider
-├── hooks/            # use-tracker-domain.ts, use-tracker-forms.ts, use-import-panel-state.ts, use-compact-layout.ts, color-mode.ts, …
+├── hooks/            # use-tracker-domain.ts, use-tracker-forms.ts, use-character-form-state.ts, use-import-panel-state.ts, use-compact-layout.ts, color-mode.ts, …
 ├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons
-├── data/             # raid-names.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts
-├── utils/            # validate-character/dungeon, dungeon-toggles, character-display, build-import-status, format-dungeon-label, dungeon-short-name, sort/filter, …
-├── assets/           # class-icons/, emblems/
+├── data/             # raid-names.ts, class-specs.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts
+├── utils/            # validate-character/dungeon, dungeon-toggles, character-display, format-character-details, format-character-import, build-import-status, format-dungeon-label, dungeon-short-name, sort/filter, …
+├── assets/           # class-icons/ (+ specs/), emblems/
 ├── storage/          # index.ts (public API), parse, persist, types, constants
 ├── test/             # setup.ts, fixtures.ts, render-with-theme.tsx (Vitest + Testing Library)
 ├── uuid.ts           # generateUUID
