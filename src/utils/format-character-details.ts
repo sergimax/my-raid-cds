@@ -1,8 +1,19 @@
 import type { CharacterSpecGear, CharacterRecord } from "../types/characters.ts";
 
+export function formatCompactGearScore(gearScore: number): string {
+  if (gearScore < 1000) {
+    return String(gearScore);
+  }
+  const thousands = Math.round((gearScore / 1000) * 10) / 10;
+  if (Number.isInteger(thousands)) {
+    return `${thousands}k`;
+  }
+  return `${thousands.toFixed(1)}k`;
+}
+
 export function formatSpecGearLine(pair: CharacterSpecGear): string {
   if (pair.gearScore !== undefined) {
-    return `${pair.spec} · ${pair.gearScore}`;
+    return `${pair.spec} · ${formatCompactGearScore(pair.gearScore)}`;
   }
   return pair.spec;
 }
