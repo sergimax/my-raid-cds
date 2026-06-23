@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-06-24
+
+### Added
+
+- **Character specs & gear:** Optional main/off talent spec and gear score per character (WotLK specs per class). Set when adding a character or via **Edit** in the character column header (`CharacterEditDialog`).
+- **Spec icons:** WotLK talent icons in spec dropdowns and in the character column (icon + compact gear score; full spec name in tooltip).
+- **Import roster detail:** Copy lines include per-character spec abbreviations and compact gear scores, e.g. `ЦЛК25хм - Elst Udk 6.6k \ Blood 6k` (class-scoped short labels from `data/class-specs.ts`).
+
+### Changed
+
+- **Local storage:** `schemaVersion` **3** — characters may store `mainSpec` / `offSpec` (`{ spec, gearScore? }`). Older saves with flat `mainSpec`/`offSpec` strings or a single `gearScore` field migrate on load.
+
 ## [1.12.2] - 2026-06-22
 
 ### Changed
