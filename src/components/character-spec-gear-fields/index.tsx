@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { specsForClass } from "../../data/class-specs.ts";
 import type { CharacterClass } from "../../types/characters.ts";
+import { SpecOptionLabel } from "../spec-option-label/index.tsx";
 
 export type CharacterSpecGearFieldsProps = {
   characterClass: CharacterClass | "";
@@ -29,6 +30,7 @@ function SpecGearRow({
   specName,
   gearScoreName,
   specLabelId,
+  characterClass,
   classSpecs,
   disabled,
   onSpecChange,
@@ -40,6 +42,7 @@ function SpecGearRow({
   specName: string;
   gearScoreName: string;
   specLabelId: string;
+  characterClass: CharacterClass | "";
   classSpecs: readonly string[];
   disabled: boolean;
   onSpecChange: (value: string) => void;
@@ -67,7 +70,14 @@ function SpecGearRow({
             </MenuItem>
             {classSpecs.map((option) => (
               <MenuItem key={option} value={option}>
-                {option}
+                {characterClass === "" ? (
+                  option
+                ) : (
+                  <SpecOptionLabel
+                    className={characterClass.name}
+                    spec={option}
+                  />
+                )}
               </MenuItem>
             ))}
           </Select>
@@ -113,6 +123,7 @@ export function CharacterSpecGearFields({
         specName="mainSpec"
         gearScoreName="mainGearScore"
         specLabelId="character-main-spec-label"
+        characterClass={characterClass}
         classSpecs={classSpecs}
         disabled={specsDisabled}
         onSpecChange={onMainSpecChange}
@@ -125,6 +136,7 @@ export function CharacterSpecGearFields({
         specName="offSpec"
         gearScoreName="offGearScore"
         specLabelId="character-off-spec-label"
+        characterClass={characterClass}
         classSpecs={classSpecs}
         disabled={specsDisabled}
         onSpecChange={onOffSpecChange}
