@@ -19,7 +19,7 @@ describe("formatCharacterImportLabel", () => {
           mainSpec: { spec: "Unholy", gearScore: 6615 },
         }),
       ),
-    ).toBe("Elst Unh 6.6k");
+    ).toBe("Elst Udk 6.6k");
   });
 
   it("joins main and off spec with backslash separator", () => {
@@ -32,7 +32,7 @@ describe("formatCharacterImportLabel", () => {
           offSpec: { spec: "Blood", gearScore: 6023 },
         }),
       ),
-    ).toBe("Elst Unh 6.6k \\ Blo 6k");
+    ).toBe("Elst Udk 6.6k \\ Blood 6k");
   });
 
   it("omits gear score when not set", () => {
@@ -40,10 +40,11 @@ describe("formatCharacterImportLabel", () => {
       formatCharacterImportLabel(
         createTestCharacter({
           name: "Elst",
+          class: Classes[0],
           mainSpec: { spec: "Unholy" },
           offSpec: { spec: "Blood", gearScore: 6023 },
         }),
       ),
-    ).toBe("Elst Unh \\ Blo 6k");
+    ).toBe("Elst Udk \\ Blood 6k");
   });
 });

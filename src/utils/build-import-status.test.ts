@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { Classes } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
 import { buildImportStatusString } from "./build-import-status.ts";
 import {
@@ -33,6 +34,7 @@ describe("buildImportStatusString", () => {
     const beta = createTestCharacter({
       id: "character-2",
       name: "Beta",
+      class: Classes[5],
       mainSpec: { spec: "Shadow", gearScore: 5800 },
     });
     const dungeon = createTestDungeon({
@@ -52,7 +54,7 @@ describe("buildImportStatusString", () => {
         dungeons: [dungeon],
         dungeonToggles: toggles,
       }),
-    ).toBe("ICC25H - Beta Shad 5.8k");
+    ).toBe("ICC25H - Beta SP 5.8k");
   });
 
   it("returns all-have-CD message when every selected character has CD", () => {
