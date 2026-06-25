@@ -4,7 +4,7 @@ export function formatCompactGearScore(gearScore: number): string {
   if (gearScore < 1000) {
     return String(gearScore);
   }
-  const thousands = Math.round((gearScore / 1000) * 10) / 10;
+  const thousands = Math.floor((gearScore / 1000) * 10) / 10;
   if (Number.isInteger(thousands)) {
     return `${thousands}k`;
   }

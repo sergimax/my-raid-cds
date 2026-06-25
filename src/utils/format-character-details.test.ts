@@ -19,6 +19,11 @@ describe("formatCompactGearScore", () => {
     expect(formatCompactGearScore(6000)).toBe("6k");
     expect(formatCompactGearScore(10000)).toBe("10k");
   });
+
+  it("rounds down fractional thousands", () => {
+    expect(formatCompactGearScore(5599)).toBe("5.5k");
+    expect(formatCompactGearScore(6650)).toBe("6.6k");
+  });
 });
 
 describe("formatSpecGearLine", () => {
