@@ -51,7 +51,7 @@ export function buildExportStatusString({
         ),
       )
       .filter((entry): entry is string => entry !== null)
-      .join(", ");
+      .join(" / ");
     if (names.length === 0) {
       continue;
     }
