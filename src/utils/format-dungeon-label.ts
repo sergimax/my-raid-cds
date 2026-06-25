@@ -5,7 +5,7 @@ import {
 
 const CYRILLIC_PATTERN = /[\u0400-\u04FF]/;
 
-function usesRussianImportLabel(
+function usesRussianExportLabel(
   dungeon: Pick<DungeonRecord, "name" | "shortName">,
 ): boolean {
   const label = dungeon.shortName ?? dungeon.name;
@@ -13,10 +13,10 @@ function usesRussianImportLabel(
 }
 
 /**
- * Import/export label, e.g. `ICC25H`, `ICC25`, `ЦЛК25хм`, `ЦЛК25`.
+ * Export label, e.g. `ICC25H`, `ICC25`, `ЦЛК25хм`, `ЦЛК25`.
  * Normal: `{shortName}{size}`; Heroic: `{shortName}{size}H` or `{shortName}{size}хм`.
  */
-export function formatDungeonImportLabel(
+export function formatDungeonExportLabel(
   dungeon: Pick<DungeonRecord, "name" | "shortName" | "size" | "difficulty">,
 ): string {
   const name = dungeon.shortName ?? dungeon.name;
@@ -24,5 +24,5 @@ export function formatDungeonImportLabel(
   if (dungeon.difficulty === DungeonDifficulty.NORMAL) {
     return base;
   }
-  return usesRussianImportLabel(dungeon) ? `${base}хм` : `${base}H`;
+  return usesRussianExportLabel(dungeon) ? `${base}хм` : `${base}H`;
 }

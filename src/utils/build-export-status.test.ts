@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 import { Classes } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
-import { buildImportStatusString } from "./build-import-status.ts";
+import { buildExportStatusString } from "./build-export-status.ts";
 import {
   createTestCharacter,
   createTestDungeon,
   createTestToggles,
 } from "../test/fixtures.ts";
 
-describe("buildImportStatusString", () => {
+describe("buildExportStatusString", () => {
   it("returns message when no dungeons are visible", () => {
     expect(
-      buildImportStatusString({
+      buildExportStatusString({
         characters: [createTestCharacter()],
         dungeons: [],
         dungeonToggles: {},
@@ -21,7 +21,7 @@ describe("buildImportStatusString", () => {
 
   it("returns message when no characters are selected", () => {
     expect(
-      buildImportStatusString({
+      buildExportStatusString({
         characters: [],
         dungeons: [createTestDungeon()],
         dungeonToggles: {},
@@ -49,7 +49,7 @@ describe("buildImportStatusString", () => {
     ]);
 
     expect(
-      buildImportStatusString({
+      buildExportStatusString({
         characters: [alpha, beta],
         dungeons: [dungeon],
         dungeonToggles: toggles,
@@ -65,7 +65,7 @@ describe("buildImportStatusString", () => {
     ]);
 
     expect(
-      buildImportStatusString({
+      buildExportStatusString({
         characters: [alpha],
         dungeons: [dungeon],
         dungeonToggles: toggles,
