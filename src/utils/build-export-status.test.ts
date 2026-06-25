@@ -54,7 +54,7 @@ describe("buildExportStatusString", () => {
         dungeons: [dungeon],
         dungeonToggles: toggles,
       }),
-    ).toBe("ICC25H - Beta SP 5.8k");
+    ).toBe("ICC25H - Beta: Shadow 5.8k");
   });
 
   it("returns all-have-CD message when every selected character has CD", () => {
@@ -99,7 +99,7 @@ describe("buildExportStatusString", () => {
           },
         },
       }),
-    ).toBe("ICC25 - Elst Blood 6k");
+    ).toBe("ICC25 - Elst: Blood 6k");
   });
 
   it("omits characters with no specs selected", () => {

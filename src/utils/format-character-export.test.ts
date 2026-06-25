@@ -30,7 +30,7 @@ describe("formatCharacterExportLabel", () => {
     ).toBeNull();
   });
 
-  it("includes main spec short name and gear score by default", () => {
+  it("uses Name: Spec gs template for main spec", () => {
     expect(
       formatCharacterExportLabel(
         createTestCharacter({
@@ -39,7 +39,7 @@ describe("formatCharacterExportLabel", () => {
           mainSpec: { spec: "Unholy", gearScore: 6615 },
         }),
       ),
-    ).toBe("Elst Udk 6.6k");
+    ).toBe("Elst: Unholy 6.6k");
   });
 
   it("exports one or both specs based on selection", () => {
@@ -55,21 +55,21 @@ describe("formatCharacterExportLabel", () => {
         includeOff: false,
         includeWithoutSpec: true,
       }),
-    ).toBe("Elst Udk 6.6k");
+    ).toBe("Elst: Unholy 6.6k");
     expect(
       formatCharacterExportLabel(character, {
         includeMain: false,
         includeOff: true,
         includeWithoutSpec: true,
       }),
-    ).toBe("Elst Blood 6k");
+    ).toBe("Elst: Blood 6k");
     expect(
       formatCharacterExportLabel(character, {
         includeMain: true,
         includeOff: true,
         includeWithoutSpec: true,
       }),
-    ).toBe("Elst Udk 6.6k \\ Blood 6k");
+    ).toBe("Elst: Unholy 6.6k \\ Blood 6k");
     expect(
       formatCharacterExportLabel(character, {
         includeMain: false,
@@ -103,6 +103,6 @@ describe("formatCharacterExportLabel", () => {
         }),
         mainOnlySelection,
       ),
-    ).toBe("Elst Udk");
+    ).toBe("Elst: Unholy");
   });
 });

@@ -1,5 +1,4 @@
-import { shortSpecName } from "../data/class-specs.ts";
-import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
+import type { CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import { formatCompactGearScore } from "./format-character-details.ts";
 
 export type CharacterExportSpecSelection = {
@@ -56,19 +55,15 @@ export function isCharacterIncludedInExport(
   return selection.includeMain || selection.includeOff;
 }
 
-function formatSpecExportPart(
-  className: ClassName,
-  specGear: CharacterSpecGear,
-): string {
-  const shortName = shortSpecName(className, specGear.spec);
+function formatSpecExportSegment(specGear: CharacterSpecGear): string {
   if (specGear.gearScore !== undefined) {
-    return `${shortName} ${formatCompactGearScore(specGear.gearScore)}`;
+    return `${specGear.spec} ${formatCompactGearScore(specGear.gearScore)}`;
   }
-  return shortName;
+  return specGear.spec;
 }
 
 /**
- * Compact roster label for selected spec slots.
+ * Compact roster label: `Name: MainSpec mainGs \\ OffSpec offGs`.
  * Returns `null` when the character should be omitted from export lines.
  */
 export function formatCharacterExportLabel(
@@ -79,21 +74,18 @@ export function formatCharacterExportLabel(
     return null;
   }
 
-  const className = character.class?.name;
-  const specParts: string[] = [];
+  const specSegments: string[] = [];
 
-  if (selection.includeMain && character.mainSpec && className) {
-    specParts.push(formatSpecExportPart(className, character.mainSpec));
+  if (selection.includeMain && character.mainSpec) {
+    specSegments.push(formatSpecExportSegment(character.mainSpec));
   }
-  if (selection.includeOff && character.offSpec && className) {
-    specParts.push(formatSpecExportPart(className, character.offSpec));
+  if (selection.includeOff && character.offSpec) {
+    specSegments.push(formatSpecExportSegment(character.offSpec));
   }
 
-  if (specParts.length === 0) {
+  if (specSegments.length === 0) {
     return character.name;
   }
-  if (specParts.length === 1) {
-    return `${character.name} ${specParts[0]}`;
-  }
-  return `${character.name} ${specParts[0]} \\ ${specParts[1]}`;
+
+  return `${character.name}: ${specSegments.join(" \\ ")}`;
 }
