@@ -1,14 +1,23 @@
 import type { CharacterSpecGear, CharacterRecord } from "../types/characters.ts";
 
-export function formatCompactGearScore(gearScore: number): string {
+function formatGearScoreShort(gearScore: number, suffix: "k" | ""): string {
   if (gearScore < 1000) {
     return String(gearScore);
   }
   const thousands = Math.floor((gearScore / 1000) * 10) / 10;
-  if (Number.isInteger(thousands)) {
-    return `${thousands}k`;
-  }
-  return `${thousands.toFixed(1)}k`;
+  const value = Number.isInteger(thousands)
+    ? String(thousands)
+    : thousands.toFixed(1);
+  return suffix ? `${value}${suffix}` : value;
+}
+
+export function formatCompactGearScore(gearScore: number): string {
+  return formatGearScoreShort(gearScore, "k");
+}
+
+/** Export lines: compact gear score without a thousands suffix (e.g. `6.6`). */
+export function formatExportGearScore(gearScore: number): string {
+  return formatGearScoreShort(gearScore, "");
 }
 
 export function formatSpecGearLine(pair: CharacterSpecGear): string {
