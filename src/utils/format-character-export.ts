@@ -5,11 +5,19 @@ import { formatCompactGearScore } from "./format-character-details.ts";
 export type CharacterExportSpecSelection = {
   includeMain: boolean;
   includeOff: boolean;
+  /** For characters with no specs: include name-only in export lines. */
+  includeWithoutSpec: boolean;
 };
 
 export type ExportSpecSelectionByCharacterId = Readonly<
   Record<string, Partial<CharacterExportSpecSelection>>
 >;
+
+export function characterHasExportSpecs(
+  character: Pick<CharacterRecord, "mainSpec" | "offSpec">,
+): boolean {
+  return Boolean(character.mainSpec || character.offSpec);
+}
 
 export function defaultExportSpecSelection(
   character: Pick<CharacterRecord, "mainSpec" | "offSpec">,
@@ -17,6 +25,7 @@ export function defaultExportSpecSelection(
   return {
     includeMain: Boolean(character.mainSpec),
     includeOff: Boolean(character.offSpec),
+    includeWithoutSpec: true,
   };
 }
 
@@ -33,6 +42,7 @@ export function resolveExportSpecSelection(
     includeOff: character.offSpec
       ? (stored?.includeOff ?? defaults.includeOff)
       : false,
+    includeWithoutSpec: stored?.includeWithoutSpec ?? defaults.includeWithoutSpec,
   };
 }
 
@@ -40,8 +50,8 @@ export function isCharacterIncludedInExport(
   character: Pick<CharacterRecord, "mainSpec" | "offSpec">,
   selection: CharacterExportSpecSelection,
 ): boolean {
-  if (!character.mainSpec && !character.offSpec) {
-    return true;
+  if (!characterHasExportSpecs(character)) {
+    return selection.includeWithoutSpec;
   }
   return selection.includeMain || selection.includeOff;
 }

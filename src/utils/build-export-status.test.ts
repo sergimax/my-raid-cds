@@ -92,7 +92,11 @@ describe("buildExportStatusString", () => {
         dungeons: [dungeon],
         dungeonToggles: toggles,
         exportSpecSelectionByCharacterId: {
-          "character-1": { includeMain: false, includeOff: true },
+          "character-1": {
+            includeMain: false,
+            includeOff: true,
+            includeWithoutSpec: true,
+          },
         },
       }),
     ).toBe("ICC25 - Elst Blood 6k");
@@ -117,7 +121,11 @@ describe("buildExportStatusString", () => {
         dungeons: [dungeon],
         dungeonToggles: toggles,
         exportSpecSelectionByCharacterId: {
-          "character-1": { includeMain: false, includeOff: false },
+          "character-1": {
+            includeMain: false,
+            includeOff: false,
+            includeWithoutSpec: false,
+          },
         },
       }),
     ).toBe("All selected characters have CD on matching dungeons.");

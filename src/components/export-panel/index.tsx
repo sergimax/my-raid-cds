@@ -10,6 +10,8 @@ import {
 import { useMemo, useState } from "react";
 import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
 import {
+  characterHasExportSpecs,
+  isCharacterIncludedInExport,
   resolveExportSpecSelection,
   type CharacterExportSpecSelection,
 } from "../../utils/format-character-export.ts";
@@ -82,17 +84,15 @@ export function ExportPanel({
 
   const includedCharacters = useMemo(
     () =>
-      characters.filter((character) => {
-        const selection = resolveExportSpecSelection(
+      characters.filter((character) =>
+        isCharacterIncludedInExport(
           character,
-          exportSpecSelectionByCharacterId,
-        );
-        return (
-          selection.includeMain ||
-          selection.includeOff ||
-          (!character.mainSpec && !character.offSpec)
-        );
-      }),
+          resolveExportSpecSelection(
+            character,
+            exportSpecSelectionByCharacterId,
+          ),
+        ),
+      ),
     [characters, exportSpecSelectionByCharacterId],
   );
 
@@ -126,6 +126,10 @@ export function ExportPanel({
           includeMain:
             slot === "includeMain" ? included : resolved.includeMain,
           includeOff: slot === "includeOff" ? included : resolved.includeOff,
+          includeWithoutSpec:
+            slot === "includeWithoutSpec"
+              ? included
+              : resolved.includeWithoutSpec,
         },
       };
     });
@@ -149,6 +153,7 @@ export function ExportPanel({
                 character,
                 exportSpecSelectionByCharacterId,
               );
+              const hasSpecs = characterHasExportSpecs(character);
               return (
                 <Stack
                   key={character.id}
@@ -181,6 +186,24 @@ export function ExportPanel({
                       checked={selection.includeOff}
                       onCheckedChange={(slot, included) => {
                         setSpecIncluded(character, slot, included);
+                      }}
+                    />
+                  ) : null}
+                  {!hasSpecs ? (
+                    <Checkbox
+                      size="small"
+                      checked={selection.includeWithoutSpec}
+                      onChange={(event) => {
+                        setSpecIncluded(
+                          character,
+                          "includeWithoutSpec",
+                          event.target.checked,
+                        );
+                      }}
+                      slotProps={{
+                        input: {
+                          "aria-label": `Include ${character.name} in export`,
+                        },
                       }}
                     />
                   ) : null}

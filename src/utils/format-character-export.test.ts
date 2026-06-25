@@ -7,11 +7,27 @@ import {
 } from "./format-character-export.ts";
 import { createTestCharacter } from "../test/fixtures.ts";
 
+const mainOnlySelection = {
+  includeMain: true,
+  includeOff: false,
+  includeWithoutSpec: true,
+};
+
 describe("formatCharacterExportLabel", () => {
   it("returns name only when no specs are set", () => {
     expect(formatCharacterExportLabel(createTestCharacter({ name: "Elst" }))).toBe(
       "Elst",
     );
+  });
+
+  it("excludes name-only characters when includeWithoutSpec is false", () => {
+    expect(
+      formatCharacterExportLabel(createTestCharacter({ name: "Elst" }), {
+        includeMain: false,
+        includeOff: false,
+        includeWithoutSpec: false,
+      }),
+    ).toBeNull();
   });
 
   it("includes main spec short name and gear score by default", () => {
@@ -37,24 +53,28 @@ describe("formatCharacterExportLabel", () => {
       formatCharacterExportLabel(character, {
         includeMain: true,
         includeOff: false,
+        includeWithoutSpec: true,
       }),
     ).toBe("Elst Udk 6.6k");
     expect(
       formatCharacterExportLabel(character, {
         includeMain: false,
         includeOff: true,
+        includeWithoutSpec: true,
       }),
     ).toBe("Elst Blood 6k");
     expect(
       formatCharacterExportLabel(character, {
         includeMain: true,
         includeOff: true,
+        includeWithoutSpec: true,
       }),
     ).toBe("Elst Udk 6.6k \\ Blood 6k");
     expect(
       formatCharacterExportLabel(character, {
         includeMain: false,
         includeOff: false,
+        includeWithoutSpec: true,
       }),
     ).toBeNull();
   });
@@ -63,11 +83,12 @@ describe("formatCharacterExportLabel", () => {
     expect(defaultExportSpecSelection({ offSpec: { spec: "Blood" } })).toEqual({
       includeMain: false,
       includeOff: true,
+      includeWithoutSpec: true,
     });
     expect(
       isCharacterIncludedInExport(
         { mainSpec: undefined, offSpec: { spec: "Blood" } },
-        { includeMain: false, includeOff: true },
+        { includeMain: false, includeOff: true, includeWithoutSpec: true },
       ),
     ).toBe(true);
   });
@@ -80,7 +101,7 @@ describe("formatCharacterExportLabel", () => {
           class: Classes[0],
           mainSpec: { spec: "Unholy" },
         }),
-        { includeMain: true, includeOff: false },
+        mainOnlySelection,
       ),
     ).toBe("Elst Udk");
   });
