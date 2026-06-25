@@ -1,5 +1,6 @@
-import type { CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
-import { formatCompactGearScore } from "./format-character-details.ts";
+import { shortSpecName } from "../data/class-specs.ts";
+import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
+import { formatExportGearScore } from "./format-character-details.ts";
 
 export type CharacterExportSpecSelection = {
   includeMain: boolean;
@@ -55,15 +56,19 @@ export function isCharacterIncludedInExport(
   return selection.includeMain || selection.includeOff;
 }
 
-function formatSpecExportSegment(specGear: CharacterSpecGear): string {
+function formatSpecExportSegment(
+  className: ClassName,
+  specGear: CharacterSpecGear,
+): string {
+  const spec = shortSpecName(className, specGear.spec);
   if (specGear.gearScore !== undefined) {
-    return `${specGear.spec} ${formatCompactGearScore(specGear.gearScore)}`;
+    return `${spec} ${formatExportGearScore(specGear.gearScore)}`;
   }
-  return specGear.spec;
+  return spec;
 }
 
 /**
- * Compact roster label: `Name: MainSpec mainGs, OffSpec offGs`.
+ * Compact roster label: `Name: MainShort mainGs, OffShort offGs`.
  * Returns `null` when the character should be omitted from export lines.
  */
 export function formatCharacterExportLabel(
@@ -74,13 +79,14 @@ export function formatCharacterExportLabel(
     return null;
   }
 
+  const className = character.class?.name;
   const specSegments: string[] = [];
 
-  if (selection.includeMain && character.mainSpec) {
-    specSegments.push(formatSpecExportSegment(character.mainSpec));
+  if (selection.includeMain && character.mainSpec && className) {
+    specSegments.push(formatSpecExportSegment(className, character.mainSpec));
   }
-  if (selection.includeOff && character.offSpec) {
-    specSegments.push(formatSpecExportSegment(character.offSpec));
+  if (selection.includeOff && character.offSpec && className) {
+    specSegments.push(formatSpecExportSegment(className, character.offSpec));
   }
 
   if (specSegments.length === 0) {

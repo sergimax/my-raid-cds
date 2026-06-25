@@ -54,7 +54,7 @@ describe("buildExportStatusString", () => {
         dungeons: [dungeon],
         dungeonToggles: toggles,
       }),
-    ).toBe("ICC25H - Beta: Shadow 5.8k");
+    ).toBe("ICC25H - Beta: SP 5.8");
   });
 
   it("joins multiple characters with slash separator", () => {
@@ -87,7 +87,7 @@ describe("buildExportStatusString", () => {
         dungeons: [dungeon],
         dungeonToggles: toggles,
       }),
-    ).toBe("ICC25 - Alpha: Shadow 5.8k / Beta: Unholy 6.6k");
+    ).toBe("ICC25 - Alpha: SP 5.8 / Beta: Udk 6.6");
   });
 
   it("returns all-have-CD message when every selected character has CD", () => {
@@ -132,7 +132,7 @@ describe("buildExportStatusString", () => {
           },
         },
       }),
-    ).toBe("ICC25 - Elst: Blood 6k");
+    ).toBe("ICC25 - Elst: Blood 6");
   });
 
   it("omits characters with no specs selected", () => {

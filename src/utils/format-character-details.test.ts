@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   formatCharacterSpecGearSummary,
   formatCompactGearScore,
+  formatExportGearScore,
   formatSpecGearLine,
 } from "./format-character-details.ts";
 
@@ -23,6 +24,18 @@ describe("formatCompactGearScore", () => {
   it("rounds down fractional thousands", () => {
     expect(formatCompactGearScore(5599)).toBe("5.5k");
     expect(formatCompactGearScore(6650)).toBe("6.6k");
+  });
+});
+
+describe("formatExportGearScore", () => {
+  it("returns the value unchanged below 1000", () => {
+    expect(formatExportGearScore(999)).toBe("999");
+  });
+
+  it("formats thousands without a k suffix", () => {
+    expect(formatExportGearScore(6615)).toBe("6.6");
+    expect(formatExportGearScore(6000)).toBe("6");
+    expect(formatExportGearScore(5599)).toBe("5.5");
   });
 });
 
