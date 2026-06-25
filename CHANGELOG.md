@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-06-24
+
+### Added
+
+- **Export panel:** Per-character spec selection — icon checkboxes for main and off spec (when set); characters without specs can be included or excluded individually.
+
+### Changed
+
+- **Export lines:** Roster detail uses `Name: ShortSpec gs` per character; multiple specs are comma-separated; characters on a raid line are separated by ` / `. Spec labels use class-scoped short names from `data/class-specs.ts`; gear scores in copy text omit the `k` suffix (e.g. `6.6`, rounded down). Table headers and tooltips still show compact gear scores with `k` (e.g. `6.6k`).
+
 ## [1.13.1] - 2026-06-25
 
 ### Changed
