@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.1] - 2026-06-25
+
+### Changed
+
+- **Export:** Toolbar **Import** renamed to **Export** — the panel still builds copy-ready CD status lines; a real import flow is planned later. Code and docs use `export-panel`, `build-export-status.ts`, `format-character-export.ts`, etc.
+
+### Fixed
+
+- **Gear score display:** Compact gear scores in character column headers and export lines round **down** to one decimal in thousands (e.g. `5599` → `5.5k`, not `5.6k`).
+
 ## [1.13.0] - 2026-06-24
 
 ### Added

@@ -38,7 +38,7 @@ Open [http://localhost:5173](http://localhost:5173).
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
 5. **Sort** — Click a column header (name, size, mode, item level, completions) or a character header to sort rows. On narrow screens (below `md`), the table shows only the actions column, dungeon name, and character toggles; size, mode, item level, and completion columns are hidden. In that compact layout, the name column shows the short name when set (tooltip with full name).
 6. **Search** — Use the search field under **Dungeon name** to filter rows by substring (matches full name or short name). If nothing matches, the table shows a “No dungeons match your search” hint.
-7. **Import** — Filter dungeons with search (e.g. `ICC` or `ЦЛК`), then click **Import** in the toolbar. The panel lists one line per visible raid with characters still without CD (toggle off), ready to copy — e.g. `ICC25H - Elst Udk 6.6k \ Blood 6k` (spec short labels + compact gear score when set), or `ЦЛК25хм - …` for Russian short raid names. Heroic lines use suffix `H` (Latin) or `хм` (Cyrillic). Character checkboxes limit who is included (new characters are selected by default while the panel is open); raids where everyone has CD are omitted.
+7. **Export** — Filter dungeons with search (e.g. `ICC` or `ЦЛК`), then click **Export** in the toolbar. The panel lists one line per visible raid with characters still without CD (toggle off), ready to copy — e.g. `ICC25H - Elst Udk 6.6k \ Blood 6k` (spec short labels + compact gear score when set), or `ЦЛК25хм - …` for Russian short raid names. Heroic lines use suffix `H` (Latin) or `хм` (Cyrillic). Character checkboxes limit who is included (new characters are selected by default while the panel is open); raids where everyone has CD are omitted. Compact gear scores round down (e.g. `5599` → `5.5k`).
 8. **Edit character** — **Edit** icon in a character column header opens a dialog to update main/off spec and gear score (name and class stay fixed).
 9. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
 10. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
@@ -46,7 +46,7 @@ Open [http://localhost:5173](http://localhost:5173).
 12. **Delete** — Delete icon on each dungeon row or remove icon in a character header opens a confirmation dialog (entity name, irreversible warning); confirm with **Delete** / **Remove** or dismiss with **Cancel**.
 13. **Theme** — Sun/moon icon in the header toggles light/dark mode (saved in `localStorage`; uses system preference when unset).
 
-The sticky header shows the app name, tracker actions (on narrow screens below `md`, a menu icon opens **Add from template**, **Add character**, **Add dungeon**, **Import**, and **Reset all toggles**), theme toggle, a GitHub icon (tooltip: author attribution), and the version label (`v.x.y.z` from `package.json` at build time) on the right.
+The sticky header shows the app name, tracker actions (on narrow screens below `md`, a menu icon opens **Add from template**, **Add character**, **Add dungeon**, **Export**, and **Reset all toggles**), theme toggle, a GitHub icon (tooltip: author attribution), and the version label (`v.x.y.z` from `package.json` at build time) on the right.
 
 Data is saved automatically (debounced) to `localStorage` under the key `my-raid-cds`. If saved data is corrupted or unreadable, an error alert appears and the tracker resets to empty.
 
@@ -92,15 +92,15 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 ```
 src/
-├── components/       # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, import-panel, tracker-controls, …
+├── components/       # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, export-panel, tracker-controls, …
 │   raid-tracker-table/   # grid, use-raid-tracker-table-state, head/row, character-header-cell, pinned-column-renderers, …
 ├── constants/        # character.ts, dungeon-form-defaults.ts
 ├── contexts/         # raid-tracker-provider, raid-tracker-context, color-mode-provider
-├── hooks/            # use-tracker-domain.ts, use-tracker-forms.ts, use-character-form-state.ts, use-import-panel-state.ts, use-compact-layout.ts, color-mode.ts, …
+├── hooks/            # use-tracker-domain.ts, use-tracker-forms.ts, use-character-form-state.ts, use-export-panel-state.ts, use-compact-layout.ts, color-mode.ts, …
 ├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons
 ├── data/             # raid-names.ts, class-specs.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts
-├── utils/            # validate-character/dungeon, dungeon-toggles, character-display, format-character-details, format-character-import, build-import-status, format-dungeon-label, dungeon-short-name, sort/filter, …
+├── utils/            # validate-character/dungeon, dungeon-toggles, character-display, format-character-details, format-character-export, build-export-status, format-dungeon-label, dungeon-short-name, sort/filter, …
 ├── assets/           # class-icons/ (+ specs/), emblems/
 ├── storage/          # index.ts (public API), parse, persist, types, constants
 ├── test/             # setup.ts, fixtures.ts, render-with-theme.tsx (Vitest + Testing Library)
@@ -110,6 +110,6 @@ src/
 
 Tests live next to source as `*.test.ts` / `*.test.tsx` (e.g. `utils/dungeon-toggles.test.ts`, `storage/parse.test.ts`).
 
-`App` mounts `RaidTrackerProvider` (domain state via `useTrackerDomain` + `useRaidTrackerContext()`) and `TrackerLayout` (toolbar, forms, import panel orchestration). `RaidTrackerMain` renders add forms; `RaidTrackerTable` reads domain context only. Table UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
+`App` mounts `RaidTrackerProvider` (domain state via `useTrackerDomain` + `useRaidTrackerContext()`) and `TrackerLayout` (toolbar, forms, export panel orchestration). `RaidTrackerMain` renders add forms; `RaidTrackerTable` reads domain context only. Table UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
 
 Production builds split vendor code into separate chunks (React, MUI, icons) via `vite.config.ts` `manualChunks`.
