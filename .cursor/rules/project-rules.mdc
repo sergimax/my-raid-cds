@@ -91,7 +91,7 @@ Example: `feat(auth): add login form`
 - **Edit character** — edit icon in character column header opens `CharacterEditDialog` to update main/off spec and gear score (name and class unchanged)
 - **Character column** — shows class icon, name, optional spec icons with compact gear score (`6.6k`, rounded down); tooltip has full spec names
 - **Compact table** — below `md`, pinned columns are actions + name only; name cell shows `shortName` when set (full name in tooltip)
-- **Export** — filter dungeons with table search, then **Export** in toolbar; one line per visible raid lists characters without CD with optional spec short labels and compact gear scores (e.g. `Name Udk 6.6k \ Blood 6k`; see `format-character-export.ts`, `build-export-status.ts`, `format-dungeon-label.ts`)
+- **Export** — filter dungeons with table search, then **Export** in toolbar; one line per visible raid lists characters without CD. Per character: icon checkboxes for main/off spec (when set), or a single checkbox when no specs; format `Name: ShortSpec gs` with `,` between specs and ` / ` between characters (e.g. `ICC25 - Elst: Udk 6.6, Blood 6 / Beta: SP 5.8`; export gear scores omit `k`; see `format-character-export.ts`, `build-export-status.ts`, `format-dungeon-label.ts`)
 - **Empty table** — no dungeons: body hint to add or use template; search with no matches: “No dungeons match your search” row (`raid-tracker-table-empty-state`)
 
 ## Component Structure
