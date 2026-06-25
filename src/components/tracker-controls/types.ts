@@ -7,8 +7,8 @@ export type TrackerControlsSource = {
   handleResetAllToggles: () => void;
   showCharacterForm: boolean;
   showDungeonForm: boolean;
-  showImportPanel: boolean;
+  showExportPanel: boolean;
   toggleCharacterForm: () => void;
   toggleDungeonForm: () => void;
-  toggleImportPanel: () => void;
+  toggleExportPanel: () => void;
 };

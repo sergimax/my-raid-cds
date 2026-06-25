@@ -1,18 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { Classes } from "../types/characters.ts";
-import { formatCharacterImportLabel } from "./format-character-import.ts";
+import { formatCharacterExportLabel } from "./format-character-export.ts";
 import { createTestCharacter } from "../test/fixtures.ts";
 
-describe("formatCharacterImportLabel", () => {
+describe("formatCharacterExportLabel", () => {
   it("returns name only when no specs are set", () => {
-    expect(formatCharacterImportLabel(createTestCharacter({ name: "Elst" }))).toBe(
+    expect(formatCharacterExportLabel(createTestCharacter({ name: "Elst" }))).toBe(
       "Elst",
     );
   });
 
   it("includes main spec short name and gear score", () => {
     expect(
-      formatCharacterImportLabel(
+      formatCharacterExportLabel(
         createTestCharacter({
           name: "Elst",
           class: Classes[0],
@@ -24,7 +24,7 @@ describe("formatCharacterImportLabel", () => {
 
   it("joins main and off spec with backslash separator", () => {
     expect(
-      formatCharacterImportLabel(
+      formatCharacterExportLabel(
         createTestCharacter({
           name: "Elst",
           class: Classes[0],
@@ -37,7 +37,7 @@ describe("formatCharacterImportLabel", () => {
 
   it("omits gear score when not set", () => {
     expect(
-      formatCharacterImportLabel(
+      formatCharacterExportLabel(
         createTestCharacter({
           name: "Elst",
           class: Classes[0],

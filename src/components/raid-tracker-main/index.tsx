@@ -8,14 +8,14 @@ import { RaidTrackerTable } from "../raid-tracker-table/index.tsx";
 
 type RaidTrackerMainProps = {
   forms: TrackerFormsState;
-  showImportPanel: boolean;
-  closeImportPanel: () => void;
+  showExportPanel: boolean;
+  closeExportPanel: () => void;
 };
 
 export function RaidTrackerMain({
   forms,
-  showImportPanel,
-  closeImportPanel,
+  showExportPanel,
+  closeExportPanel,
 }: RaidTrackerMainProps) {
   const domain = useRaidTrackerContext();
   const showIntro =
@@ -68,8 +68,8 @@ export function RaidTrackerMain({
       ) : null}
 
       <RaidTrackerTable
-        showImportPanel={showImportPanel}
-        closeImportPanel={closeImportPanel}
+        showExportPanel={showExportPanel}
+        closeExportPanel={closeExportPanel}
       />
     </Stack>
   );

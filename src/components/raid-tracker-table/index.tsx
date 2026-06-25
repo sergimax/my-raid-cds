@@ -1,6 +1,6 @@
 import { Stack, Table, TableBody, TableContainer } from "@mui/material";
 import { memo, useCallback, useMemo, useState } from "react";
-import { ImportPanel } from "../import-panel/index.tsx";
+import { ExportPanel } from "../export-panel/index.tsx";
 import { CharacterEditDialog } from "../character-edit-dialog/index.tsx";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
@@ -13,13 +13,13 @@ import "./styles.css";
 import { useRaidTrackerTableState } from "./use-raid-tracker-table-state.ts";
 
 type RaidTrackerTableProps = {
-  showImportPanel: boolean;
-  closeImportPanel: () => void;
+  showExportPanel: boolean;
+  closeExportPanel: () => void;
 };
 
 export const RaidTrackerTable = memo(function RaidTrackerTable({
-  showImportPanel,
-  closeImportPanel,
+  showExportPanel,
+  closeExportPanel,
 }: RaidTrackerTableProps) {
   const domain = useRaidTrackerContext();
   const {
@@ -82,13 +82,13 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
 
   return (
     <Stack spacing={2}>
-      {showImportPanel ? (
-        <ImportPanel
-          key="import-panel"
+      {showExportPanel ? (
+        <ExportPanel
+          key="export-panel"
           characters={characters}
           visibleDungeons={sortedDungeons}
           dungeonToggles={dungeonToggles}
-          onClose={closeImportPanel}
+          onClose={closeExportPanel}
         />
       ) : null}
       <TableContainer sx={{ overflowX: "auto" }}>

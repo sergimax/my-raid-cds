@@ -2,7 +2,7 @@ import { shortSpecName } from "../data/class-specs.ts";
 import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import { formatCompactGearScore } from "./format-character-details.ts";
 
-function formatSpecImportPart(
+function formatSpecExportPart(
   className: ClassName,
   specGear: CharacterSpecGear,
 ): string {
@@ -14,15 +14,15 @@ function formatSpecImportPart(
 }
 
 /** Compact roster label: Name MainShort mainGs \\ OffShort offGs */
-export function formatCharacterImportLabel(character: CharacterRecord): string {
+export function formatCharacterExportLabel(character: CharacterRecord): string {
   const className = character.class?.name;
   const mainPart =
     character.mainSpec && className
-      ? formatSpecImportPart(className, character.mainSpec)
+      ? formatSpecExportPart(className, character.mainSpec)
       : null;
   const offPart =
     character.offSpec && className
-      ? formatSpecImportPart(className, character.offSpec)
+      ? formatSpecExportPart(className, character.offSpec)
       : null;
 
   if (mainPart && offPart) {

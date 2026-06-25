@@ -8,7 +8,7 @@ export type TrackerActionId =
   | "addFromTemplate"
   | "addCharacter"
   | "addDungeon"
-  | "importStatus"
+  | "exportStatus"
   | "resetAllToggles";
 
 export type TrackerAction = {
@@ -58,13 +58,13 @@ export function buildTrackerActions(
       ariaExpanded: source.showDungeonForm,
     },
     {
-      id: "importStatus",
-      label: "Import",
-      onClick: source.toggleImportPanel,
-      selected: source.showImportPanel,
-      buttonVariant: source.showImportPanel ? "contained" : "outlined",
+      id: "exportStatus",
+      label: "Export",
+      onClick: source.toggleExportPanel,
+      selected: source.showExportPanel,
+      buttonVariant: source.showExportPanel ? "contained" : "outlined",
       buttonColor: "inherit",
-      ariaExpanded: source.showImportPanel,
+      ariaExpanded: source.showExportPanel,
       disabled: source.charactersCount === 0 || source.dungeonsCount === 0,
     },
     {
