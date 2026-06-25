@@ -3,14 +3,73 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
-  FormGroup,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { useMemo, useState } from "react";
+import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
+import {
+  resolveExportSpecSelection,
+  type CharacterExportSpecSelection,
+} from "../../utils/format-character-export.ts";
 import { buildExportStatusString } from "../../utils/build-export-status.ts";
+import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
 import type { ExportPanelProps } from "./types.ts";
+
+type StoredExportSpecSelection = Partial<CharacterExportSpecSelection>;
+
+type ExportSpecCheckboxProps = {
+  character: CharacterRecord;
+  specGear: CharacterSpecGear;
+  slot: keyof CharacterExportSpecSelection;
+  checked: boolean;
+  onCheckedChange: (
+    slot: keyof CharacterExportSpecSelection,
+    included: boolean,
+  ) => void;
+};
+
+function ExportSpecCheckbox({
+  character,
+  specGear,
+  slot,
+  checked,
+  onCheckedChange,
+}: ExportSpecCheckboxProps) {
+  if (!character.class) {
+    return null;
+  }
+
+  return (
+    <FormControlLabel
+      control={
+        <Checkbox
+          size="small"
+          checked={checked}
+          onChange={(event) => {
+            onCheckedChange(slot, event.target.checked);
+          }}
+          slotProps={{
+            input: {
+              "aria-label": `Include ${specGear.spec} for ${character.name}`,
+            },
+          }}
+        />
+      }
+      label={
+        <CharacterSpecGearLabel
+          characterClass={character.class}
+          spec={specGear.spec}
+          gearScore={specGear.gearScore}
+          iconSize={18}
+          showSpecName={false}
+        />
+      }
+      sx={{ mr: 0 }}
+    />
+  );
+}
 
 export function ExportPanel({
   characters,
@@ -18,49 +77,57 @@ export function ExportPanel({
   dungeonToggles,
   onClose,
 }: ExportPanelProps) {
-  const characterIds = useMemo(
-    () => new Set(characters.map((character) => character.id)),
-    [characters],
-  );
+  const [exportSpecSelectionByCharacterId, setExportSpecSelectionByCharacterId] =
+    useState<Record<string, StoredExportSpecSelection>>({});
 
-  const [deselectedCharacterIds, setDeselectedCharacterIds] = useState<
-    Set<string>
-  >(() => new Set());
-
-  const selectedCharacterIds = useMemo(() => {
-    const selected = new Set<string>();
-    for (const characterId of characterIds) {
-      if (!deselectedCharacterIds.has(characterId)) {
-        selected.add(characterId);
-      }
-    }
-    return selected;
-  }, [characterIds, deselectedCharacterIds]);
-
-  const selectedCharacters = useMemo(
-    () => characters.filter((character) => selectedCharacterIds.has(character.id)),
-    [characters, selectedCharacterIds],
+  const includedCharacters = useMemo(
+    () =>
+      characters.filter((character) => {
+        const selection = resolveExportSpecSelection(
+          character,
+          exportSpecSelectionByCharacterId,
+        );
+        return (
+          selection.includeMain ||
+          selection.includeOff ||
+          (!character.mainSpec && !character.offSpec)
+        );
+      }),
+    [characters, exportSpecSelectionByCharacterId],
   );
 
   const statusText = useMemo(
     () =>
       buildExportStatusString({
-        characters: selectedCharacters,
+        characters: includedCharacters,
         dungeons: visibleDungeons,
         dungeonToggles,
+        exportSpecSelectionByCharacterId,
       }),
-    [dungeonToggles, selectedCharacters, visibleDungeons],
+    [
+      dungeonToggles,
+      exportSpecSelectionByCharacterId,
+      includedCharacters,
+      visibleDungeons,
+    ],
   );
 
-  const toggleCharacter = (characterId: string, checked: boolean) => {
-    setDeselectedCharacterIds((previous) => {
-      const next = new Set(previous);
-      if (checked) {
-        next.delete(characterId);
-      } else {
-        next.add(characterId);
-      }
-      return next;
+  const setSpecIncluded = (
+    character: CharacterRecord,
+    slot: keyof CharacterExportSpecSelection,
+    included: boolean,
+  ) => {
+    setExportSpecSelectionByCharacterId((previous) => {
+      const resolved = resolveExportSpecSelection(character, previous);
+      return {
+        ...previous,
+        [character.id]: {
+          ...previous[character.id],
+          includeMain:
+            slot === "includeMain" ? included : resolved.includeMain,
+          includeOff: slot === "includeOff" ? included : resolved.includeOff,
+        },
+      };
     });
   };
 
@@ -72,26 +139,55 @@ export function ExportPanel({
       <Stack spacing={2} sx={{ maxWidth: 640 }}>
         <Typography variant="body2" color="text.secondary">
           Filter dungeons with the table search, then copy lines below — one per
-          matching raid listing characters still without CD (toggle off).
+          matching raid listing characters still without CD (toggle off). Check
+          which specs to include for each character.
         </Typography>
         {characters.length > 0 ? (
-          <FormGroup row sx={{ gap: 1 }}>
-            {characters.map((character) => (
-              <FormControlLabel
-                key={character.id}
-                control={
-                  <Checkbox
-                    size="small"
-                    checked={selectedCharacterIds.has(character.id)}
-                    onChange={(event) => {
-                      toggleCharacter(character.id, event.target.checked);
-                    }}
-                  />
-                }
-                label={character.name}
-              />
-            ))}
-          </FormGroup>
+          <Stack spacing={1}>
+            {characters.map((character) => {
+              const selection = resolveExportSpecSelection(
+                character,
+                exportSpecSelectionByCharacterId,
+              );
+              return (
+                <Stack
+                  key={character.id}
+                  direction="row"
+                  spacing={1}
+                  sx={{ alignItems: "center", flexWrap: "wrap", gap: 1 }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{ minWidth: 72, fontWeight: 600 }}
+                  >
+                    {character.name}
+                  </Typography>
+                  {character.mainSpec ? (
+                    <ExportSpecCheckbox
+                      character={character}
+                      specGear={character.mainSpec}
+                      slot="includeMain"
+                      checked={selection.includeMain}
+                      onCheckedChange={(slot, included) => {
+                        setSpecIncluded(character, slot, included);
+                      }}
+                    />
+                  ) : null}
+                  {character.offSpec ? (
+                    <ExportSpecCheckbox
+                      character={character}
+                      specGear={character.offSpec}
+                      slot="includeOff"
+                      checked={selection.includeOff}
+                      onCheckedChange={(slot, included) => {
+                        setSpecIncluded(character, slot, included);
+                      }}
+                    />
+                  ) : null}
+                </Stack>
+              );
+            })}
+          </Stack>
         ) : (
           <Typography variant="body2" color="text.secondary">
             Add a character to build a status summary.
