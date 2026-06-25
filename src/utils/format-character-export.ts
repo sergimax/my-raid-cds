@@ -63,7 +63,7 @@ function formatSpecExportSegment(specGear: CharacterSpecGear): string {
 }
 
 /**
- * Compact roster label: `Name: MainSpec mainGs \\ OffSpec offGs`.
+ * Compact roster label: `Name: MainSpec mainGs, OffSpec offGs`.
  * Returns `null` when the character should be omitted from export lines.
  */
 export function formatCharacterExportLabel(
@@ -87,5 +87,5 @@ export function formatCharacterExportLabel(
     return character.name;
   }
 
-  return `${character.name}: ${specSegments.join(" \\ ")}`;
+  return `${character.name}: ${specSegments.join(", ")}`;
 }

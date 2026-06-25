@@ -57,6 +57,39 @@ describe("buildExportStatusString", () => {
     ).toBe("ICC25H - Beta: Shadow 5.8k");
   });
 
+  it("joins multiple characters with slash separator", () => {
+    const alpha = createTestCharacter({
+      id: "character-1",
+      name: "Alpha",
+      class: Classes[5],
+      mainSpec: { spec: "Shadow", gearScore: 5800 },
+    });
+    const beta = createTestCharacter({
+      id: "character-2",
+      name: "Beta",
+      class: Classes[0],
+      mainSpec: { spec: "Unholy", gearScore: 6615 },
+    });
+    const dungeon = createTestDungeon({
+      id: "dungeon-1",
+      shortName: "ICC",
+      size: 25,
+      difficulty: DungeonDifficulty.NORMAL,
+    });
+    const toggles = createTestToggles([
+      { characterId: "character-1", dungeonId: "dungeon-1", on: false },
+      { characterId: "character-2", dungeonId: "dungeon-1", on: false },
+    ]);
+
+    expect(
+      buildExportStatusString({
+        characters: [alpha, beta],
+        dungeons: [dungeon],
+        dungeonToggles: toggles,
+      }),
+    ).toBe("ICC25 - Alpha: Shadow 5.8k / Beta: Unholy 6.6k");
+  });
+
   it("returns all-have-CD message when every selected character has CD", () => {
     const alpha = createTestCharacter({ id: "character-1", name: "Alpha" });
     const dungeon = createTestDungeon({ id: "dungeon-1", shortName: "ICC" });

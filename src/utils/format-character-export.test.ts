@@ -69,7 +69,7 @@ describe("formatCharacterExportLabel", () => {
         includeOff: true,
         includeWithoutSpec: true,
       }),
-    ).toBe("Elst: Unholy 6.6k \\ Blood 6k");
+    ).toBe("Elst: Unholy 6.6k, Blood 6k");
     expect(
       formatCharacterExportLabel(character, {
         includeMain: false,
