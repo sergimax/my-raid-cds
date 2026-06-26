@@ -26,10 +26,16 @@ export function itemToGearSlots(item) {
   return [];
 }
 
-export function buildItemGearSlotsMap(dbItems) {
+export function buildItemGearSlotsMap(dbItems, itemLevelIds) {
+  const itemsById = new Map(dbItems.map((item) => [item.id, item]));
   const gearSlotsByItemId = {};
 
-  for (const item of dbItems) {
+  for (const itemId of itemLevelIds) {
+    const item = itemsById.get(Number(itemId));
+    if (!item) {
+      continue;
+    }
+
     const slots = itemToGearSlots(item);
     if (slots.length > 0) {
       gearSlotsByItemId[item.id] = slots;
