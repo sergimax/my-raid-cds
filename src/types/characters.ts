@@ -34,6 +34,8 @@ export const Classes: Array<CharacterClass> = [
   { name: ClassName.Warrior, icon: classIcons.Warrior, color: "C69B6D" },
 ];
 
+import type { CharacterGearItem } from "./character-gear.ts";
+
 /** Talent specialization with optional GearScore for that spec's gear set. */
 export type CharacterSpecGear = {
   spec: string;
@@ -45,6 +47,7 @@ export type Character = {
   class?: CharacterClass;
   mainSpec?: CharacterSpecGear;
   offSpec?: CharacterSpecGear;
+  gearItems?: CharacterGearItem[];
 };
 
 export type CharacterRecord = Character & { id: string };
@@ -52,4 +55,5 @@ export type CharacterRecord = Character & { id: string };
 export type CharacterSpecGearUpdate = {
   mainSpec?: CharacterSpecGear;
   offSpec?: CharacterSpecGear;
+  gearItems?: CharacterGearItem[];
 };
