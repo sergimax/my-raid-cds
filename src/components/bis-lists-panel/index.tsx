@@ -28,6 +28,7 @@ import {
   resolveItemNamesToIds,
 } from "../../utils/bis-lists.ts";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
+import { WowItemAlternatives } from "../wow-item-link/index.tsx";
 
 type BisListsPanelProps = {
   onClose: () => void;
@@ -36,6 +37,7 @@ type BisListsPanelProps = {
 type SlotDraft = {
   slot: number;
   itemsText: string;
+  itemIds: number[];
 };
 
 function presetToSlotDrafts(preset: BisListPreset): SlotDraft[] {
@@ -45,6 +47,7 @@ function presetToSlotDrafts(preset: BisListPreset): SlotDraft[] {
     .map((slotEntry) => ({
       slot: slotEntry.slot,
       itemsText: formatBisSlotItems(slotEntry.itemIds),
+      itemIds: [...slotEntry.itemIds],
     }));
 }
 
@@ -281,8 +284,8 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                       helperText="Separate alternatives with /"
                     />
                   ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      {slotDraft.itemsText}
+                    <Typography variant="body2" color="text.secondary" component="div">
+                      <WowItemAlternatives itemIds={slotDraft.itemIds} />
                     </Typography>
                   )}
                 </Stack>
