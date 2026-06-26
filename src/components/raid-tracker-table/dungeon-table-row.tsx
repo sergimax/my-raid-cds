@@ -3,7 +3,8 @@
  * per-character cooldown toggle switches.
  */
 import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton, Switch, TableCell, TableRow, Tooltip } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import { IconButton, Stack, Switch, TableCell, TableRow, Tooltip } from "@mui/material";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
@@ -27,6 +28,7 @@ type DungeonTableRowProps = {
   characterCount: number;
   dungeonToggles: DungeonToggles;
   onDungeonToggle: (characterId: string, dungeonId: string) => void;
+  onEditDungeon: (dungeonId: string) => void;
   onRequestDeleteDungeon: (dungeon: DungeonRecord) => void;
 };
 
@@ -39,12 +41,26 @@ export function DungeonTableRow({
   characterCount,
   dungeonToggles,
   onDungeonToggle,
+  onEditDungeon,
   onRequestDeleteDungeon,
 }: DungeonTableRowProps) {
   return (
     <TableRow hover>
       <TableCell sx={pinnedActionsColumnSx(compactTable, false)}>
-        <Tooltip title={`Delete dungeon: ${dungeon.name}`}>
+        <Stack direction="row" spacing={0.25} sx={{ justifyContent: "center" }}>
+          <Tooltip title={`Edit details for ${dungeon.name}`}>
+            <IconButton
+              size="small"
+              color="default"
+              onClick={() => {
+                onEditDungeon(dungeon.id);
+              }}
+              aria-label={`Edit details for ${dungeon.name}`}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`Delete dungeon: ${dungeon.name}`}>
           <IconButton
             size="small"
             color="error"
@@ -56,6 +72,7 @@ export function DungeonTableRow({
             <DeleteIcon fontSize="small" />
           </IconButton>
         </Tooltip>
+        </Stack>
       </TableCell>
       {visiblePinnedColumns.map((column) => (
         <TableCell

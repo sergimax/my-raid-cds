@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { EmblemKey } from "../assets/emblems/emblem-icons.ts";
 import {
   DEFAULT_DUNGEON_DIFFICULTY,
   DEFAULT_DUNGEON_FORM_SIZE,
@@ -7,7 +8,12 @@ import {
 } from "../constants/dungeon-form-defaults.ts";
 import { RaidNames } from "../data/raid-names.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
-import { parseDungeonForm } from "./validate-dungeon.ts";
+import { createTestDungeon } from "../test/fixtures.ts";
+import {
+  dungeonCustomizationFormValues,
+  parseDungeonCustomizationForm,
+  parseDungeonForm,
+} from "./validate-dungeon.ts";
 
 describe("parseDungeonForm", () => {
   it("rejects empty dungeon name", () => {
@@ -78,6 +84,78 @@ describe("parseDungeonForm", () => {
         itemLevel: [200, 213],
         difficulty: DEFAULT_DUNGEON_DIFFICULTY,
       },
+    });
+  });
+});
+
+describe("parseDungeonCustomizationForm", () => {
+  it("maps dungeon record to form values", () => {
+    const dungeon = createTestDungeon({
+      name: RaidNames.icecrownCitadel.en,
+      shortName: "ICC25",
+      size: 25,
+      difficulty: DungeonDifficulty.HEROIC,
+      emblem: EmblemKey.FROST,
+    });
+    expect(dungeonCustomizationFormValues(dungeon)).toEqual({
+      name: RaidNames.icecrownCitadel.en,
+      shortName: "ICC25",
+      size: 25,
+      difficulty: DungeonDifficulty.HEROIC,
+      emblem: EmblemKey.FROST,
+    });
+  });
+
+  it("accepts customization with emblem badge", () => {
+    const result = parseDungeonCustomizationForm({
+      name: "Icecrown Citadel",
+      shortName: "ICC25",
+      size: 25,
+      difficulty: DungeonDifficulty.HEROIC,
+      emblem: EmblemKey.FROST,
+    });
+    expect(result).toEqual({
+      ok: true,
+      fields: {
+        name: "Icecrown Citadel",
+        shortName: "ICC25",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+        emblem: EmblemKey.FROST,
+      },
+    });
+  });
+
+  it("omits emblem when badge is cleared", () => {
+    const result = parseDungeonCustomizationForm({
+      name: "Custom Raid",
+      shortName: "CR",
+      size: DEFAULT_DUNGEON_FORM_SIZE,
+      difficulty: DEFAULT_DUNGEON_DIFFICULTY,
+      emblem: "",
+    });
+    expect(result).toEqual({
+      ok: true,
+      fields: {
+        name: "Custom Raid",
+        shortName: "CR",
+        size: DEFAULT_DUNGEON_FORM_SIZE,
+        difficulty: DEFAULT_DUNGEON_DIFFICULTY,
+      },
+    });
+  });
+
+  it("rejects invalid emblem badge", () => {
+    const result = parseDungeonCustomizationForm({
+      name: "Custom Raid",
+      shortName: "",
+      size: DEFAULT_DUNGEON_FORM_SIZE,
+      difficulty: DEFAULT_DUNGEON_DIFFICULTY,
+      emblem: "invalid" as EmblemKey,
+    });
+    expect(result).toEqual({
+      ok: false,
+      error: "Choose a valid emblem badge.",
     });
   });
 });

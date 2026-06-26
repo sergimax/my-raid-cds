@@ -24,4 +24,13 @@ export type Dungeon = {
 
 export type DungeonRecord = Dungeon & { id: string };
 
+/** Editable dungeon display fields (names, size, mode, emblem badge). */
+export type DungeonCustomizationUpdate = Pick<
+  Dungeon,
+  "name" | "size" | "difficulty"
+> & {
+  shortName?: string;
+  emblem?: EmblemKey;
+};
+
 export type DungeonToggles = Record<string, Record<string, boolean>>;
