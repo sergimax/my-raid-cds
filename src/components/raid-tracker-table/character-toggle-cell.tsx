@@ -27,10 +27,9 @@ export function CharacterToggleCell({
 }: CharacterToggleCellProps) {
   const bisLists = useBisListsContext();
   const { locale: itemTooltipLocale } = useItemTooltipLocale();
-  const bisSelectionVersion = bisLists.localState;
   const bisSlotMap = useMemo(
     () => bisLists.getBisSlotMapForCharacter(character),
-    [bisLists, bisSelectionVersion, character],
+    [bisLists, character],
   );
 
   const upgradeHint = useMemo(
