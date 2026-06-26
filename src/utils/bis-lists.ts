@@ -2,9 +2,10 @@ import {
   getBuiltInPresetsForSpec,
   findBuiltInSpecBis,
 } from "../data/bis-presets/index.ts";
+import { gearSlotLabel } from "../data/gear-slot-names.ts";
+import { getWotlkItemGearSlots } from "../data/wotlk-item-gear-slots.ts";
 import { getWotlkItemName } from "../data/wotlk-item-names.ts";
 import itemNamesJson from "../data/wotlk-item-names.json";
-import { gearSlotLabel } from "../data/gear-slot-names.ts";
 import type { ClassName } from "../types/characters.ts";
 import type {
   BisListPreset,
@@ -14,6 +15,38 @@ import type {
 } from "../types/bis-lists.ts";
 
 const itemNames = itemNamesJson as Record<string, string>;
+
+export type BisSlotValidationMode = "partial" | "strict";
+
+let bisItemNameToIdCache: Map<string, number> | undefined;
+
+function getBisItemNameToIdMap(): Map<string, number> {
+  if (!bisItemNameToIdCache) {
+    bisItemNameToIdCache = new Map();
+    for (const [itemId, itemName] of Object.entries(itemNames)) {
+      bisItemNameToIdCache.set(itemName.trim().toLowerCase(), Number(itemId));
+    }
+  }
+  return bisItemNameToIdCache;
+}
+
+function resolveBisSegmentItemId(
+  rawSegment: string,
+  nameToId: Map<string, number>,
+): number | "unknown" | undefined {
+  const trimmedSegment = rawSegment.trim();
+  if (!trimmedSegment) {
+    return undefined;
+  }
+
+  const parsedItemId = parseBisSlotItemId(trimmedSegment);
+  if (parsedItemId !== undefined) {
+    return parsedItemId;
+  }
+
+  const itemId = nameToId.get(trimmedSegment.toLowerCase());
+  return itemId ?? "unknown";
+}
 
 export type BisSlotMap = ReadonlyMap<number, readonly number[]>;
 
@@ -168,36 +201,81 @@ export function parseBisSlotItemId(rawSegment: string): number | undefined {
   return undefined;
 }
 
+export function validateBisSlotItemsText(
+  gearSlot: number,
+  itemsText: string,
+  mode: BisSlotValidationMode = "strict",
+): { itemIds: number[]; error?: string } {
+  const trimmedText = itemsText.trim();
+  if (!trimmedText || trimmedText === "—") {
+    return { itemIds: [] };
+  }
+
+  const nameToId = getBisItemNameToIdMap();
+  const itemIds: number[] = [];
+  const errors: string[] = [];
+
+  for (const rawSegment of itemsText.split("/")) {
+    const segmentResult = resolveBisSegmentItemId(rawSegment, nameToId);
+    if (segmentResult === undefined) {
+      continue;
+    }
+
+    if (segmentResult === "unknown") {
+      const trimmedSegment = rawSegment.trim();
+      if (mode === "strict" && trimmedSegment) {
+        errors.push(`Unknown item: ${trimmedSegment}`);
+      }
+      continue;
+    }
+
+    const itemId = segmentResult;
+    const hasName = getWotlkItemName(itemId) !== undefined;
+    const validSlots = getWotlkItemGearSlots(itemId);
+
+    if (!hasName && !validSlots) {
+      errors.push(`Unknown item id: ${itemId}`);
+      continue;
+    }
+
+    if (validSlots && !validSlots.includes(gearSlot)) {
+      const itemLabel = getWotlkItemName(itemId) ?? `#${itemId}`;
+      const validSlotLabels = validSlots.map(gearSlotLabel).join(" or ");
+      errors.push(
+        `"${itemLabel}" belongs in ${validSlotLabels}, not ${gearSlotLabel(gearSlot)}`,
+      );
+      continue;
+    }
+
+    itemIds.push(itemId);
+  }
+
+  return {
+    itemIds,
+    error: errors.length > 0 ? errors.join("; ") : undefined,
+  };
+}
+
 export function resolveItemNamesToIds(itemsText: string): {
   itemIds: number[];
   unknownNames: string[];
 } {
-  const nameToId = new Map<string, number>();
-  for (const [itemId, itemName] of Object.entries(itemNames)) {
-    nameToId.set(itemName.trim().toLowerCase(), Number(itemId));
-  }
-
+  const nameToId = getBisItemNameToIdMap();
   const itemIds: number[] = [];
   const unknownNames: string[] = [];
 
   for (const rawSegment of itemsText.split("/")) {
-    const trimmedSegment = rawSegment.trim();
-    if (!trimmedSegment) {
+    const segmentResult = resolveBisSegmentItemId(rawSegment, nameToId);
+    if (segmentResult === undefined) {
       continue;
     }
 
-    const parsedItemId = parseBisSlotItemId(trimmedSegment);
-    if (parsedItemId !== undefined) {
-      itemIds.push(parsedItemId);
+    if (segmentResult === "unknown") {
+      unknownNames.push(rawSegment.trim());
       continue;
     }
 
-    const itemId = nameToId.get(trimmedSegment.toLowerCase());
-    if (itemId === undefined) {
-      unknownNames.push(trimmedSegment);
-    } else {
-      itemIds.push(itemId);
-    }
+    itemIds.push(segmentResult);
   }
 
   return { itemIds, unknownNames };
