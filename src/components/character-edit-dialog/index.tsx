@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import type { SubmitEvent } from "react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import type { CharacterGearItem } from "../../types/character-gear.ts";
 import type { CharacterRecord, CharacterSpecGearUpdate } from "../../types/characters.ts";
 import {
@@ -25,6 +25,7 @@ import {
 } from "../../utils/validate-character.ts";
 import { characterNameDisplaySx } from "../../utils/character-display.ts";
 import { parseWowSimsExporterJson } from "../../utils/parse-wowsims-exporter.ts";
+import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { CharacterSpecGearFields } from "../character-spec-gear-fields/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 
@@ -72,6 +73,8 @@ function CharacterEditDialogContent({
     () => (gearItems ? sortGearItemsBySlot(gearItems) : []),
     [gearItems],
   );
+
+  useEffect(() => () => hideExternalWowTooltips(), []);
 
   const handleImportGear = useCallback(() => {
     if (!character.class) {

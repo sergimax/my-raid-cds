@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { ITEM_TOOLTIP_LOCALE_STORAGE_KEY } from "../constants/item-tooltips.ts";
+import { hideExternalWowTooltips } from "../utils/hide-external-wow-tooltips.ts";
 import {
   getInitialItemTooltipLocale,
   ItemTooltipLocaleContext,
@@ -17,6 +18,10 @@ export function ItemTooltipLocaleProvider({ children }: { children: ReactNode })
   const [locale, setLocaleState] = useState<ItemTooltipLocale>(() =>
     getInitialItemTooltipLocale(),
   );
+
+  useEffect(() => {
+    hideExternalWowTooltips();
+  }, [locale]);
 
   useEffect(() => {
     try {

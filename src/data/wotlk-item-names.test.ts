@@ -13,8 +13,9 @@ describe("getWotlkItemName", () => {
   });
 
   it("falls back to English when Russian name is missing", () => {
-    expect(getWotlkItemName(51197, "ru")).toBe(
-      "Sanctified Frost Witch's Faceguard",
+    expect(getWotlkItemName(99999999, "ru")).toBeUndefined();
+    expect(getWotlkItemName(51312, "ru")).toBe(
+      "Освященный полный шлем повелителя Плети",
     );
   });
 });
