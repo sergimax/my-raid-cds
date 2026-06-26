@@ -8,6 +8,7 @@ export type TrackerActionId =
   | "addFromTemplate"
   | "addCharacter"
   | "addDungeon"
+  | "bisLists"
   | "exportStatus"
   | "resetAllToggles";
 
@@ -56,6 +57,15 @@ export function buildTrackerActions(
       buttonVariant: source.showDungeonForm ? "contained" : "outlined",
       buttonColor: "inherit",
       ariaExpanded: source.showDungeonForm,
+    },
+    {
+      id: "bisLists",
+      label: "BiS lists",
+      onClick: source.toggleBisListsPanel,
+      selected: source.showBisListsPanel,
+      buttonVariant: source.showBisListsPanel ? "contained" : "outlined",
+      buttonColor: "inherit",
+      ariaExpanded: source.showBisListsPanel,
     },
     {
       id: "exportStatus",

@@ -8,7 +8,9 @@ export type TrackerControlsSource = {
   showCharacterForm: boolean;
   showDungeonForm: boolean;
   showExportPanel: boolean;
+  showBisListsPanel: boolean;
   toggleCharacterForm: () => void;
   toggleDungeonForm: () => void;
   toggleExportPanel: () => void;
+  toggleBisListsPanel: () => void;
 };

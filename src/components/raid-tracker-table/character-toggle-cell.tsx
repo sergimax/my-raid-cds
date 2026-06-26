@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
+import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import {
   evaluateGearUpgradeHint,
   formatGearUpgradeHintTooltip,
@@ -23,9 +24,15 @@ export function CharacterToggleCell({
   dungeonToggles,
   onDungeonToggle,
 }: CharacterToggleCellProps) {
+  const bisLists = useBisListsContext();
+  const bisSlotMap = useMemo(
+    () => bisLists.getBisSlotMapForCharacter(character),
+    [bisLists, character],
+  );
+
   const upgradeHint = useMemo(
-    () => evaluateGearUpgradeHint(character.gearItems, dungeon),
-    [character.gearItems, dungeon],
+    () => evaluateGearUpgradeHint(character.gearItems, dungeon, bisSlotMap),
+    [bisSlotMap, character.gearItems, dungeon],
   );
 
   const tooltipTitle = formatGearUpgradeHintTooltip(upgradeHint);
