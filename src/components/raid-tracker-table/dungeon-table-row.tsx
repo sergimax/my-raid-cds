@@ -4,17 +4,16 @@
  */
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { IconButton, Stack, Switch, TableCell, TableRow, Tooltip } from "@mui/material";
+import { IconButton, Stack, TableCell, TableRow, Tooltip } from "@mui/material";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
-import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
+import { CharacterToggleCell } from "./character-toggle-cell.tsx";
 import {
   pinnedColumnBodyAlign,
   pinnedColumnBodySx,
   renderPinnedColumnBody,
 } from "./pinned-column-renderers.tsx";
 import {
-  CHARACTER_BODY_CELL_SX,
   pinnedActionsColumnSx,
   type PinnedColumnDef,
 } from "./table-layout.ts";
@@ -90,24 +89,13 @@ export function DungeonTableRow({
         </TableCell>
       ))}
       {characters.map((character) => (
-        <TableCell
+        <CharacterToggleCell
           key={character.id}
-          align="center"
-          sx={CHARACTER_BODY_CELL_SX}
-        >
-          <Switch
-            size="small"
-            checked={isCooldownOn(dungeonToggles, character.id, dungeon.id)}
-            onChange={() => {
-              onDungeonToggle(character.id, dungeon.id);
-            }}
-            slotProps={{
-              input: {
-                "aria-label": `${character.name} — ${dungeon.name}`,
-              },
-            }}
-          />
-        </TableCell>
+          character={character}
+          dungeon={dungeon}
+          dungeonToggles={dungeonToggles}
+          onDungeonToggle={onDungeonToggle}
+        />
       ))}
     </TableRow>
   );
