@@ -21,7 +21,7 @@ const RHEE_EXPORT = JSON.stringify({
 describe("formatStoredGearItemLine", () => {
   it("includes slot label, item id, and item level", () => {
     expect(formatStoredGearItemLine({ slot: 0, id: 51197 })).toBe(
-      "Head · 51197 · ilvl 264",
+      "Head · Sanctified Frost Witch's Faceguard · ilvl 264",
     );
   });
 

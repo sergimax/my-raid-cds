@@ -24,16 +24,8 @@ export function CharacterToggleCell({
   onDungeonToggle,
 }: CharacterToggleCellProps) {
   const upgradeHint = useMemo(
-    () => evaluateGearUpgradeHint(character.gearItems, dungeon.itemLevel),
-    [character.gearItems, dungeon.itemLevel],
-  );
-
-  const cellSx = useMemo(
-    () => [
-      CHARACTER_BODY_CELL_SX,
-      gearUpgradeHintCellSx(upgradeHint.level, dungeon.itemLevel),
-    ],
-    [dungeon.itemLevel, upgradeHint.level],
+    () => evaluateGearUpgradeHint(character.gearItems, dungeon),
+    [character.gearItems, dungeon],
   );
 
   const tooltipTitle = formatGearUpgradeHintTooltip(upgradeHint);
@@ -54,7 +46,13 @@ export function CharacterToggleCell({
   );
 
   return (
-    <TableCell align="center" sx={cellSx}>
+    <TableCell
+      align="center"
+      sx={[
+        CHARACTER_BODY_CELL_SX,
+        gearUpgradeHintCellSx(upgradeHint.level, dungeon.itemLevel),
+      ]}
+    >
       {tooltipTitle ? (
         <Tooltip title={tooltipTitle}>
           <span>{toggleSwitch}</span>
