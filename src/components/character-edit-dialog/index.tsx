@@ -13,6 +13,11 @@ import type { SubmitEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
 import type { CharacterGearItem } from "../../types/character-gear.ts";
 import type { CharacterRecord, CharacterSpecGearUpdate } from "../../types/characters.ts";
+import {
+  formatGearSummary,
+  formatStoredGearItemLine,
+  sortGearItemsBySlot,
+} from "../../utils/format-stored-gear.ts";
 import { summarizeGearItemLevels } from "../../utils/summarize-gear-item-levels.ts";
 import {
   characterSpecGearFormValues,
@@ -35,18 +40,6 @@ type CharacterEditDialogContentProps = {
   onSave: (characterId: string, specGear: CharacterSpecGearUpdate) => void;
 };
 
-function formatGearSummary(gearItems: CharacterGearItem[]): string {
-  const summary = summarizeGearItemLevels(gearItems);
-  const parts = [`${summary.equippedCount} items`];
-  if (summary.averageItemLevel !== undefined) {
-    parts.push(`avg ilvl ${summary.averageItemLevel}`);
-  }
-  if (summary.unknownItemIds.length > 0) {
-    parts.push(`${summary.unknownItemIds.length} unknown item id(s)`);
-  }
-  return parts.join(" · ");
-}
-
 function CharacterEditDialogContent({
   character,
   onClose,
@@ -68,8 +61,15 @@ function CharacterEditDialogContent({
   const [importNotice, setImportNotice] = useState("");
   const [error, setError] = useState("");
 
-  const gearSummaryText = useMemo(
-    () => (gearItems && gearItems.length > 0 ? formatGearSummary(gearItems) : ""),
+  const storedGearSummary = useMemo(() => {
+    if (!gearItems || gearItems.length === 0) {
+      return null;
+    }
+    return summarizeGearItemLevels(gearItems);
+  }, [gearItems]);
+
+  const sortedGearItems = useMemo(
+    () => (gearItems ? sortGearItemsBySlot(gearItems) : []),
     [gearItems],
   );
 
@@ -191,10 +191,36 @@ function CharacterEditDialogContent({
                 <Typography variant="body2" color="text.secondary">
                   Import gear from WowSimsExporter
                 </Typography>
-                {gearSummaryText ? (
-                  <Typography variant="body2">
-                    Stored gear: {gearSummaryText}
-                  </Typography>
+                {storedGearSummary ? (
+                  <Stack spacing={0.5}>
+                    <Typography variant="body2">
+                      Stored gear
+                      {storedGearSummary.averageItemLevel !== undefined
+                        ? ` · avg ilvl ${storedGearSummary.averageItemLevel}`
+                        : ""}
+                    </Typography>
+                    <Box
+                      component="ul"
+                      sx={{ m: 0, pl: 2.5, maxHeight: 160, overflowY: "auto" }}
+                    >
+                      {sortedGearItems.map((item) => (
+                        <Typography
+                          key={`${item.slot}-${item.id}`}
+                          component="li"
+                          variant="body2"
+                          color="text.secondary"
+                        >
+                          {formatStoredGearItemLine(item)}
+                        </Typography>
+                      ))}
+                    </Box>
+                    {storedGearSummary.unknownItemIds.length > 0 ? (
+                      <Typography variant="caption" color="warning.main">
+                        {storedGearSummary.unknownItemIds.length} item id(s) not
+                        in the ilvl database
+                      </Typography>
+                    ) : null}
+                  </Stack>
                 ) : null}
                 <TextField
                   label="WowSimsExporter JSON"
