@@ -1,15 +1,18 @@
 import { useCallback, useMemo, useState } from "react";
 import type { ClassName, CharacterRecord } from "../types/characters.ts";
-import type { BisListPreset, LocalBisListsState } from "../types/bis-lists.ts";
+import type { BisListSlot, LocalBisListsState } from "../types/bis-lists.ts";
 import {
   loadLocalBisListsState,
   saveLocalBisListsState,
 } from "../storage/bis-lists/index.ts";
+import { getBuiltInPresetsForSpec } from "../data/bis-presets/index.ts";
 import {
   getMergedPresetsForSpec,
   getSelectedPresetForSpec,
+  isLocalBisPreset,
   removeLocalSpecEntry,
   resolveBisSlotMap,
+  resolveSaveLocalPresetByName,
   specBisStorageKey,
   type BisSlotMap,
   upsertLocalSpecEntry,
@@ -60,58 +63,83 @@ export function useBisListsDomain() {
     (className: ClassName, spec: string, presetId: string) => {
       const storageKey = specBisStorageKey(className, spec);
       const existingEntry = localState.entries[storageKey];
-      const presets = getMergedPresetsForSpec(className, spec, localState);
+      const localPresets =
+        existingEntry?.presets.filter((preset) => isLocalBisPreset(preset)) ?? [];
 
       persistState(
         upsertLocalSpecEntry(localState, className, spec, {
           selectedPresetId: presetId,
-          presets: existingEntry?.presets ?? presets.filter((preset) => preset.id.startsWith("local-")),
+          presets: localPresets,
         }),
       );
     },
     [localState, persistState],
   );
 
-  const saveLocalPreset = useCallback(
-    (className: ClassName, spec: string, preset: BisListPreset) => {
-      const storageKey = specBisStorageKey(className, spec);
-      const existingEntry = localState.entries[storageKey];
-      const nextPresets = existingEntry
-        ? [
-            ...existingEntry.presets.filter((entry) => entry.id !== preset.id),
-            preset,
-          ]
-        : [preset];
-
-      persistState(
-        upsertLocalSpecEntry(localState, className, spec, {
-          selectedPresetId: preset.id,
-          presets: nextPresets,
-        }),
-      );
-    },
-    [localState, persistState],
-  );
-
-  const duplicatePreset = useCallback(
+  const savePresetByName = useCallback(
     (
       className: ClassName,
       spec: string,
-      sourcePreset: BisListPreset,
-      newName: string,
-    ) => {
-      const preset: BisListPreset = {
-        id: `local-${Date.now()}`,
-        name: newName,
-        slots: sourcePreset.slots.map((slotEntry) => ({
-          slot: slotEntry.slot,
-          itemIds: [...slotEntry.itemIds],
-        })),
-      };
-      saveLocalPreset(className, spec, preset);
-      return preset;
+      name: string,
+      slots: BisListSlot[],
+    ): { ok: true } | { ok: false; error: string } => {
+      const storageKey = specBisStorageKey(className, spec);
+      const existingEntry = localState.entries[storageKey];
+      const localPresets =
+        existingEntry?.presets.filter((preset) => isLocalBisPreset(preset)) ?? [];
+      const builtInPresets = getBuiltInPresetsForSpec(className, spec);
+
+      const resolved = resolveSaveLocalPresetByName(
+        localPresets,
+        builtInPresets,
+        name,
+        slots,
+      );
+      if ("error" in resolved) {
+        return { ok: false, error: resolved.error };
+      }
+
+      persistState(
+        upsertLocalSpecEntry(localState, className, spec, {
+          selectedPresetId: resolved.preset.id,
+          presets: resolved.presets,
+        }),
+      );
+
+      return { ok: true };
     },
-    [saveLocalPreset],
+    [localState, persistState],
+  );
+
+  const deleteLocalPreset = useCallback(
+    (className: ClassName, spec: string, presetId: string) => {
+      if (!presetId.startsWith("local-")) {
+        return;
+      }
+
+      const storageKey = specBisStorageKey(className, spec);
+      const existingEntry = localState.entries[storageKey];
+      if (!existingEntry) {
+        return;
+      }
+
+      const nextLocalPresets = existingEntry.presets.filter(
+        (preset) => preset.id !== presetId,
+      );
+      const builtInPresets = getBuiltInPresetsForSpec(className, spec);
+      const wasSelected = existingEntry.selectedPresetId === presetId;
+      const nextSelectedPresetId = wasSelected
+        ? (builtInPresets[0]?.id ?? nextLocalPresets[0]?.id ?? "default")
+        : existingEntry.selectedPresetId;
+
+      persistState(
+        upsertLocalSpecEntry(localState, className, spec, {
+          selectedPresetId: nextSelectedPresetId,
+          presets: nextLocalPresets,
+        }),
+      );
+    },
+    [localState, persistState],
   );
 
   const resetSpecToBuiltIn = useCallback(
@@ -129,19 +157,19 @@ export function useBisListsDomain() {
       getBisSlotMapForSpec,
       getBisSlotMapForCharacter,
       selectPreset,
-      saveLocalPreset,
-      duplicatePreset,
+      savePresetByName,
+      deleteLocalPreset,
       resetSpecToBuiltIn,
     }),
     [
-      duplicatePreset,
+      deleteLocalPreset,
       getBisSlotMapForCharacter,
       getBisSlotMapForSpec,
       getPresetsForSpec,
       getSelectedPreset,
       localState,
       resetSpecToBuiltIn,
-      saveLocalPreset,
+      savePresetByName,
       selectPreset,
     ],
   );

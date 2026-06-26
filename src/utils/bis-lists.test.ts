@@ -4,7 +4,10 @@ import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts
 import {
   buildBisSlotMap,
   getSelectedPresetForSpec,
+  isLocalBisPreset,
+  parseBisSlotItemId,
   resolveItemNamesToIds,
+  resolveSaveLocalPresetByName,
   specBisStorageKey,
 } from "./bis-lists.ts";
 
@@ -25,6 +28,26 @@ describe("resolveItemNamesToIds", () => {
     expect(resolved.unknownNames).toEqual([]);
     expect(resolved.itemIds).toEqual([50459, 47673]);
   });
+
+  it("resolves item ids with or without a hash prefix", () => {
+    const resolved = resolveItemNamesToIds("51312 / #54581");
+    expect(resolved.unknownNames).toEqual([]);
+    expect(resolved.itemIds).toEqual([51312, 54581]);
+  });
+
+  it("reports unknown segments that are neither names nor ids", () => {
+    const resolved = resolveItemNamesToIds("Not A Real Item / #");
+    expect(resolved.itemIds).toEqual([]);
+    expect(resolved.unknownNames).toEqual(["Not A Real Item", "#"]);
+  });
+});
+
+describe("parseBisSlotItemId", () => {
+  it("parses numeric and hash-prefixed ids", () => {
+    expect(parseBisSlotItemId("51312")).toBe(51312);
+    expect(parseBisSlotItemId(" #51312 ")).toBe(51312);
+    expect(parseBisSlotItemId("Penumbra Pendant")).toBeUndefined();
+  });
 });
 
 describe("getSelectedPresetForSpec", () => {
@@ -44,5 +67,70 @@ describe("getSelectedPresetForSpec", () => {
     expect(selected?.slots.some((slot) => slot.itemIds.includes(54581))).toBe(
       true,
     );
+  });
+});
+
+describe("isLocalBisPreset", () => {
+  it("identifies local presets by id prefix", () => {
+    expect(isLocalBisPreset({ id: "local-1", name: "Mine", slots: [] })).toBe(
+      true,
+    );
+    expect(isLocalBisPreset(unholyDeathKnightBis.presets[0])).toBe(false);
+  });
+});
+
+describe("resolveSaveLocalPresetByName", () => {
+  const builtInPresets = unholyDeathKnightBis.presets;
+
+  it("creates a new local preset when the name is new", () => {
+    const resolved = resolveSaveLocalPresetByName(
+      [],
+      builtInPresets,
+      "My list",
+      [{ slot: 1, itemIds: [54581] }],
+    );
+
+    expect("error" in resolved).toBe(false);
+    if ("error" in resolved) {
+      return;
+    }
+
+    expect(resolved.preset.name).toBe("My list");
+    expect(resolved.preset.id).toMatch(/^local-/);
+    expect(resolved.presets).toHaveLength(1);
+  });
+
+  it("updates an existing local preset when the name matches", () => {
+    const existing = {
+      id: "local-99",
+      name: "Circle",
+      slots: [{ slot: 1, itemIds: [1] }],
+    };
+    const resolved = resolveSaveLocalPresetByName(
+      [existing],
+      builtInPresets,
+      "circle",
+      [{ slot: 1, itemIds: [54581] }],
+    );
+
+    expect("error" in resolved).toBe(false);
+    if ("error" in resolved) {
+      return;
+    }
+
+    expect(resolved.preset.id).toBe("local-99");
+    expect(resolved.preset.slots[0]?.itemIds).toEqual([54581]);
+    expect(resolved.presets).toHaveLength(1);
+  });
+
+  it("rejects empty names and built-in preset names", () => {
+    expect(resolveSaveLocalPresetByName([], builtInPresets, "  ", [])).toEqual({
+      error: "List name is required",
+    });
+    expect(
+      resolveSaveLocalPresetByName([], builtInPresets, builtInPresets[0]!.name, []),
+    ).toEqual({
+      error: "Use a custom name (not a built-in list name)",
+    });
   });
 });

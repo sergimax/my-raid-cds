@@ -1,10 +1,10 @@
 import CloseIcon from "@mui/icons-material/Close";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SaveIcon from "@mui/icons-material/Save";
 import {
   Box,
   Button,
+  Chip,
+  Divider,
   FormControl,
   IconButton,
   InputLabel,
@@ -13,6 +13,7 @@ import {
   Select,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -25,11 +26,11 @@ import type { BisListPreset, BisListSlot } from "../../types/bis-lists.ts";
 import {
   formatBisSlotItems,
   hasBuiltInBisForSpec,
+  isLocalBisPreset,
   resolveItemNamesToIds,
 } from "../../utils/bis-lists.ts";
 import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
-import { WowItemAlternatives } from "../wow-item-link/index.tsx";
 
 type BisListsPanelProps = {
   onClose: () => void;
@@ -40,6 +41,15 @@ type SlotDraft = {
   itemsText: string;
   itemIds: number[];
 };
+
+const slotRowSx = {
+  display: "grid",
+  gridTemplateColumns: "6.25rem minmax(0, 1fr)",
+  columnGap: 1,
+  alignItems: "center",
+  py: 0.375,
+  minHeight: 32,
+} as const;
 
 function presetToSlotDrafts(preset: BisListPreset): SlotDraft[] {
   return preset.slots
@@ -72,11 +82,42 @@ function slotDraftsToPresetSlots(slotDrafts: SlotDraft[]): {
   if (unknownNames.length > 0) {
     return {
       slots: [],
-      error: `Unknown item name(s): ${unknownNames.join(", ")}`,
+      error: `Unknown item name or id: ${unknownNames.join(", ")}`,
     };
   }
 
   return { slots, error: "" };
+}
+
+type BisSlotRowProps = {
+  slotDraft: SlotDraft;
+  onItemsTextChange: (nextValue: string) => void;
+};
+
+function BisSlotRow({ slotDraft, onItemsTextChange }: BisSlotRowProps) {
+  return (
+    <Box sx={slotRowSx}>
+      <Typography
+        variant="caption"
+        component="span"
+        sx={{ fontWeight: 600, color: "text.secondary", lineHeight: 1.3 }}
+      >
+        {gearSlotLabel(slotDraft.slot)}
+      </Typography>
+      <TextField
+        size="small"
+        fullWidth
+        value={slotDraft.itemsText}
+        onChange={(event) => onItemsTextChange(event.target.value)}
+        placeholder="Name, id, or #id"
+        slotProps={{
+          input: {
+            sx: { py: 0.75, fontSize: "0.8125rem" },
+          },
+        }}
+      />
+    </Box>
+  );
 }
 
 export function BisListsPanel({ onClose }: BisListsPanelProps) {
@@ -84,9 +125,8 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   const bisLists = useBisListsContext();
   const [className, setClassName] = useState<ClassNameType>(ClassName.DeathKnight);
   const [spec, setSpec] = useState("Unholy");
-  const [editMode, setEditMode] = useState(false);
   const [slotDrafts, setSlotDrafts] = useState<SlotDraft[]>([]);
-  const [copyName, setCopyName] = useState("");
+  const [saveListName, setSaveListName] = useState("");
   const [error, setError] = useState("");
 
   const classSpecs = useMemo(() => specsForClass(className), [className]);
@@ -99,93 +139,107 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     () => bisLists.getSelectedPreset(className, activeSpec),
     [activeSpec, bisLists, className],
   );
-  const displayDrafts = useMemo(
-    () => (selectedPreset ? presetToSlotDrafts(selectedPreset) : []),
-    [selectedPreset],
-  );
   const hasBuiltIn = hasBuiltInBisForSpec(className, activeSpec);
-  const hasLocalEntry = Boolean(
-    bisLists.localState.entries[`${className}|${activeSpec}`],
-  );
-  const visibleDrafts = editMode ? slotDrafts : displayDrafts;
+  const selectedPresetId = selectedPreset?.id;
 
   const handleSelectPreset = useCallback(
     (presetId: string) => {
       bisLists.selectPreset(className, activeSpec, presetId);
-      setEditMode(false);
       setError("");
     },
     [activeSpec, bisLists, className],
   );
 
-  const handleDuplicate = useCallback(() => {
-    if (!selectedPreset) {
-      return;
-    }
-    const nextName =
-      copyName.trim() ||
-      `${selectedPreset.name} (local ${new Date().toLocaleDateString()})`;
-    bisLists.duplicatePreset(className, activeSpec, selectedPreset, nextName);
-    setCopyName("");
-    setSlotDrafts(presetToSlotDrafts(selectedPreset));
-    setEditMode(true);
-    setError("");
-  }, [activeSpec, bisLists, className, copyName, selectedPreset]);
-
-  const handleSaveEdits = useCallback(() => {
-    if (!selectedPreset) {
-      return;
-    }
-
+  const handleSaveList = useCallback(() => {
     const parsed = slotDraftsToPresetSlots(slotDrafts);
     if (parsed.error) {
       setError(parsed.error);
       return;
     }
 
-    bisLists.saveLocalPreset(className, activeSpec, {
-      ...selectedPreset,
-      slots: parsed.slots,
-    });
-    setEditMode(false);
-    setError("");
-  }, [activeSpec, bisLists, className, selectedPreset, slotDrafts]);
+    const result = bisLists.savePresetByName(
+      className,
+      activeSpec,
+      saveListName,
+      parsed.slots,
+    );
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
 
-  const handleReset = useCallback(() => {
-    bisLists.resetSpecToBuiltIn(className, activeSpec);
-    setEditMode(false);
     setError("");
-  }, [activeSpec, bisLists, className]);
+  }, [activeSpec, bisLists, className, saveListName, slotDrafts]);
+
+  const handleDeleteLocalPreset = useCallback(
+    (presetId: string) => {
+      bisLists.deleteLocalPreset(className, activeSpec, presetId);
+      setError("");
+    },
+    [activeSpec, bisLists, className],
+  );
 
   const handleClose = useCallback(() => {
     hideExternalWowTooltips();
     onClose();
   }, [onClose]);
 
+  useEffect(() => {
+    if (selectedPreset) {
+      setSlotDrafts(presetToSlotDrafts(selectedPreset));
+      setSaveListName(
+        isLocalBisPreset(selectedPreset) ? selectedPreset.name : "",
+      );
+    } else {
+      setSlotDrafts([]);
+      setSaveListName("");
+    }
+    setError("");
+  }, [selectedPresetId, className, activeSpec, selectedPreset]);
+
   useEffect(() => () => hideExternalWowTooltips(), []);
 
   return (
-    <Paper ref={panelRef} variant="outlined" sx={{ p: 2 }}>
-      <Stack spacing={2}>
+    <Paper ref={panelRef} variant="outlined" sx={{ p: { xs: 1.25, sm: 1.5 } }}>
+      <Stack spacing={1.25}>
         <Stack
           direction="row"
-          sx={{ alignItems: "center", justifyContent: "space-between" }}
+          spacing={1}
+          sx={{ alignItems: "flex-start", justifyContent: "space-between" }}
         >
-          <Box>
-            <Typography variant="h6">BiS lists</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Preset best-in-slot targets per spec. Save local copies for Horde /
-              Alliance or personal tweaks. Upgrade hints use the selected list for
-              each character&apos;s main spec.
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
+              BiS lists
             </Typography>
+            <Tooltip
+              title="Preset best-in-slot targets per spec. Save custom lists with a name; saving again with the same name updates that list. Upgrade hints use the selected list for each character's main spec."
+              placement="bottom-start"
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{
+                  display: "block",
+                  lineHeight: 1.35,
+                  cursor: "help",
+                }}
+              >
+                Click a list to activate · save edits under a custom name
+              </Typography>
+            </Tooltip>
           </Box>
-          <IconButton aria-label="Close BiS lists panel" onClick={handleClose}>
-            <CloseIcon />
+          <IconButton
+            size="small"
+            aria-label="Close BiS lists panel"
+            onClick={handleClose}
+            sx={{ mt: -0.25, mr: -0.5 }}
+          >
+            <CloseIcon fontSize="small" />
           </IconButton>
         </Stack>
 
-        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-          <FormControl fullWidth size="small">
+        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
+          <FormControl size="small" sx={{ minWidth: 132, flex: "1 1 132px" }}>
             <InputLabel id="bis-class-label">Class</InputLabel>
             <Select
               labelId="bis-class-label"
@@ -195,7 +249,6 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                 const nextClass = event.target.value as ClassNameType;
                 setClassName(nextClass);
                 setSpec(specsForClass(nextClass)[0] ?? "");
-                setEditMode(false);
                 setError("");
               }}
             >
@@ -207,7 +260,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
             </Select>
           </FormControl>
 
-          <FormControl fullWidth size="small">
+          <FormControl size="small" sx={{ minWidth: 112, flex: "1 1 112px" }}>
             <InputLabel id="bis-spec-label">Spec</InputLabel>
             <Select
               labelId="bis-spec-label"
@@ -215,7 +268,6 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
               value={activeSpec}
               onChange={(event) => {
                 setSpec(event.target.value);
-                setEditMode(false);
                 setError("");
               }}
             >
@@ -226,31 +278,11 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
               ))}
             </Select>
           </FormControl>
-
-          <FormControl fullWidth size="small" disabled={presets.length === 0}>
-            <InputLabel id="bis-preset-label">List</InputLabel>
-            <Select
-              labelId="bis-preset-label"
-              label="List"
-              value={selectedPreset?.id ?? ""}
-              onChange={(event) => {
-                handleSelectPreset(event.target.value);
-              }}
-            >
-              {presets.map((preset) => (
-                <MenuItem key={preset.id} value={preset.id}>
-                  {preset.name}
-                  {preset.id.startsWith("local-") ? " (local)" : ""}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
         </Stack>
 
         {presets.length === 0 ? (
-          <Typography variant="body2" color="text.secondary">
-            No built-in BiS list for {className} {activeSpec} yet. Duplicate another
-            spec&apos;s list or add presets in{" "}
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8125rem" }}>
+            No built-in BiS list for {className} {activeSpec} yet. Add presets in{" "}
             <Box component="code" sx={{ fontSize: "0.85em" }}>
               src/data/bis-presets/
             </Box>
@@ -258,108 +290,85 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
           </Typography>
         ) : (
           <>
-            <Stack spacing={1}>
-              {visibleDrafts.map((slotDraft, index) => (
-                <Stack
-                  key={slotDraft.slot}
-                  direction={{ xs: "column", sm: "row" }}
-                  spacing={1}
-                  sx={{ alignItems: { sm: "center" } }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{ minWidth: 112, fontWeight: 600 }}
-                  >
-                    {gearSlotLabel(slotDraft.slot)}
-                  </Typography>
-                  {editMode ? (
-                    <TextField
-                      size="small"
-                      fullWidth
-                      value={slotDraft.itemsText}
-                      onChange={(event) => {
-                        const nextValue = event.target.value;
-                        setSlotDrafts((previousDrafts) =>
-                          previousDrafts.map((entry, entryIndex) =>
-                            entryIndex === index
-                              ? { ...entry, itemsText: nextValue }
-                              : entry,
-                          ),
-                        );
-                        setError("");
-                      }}
-                      placeholder="Item name / alternate item"
-                      helperText="Separate alternatives with /"
-                    />
-                  ) : (
-                    <Typography variant="body2" color="text.secondary" component="div">
-                      <WowItemAlternatives itemIds={slotDraft.itemIds} />
-                    </Typography>
-                  )}
-                </Stack>
-              ))}
+            <Stack direction="row" spacing={0.75} sx={{ flexWrap: "wrap", gap: 0.75 }}>
+              {presets.map((preset) => {
+                const isSelected = preset.id === selectedPresetId;
+                const isLocal = isLocalBisPreset(preset);
+
+                return (
+                  <Chip
+                    key={preset.id}
+                    label={preset.name}
+                    variant={isSelected ? "filled" : "outlined"}
+                    color={isSelected ? "primary" : "default"}
+                    onClick={() => handleSelectPreset(preset.id)}
+                    onDelete={
+                      isLocal
+                        ? () => handleDeleteLocalPreset(preset.id)
+                        : undefined
+                    }
+                    sx={{ maxWidth: "100%" }}
+                  />
+                );
+              })}
             </Stack>
 
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
-              {editMode ? (
-                <>
-                  <Button
-                    variant="contained"
-                    startIcon={<SaveIcon />}
-                    onClick={handleSaveEdits}
-                  >
-                    Save list
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      setSlotDrafts(displayDrafts);
-                      setEditMode(false);
-                      setError("");
-                    }}
-                  >
-                    Cancel edit
-                  </Button>
-                </>
-              ) : (
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    setSlotDrafts(displayDrafts);
-                    setEditMode(true);
+            <Typography variant="caption" color="text.secondary">
+              Separate alternatives with /. Use item name, numeric id, or #id.
+            </Typography>
+
+            <Box
+              sx={{
+                maxHeight: { xs: 360, md: 320 },
+                overflowY: "auto",
+                pr: 0.5,
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
+                columnGap: 3,
+                rowGap: 0,
+                alignContent: "start",
+              }}
+            >
+              {slotDrafts.map((slotDraft, index) => (
+                <BisSlotRow
+                  key={slotDraft.slot}
+                  slotDraft={slotDraft}
+                  onItemsTextChange={(nextValue) => {
+                    setSlotDrafts((previousDrafts) =>
+                      previousDrafts.map((entry, entryIndex) =>
+                        entryIndex === index
+                          ? { ...entry, itemsText: nextValue }
+                          : entry,
+                      ),
+                    );
                     setError("");
                   }}
-                >
-                  Edit list
-                </Button>
-              )}
+                />
+              ))}
+            </Box>
 
+            <Divider />
+
+            <Stack spacing={1}>
               <TextField
                 size="small"
-                label="Local copy name"
-                value={copyName}
-                onChange={(event) => setCopyName(event.target.value)}
-                sx={{ minWidth: 200 }}
+                label="List name"
+                value={saveListName}
+                onChange={(event) => {
+                  setSaveListName(event.target.value);
+                  setError("");
+                }}
+                placeholder="Custom list name"
+                fullWidth
               />
               <Button
-                variant="outlined"
-                startIcon={<ContentCopyIcon />}
-                onClick={handleDuplicate}
-                disabled={!selectedPreset}
+                variant="contained"
+                startIcon={<SaveIcon />}
+                onClick={handleSaveList}
+                sx={{ alignSelf: "flex-start" }}
               >
-                Save local copy
+                Save list
               </Button>
-
-              {hasLocalEntry ? (
-                <Button
-                  variant="text"
-                  color="warning"
-                  startIcon={<RestartAltIcon />}
-                  onClick={handleReset}
-                >
-                  Reset local lists
-                </Button>
-              ) : null}
             </Stack>
 
             {!hasBuiltIn ? (

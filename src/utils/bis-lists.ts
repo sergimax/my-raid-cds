@@ -86,6 +86,55 @@ export function hasBuiltInBisForSpec(className: ClassName, spec: string): boolea
   return findBuiltInSpecBis(className, spec) !== undefined;
 }
 
+export function isLocalBisPreset(preset: BisListPreset): boolean {
+  return preset.id.startsWith("local-");
+}
+
+export function resolveSaveLocalPresetByName(
+  localPresets: readonly BisListPreset[],
+  builtInPresets: readonly BisListPreset[],
+  name: string,
+  slots: BisListSlot[],
+): { preset: BisListPreset; presets: BisListPreset[] } | { error: string } {
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    return { error: "List name is required" };
+  }
+
+  const normalizedName = trimmedName.toLowerCase();
+  const builtInNameMatch = builtInPresets.some(
+    (preset) => preset.name.toLowerCase() === normalizedName,
+  );
+  if (builtInNameMatch) {
+    return { error: "Use a custom name (not a built-in list name)" };
+  }
+
+  const existingPreset = localPresets.find(
+    (preset) => preset.name.toLowerCase() === normalizedName,
+  );
+
+  if (existingPreset) {
+    const preset: BisListPreset = { ...existingPreset, slots };
+    return {
+      preset,
+      presets: localPresets.map((entry) =>
+        entry.id === existingPreset.id ? preset : entry,
+      ),
+    };
+  }
+
+  const preset: BisListPreset = {
+    id: `local-${Date.now()}`,
+    name: trimmedName,
+    slots,
+  };
+
+  return {
+    preset,
+    presets: [...localPresets, preset],
+  };
+}
+
 export function formatBisSlotItems(itemIds: readonly number[]): string {
   if (itemIds.length === 0) {
     return "—";
@@ -100,7 +149,26 @@ export function formatBisSlotLine(slotEntry: BisListSlot): string {
   return `${gearSlotLabel(slotEntry.slot)}: ${formatBisSlotItems(slotEntry.itemIds)}`;
 }
 
-export function resolveItemNamesToIds(namesText: string): {
+/** Parses `#51312` or `51312` as a WotLK item id reference. */
+export function parseBisSlotItemId(rawSegment: string): number | undefined {
+  const trimmedSegment = rawSegment.trim();
+  if (!trimmedSegment) {
+    return undefined;
+  }
+
+  const hashMatch = trimmedSegment.match(/^#(\d+)$/);
+  if (hashMatch) {
+    return Number(hashMatch[1]);
+  }
+
+  if (/^\d+$/.test(trimmedSegment)) {
+    return Number(trimmedSegment);
+  }
+
+  return undefined;
+}
+
+export function resolveItemNamesToIds(itemsText: string): {
   itemIds: number[];
   unknownNames: string[];
 } {
@@ -112,15 +180,21 @@ export function resolveItemNamesToIds(namesText: string): {
   const itemIds: number[] = [];
   const unknownNames: string[] = [];
 
-  for (const rawName of namesText.split("/")) {
-    const trimmedName = rawName.trim();
-    if (!trimmedName) {
+  for (const rawSegment of itemsText.split("/")) {
+    const trimmedSegment = rawSegment.trim();
+    if (!trimmedSegment) {
       continue;
     }
 
-    const itemId = nameToId.get(trimmedName.toLowerCase());
+    const parsedItemId = parseBisSlotItemId(trimmedSegment);
+    if (parsedItemId !== undefined) {
+      itemIds.push(parsedItemId);
+      continue;
+    }
+
+    const itemId = nameToId.get(trimmedSegment.toLowerCase());
     if (itemId === undefined) {
-      unknownNames.push(trimmedName);
+      unknownNames.push(trimmedSegment);
     } else {
       itemIds.push(itemId);
     }
