@@ -38,7 +38,7 @@ export function buildItemGearSlotsMap(dbItems, itemLevelIds) {
 
     const slots = itemToGearSlots(item);
     if (slots.length > 0) {
-      gearSlotsByItemId[item.id] = slots;
+      gearSlotsByItemId[itemId] = slots;
     }
   }
 
