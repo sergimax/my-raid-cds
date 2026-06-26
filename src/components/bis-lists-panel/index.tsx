@@ -314,6 +314,21 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   const isBuiltInPresetSelected = Boolean(
     selectedPreset && !isLocalBisPreset(selectedPreset),
   );
+  const editorSessionKey = `${className}:${activeSpec}:${selectedPresetId ?? "none"}`;
+  const [trackedEditorSessionKey, setTrackedEditorSessionKey] =
+    useState(editorSessionKey);
+
+  if (editorSessionKey !== trackedEditorSessionKey) {
+    setTrackedEditorSessionKey(editorSessionKey);
+    const nextDrafts = selectedPreset ? presetToSlotDrafts(selectedPreset) : [];
+    setSlotDrafts(nextDrafts);
+    setSlotErrors(collectSlotValidationErrors(nextDrafts, "strict"));
+    setEditingSlots({});
+    setSaveListName(
+      selectedPreset && isLocalBisPreset(selectedPreset) ? selectedPreset.name : "",
+    );
+    setError("");
+  }
 
   const handleSelectPreset = useCallback(
     (presetId: string) => {
@@ -486,24 +501,6 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     hideExternalWowTooltips();
     onClose();
   }, [onClose]);
-
-  useEffect(() => {
-    if (selectedPreset) {
-      const nextDrafts = presetToSlotDrafts(selectedPreset);
-      setSlotDrafts(nextDrafts);
-      setSlotErrors(collectSlotValidationErrors(nextDrafts, "strict"));
-      setEditingSlots({});
-      setSaveListName(
-        isLocalBisPreset(selectedPreset) ? selectedPreset.name : "",
-      );
-    } else {
-      setSlotDrafts([]);
-      setSlotErrors({});
-      setEditingSlots({});
-      setSaveListName("");
-    }
-    setError("");
-  }, [selectedPresetId, className, activeSpec, selectedPreset]);
 
   useEffect(() => () => hideExternalWowTooltips(), []);
 
