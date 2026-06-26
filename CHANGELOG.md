@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.16.0] - 2026-06-27
+
+### Added
+
+- **BiS lists:** Toolbar **BiS lists** panel — pick class and spec, view built-in presets (read-only), create and edit local presets with item IDs per gear slot, save under a custom name, and delete local lists. Built-in presets can be copied via **Save list**. Selection is persisted in `localStorage` (`my-raid-cds-bis-lists`).
+- **Character gear import:** **Edit character** accepts WowSimsExporter JSON paste to import equipped items; shows a gear summary and per-slot item links with tooltips. Optional spec from the export can fill main spec when empty.
+- **Gear upgrade hints:** Character toggle cells get a subtle background tint when imported gear has upgrades in that dungeon’s item-level tier. Tooltip lists upgradeable slots; when a BiS list is selected for the character’s spec, hints filter to BiS-relevant loot only.
+- **Item tooltips:** Header **EN** / **RU** toggle switches item tooltip provider (Cavern of Time / WoWRoad). Item names and links follow the selected locale.
+- **Bundled WoW data:** WotLK item levels, English and Russian names, gear-slot mappings, and raid loot indexed by template raid key — used for gear display, BiS validation, and upgrade hints.
+- **`npm run build:wow-data`:** Regenerates bundled data from `scripts/wowsims-db.json` (pass `--skip-ru` to skip WoWRoad Russian name fetch).
+
+### Changed
+
+- **Local storage:** `schemaVersion` **4** — characters may store `gearItems` (`{ slot, id, enchant?, gems? }[]`); template dungeons persist optional `raidKey` for slot-aware loot lookup.
+
 ## [1.15.0] - 2026-06-26
 
 ### Added

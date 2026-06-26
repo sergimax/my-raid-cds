@@ -69,11 +69,14 @@ Example: `feat(auth): add login form`
 
 - React 19 + TypeScript + Vite app with Material UI (`@mui/material`, `@mui/icons-material`)
 - WoW raid cooldown tracker: characters, dungeons, per-character–dungeon toggles
-- Domain state in `useTrackerDomain` (alias `useRaidTracker`); persistence via `storage/index.ts` + `storage/parse.ts` / `storage/persist.ts` (`my-raid-cds` key, `schemaVersion` in saves; persisted snapshot type `PersistedTrackerState`; **current `schemaVersion` is 3**); dungeons list starts empty; corrupted saves reset with a load warning
-- Main table UI: `components/raid-tracker-table/` (`RaidTrackerTable`); sort/search/delete UI state in `use-raid-tracker-table-state.ts`; shared confirm-before-delete in `hooks/use-pending-delete.ts`; toggle helpers in `utils/dungeon-toggles.ts`
+- Domain state in `useTrackerDomain` (alias `useRaidTracker`); persistence via `storage/index.ts` + `storage/parse.ts` / `storage/persist.ts` (`my-raid-cds` key, `schemaVersion` in saves; persisted snapshot type `PersistedTrackerState`; **current `schemaVersion` is 4**); dungeons list starts empty; corrupted saves reset with a load warning
+- BiS lists in separate storage `storage/bis-lists/` (`my-raid-cds-bis-lists` key, `schemaVersion` 1); domain in `useBisListsDomain`; `BisListsProvider` + `useBisListsContext()`; built-in presets in `data/bis-presets/`; local presets editable, built-in read-only (copy via **Save list**)
+- Bundled WoW data: `data/wotlk-item-levels.json`, `wotlk-item-names.json` (+ `-ru.json`), `wotlk-item-gear-slots.json`, `raid-loot-by-key.json`; regenerated via `npm run build:wow-data` from `scripts/wowsims-db.json` (`--skip-ru` skips WoWRoad fetch)
+- Item tooltips: `ItemTooltipLocaleProvider` + `useItemTooltipLocale`; header **EN**/**RU** toggle; Cavern of Time (en) / WoWRoad (ru) scripts; `hideExternalWowTooltips` on panel/dialog unmount
+- Main table UI: `components/raid-tracker-table/` (`RaidTrackerTable`); `CharacterToggleCell` shows gear upgrade hints; sort/search/delete UI state in `use-raid-tracker-table-state.ts`; shared confirm-before-delete in `hooks/use-pending-delete.ts`; toggle helpers in `utils/dungeon-toggles.ts`
 - `data/raid-names.ts`, `data/class-specs.ts` (WotLK specs per class, `ClassSpecNames` with `en`/`ru`/`shortEn`/`shortRu`; duplicate spec names like Holy/Frost/Protection/Restoration differ per class), `data/dungeon-list.ts`, `create-template-dungeon.ts` — WotLK template raids (`RaidNames` metadata with `ru`/`en` names, `shortRu`/`shortEn` abbreviations, emblem + `DungeonList`; re-exported from `data/dungeons.ts`)
-- Dungeons use `difficulty` (Normal/Heroic); optional `shortName` for compact display; optional `emblem` for display; legacy saves with `mode` are migrated on load; `emblem` loads only from the saved field (template rows include it in `DungeonList`; no raid-name backfill on load); missing `shortName` backfills from `RaidNames` when the name matches on load
-- Characters may store optional `mainSpec` / `offSpec` (`{ spec, gearScore? }`); legacy v2 saves with flat spec strings or a single `gearScore` migrate on load (`storage/parse.ts`)
+- Dungeons use `difficulty` (Normal/Heroic); optional `shortName` for compact display; optional `emblem` for display; optional `raidKey` on template rows for bundled raid loot; legacy saves with `mode` are migrated on load; `emblem` loads only from the saved field (template rows include it in `DungeonList`; no raid-name backfill on load); missing `shortName` backfills from `RaidNames` when the name matches on load
+- Characters may store optional `mainSpec` / `offSpec` (`{ spec, gearScore? }`) and optional `gearItems` (WowSimsExporter import); legacy v2 saves with flat spec strings or a single `gearScore` migrate on load (`storage/parse.ts`)
 - Production `vite.config.ts` uses `manualChunks` for React / MUI vendor splits; Vitest configured in the same file (`test` block, jsdom, `src/test/setup.ts`)
 - Tests: Vitest + jsdom + Testing Library; colocated `*.test.ts` / `*.test.tsx`; shared helpers in `src/test/` (`fixtures.ts`, `render-with-theme.tsx`); CI runs `npm run test:run` after lint
 - App version from `package.json` via Vite `define` (`__APP_VERSION__` in `vite-env.d.ts`; label in `app-meta-info`)
@@ -88,7 +91,10 @@ Example: `feat(auth): add login form`
 - **Delete dungeon** — per-row edit and delete icons in the pinned actions column; delete removes that dungeon and its toggles
 - **Reset per character** — icon in the character column header clears toggles for that character only
 - **Add forms** — only one of character or dungeon form open at a time; submit closes the form; duplicate character (name + class) is rejected; character form accepts optional main/off spec and gear score (WotLK specs for selected class; main and off must differ when both set); dungeon form accepts optional short name (defaults from `RaidNames` when name matches a known raid)
-- **Edit character** — edit icon in character column header opens `CharacterEditDialog` to update main/off spec and gear score (name and class unchanged)
+- **Edit character** — edit icon in character column header opens `CharacterEditDialog` to update main/off spec and gear score (name and class unchanged); WowSimsExporter JSON paste imports `gearItems`
+- **BiS lists** — toolbar **BiS lists** opens `BisListsPanel`; built-in presets read-only; local presets editable (item IDs per slot, confirm per slot, save/delete); selection drives `getBisSlotMapForCharacter` for upgrade hints
+- **Gear upgrade hints** — `CharacterToggleCell` tints toggle background via `evaluateGearUpgradeHint` (equipped gear vs dungeon ilvl tier + optional BiS-filtered raid loot from `raid-loot-by-key.json`)
+- **Item tooltips** — header locale toggle (`my-raid-cds-item-tooltip-locale`); item links in `wow-item-link`, gear summary, BiS panel
 - **Edit dungeon** — edit icon on each dungeon row opens `DungeonEditDialog` to update name, short name, size, mode, and emblem badge (item levels and toggles unchanged)
 - **Character column** — shows class icon, name, optional spec icons with compact gear score (`6.6k`, rounded down); tooltip has full spec names
 - **Compact table** — below `md`, pinned columns are actions + name only; name cell shows `shortName` when set (full name in tooltip)
@@ -100,25 +106,27 @@ Example: `feat(auth): add login form`
 - **kebab-case** for component dirs (e.g. `character-form/`)
 - Typical folder: `index.tsx`; add `types.ts` and/or `styles.css` when needed (not every component has all three)
 - complex components like `raid-tracker-table/` may include colocated subcomponents (e.g. `dungeon-cells.tsx`, `character-header-cell.tsx`, `raid-tracker-table-head.tsx`, `dungeon-table-row.tsx`, `pinned-column-renderers.tsx`, `use-raid-tracker-table-state.ts`)
-- Domain state lives in `useTrackerDomain` (persistence, toggles, deletes, template, `updateCharacter`, `updateDungeon`); `RaidTrackerProvider` + `useRaidTrackerContext()` expose domain to the table and main content. `TrackerLayout` composes toolbar (`TrackerControls`), `useTrackerForms`, and export panel state; add-form field state is not in context (avoids re-rendering toolbar/table on keystrokes). Validation in `utils/validate-character.ts` and `utils/validate-dungeon.ts`. `CharacterForm` / `DungeonForm` / `CharacterEditDialog` / `DungeonEditDialog` stay presentational. `App` mounts provider + `TrackerLayout` only. Ephemeral table UI state (sort, search, pending delete, compact columns) lives in `useRaidTrackerTableState` colocated with the table; edit-character and edit-dungeon dialog state lives in `RaidTrackerTable`. Character name display sx in `utils/character-display.ts`; spec/gear display in `utils/format-character-details.ts` and `components/spec-option-label/`.
+- Domain state lives in `useTrackerDomain` (persistence, toggles, deletes, template, `updateCharacter`, `updateDungeon`); `RaidTrackerProvider` + `useRaidTrackerContext()` expose domain to the table and main content. `BisListsProvider` wraps the app for BiS state. `TrackerLayout` composes toolbar (`TrackerControls`), `useTrackerForms`, BiS panel, and export panel state; add-form field state is not in context (avoids re-rendering toolbar/table on keystrokes). Validation in `utils/validate-character.ts` and `utils/validate-dungeon.ts`. `CharacterForm` / `DungeonForm` / `CharacterEditDialog` / `DungeonEditDialog` / `BisListsPanel` stay presentational. `App` mounts providers + `TrackerLayout` only. Ephemeral table UI state (sort, search, pending delete, compact columns) lives in `useRaidTrackerTableState` colocated with the table; edit-character and edit-dungeon dialog state lives in `RaidTrackerTable`. Character name display sx in `utils/character-display.ts`; spec/gear display in `utils/format-character-details.ts` and `components/spec-option-label/`; gear import in `utils/parse-wowsims-exporter.ts`.
 
 ## Project Structure
 
 ```
 src/
-├── components/ # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, dungeon-edit-dialog, dungeon-customization-fields, raid-tracker-table, tracker-controls (+ actions.ts), export-panel, …
-├── constants/ # character.ts, dungeon-form-defaults.ts
-├── contexts/ # raid-tracker-context.ts, raid-tracker-provider.tsx, color-mode-provider.tsx
-├── hooks/ # use-tracker-domain.ts, use-compact-layout.ts, use-raid-tracker-context.ts, use-tracker-forms.ts, use-*-form-state.ts, use-export-panel-state.ts, color-mode.ts, …
+├── components/ # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, dungeon-edit-dialog, dungeon-customization-fields, raid-tracker-table, tracker-controls (+ actions.ts), export-panel, bis-lists-panel, wow-item-link, stored-gear-item-line, item-tooltip-locale-toggle, …
+├── constants/ # character.ts, dungeon-form-defaults.ts, item-tooltips.ts
+├── contexts/ # raid-tracker-context.ts, raid-tracker-provider.tsx, color-mode-provider.tsx, bis-lists-provider.tsx, item-tooltip-locale-provider.tsx
+├── hooks/ # use-tracker-domain.ts, use-compact-layout.ts, use-raid-tracker-context.ts, use-tracker-forms.ts, use-bis-lists-domain.ts, use-*-form-state.ts, use-export-panel-state.ts, color-mode.ts, item-tooltip-locale.ts, …
 ├── theme/ # create-app-theme.ts
-├── types/ # characters, dungeons
-├── data/ # raid-names.ts, class-specs.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts (barrel)
-├── utils/ # completion-counts, dungeon-toggles, character-display, format-character-details, format-character-export, filter/sort dungeons, validate-character/dungeon, dungeon-short-name, build-export-status, …
+├── types/ # characters, dungeons, character-gear, bis-lists
+├── data/ # raid-names.ts, class-specs.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts (barrel), bis-presets/, gear-slot-names.ts, raid-loot.ts, wotlk-item-* (+ bundled JSON)
+├── utils/ # completion-counts, dungeon-toggles, character-display, format-character-details, format-character-export, filter/sort dungeons, validate-character/dungeon, dungeon-short-name, build-export-status, bis-lists.ts, gear-upgrade-hint.ts, parse-wowsims-exporter.ts, format-stored-gear.ts, hide-external-wow-tooltips.ts, …
 ├── assets/ # class-icons/ (+ specs/), emblems/
-├── storage/ # index.ts (public API), parse.ts, persist.ts, types, constants
+├── storage/ # index.ts (public API), parse.ts, persist.ts, types, constants; bis-lists/ (separate key)
 ├── test/ # setup.ts, fixtures.ts, render-with-theme.tsx, test-providers.tsx
 ├── uuid.ts # generateUUID
 └── vite-env.d.ts # __APP_VERSION__ declaration
+
+scripts/ # build-wow-data.mjs, wow-item-gear-slots.mjs, wowsims-db.json
 ```
 
 Colocate tests as `*.test.ts` / `*.test.tsx` beside the module under test; use `src/test/fixtures.ts` for sample characters/dungeons/toggles and `renderWithTheme` for MUI component tests.
