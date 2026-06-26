@@ -1,5 +1,6 @@
 import { EmblemKey, type EmblemKey as EmblemKeyType } from "../assets/emblems/emblem-icons.ts";
 import { isSpecValidForClass } from "../data/class-specs.ts";
+import { isRaidKey } from "../data/raid-zones.ts";
 import { defaultShortNameForDungeonName } from "../utils/dungeon-short-name.ts";
 import { pruneToggles } from "../utils/dungeon-toggles.ts";
 import { Classes, type ClassName, type CharacterRecord, type CharacterSpecGear } from "../types/characters.ts";
@@ -106,6 +107,10 @@ function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {
     typeof stored.shortName === "string" && stored.shortName.trim() !== ""
       ? stored.shortName.trim()
       : defaultShortNameForDungeonName(stored.name);
+  const raidKey =
+    typeof stored.raidKey === "string" && isRaidKey(stored.raidKey)
+      ? stored.raidKey
+      : undefined;
   return {
     id: stored.id,
     name: stored.name,
@@ -114,6 +119,7 @@ function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {
     difficulty,
     ...(shortName ? { shortName } : {}),
     ...(emblem ? { emblem } : {}),
+    ...(raidKey ? { raidKey } : {}),
   };
 }
 
