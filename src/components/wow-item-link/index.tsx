@@ -19,7 +19,7 @@ type WowItemLinkProps = {
 
 export function WowItemLink({ itemId, children }: WowItemLinkProps) {
   const { locale } = useItemTooltipLocale();
-  const label = children ?? getWotlkItemName(itemId) ?? `#${itemId}`;
+  const label = children ?? getWotlkItemName(itemId, locale) ?? `#${itemId}`;
 
   return (
     <Box
