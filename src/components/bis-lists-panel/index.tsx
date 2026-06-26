@@ -1,4 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
 import SaveIcon from "@mui/icons-material/Save";
 import {
   Box,
@@ -24,6 +25,7 @@ import { useScrollIntoViewOnMount } from "../../hooks/use-scroll-into-view-on-mo
 import { Classes, ClassName, type ClassName as ClassNameType } from "../../types/characters.ts";
 import type { BisListPreset, BisListSlot } from "../../types/bis-lists.ts";
 import {
+  confirmBisSlotItemsText,
   formatBisSlotItems,
   hasBuiltInBisForSpec,
   isLocalBisPreset,
@@ -39,27 +41,36 @@ type BisListsPanelProps = {
 type SlotDraft = {
   slot: number;
   itemsText: string;
+  confirmedText: string;
   itemIds: number[];
 };
 
 const slotRowSx = {
   display: "grid",
-  gridTemplateColumns: "6.25rem minmax(0, 1fr)",
+  gridTemplateColumns: "6.25rem minmax(0, 1fr) auto",
   columnGap: 1,
   alignItems: "start",
   py: 0.375,
   minHeight: 32,
 } as const;
 
+function isSlotDraftDirty(slotDraft: SlotDraft): boolean {
+  return slotDraft.itemsText.trim() !== slotDraft.confirmedText.trim();
+}
+
 function presetToSlotDrafts(preset: BisListPreset): SlotDraft[] {
   return preset.slots
     .slice()
     .sort((leftSlot, rightSlot) => leftSlot.slot - rightSlot.slot)
-    .map((slotEntry) => ({
-      slot: slotEntry.slot,
-      itemsText: formatBisSlotItems(slotEntry.itemIds),
-      itemIds: [...slotEntry.itemIds],
-    }));
+    .map((slotEntry) => {
+      const itemsText = formatBisSlotItems(slotEntry.itemIds);
+      return {
+        slot: slotEntry.slot,
+        itemsText,
+        confirmedText: itemsText,
+        itemIds: [...slotEntry.itemIds],
+      };
+    });
 }
 
 function slotDraftsToPresetSlots(slotDrafts: SlotDraft[]): {
@@ -109,22 +120,32 @@ function collectSlotValidationErrors(
 type BisSlotRowProps = {
   slotDraft: SlotDraft;
   validationError?: string;
+  isDirty: boolean;
   onItemsTextChange: (nextValue: string) => void;
   onItemsTextBlur: (itemsText: string) => void;
+  onConfirm: () => void;
 };
 
 function BisSlotRow({
   slotDraft,
   validationError,
+  isDirty,
   onItemsTextChange,
   onItemsTextBlur,
+  onConfirm,
 }: BisSlotRowProps) {
+  const canConfirm =
+    isDirty &&
+    !validationError &&
+    validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, "strict").error ===
+      undefined;
+
   return (
     <Box sx={slotRowSx}>
       <Typography
         variant="caption"
         component="span"
-        sx={{ fontWeight: 600, color: "text.secondary", lineHeight: 1.3 }}
+        sx={{ fontWeight: 600, color: "text.secondary", lineHeight: 1.3, pt: 0.75 }}
       >
         {gearSlotLabel(slotDraft.slot)}
       </Typography>
@@ -134,18 +155,54 @@ function BisSlotRow({
         value={slotDraft.itemsText}
         onChange={(event) => onItemsTextChange(event.target.value)}
         onBlur={(event) => onItemsTextBlur(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && canConfirm) {
+            event.preventDefault();
+            onConfirm();
+          }
+        }}
         placeholder="Name, id, or #id"
         error={Boolean(validationError)}
-        helperText={validationError}
+        helperText={
+          validationError ??
+          (isDirty
+            ? "Confirm this slot when done editing"
+            : slotDraft.confirmedText
+              ? "Confirmed"
+              : undefined)
+        }
         slotProps={{
           input: {
             sx: { py: 0.75, fontSize: "0.8125rem" },
           },
           formHelperText: {
-            sx: { mx: 0, mt: 0.25, lineHeight: 1.3 },
+            sx: {
+              mx: 0,
+              mt: 0.25,
+              lineHeight: 1.3,
+              color: validationError
+                ? undefined
+                : isDirty
+                  ? "text.secondary"
+                  : "success.main",
+            },
           },
         }}
       />
+      <Tooltip title={isDirty ? "Confirm item for this slot" : "Slot confirmed"}>
+        <span>
+          <IconButton
+            size="small"
+            aria-label={`Confirm ${gearSlotLabel(slotDraft.slot)} item`}
+            onClick={onConfirm}
+            disabled={!canConfirm}
+            color={isDirty ? "primary" : "success"}
+            sx={{ mt: 0.25 }}
+          >
+            <CheckIcon fontSize="small" />
+          </IconButton>
+        </span>
+      </Tooltip>
     </Box>
   );
 }
@@ -182,6 +239,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   );
 
   const hasSlotErrors = Object.keys(slotErrors).length > 0;
+  const hasUnconfirmedSlots = slotDrafts.some(isSlotDraftDirty);
 
   const updateSlotValidation = useCallback((slot: number, itemsText: string, mode: "partial" | "strict") => {
     const validated = validateBisSlotItemsText(slot, itemsText, mode);
@@ -198,7 +256,51 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     });
   }, []);
 
+  const handleConfirmSlot = useCallback((slotIndex: number) => {
+    setSlotDrafts((previousDrafts) => {
+      const slotDraft = previousDrafts[slotIndex];
+      if (!slotDraft) {
+        return previousDrafts;
+      }
+
+      const confirmed = confirmBisSlotItemsText(slotDraft.slot, slotDraft.itemsText);
+      if (!confirmed.ok) {
+        setSlotErrors((previousErrors) => ({
+          ...previousErrors,
+          [slotDraft.slot]: confirmed.error,
+        }));
+        return previousDrafts;
+      }
+
+      setSlotErrors((previousErrors) => {
+        if (!(slotDraft.slot in previousErrors)) {
+          return previousErrors;
+        }
+        const nextErrors = { ...previousErrors };
+        delete nextErrors[slotDraft.slot];
+        return nextErrors;
+      });
+      setError("");
+
+      return previousDrafts.map((entry, entryIndex) =>
+        entryIndex === slotIndex
+          ? {
+              ...entry,
+              itemsText: confirmed.itemsText,
+              confirmedText: confirmed.itemsText,
+              itemIds: confirmed.itemIds,
+            }
+          : entry,
+      );
+    });
+  }, []);
+
   const handleSaveList = useCallback(() => {
+    if (hasUnconfirmedSlots) {
+      setError("Confirm all edited slots before saving the list.");
+      return;
+    }
+
     const strictErrors = collectSlotValidationErrors(slotDrafts, "strict");
     if (Object.keys(strictErrors).length > 0) {
       setSlotErrors(strictErrors);
@@ -224,7 +326,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     }
 
     setError("");
-  }, [activeSpec, bisLists, className, saveListName, slotDrafts]);
+  }, [activeSpec, bisLists, className, hasUnconfirmedSlots, saveListName, slotDrafts]);
 
   const handleDeleteLocalPreset = useCallback(
     (presetId: string) => {
@@ -282,7 +384,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                   cursor: "help",
                 }}
               >
-                Click a list to activate · save edits under a custom name
+                Click a list to activate · confirm each slot · save under a custom name
               </Typography>
             </Tooltip>
           </Box>
@@ -372,7 +474,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
             </Stack>
 
             <Typography variant="caption" color="text.secondary">
-              Separate alternatives with /. Use item name, numeric id, or #id.
+              Separate alternatives with /. Confirm each slot with ✓ or Enter before saving the list.
             </Typography>
 
             <Box
@@ -392,6 +494,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                   key={slotDraft.slot}
                   slotDraft={slotDraft}
                   validationError={slotErrors[slotDraft.slot]}
+                  isDirty={isSlotDraftDirty(slotDraft)}
                   onItemsTextChange={(nextValue) => {
                     setSlotDrafts((previousDrafts) =>
                       previousDrafts.map((entry, entryIndex) =>
@@ -406,6 +509,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                   onItemsTextBlur={(itemsText) => {
                     updateSlotValidation(slotDraft.slot, itemsText, "strict");
                   }}
+                  onConfirm={() => handleConfirmSlot(index)}
                 />
               ))}
             </Box>
@@ -428,7 +532,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                 variant="contained"
                 startIcon={<SaveIcon />}
                 onClick={handleSaveList}
-                disabled={hasSlotErrors}
+                disabled={hasSlotErrors || hasUnconfirmedSlots}
                 sx={{ alignSelf: "flex-start" }}
               >
                 Save list

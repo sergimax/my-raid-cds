@@ -3,6 +3,7 @@ import { ClassName } from "../types/characters.ts";
 import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
 import {
   buildBisSlotMap,
+  confirmBisSlotItemsText,
   getSelectedPresetForSpec,
   isLocalBisPreset,
   parseBisSlotItemId,
@@ -111,6 +112,27 @@ describe("validateBisSlotItemsText", () => {
   it("reports unknown items on strict validation", () => {
     const validated = validateBisSlotItemsText(0, "Not A Real Item", "strict");
     expect(validated.error).toContain("Unknown item");
+  });
+});
+
+describe("confirmBisSlotItemsText", () => {
+  it("formats confirmed ids to canonical item names", () => {
+    const confirmed = confirmBisSlotItemsText(0, "51312");
+    expect(confirmed.ok).toBe(true);
+    if (!confirmed.ok) {
+      return;
+    }
+    expect(confirmed.itemIds).toEqual([51312]);
+    expect(confirmed.itemsText).toBe("Sanctified Scourgelord Helmet");
+  });
+
+  it("returns validation errors without confirming", () => {
+    const confirmed = confirmBisSlotItemsText(0, "51132");
+    expect(confirmed.ok).toBe(false);
+    if (confirmed.ok) {
+      return;
+    }
+    expect(confirmed.error).toContain("Hands");
   });
 });
 

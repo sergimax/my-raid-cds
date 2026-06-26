@@ -256,6 +256,25 @@ export function validateBisSlotItemsText(
   };
 }
 
+export function confirmBisSlotItemsText(
+  gearSlot: number,
+  itemsText: string,
+): { ok: true; itemsText: string; itemIds: number[] } | { ok: false; error: string } {
+  const validated = validateBisSlotItemsText(gearSlot, itemsText, "strict");
+  if (validated.error) {
+    return { ok: false, error: validated.error };
+  }
+
+  const formattedItemsText =
+    validated.itemIds.length > 0 ? formatBisSlotItems(validated.itemIds) : "";
+
+  return {
+    ok: true,
+    itemsText: formattedItemsText,
+    itemIds: validated.itemIds,
+  };
+}
+
 export function resolveItemNamesToIds(itemsText: string): {
   itemIds: number[];
   unknownNames: string[];
