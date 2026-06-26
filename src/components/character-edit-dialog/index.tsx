@@ -15,10 +15,10 @@ import type { CharacterGearItem } from "../../types/character-gear.ts";
 import type { CharacterRecord, CharacterSpecGearUpdate } from "../../types/characters.ts";
 import {
   formatGearSummary,
-  formatStoredGearItemLine,
   sortGearItemsBySlot,
 } from "../../utils/format-stored-gear.ts";
 import { summarizeGearItemLevels } from "../../utils/summarize-gear-item-levels.ts";
+import { StoredGearItemLine } from "../stored-gear-item-line/index.tsx";
 import {
   characterSpecGearFormValues,
   parseCharacterSpecGearFields,
@@ -208,9 +208,8 @@ function CharacterEditDialogContent({
                           key={`${item.slot}-${item.id}`}
                           component="li"
                           variant="body2"
-                          color="text.secondary"
                         >
-                          {formatStoredGearItemLine(item)}
+                          <StoredGearItemLine item={item} />
                         </Typography>
                       ))}
                     </Box>
