@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
+    "build:wow-data": "node scripts/build-wow-data.mjs",
     "test:run": "vitest run"
   },
   "dependencies": {
