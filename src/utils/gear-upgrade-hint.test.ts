@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ClassName } from "../types/characters.ts";
+import { DungeonDifficulty } from "../types/dungeons.ts";
+import { createTestDungeon } from "../test/fixtures.ts";
 import {
   evaluateGearUpgradeHint,
   formatGearUpgradeHintTooltip,
@@ -41,22 +43,36 @@ describe("getDungeonPeakItemLevel", () => {
 
 describe("evaluateGearUpgradeHint", () => {
   it("returns no hint when the character has no imported gear", () => {
-    expect(evaluateGearUpgradeHint(undefined, [277, 284])).toEqual({
+    expect(
+      evaluateGearUpgradeHint(undefined, {
+        name: "Цитадель Ледяной Короны",
+        raidKey: "icecrownCitadel",
+        itemLevel: [277, 284],
+      }),
+    ).toEqual({
       level: 0,
       upgradeSlotCount: 0,
       equippedCount: 0,
       peakDungeonItemLevel: 284,
+      slotAware: false,
+      upgradeSlots: [],
     });
   });
 
   it("returns no hint when all gear meets the dungeon peak ilvl", () => {
     expect(
-      evaluateGearUpgradeHint([{ slot: 0, id: 51197 }], [264, 264]),
+      evaluateGearUpgradeHint([{ slot: 0, id: 51197 }], {
+        name: "Цитадель Ледяной Короны",
+        raidKey: "icecrownCitadel",
+        itemLevel: [264, 264],
+      }),
     ).toEqual({
       level: 0,
       upgradeSlotCount: 0,
       equippedCount: 1,
       peakDungeonItemLevel: 264,
+      slotAware: true,
+      upgradeSlots: [],
     });
   });
 
@@ -67,24 +83,85 @@ describe("evaluateGearUpgradeHint", () => {
       return;
     }
 
-    const iccHint = evaluateGearUpgradeHint(parsed.gearItems, [277, 284]);
+    const iccHint = evaluateGearUpgradeHint(parsed.gearItems, {
+      name: "Цитадель Ледяной Короны",
+      raidKey: "icecrownCitadel",
+      itemLevel: [277, 284],
+    });
+    expect(iccHint.slotAware).toBe(true);
     expect(iccHint.upgradeSlotCount).toBeGreaterThan(0);
     expect(iccHint.level).toBeGreaterThanOrEqual(2);
 
-    const naxxHint = evaluateGearUpgradeHint(parsed.gearItems, [213]);
+    const naxxHint = evaluateGearUpgradeHint(parsed.gearItems, {
+      name: "Наксрамас",
+      raidKey: "naxxramas",
+      itemLevel: [213],
+    });
     expect(naxxHint.level).toBe(0);
+  });
+
+  it("does not treat weapon slots as upgradeable in Ruby Sanctum", () => {
+    const parsed = parseWowSimsExporterJson(RHEE_EXPORT, ClassName.Shaman);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) {
+      return;
+    }
+
+    const rsHint = evaluateGearUpgradeHint(parsed.gearItems, {
+      name: "Рубиновое святилище",
+      raidKey: "rubySanctum",
+      itemLevel: [284],
+    });
+
+    expect(rsHint.slotAware).toBe(true);
+    expect(rsHint.upgradeSlots.some((slotHint) => slotHint.slot === 14)).toBe(
+      false,
+    );
+    expect(rsHint.upgradeSlots.some((slotHint) => slotHint.slot === 15)).toBe(
+      false,
+    );
+    expect(rsHint.upgradeSlotCount).toBeGreaterThan(0);
+  });
+
+  it("falls back to ilvl-only hints for custom dungeons without raid loot", () => {
+    const hint = evaluateGearUpgradeHint([{ slot: 14, id: 50426 }], {
+      name: "Custom dungeon",
+      itemLevel: [300],
+    });
+
+    expect(hint.slotAware).toBe(false);
+    expect(hint.upgradeSlotCount).toBe(1);
+  });
+
+  it("resolves raid loot from the Russian dungeon name when raidKey is missing", () => {
+    const dungeon = createTestDungeon({
+      name: "Рубиновое святилище",
+      itemLevel: [284],
+      difficulty: DungeonDifficulty.HEROIC,
+    });
+
+    const hint = evaluateGearUpgradeHint([{ slot: 14, id: 50426 }], dungeon);
+    expect(hint.slotAware).toBe(true);
+    expect(hint.upgradeSlotCount).toBe(0);
   });
 });
 
 describe("formatGearUpgradeHintTooltip", () => {
-  it("describes how many items are below the dungeon peak", () => {
-    expect(
-      formatGearUpgradeHintTooltip({
-        level: 3,
-        upgradeSlotCount: 12,
-        equippedCount: 17,
-        peakDungeonItemLevel: 284,
-      }),
-    ).toBe("12 of 17 items below ilvl 284");
+  it("lists upgrade slots with item names when loot data is available", () => {
+    const tooltip = formatGearUpgradeHintTooltip({
+      level: 2,
+      upgradeSlotCount: 2,
+      equippedCount: 17,
+      peakDungeonItemLevel: 284,
+      slotAware: true,
+      upgradeSlots: [
+        { slot: 12, bestLootItemId: 54569, bestLootItemLevel: 284 },
+        { slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 },
+      ],
+    });
+
+    expect(tooltip).toContain("2 slot(s) with raid loot upgrades");
+    expect(tooltip).toContain("Trinket 1");
+    expect(tooltip).toContain("→");
   });
 });

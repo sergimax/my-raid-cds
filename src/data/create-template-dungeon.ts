@@ -28,6 +28,7 @@ export function createTemplateDungeon({
     size,
     itemLevel,
     difficulty,
+    raidKey,
     ...(withEmblem ? { emblem: raid.emblem } : {}),
   };
 }

@@ -1,5 +1,6 @@
 import { gearSlotLabel } from "../data/gear-slot-names.ts";
 import { getWotlkItemLevel } from "../data/wotlk-item-levels.ts";
+import { getWotlkItemName } from "../data/wotlk-item-names.ts";
 import type { CharacterGearItem } from "../types/character-gear.ts";
 import { summarizeGearItemLevels } from "./summarize-gear-item-levels.ts";
 
@@ -7,7 +8,9 @@ export function formatStoredGearItemLine(item: CharacterGearItem): string {
   const itemLevel = getWotlkItemLevel(item.id);
   const itemLevelLabel =
     itemLevel === undefined ? "ilvl ?" : `ilvl ${itemLevel}`;
-  return `${gearSlotLabel(item.slot)} · ${item.id} · ${itemLevelLabel}`;
+  const itemName = getWotlkItemName(item.id);
+  const nameSegment = itemName ?? String(item.id);
+  return `${gearSlotLabel(item.slot)} · ${nameSegment} · ${itemLevelLabel}`;
 }
 
 export function formatGearSummary(gearItems: CharacterGearItem[]): string {
