@@ -1,6 +1,7 @@
 import type { SystemStyleObject } from "@mui/system";
 import type { Theme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
+import type { ItemTooltipLocale } from "../constants/item-tooltips.ts";
 import { gearSlotLabel } from "../data/gear-slot-names.ts";
 import { getRaidLootItemIdsForTier } from "../data/raid-loot.ts";
 import { getWotlkItemLevel } from "../data/wotlk-item-levels.ts";
@@ -237,10 +238,13 @@ export function evaluateGearUpgradeHint(
   return evaluateNaiveGearUpgradeHint(gearItems, peakDungeonItemLevel);
 }
 
-function formatUpgradeSlotLabel(slotHint: GearUpgradeSlotHint): string {
+function formatUpgradeSlotLabel(
+  slotHint: GearUpgradeSlotHint,
+  locale: ItemTooltipLocale,
+): string {
   const slotLabel = gearSlotLabel(slotHint.slot);
   if (slotHint.bestLootItemId !== undefined) {
-    const itemName = getWotlkItemName(slotHint.bestLootItemId);
+    const itemName = getWotlkItemName(slotHint.bestLootItemId, locale);
     if (itemName) {
       return `${slotLabel} → ${itemName}`;
     }
@@ -248,12 +252,17 @@ function formatUpgradeSlotLabel(slotHint: GearUpgradeSlotHint): string {
   return slotLabel;
 }
 
-export function formatGearUpgradeHintTooltip(hint: GearUpgradeHint): string {
+export function formatGearUpgradeHintTooltip(
+  hint: GearUpgradeHint,
+  locale: ItemTooltipLocale = "en",
+): string {
   if (hint.level === 0) {
     return "";
   }
 
-  const slotLabels = hint.upgradeSlots.map(formatUpgradeSlotLabel);
+  const slotLabels = hint.upgradeSlots.map((slotHint) =>
+    formatUpgradeSlotLabel(slotHint, locale),
+  );
   const visibleLabels = slotLabels.slice(0, MAX_TOOLTIP_SLOT_LABELS);
   const remainingCount = slotLabels.length - visibleLabels.length;
   const slotSummary =

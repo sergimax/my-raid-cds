@@ -4,6 +4,7 @@ import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
+import { useItemTooltipLocale } from "../../hooks/use-item-tooltip-locale.ts";
 import {
   evaluateGearUpgradeHint,
   formatGearUpgradeHintTooltip,
@@ -25,6 +26,7 @@ export function CharacterToggleCell({
   onDungeonToggle,
 }: CharacterToggleCellProps) {
   const bisLists = useBisListsContext();
+  const { locale: itemTooltipLocale } = useItemTooltipLocale();
   const bisSlotMap = useMemo(
     () => bisLists.getBisSlotMapForCharacter(character),
     [bisLists, character],
@@ -35,7 +37,7 @@ export function CharacterToggleCell({
     [bisSlotMap, character.gearItems, dungeon],
   );
 
-  const tooltipTitle = formatGearUpgradeHintTooltip(upgradeHint);
+  const tooltipTitle = formatGearUpgradeHintTooltip(upgradeHint, itemTooltipLocale);
 
   const toggleSwitch = (
     <Switch
