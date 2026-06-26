@@ -169,6 +169,49 @@ describe("evaluateGearUpgradeHint", () => {
     expect(rsHint.upgradeSlots[0]?.bestLootItemId).toBe(54581);
   });
 
+  it("flags missing BiS targets even when equipped gear is higher ilvl", () => {
+    const bryntrollBis = buildBisSlotMap({
+      id: "local-uhdk-bryn",
+      name: "with bryn",
+      slots: [{ slot: 14, itemIds: [50709] }],
+    });
+
+    const iccHint = evaluateGearUpgradeHint(
+      [{ slot: 14, id: 49623 }],
+      {
+        name: "ICC25 HM",
+        raidKey: "icecrownCitadel",
+        itemLevel: [277, 284],
+      },
+      bryntrollBis,
+    );
+
+    expect(iccHint.bisFiltered).toBe(true);
+    expect(iccHint.upgradeSlotCount).toBe(1);
+    expect(iccHint.upgradeSlots[0]?.bestLootItemId).toBe(50709);
+  });
+
+  it("does not flag a slot when equipped gear matches the active BiS list", () => {
+    const shadowmourneBis = buildBisSlotMap({
+      id: "default",
+      name: "Default",
+      slots: [{ slot: 14, itemIds: [49623] }],
+    });
+
+    const iccHint = evaluateGearUpgradeHint(
+      [{ slot: 14, id: 49623 }],
+      {
+        name: "ICC25 HM",
+        raidKey: "icecrownCitadel",
+        itemLevel: [277, 284],
+      },
+      shadowmourneBis,
+    );
+
+    expect(iccHint.bisFiltered).toBe(true);
+    expect(iccHint.upgradeSlotCount).toBe(0);
+  });
+
   it("falls back to ilvl-only hints for custom dungeons without raid loot", () => {
     const hint = evaluateGearUpgradeHint([{ slot: 14, id: 50426 }], {
       name: "Custom dungeon",
@@ -207,7 +250,7 @@ describe("formatGearUpgradeHintTooltip", () => {
       ],
     });
 
-    expect(tooltip).toContain("2 BiS slot(s) with upgrades");
+    expect(tooltip).toContain("2 BiS slot(s) missing targets");
     expect(tooltip).toContain("Trinket 1");
     expect(tooltip).toContain("→");
   });

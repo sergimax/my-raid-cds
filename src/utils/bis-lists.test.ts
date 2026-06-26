@@ -7,6 +7,7 @@ import {
   getSelectedPresetForSpec,
   isLocalBisPreset,
   parseBisSlotItemId,
+  resolveBisSlotMap,
   resolveItemNamesToIds,
   resolveSaveLocalPresetByName,
   specBisStorageKey,
@@ -69,6 +70,55 @@ describe("getSelectedPresetForSpec", () => {
     expect(selected?.slots.some((slot) => slot.itemIds.includes(54581))).toBe(
       true,
     );
+  });
+
+  it("returns a selected local preset instead of the built-in default", () => {
+    const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
+    const customNeckItemId = 50647;
+    const selected = getSelectedPresetForSpec(ClassName.DeathKnight, "Unholy", {
+      schemaVersion: 1,
+      entries: {
+        [storageKey]: {
+          selectedPresetId: "local-42",
+          presets: [
+            {
+              id: "local-42",
+              name: "q with bryn",
+              slots: [{ slot: 1, itemIds: [customNeckItemId] }],
+            },
+          ],
+        },
+      },
+    });
+
+    expect(selected?.id).toBe("local-42");
+    expect(selected?.name).toBe("q with bryn");
+    expect(selected?.slots).toEqual([{ slot: 1, itemIds: [customNeckItemId] }]);
+  });
+});
+
+describe("resolveBisSlotMap", () => {
+  it("uses the active local preset for upgrade hints", () => {
+    const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
+    const customNeckItemId = 50647;
+    const slotMap = resolveBisSlotMap(ClassName.DeathKnight, "Unholy", {
+      schemaVersion: 1,
+      entries: {
+        [storageKey]: {
+          selectedPresetId: "local-42",
+          presets: [
+            {
+              id: "local-42",
+              name: "q with bryn",
+              slots: [{ slot: 1, itemIds: [customNeckItemId] }],
+            },
+          ],
+        },
+      },
+    });
+
+    expect(slotMap.get(1)).toEqual([customNeckItemId]);
+    expect(slotMap.get(1)).not.toEqual([54581]);
   });
 });
 

@@ -275,6 +275,25 @@ export function confirmBisSlotItemsText(
   };
 }
 
+export function confirmedSlotDraftsToPresetSlots(
+  slotDrafts: readonly { slot: number; confirmedText: string }[],
+): BisListSlot[] {
+  const slots: BisListSlot[] = [];
+
+  for (const slotDraft of slotDrafts) {
+    const validated = validateBisSlotItemsText(
+      slotDraft.slot,
+      slotDraft.confirmedText,
+      "strict",
+    );
+    if (!validated.error && validated.itemIds.length > 0) {
+      slots.push({ slot: slotDraft.slot, itemIds: validated.itemIds });
+    }
+  }
+
+  return slots;
+}
+
 export function resolveItemNamesToIds(itemsText: string): {
   itemIds: number[];
   unknownNames: string[];

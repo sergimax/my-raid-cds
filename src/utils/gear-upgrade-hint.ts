@@ -123,6 +123,18 @@ function isSlotUpgradeableWithLoot(
     return null;
   }
 
+  if (bisItemIdsForSlot !== undefined) {
+    if (bisItemIdsForSlot.includes(item.id)) {
+      return null;
+    }
+
+    return {
+      slot: item.slot,
+      bestLootItemId: pickBestLootItemId(relevantLootIds),
+      bestLootItemLevel,
+    };
+  }
+
   const itemLevel = getWotlkItemLevel(item.id);
   if (itemLevel !== undefined && itemLevel >= bestLootItemLevel) {
     return null;
@@ -271,7 +283,7 @@ export function formatGearUpgradeHintTooltip(
       : visibleLabels.join(", ");
 
   const intro = hint.bisFiltered
-    ? `${hint.upgradeSlotCount} BiS slot(s) with upgrades`
+    ? `${hint.upgradeSlotCount} BiS slot(s) missing targets`
     : hint.slotAware
       ? `${hint.upgradeSlotCount} slot(s) with raid loot upgrades`
       : `${hint.upgradeSlotCount} of ${hint.equippedCount} items below ilvl ${hint.peakDungeonItemLevel}`;

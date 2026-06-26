@@ -1,6 +1,7 @@
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import EditIcon from "@mui/icons-material/Edit";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import {
   Box,
@@ -27,6 +28,7 @@ import { Classes, ClassName, type ClassName as ClassNameType } from "../../types
 import type { BisListPreset, BisListSlot } from "../../types/bis-lists.ts";
 import {
   confirmBisSlotItemsText,
+  confirmedSlotDraftsToPresetSlots,
   formatBisSlotItems,
   hasBuiltInBisForSpec,
   isLocalBisPreset,
@@ -63,7 +65,11 @@ function isSlotDraftDirty(slotDraft: SlotDraft): boolean {
 function isSlotEditing(
   slotDraft: SlotDraft,
   editingSlots: Readonly<Record<number, boolean>>,
+  isBuiltInPresetSelected: boolean,
 ): boolean {
+  if (isBuiltInPresetSelected) {
+    return false;
+  }
   if (isSlotDraftDirty(slotDraft)) {
     return true;
   }
@@ -142,6 +148,7 @@ type BisSlotRowProps = {
   slotDraft: SlotDraft;
   validationError?: string;
   isEditing: boolean;
+  readOnly: boolean;
   onItemsTextChange: (nextValue: string) => void;
   onItemsTextBlur: (itemsText: string) => void;
   onConfirm: () => void;
@@ -153,6 +160,7 @@ function BisSlotRow({
   slotDraft,
   validationError,
   isEditing,
+  readOnly,
   onItemsTextChange,
   onItemsTextBlur,
   onConfirm,
@@ -174,7 +182,14 @@ function BisSlotRow({
   }, [isEditing]);
 
   return (
-    <Box sx={slotRowSx}>
+    <Box
+      sx={{
+        ...slotRowSx,
+        gridTemplateColumns: readOnly
+          ? "6.25rem minmax(0, 1fr)"
+          : slotRowSx.gridTemplateColumns,
+      }}
+    >
       <Typography
         variant="caption"
         component="span"
@@ -256,16 +271,18 @@ function BisSlotRow({
           </Tooltip>
         </Stack>
       ) : (
-        <Tooltip title="Edit this slot">
-          <IconButton
-            size="small"
-            aria-label={`Edit ${gearSlotLabel(slotDraft.slot)} item`}
-            onClick={onStartEdit}
-            sx={{ alignSelf: "center" }}
-          >
-            <EditIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+        readOnly ? null : (
+          <Tooltip title="Edit this slot">
+            <IconButton
+              size="small"
+              aria-label={`Edit ${gearSlotLabel(slotDraft.slot)} item`}
+              onClick={onStartEdit}
+              sx={{ alignSelf: "center" }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )
       )}
     </Box>
   );
@@ -294,6 +311,9 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   );
   const hasBuiltIn = hasBuiltInBisForSpec(className, activeSpec);
   const selectedPresetId = selectedPreset?.id;
+  const isBuiltInPresetSelected = Boolean(
+    selectedPreset && !isLocalBisPreset(selectedPreset),
+  );
 
   const handleSelectPreset = useCallback(
     (presetId: string) => {
@@ -321,11 +341,11 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     });
   }, []);
 
-  const handleConfirmSlot = useCallback((slotIndex: number) => {
-    setSlotDrafts((previousDrafts) => {
-      const slotDraft = previousDrafts[slotIndex];
+  const handleConfirmSlot = useCallback(
+    (slotIndex: number) => {
+      const slotDraft = slotDrafts[slotIndex];
       if (!slotDraft) {
-        return previousDrafts;
+        return;
       }
 
       const confirmed = confirmBisSlotItemsText(slotDraft.slot, slotDraft.itemsText);
@@ -334,9 +354,21 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
           ...previousErrors,
           [slotDraft.slot]: confirmed.error,
         }));
-        return previousDrafts;
+        return;
       }
 
+      const nextDrafts = slotDrafts.map((entry, entryIndex) =>
+        entryIndex === slotIndex
+          ? {
+              ...entry,
+              itemsText: confirmed.itemsText,
+              confirmedText: confirmed.itemsText,
+              itemIds: confirmed.itemIds,
+            }
+          : entry,
+      );
+
+      setSlotDrafts(nextDrafts);
       setSlotErrors((previousErrors) => {
         if (!(slotDraft.slot in previousErrors)) {
           return previousErrors;
@@ -355,23 +387,27 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
       });
       setError("");
 
-      return previousDrafts.map((entry, entryIndex) =>
-        entryIndex === slotIndex
-          ? {
-              ...entry,
-              itemsText: confirmed.itemsText,
-              confirmedText: confirmed.itemsText,
-              itemIds: confirmed.itemIds,
-            }
-          : entry,
-      );
-    });
-  }, []);
+      if (selectedPreset && isLocalBisPreset(selectedPreset)) {
+        bisLists.updateSelectedLocalPresetSlots(
+          className,
+          activeSpec,
+          confirmedSlotDraftsToPresetSlots(nextDrafts),
+        );
+      }
+    },
+    [activeSpec, bisLists, className, selectedPreset, slotDrafts],
+  );
 
-  const handleStartEditSlot = useCallback((slot: number) => {
-    setEditingSlots((previousEditing) => ({ ...previousEditing, [slot]: true }));
-    setError("");
-  }, []);
+  const handleStartEditSlot = useCallback(
+    (slot: number) => {
+      if (isBuiltInPresetSelected) {
+        return;
+      }
+      setEditingSlots((previousEditing) => ({ ...previousEditing, [slot]: true }));
+      setError("");
+    },
+    [isBuiltInPresetSelected],
+  );
 
   const handleCancelEditSlot = useCallback((slotIndex: number) => {
     setSlotDrafts((previousDrafts) => {
@@ -471,6 +507,125 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
 
   useEffect(() => () => hideExternalWowTooltips(), []);
 
+  const slotEditor = presets.length === 0 ? null : (
+    <>
+      <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.75 }}>
+        {isBuiltInPresetSelected
+          ? "Built-in list (read-only). Save under a custom name to create an editable copy."
+          : "Hover item names for tooltips. Edit a slot, then confirm with ✓ or cancel with ✕."}
+      </Typography>
+      <Box
+        sx={{
+          maxHeight: { xs: 360, md: 480 },
+          overflowY: "auto",
+          pr: 0.5,
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+          columnGap: 2,
+          rowGap: 0,
+          alignContent: "start",
+        }}
+      >
+        {slotDrafts.map((slotDraft, index) => (
+          <BisSlotRow
+            key={slotDraft.slot}
+            slotDraft={slotDraft}
+            validationError={slotErrors[slotDraft.slot]}
+            isEditing={isSlotEditing(slotDraft, editingSlots, isBuiltInPresetSelected)}
+            readOnly={isBuiltInPresetSelected}
+            onItemsTextChange={(nextValue) => {
+              setSlotDrafts((previousDrafts) =>
+                previousDrafts.map((entry, entryIndex) =>
+                  entryIndex === index ? { ...entry, itemsText: nextValue } : entry,
+                ),
+              );
+              updateSlotValidation(slotDraft.slot, nextValue, "partial");
+              setError("");
+            }}
+            onItemsTextBlur={(itemsText) => {
+              updateSlotValidation(slotDraft.slot, itemsText, "strict");
+            }}
+            onConfirm={() => handleConfirmSlot(index)}
+            onStartEdit={() => handleStartEditSlot(slotDraft.slot)}
+            onCancelEdit={() => handleCancelEditSlot(index)}
+          />
+        ))}
+      </Box>
+    </>
+  );
+
+  const presetsSidebar = presets.length === 0 ? (
+    <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8125rem" }}>
+      No built-in BiS list for {className} {activeSpec} yet.
+    </Typography>
+  ) : (
+    <Stack spacing={1.25} sx={{ minWidth: 0 }}>
+      <Stack spacing={0.75}>
+        {presets.map((preset) => {
+          const isSelected = preset.id === selectedPresetId;
+          const isLocal = isLocalBisPreset(preset);
+          const isBuiltIn = !isLocal;
+
+          return (
+            <Chip
+              key={preset.id}
+              icon={isBuiltIn ? <LockOutlinedIcon /> : undefined}
+              label={preset.name}
+              variant={isSelected ? "filled" : "outlined"}
+              color={isSelected ? (isBuiltIn ? "secondary" : "primary") : "default"}
+              onClick={() => handleSelectPreset(preset.id)}
+              onDelete={isLocal ? () => handleDeleteLocalPreset(preset.id) : undefined}
+              sx={{
+                width: "100%",
+                justifyContent: "flex-start",
+                pl: isBuiltIn ? 0.5 : undefined,
+                ...(isBuiltIn && {
+                  borderStyle: isSelected ? "solid" : "dashed",
+                  opacity: isSelected ? 1 : 0.88,
+                }),
+                "& .MuiChip-label": {
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                },
+              }}
+            />
+          );
+        })}
+      </Stack>
+
+      <Divider />
+
+      <Stack spacing={1}>
+        <TextField
+          size="small"
+          label="List name"
+          value={saveListName}
+          onChange={(event) => {
+            setSaveListName(event.target.value);
+            setError("");
+          }}
+          placeholder="Custom list name"
+          fullWidth
+        />
+        <Button
+          variant="contained"
+          startIcon={<SaveIcon />}
+          onClick={handleSaveList}
+          disabled={hasSlotErrors || hasUnconfirmedSlots}
+          fullWidth
+        >
+          Save list
+        </Button>
+      </Stack>
+
+      {!hasBuiltIn ? (
+        <Typography variant="caption" color="text.secondary">
+          This spec uses only local lists.
+        </Typography>
+      ) : null}
+    </Stack>
+  );
+
   return (
     <Paper ref={panelRef} variant="outlined" sx={{ p: { xs: 1.25, sm: 1.5 } }}>
       <Stack spacing={1.25}>
@@ -496,7 +651,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                   cursor: "help",
                 }}
               >
-                Click a list to activate · confirm each slot · save under a custom name
+                Class & spec on the left · items in the center · lists & save on the right
               </Typography>
             </Tooltip>
           </Box>
@@ -510,156 +665,106 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
           </IconButton>
         </Stack>
 
-        <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap" }}>
-          <FormControl size="small" sx={{ minWidth: 132, flex: "1 1 132px" }}>
-            <InputLabel id="bis-class-label">Class</InputLabel>
-            <Select
-              labelId="bis-class-label"
-              label="Class"
-              value={className}
-              onChange={(event) => {
-                const nextClass = event.target.value as ClassNameType;
-                setClassName(nextClass);
-                setSpec(specsForClass(nextClass)[0] ?? "");
-                setError("");
-              }}
-            >
-              {Classes.map((characterClass) => (
-                <MenuItem key={characterClass.name} value={characterClass.name}>
-                  {characterClass.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl size="small" sx={{ minWidth: 112, flex: "1 1 112px" }}>
-            <InputLabel id="bis-spec-label">Spec</InputLabel>
-            <Select
-              labelId="bis-spec-label"
-              label="Spec"
-              value={activeSpec}
-              onChange={(event) => {
-                setSpec(event.target.value);
-                setError("");
-              }}
-            >
-              {classSpecs.map((specName) => (
-                <MenuItem key={specName} value={specName}>
-                  {specName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Stack>
-
-        {presets.length === 0 ? (
-          <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8125rem" }}>
-            No built-in BiS list for {className} {activeSpec} yet. Add presets in{" "}
-            <Box component="code" sx={{ fontSize: "0.85em" }}>
-              src/data/bis-presets/
-            </Box>
-            .
-          </Typography>
-        ) : (
-          <>
-            <Stack direction="row" spacing={0.75} sx={{ flexWrap: "wrap", gap: 0.75 }}>
-              {presets.map((preset) => {
-                const isSelected = preset.id === selectedPresetId;
-                const isLocal = isLocalBisPreset(preset);
-
-                return (
-                  <Chip
-                    key={preset.id}
-                    label={preset.name}
-                    variant={isSelected ? "filled" : "outlined"}
-                    color={isSelected ? "primary" : "default"}
-                    onClick={() => handleSelectPreset(preset.id)}
-                    onDelete={
-                      isLocal
-                        ? () => handleDeleteLocalPreset(preset.id)
-                        : undefined
-                    }
-                    sx={{ maxWidth: "100%" }}
-                  />
-                );
-              })}
-            </Stack>
-
-            <Typography variant="caption" color="text.secondary">
-              Hover item names for tooltips. Edit a slot, then confirm with ✓ or Enter.
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              md: "10.5rem minmax(0, 1fr) 14rem",
+              lg: "11.5rem minmax(0, 1fr) 16rem",
+            },
+            gap: { xs: 1.5, md: 2 },
+            alignItems: "start",
+          }}
+        >
+          <Stack
+            spacing={1.25}
+            sx={{
+              minWidth: 0,
+              pb: { xs: 0, md: 0 },
+              borderRight: { md: 1 },
+              borderColor: { md: "divider" },
+              pr: { md: 2 },
+            }}
+          >
+            <Typography variant="overline" sx={{ lineHeight: 1.2, color: "text.secondary" }}>
+              Class & spec
             </Typography>
-
-            <Box
-              sx={{
-                maxHeight: { xs: 360, md: 320 },
-                overflowY: "auto",
-                pr: 0.5,
-                display: "grid",
-                gridTemplateColumns: { xs: "1fr", lg: "1fr 1fr" },
-                columnGap: 3,
-                rowGap: 0,
-                alignContent: "start",
-              }}
-            >
-              {slotDrafts.map((slotDraft, index) => (
-                <BisSlotRow
-                  key={slotDraft.slot}
-                  slotDraft={slotDraft}
-                  validationError={slotErrors[slotDraft.slot]}
-                  isEditing={isSlotEditing(slotDraft, editingSlots)}
-                  onItemsTextChange={(nextValue) => {
-                    setSlotDrafts((previousDrafts) =>
-                      previousDrafts.map((entry, entryIndex) =>
-                        entryIndex === index
-                          ? { ...entry, itemsText: nextValue }
-                          : entry,
-                      ),
-                    );
-                    updateSlotValidation(slotDraft.slot, nextValue, "partial");
-                    setError("");
-                  }}
-                  onItemsTextBlur={(itemsText) => {
-                    updateSlotValidation(slotDraft.slot, itemsText, "strict");
-                  }}
-                  onConfirm={() => handleConfirmSlot(index)}
-                  onStartEdit={() => handleStartEditSlot(slotDraft.slot)}
-                  onCancelEdit={() => handleCancelEditSlot(index)}
-                />
-              ))}
-            </Box>
-
-            <Divider />
-
-            <Stack spacing={1}>
-              <TextField
-                size="small"
-                label="List name"
-                value={saveListName}
+            <FormControl size="small" fullWidth>
+              <InputLabel id="bis-class-label">Class</InputLabel>
+              <Select
+                labelId="bis-class-label"
+                label="Class"
+                value={className}
                 onChange={(event) => {
-                  setSaveListName(event.target.value);
+                  const nextClass = event.target.value as ClassNameType;
+                  setClassName(nextClass);
+                  setSpec(specsForClass(nextClass)[0] ?? "");
                   setError("");
                 }}
-                placeholder="Custom list name"
-                fullWidth
-              />
-              <Button
-                variant="contained"
-                startIcon={<SaveIcon />}
-                onClick={handleSaveList}
-                disabled={hasSlotErrors || hasUnconfirmedSlots}
-                sx={{ alignSelf: "flex-start" }}
               >
-                Save list
-              </Button>
-            </Stack>
+                {Classes.map((characterClass) => (
+                  <MenuItem key={characterClass.name} value={characterClass.name}>
+                    {characterClass.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-            {!hasBuiltIn ? (
-              <Typography variant="caption" color="text.secondary">
-                This spec uses only local lists.
+            <FormControl size="small" fullWidth>
+              <InputLabel id="bis-spec-label">Spec</InputLabel>
+              <Select
+                labelId="bis-spec-label"
+                label="Spec"
+                value={activeSpec}
+                onChange={(event) => {
+                  setSpec(event.target.value);
+                  setError("");
+                }}
+              >
+                {classSpecs.map((specName) => (
+                  <MenuItem key={specName} value={specName}>
+                    {specName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+
+          <Box
+            sx={{
+              minWidth: 0,
+              borderRight: { md: presets.length > 0 ? 1 : 0 },
+              borderColor: { md: "divider" },
+              pr: { md: presets.length > 0 ? 2 : 0 },
+            }}
+          >
+            <Typography
+              variant="overline"
+              sx={{ lineHeight: 1.2, color: "text.secondary", display: "block", mb: 1 }}
+            >
+              Items
+            </Typography>
+            {presets.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8125rem" }}>
+                No built-in BiS list for {className} {activeSpec} yet. Add presets in{" "}
+                <Box component="code" sx={{ fontSize: "0.85em" }}>
+                  src/data/bis-presets/
+                </Box>
+                .
               </Typography>
-            ) : null}
-          </>
-        )}
+            ) : (
+              slotEditor
+            )}
+          </Box>
+
+          <Stack spacing={1} sx={{ minWidth: 0 }}>
+            <Typography variant="overline" sx={{ lineHeight: 1.2, color: "text.secondary" }}>
+              Lists
+            </Typography>
+            {presetsSidebar}
+          </Stack>
+        </Box>
 
         {error ? <FormErrorMessage message={error} /> : null}
       </Stack>
