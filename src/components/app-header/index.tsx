@@ -1,5 +1,6 @@
 import { AppBar, Box, Container, Toolbar, Typography } from "@mui/material";
 import { AppMetaInfo, AppVersionLabel } from "../app-meta-info/index.tsx";
+import { ItemTooltipLocaleToggle } from "../item-tooltip-locale-toggle/index.tsx";
 import { ThemeModeToggle } from "../theme-mode-toggle/index.tsx";
 import type { AppHeaderProps } from "./types.ts";
 
@@ -70,6 +71,7 @@ export function AppHeader({ center }: AppHeaderProps) {
               gap: 0.5,
             }}
           >
+            <ItemTooltipLocaleToggle />
             <ThemeModeToggle />
             <AppMetaInfo />
             <AppVersionLabel />
