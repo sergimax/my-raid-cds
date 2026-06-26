@@ -123,35 +123,68 @@ async function fetchWowRoadRussianName(itemId) {
 }
 
 async function buildRussianItemNames(itemLevelIds) {
+  if (itemLevelIds.length === 0) {
+    return { names: {}, resolvedCount: 0, failedCount: 0 };
+  }
+
+  const workerCount = Math.min(WOWROAD_FETCH_CONCURRENCY, itemLevelIds.length);
+  const chunkSize = Math.ceil(itemLevelIds.length / workerCount);
+  const chunks = [];
+
+  for (let start = 0; start < itemLevelIds.length; start += chunkSize) {
+    chunks.push(itemLevelIds.slice(start, start + chunkSize));
+  }
+
+  const progress = {
+    processed: 0,
+    resolved: 0,
+    logIfNeeded() {
+      if (this.processed % 250 === 0 || this.processed === itemLevelIds.length) {
+        console.log(
+          `WoWRoad RU names: ${this.processed}/${itemLevelIds.length} processed (${this.resolved} resolved)`,
+        );
+      }
+    },
+    record(itemResolved) {
+      this.processed += 1;
+      if (itemResolved) {
+        this.resolved += 1;
+      }
+      this.logIfNeeded();
+    },
+  };
+
+  async function processChunk(chunk) {
+    const chunkNames = {};
+    let chunkResolved = 0;
+    let chunkFailed = 0;
+
+    for (const itemId of chunk) {
+      const russianName = await fetchWowRoadRussianName(itemId);
+      if (russianName) {
+        chunkNames[itemId] = russianName;
+        chunkResolved += 1;
+        progress.record(true);
+      } else {
+        chunkFailed += 1;
+        progress.record(false);
+      }
+    }
+
+    return { chunkNames, chunkResolved, chunkFailed };
+  }
+
+  const chunkResults = await Promise.all(chunks.map((chunk) => processChunk(chunk)));
+
   const names = {};
-  let nextIndex = 0;
   let resolvedCount = 0;
   let failedCount = 0;
 
-  async function worker() {
-    while (nextIndex < itemLevelIds.length) {
-      const itemId = itemLevelIds[nextIndex];
-      nextIndex += 1;
-
-      const russianName = await fetchWowRoadRussianName(itemId);
-      if (russianName) {
-        names[itemId] = russianName;
-        resolvedCount += 1;
-      } else {
-        failedCount += 1;
-      }
-
-      if ((resolvedCount + failedCount) % 250 === 0) {
-        console.log(
-          `WoWRoad RU names: ${resolvedCount + failedCount}/${itemLevelIds.length} processed (${resolvedCount} resolved)`,
-        );
-      }
-    }
+  for (const result of chunkResults) {
+    Object.assign(names, result.chunkNames);
+    resolvedCount += result.chunkResolved;
+    failedCount += result.chunkFailed;
   }
-
-  await Promise.all(
-    Array.from({ length: WOWROAD_FETCH_CONCURRENCY }, () => worker()),
-  );
 
   return { names, resolvedCount, failedCount };
 }
