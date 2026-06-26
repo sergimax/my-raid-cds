@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
+import { useScrollIntoViewOnMount } from "../../hooks/use-scroll-into-view-on-mount.ts";
 import {
   characterHasExportSpecs,
   isCharacterIncludedInExport,
@@ -79,6 +80,7 @@ export function ExportPanel({
   dungeonToggles,
   onClose,
 }: ExportPanelProps) {
+  const panelRef = useScrollIntoViewOnMount<HTMLDivElement>();
   const [exportSpecSelectionByCharacterId, setExportSpecSelectionByCharacterId] =
     useState<Record<string, StoredExportSpecSelection>>({});
 
@@ -136,7 +138,7 @@ export function ExportPanel({
   };
 
   return (
-    <Box>
+    <Box ref={panelRef}>
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
         Export
       </Typography>

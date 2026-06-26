@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { ClassName } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
+import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
 import { createTestDungeon } from "../test/fixtures.ts";
+import { buildBisSlotMap } from "./bis-lists.ts";
 import {
   evaluateGearUpgradeHint,
   formatGearUpgradeHintTooltip,
@@ -34,6 +36,12 @@ const RHEE_EXPORT = JSON.stringify({
   },
 });
 
+const emptyHintExtras = {
+  slotAware: false,
+  bisFiltered: false,
+  upgradeSlots: [],
+} as const;
+
 describe("getDungeonPeakItemLevel", () => {
   it("returns the highest ilvl in the dungeon row", () => {
     expect(getDungeonPeakItemLevel([264, 271])).toBe(271);
@@ -54,8 +62,7 @@ describe("evaluateGearUpgradeHint", () => {
       upgradeSlotCount: 0,
       equippedCount: 0,
       peakDungeonItemLevel: 284,
-      slotAware: false,
-      upgradeSlots: [],
+      ...emptyHintExtras,
     });
   });
 
@@ -72,6 +79,7 @@ describe("evaluateGearUpgradeHint", () => {
       equippedCount: 1,
       peakDungeonItemLevel: 264,
       slotAware: true,
+      bisFiltered: false,
       upgradeSlots: [],
     });
   });
@@ -123,6 +131,44 @@ describe("evaluateGearUpgradeHint", () => {
     expect(rsHint.upgradeSlotCount).toBeGreaterThan(0);
   });
 
+  it("filters upgrades to BiS items for the selected spec list", () => {
+    const priestNeckOnly = buildBisSlotMap({
+      id: "local-priest",
+      name: "Shadow priest",
+      slots: [{ slot: 1, itemIds: [50647] }],
+    });
+
+    const rsHint = evaluateGearUpgradeHint(
+      [{ slot: 1, id: 50452 }],
+      {
+        name: "Рубиновое святилище",
+        raidKey: "rubySanctum",
+        itemLevel: [284],
+      },
+      priestNeckOnly,
+    );
+
+    expect(rsHint.bisFiltered).toBe(true);
+    expect(rsHint.upgradeSlotCount).toBe(0);
+  });
+
+  it("uses BiS targets for Unholy DK neck upgrades in Ruby Sanctum", () => {
+    const unholyBis = buildBisSlotMap(unholyDeathKnightBis.presets[0]);
+    const rsHint = evaluateGearUpgradeHint(
+      [{ slot: 1, id: 50452 }],
+      {
+        name: "Рубиновое святилище",
+        raidKey: "rubySanctum",
+        itemLevel: [284],
+      },
+      unholyBis,
+    );
+
+    expect(rsHint.bisFiltered).toBe(true);
+    expect(rsHint.upgradeSlotCount).toBe(1);
+    expect(rsHint.upgradeSlots[0]?.bestLootItemId).toBe(54581);
+  });
+
   it("falls back to ilvl-only hints for custom dungeons without raid loot", () => {
     const hint = evaluateGearUpgradeHint([{ slot: 14, id: 50426 }], {
       name: "Custom dungeon",
@@ -154,13 +200,14 @@ describe("formatGearUpgradeHintTooltip", () => {
       equippedCount: 17,
       peakDungeonItemLevel: 284,
       slotAware: true,
+      bisFiltered: true,
       upgradeSlots: [
         { slot: 12, bestLootItemId: 54569, bestLootItemLevel: 284 },
         { slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 },
       ],
     });
 
-    expect(tooltip).toContain("2 slot(s) with raid loot upgrades");
+    expect(tooltip).toContain("2 BiS slot(s) with upgrades");
     expect(tooltip).toContain("Trinket 1");
     expect(tooltip).toContain("→");
   });

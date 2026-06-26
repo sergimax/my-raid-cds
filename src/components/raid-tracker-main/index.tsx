@@ -2,6 +2,7 @@ import { Alert, Stack } from "@mui/material";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { TrackerFormsState } from "../../hooks/use-tracker-forms.ts";
 import { AppIntro } from "../app-intro/index.tsx";
+import { BisListsPanel } from "../bis-lists-panel/index.tsx";
 import { CharacterForm } from "../character-form/index.tsx";
 import { DungeonForm } from "../dungeon-form/index.tsx";
 import { RaidTrackerTable } from "../raid-tracker-table/index.tsx";
@@ -10,12 +11,16 @@ type RaidTrackerMainProps = {
   forms: TrackerFormsState;
   showExportPanel: boolean;
   closeExportPanel: () => void;
+  showBisListsPanel: boolean;
+  closeBisListsPanel: () => void;
 };
 
 export function RaidTrackerMain({
   forms,
   showExportPanel,
   closeExportPanel,
+  showBisListsPanel,
+  closeBisListsPanel,
 }: RaidTrackerMainProps) {
   const domain = useRaidTrackerContext();
   const showIntro =
@@ -65,6 +70,10 @@ export function RaidTrackerMain({
           onCancel={forms.closeDungeonForm}
           onSubmit={forms.dungeonForm.handleSubmit}
         />
+      ) : null}
+
+      {showBisListsPanel ? (
+        <BisListsPanel key="bis-lists-panel" onClose={closeBisListsPanel} />
       ) : null}
 
       <RaidTrackerTable
