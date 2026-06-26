@@ -3,6 +3,7 @@ import { isSpecValidForClass } from "../data/class-specs.ts";
 import { defaultShortNameForDungeonName } from "../utils/dungeon-short-name.ts";
 import { pruneToggles } from "../utils/dungeon-toggles.ts";
 import { Classes, type ClassName, type CharacterRecord, type CharacterSpecGear } from "../types/characters.ts";
+import type { CharacterGearItem } from "../types/character-gear.ts";
 import {
   DungeonDifficulty,
   DungeonSizes,
@@ -167,6 +168,57 @@ function parseStoredSpecGearPair(
   return undefined;
 }
 
+function parseStoredGearItems(value: unknown): CharacterGearItem[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const gearItems: CharacterGearItem[] = [];
+  for (const entry of value) {
+    if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+      continue;
+    }
+    const record = entry as Record<string, unknown>;
+    if (
+      typeof record.slot !== "number" ||
+      !Number.isInteger(record.slot) ||
+      record.slot < 0 ||
+      typeof record.id !== "number" ||
+      !Number.isInteger(record.id) ||
+      record.id <= 0
+    ) {
+      continue;
+    }
+
+    const item: CharacterGearItem = {
+      slot: record.slot,
+      id: record.id,
+    };
+
+    if (
+      typeof record.enchant === "number" &&
+      Number.isInteger(record.enchant) &&
+      record.enchant > 0
+    ) {
+      item.enchant = record.enchant;
+    }
+
+    if (Array.isArray(record.gems)) {
+      const gems = record.gems.filter(
+        (gem): gem is number =>
+          typeof gem === "number" && Number.isInteger(gem) && gem > 0,
+      );
+      if (gems.length > 0) {
+        item.gems = gems;
+      }
+    }
+
+    gearItems.push(item);
+  }
+
+  return gearItems.length > 0 ? gearItems : undefined;
+}
+
 function parseCharacters(storedCharacters: StoredCharacter[]): CharacterRecord[] {
   return storedCharacters
     .map((stored) => {
@@ -185,6 +237,7 @@ function parseCharacters(storedCharacters: StoredCharacter[]): CharacterRecord[]
         legacyGearScore,
       );
       const offSpec = parseStoredSpecGearPair(charClass.name, stored.offSpec);
+      const gearItems = parseStoredGearItems(stored.gearItems);
 
       return {
         id: stored.id,
@@ -192,6 +245,7 @@ function parseCharacters(storedCharacters: StoredCharacter[]): CharacterRecord[]
         class: charClass,
         ...(mainSpec ? { mainSpec } : {}),
         ...(offSpec && offSpec.spec !== mainSpec?.spec ? { offSpec } : {}),
+        ...(gearItems ? { gearItems } : {}),
       } as CharacterRecord;
     })
     .filter((character): character is CharacterRecord => character !== null);

@@ -203,4 +203,30 @@ describe("loadRaidTrackerState", () => {
       "character-1": { "dungeon-1": true },
     });
   });
+
+  it("loads stored character gear items", () => {
+    writeStoredPayload({
+      schemaVersion: 4,
+      characters: [
+        {
+          id: "character-1",
+          name: "Rhee",
+          className: Classes[7].name,
+          mainSpec: { spec: "Enhancement", gearScore: 6400 },
+          gearItems: [
+            { slot: 0, id: 51197, enchant: 3817, gems: [41398, 40118] },
+            { slot: 14, id: 50426, enchant: 3789 },
+          ],
+        },
+      ],
+      dungeons: [],
+      dungeonToggles: {},
+    });
+
+    const result = loadRaidTrackerState();
+    expect(result.state.characters[0]?.gearItems).toEqual([
+      { slot: 0, id: 51197, enchant: 3817, gems: [41398, 40118] },
+      { slot: 14, id: 50426, enchant: 3789 },
+    ]);
+  });
 });

@@ -18,6 +18,13 @@ export type StoredCharacterSpecGear = {
   gearScore?: number;
 };
 
+export type StoredCharacterGearItem = {
+  slot: number;
+  id: number;
+  enchant?: number;
+  gems?: number[];
+};
+
 export type StoredCharacter = {
   id: string;
   name: string;
@@ -26,6 +33,7 @@ export type StoredCharacter = {
   offSpec?: StoredCharacterSpecGear | string;
   /** Legacy v2 flat gear score — migrated to main spec on load. */
   gearScore?: number;
+  gearItems?: StoredCharacterGearItem[];
 };
 
 export type StoredDungeon = {
