@@ -1,5 +1,6 @@
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
+import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import {
   Box,
@@ -17,7 +18,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { specsForClass } from "../../data/class-specs.ts";
 import { gearSlotLabel } from "../../data/gear-slot-names.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
@@ -33,6 +34,7 @@ import {
 } from "../../utils/bis-lists.ts";
 import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
+import { WowItemAlternatives } from "../wow-item-link/index.tsx";
 
 type BisListsPanelProps = {
   onClose: () => void;
@@ -57,6 +59,25 @@ const slotRowSx = {
 function isSlotDraftDirty(slotDraft: SlotDraft): boolean {
   return slotDraft.itemsText.trim() !== slotDraft.confirmedText.trim();
 }
+
+function isSlotEditing(
+  slotDraft: SlotDraft,
+  editingSlots: Readonly<Record<number, boolean>>,
+): boolean {
+  if (isSlotDraftDirty(slotDraft)) {
+    return true;
+  }
+  return editingSlots[slotDraft.slot] === true;
+}
+
+const slotViewContentSx = {
+  display: "flex",
+  alignItems: "center",
+  minHeight: 40,
+  py: 0.5,
+  fontSize: "0.8125rem",
+  lineHeight: 1.35,
+} as const;
 
 function presetToSlotDrafts(preset: BisListPreset): SlotDraft[] {
   return preset.slots
@@ -120,89 +141,132 @@ function collectSlotValidationErrors(
 type BisSlotRowProps = {
   slotDraft: SlotDraft;
   validationError?: string;
-  isDirty: boolean;
+  isEditing: boolean;
   onItemsTextChange: (nextValue: string) => void;
   onItemsTextBlur: (itemsText: string) => void;
   onConfirm: () => void;
+  onStartEdit: () => void;
+  onCancelEdit: () => void;
 };
 
 function BisSlotRow({
   slotDraft,
   validationError,
-  isDirty,
+  isEditing,
   onItemsTextChange,
   onItemsTextBlur,
   onConfirm,
+  onStartEdit,
+  onCancelEdit,
 }: BisSlotRowProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
   const canConfirm =
-    isDirty &&
+    isEditing &&
     !validationError &&
     validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, "strict").error ===
-      undefined;
+      undefined &&
+    isSlotDraftDirty(slotDraft);
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+    }
+  }, [isEditing]);
 
   return (
     <Box sx={slotRowSx}>
       <Typography
         variant="caption"
         component="span"
-        sx={{ fontWeight: 600, color: "text.secondary", lineHeight: 1.3, pt: 0.75 }}
+        sx={{
+          fontWeight: 600,
+          color: "text.secondary",
+          lineHeight: 1.3,
+          pt: isEditing ? 0.75 : 0,
+          alignSelf: isEditing ? "start" : "center",
+        }}
       >
         {gearSlotLabel(slotDraft.slot)}
       </Typography>
-      <TextField
-        size="small"
-        fullWidth
-        value={slotDraft.itemsText}
-        onChange={(event) => onItemsTextChange(event.target.value)}
-        onBlur={(event) => onItemsTextBlur(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && canConfirm) {
-            event.preventDefault();
-            onConfirm();
-          }
-        }}
-        placeholder="Name, id, or #id"
-        error={Boolean(validationError)}
-        helperText={
-          validationError ??
-          (isDirty
-            ? "Confirm this slot when done editing"
-            : slotDraft.confirmedText
-              ? "Confirmed"
-              : undefined)
-        }
-        slotProps={{
-          input: {
-            sx: { py: 0.75, fontSize: "0.8125rem" },
-          },
-          formHelperText: {
-            sx: {
-              mx: 0,
-              mt: 0.25,
-              lineHeight: 1.3,
-              color: validationError
-                ? undefined
-                : isDirty
-                  ? "text.secondary"
-                  : "success.main",
+
+      {isEditing ? (
+        <TextField
+          inputRef={inputRef}
+          size="small"
+          fullWidth
+          value={slotDraft.itemsText}
+          onChange={(event) => onItemsTextChange(event.target.value)}
+          onBlur={(event) => onItemsTextBlur(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && canConfirm) {
+              event.preventDefault();
+              onConfirm();
+            }
+            if (event.key === "Escape") {
+              event.preventDefault();
+              onCancelEdit();
+            }
+          }}
+          placeholder="Name, id, or #id"
+          error={Boolean(validationError)}
+          helperText={validationError ?? "Confirm with ✓ or cancel with ✕"}
+          slotProps={{
+            input: {
+              sx: { py: 0.75, fontSize: "0.8125rem" },
             },
-          },
-        }}
-      />
-      <Tooltip title={isDirty ? "Confirm item for this slot" : "Slot confirmed"}>
-        <span>
+            formHelperText: {
+              sx: { mx: 0, mt: 0.25, lineHeight: 1.3 },
+            },
+          }}
+        />
+      ) : (
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          component="div"
+          sx={slotViewContentSx}
+        >
+          <WowItemAlternatives itemIds={slotDraft.itemIds} />
+        </Typography>
+      )}
+
+      {isEditing ? (
+        <Stack direction="row" spacing={0.25} sx={{ mt: 0.25, alignSelf: "start" }}>
+          <Tooltip title="Cancel editing">
+            <IconButton
+              size="small"
+              aria-label={`Cancel editing ${gearSlotLabel(slotDraft.slot)} item`}
+              onClick={onCancelEdit}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Confirm item for this slot">
+            <span>
+              <IconButton
+                size="small"
+                aria-label={`Confirm ${gearSlotLabel(slotDraft.slot)} item`}
+                onClick={onConfirm}
+                disabled={!canConfirm}
+                color="primary"
+              >
+                <CheckIcon fontSize="small" />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </Stack>
+      ) : (
+        <Tooltip title="Edit this slot">
           <IconButton
             size="small"
-            aria-label={`Confirm ${gearSlotLabel(slotDraft.slot)} item`}
-            onClick={onConfirm}
-            disabled={!canConfirm}
-            color={isDirty ? "primary" : "success"}
-            sx={{ mt: 0.25 }}
+            aria-label={`Edit ${gearSlotLabel(slotDraft.slot)} item`}
+            onClick={onStartEdit}
+            sx={{ alignSelf: "center" }}
           >
-            <CheckIcon fontSize="small" />
+            <EditIcon fontSize="small" />
           </IconButton>
-        </span>
-      </Tooltip>
+        </Tooltip>
+      )}
     </Box>
   );
 }
@@ -214,6 +278,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   const [spec, setSpec] = useState("Unholy");
   const [slotDrafts, setSlotDrafts] = useState<SlotDraft[]>([]);
   const [slotErrors, setSlotErrors] = useState<Record<number, string>>({});
+  const [editingSlots, setEditingSlots] = useState<Record<number, boolean>>({});
   const [saveListName, setSaveListName] = useState("");
   const [error, setError] = useState("");
 
@@ -280,6 +345,14 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
         delete nextErrors[slotDraft.slot];
         return nextErrors;
       });
+      setEditingSlots((previousEditing) => {
+        if (!(slotDraft.slot in previousEditing)) {
+          return previousEditing;
+        }
+        const nextEditing = { ...previousEditing };
+        delete nextEditing[slotDraft.slot];
+        return nextEditing;
+      });
       setError("");
 
       return previousDrafts.map((entry, entryIndex) =>
@@ -290,6 +363,43 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
               confirmedText: confirmed.itemsText,
               itemIds: confirmed.itemIds,
             }
+          : entry,
+      );
+    });
+  }, []);
+
+  const handleStartEditSlot = useCallback((slot: number) => {
+    setEditingSlots((previousEditing) => ({ ...previousEditing, [slot]: true }));
+    setError("");
+  }, []);
+
+  const handleCancelEditSlot = useCallback((slotIndex: number) => {
+    setSlotDrafts((previousDrafts) => {
+      const slotDraft = previousDrafts[slotIndex];
+      if (!slotDraft) {
+        return previousDrafts;
+      }
+
+      setEditingSlots((previousEditing) => {
+        if (!(slotDraft.slot in previousEditing)) {
+          return previousEditing;
+        }
+        const nextEditing = { ...previousEditing };
+        delete nextEditing[slotDraft.slot];
+        return nextEditing;
+      });
+      setSlotErrors((previousErrors) => {
+        if (!(slotDraft.slot in previousErrors)) {
+          return previousErrors;
+        }
+        const nextErrors = { ...previousErrors };
+        delete nextErrors[slotDraft.slot];
+        return nextErrors;
+      });
+
+      return previousDrafts.map((entry, entryIndex) =>
+        entryIndex === slotIndex
+          ? { ...entry, itemsText: entry.confirmedText }
           : entry,
       );
     });
@@ -346,12 +456,14 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
       const nextDrafts = presetToSlotDrafts(selectedPreset);
       setSlotDrafts(nextDrafts);
       setSlotErrors(collectSlotValidationErrors(nextDrafts, "strict"));
+      setEditingSlots({});
       setSaveListName(
         isLocalBisPreset(selectedPreset) ? selectedPreset.name : "",
       );
     } else {
       setSlotDrafts([]);
       setSlotErrors({});
+      setEditingSlots({});
       setSaveListName("");
     }
     setError("");
@@ -474,7 +586,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
             </Stack>
 
             <Typography variant="caption" color="text.secondary">
-              Separate alternatives with /. Confirm each slot with ✓ or Enter before saving the list.
+              Hover item names for tooltips. Edit a slot, then confirm with ✓ or Enter.
             </Typography>
 
             <Box
@@ -494,7 +606,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                   key={slotDraft.slot}
                   slotDraft={slotDraft}
                   validationError={slotErrors[slotDraft.slot]}
-                  isDirty={isSlotDraftDirty(slotDraft)}
+                  isEditing={isSlotEditing(slotDraft, editingSlots)}
                   onItemsTextChange={(nextValue) => {
                     setSlotDrafts((previousDrafts) =>
                       previousDrafts.map((entry, entryIndex) =>
@@ -510,6 +622,8 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                     updateSlotValidation(slotDraft.slot, itemsText, "strict");
                   }}
                   onConfirm={() => handleConfirmSlot(index)}
+                  onStartEdit={() => handleStartEditSlot(slotDraft.slot)}
+                  onCancelEdit={() => handleCancelEditSlot(index)}
                 />
               ))}
             </Box>
