@@ -4,6 +4,7 @@
  * Outputs:
  * - src/data/wotlk-item-names.json — English item names for bundled ilvl ids
  * - src/data/wotlk-item-names-ru.json — Russian names from WoWRoad (by item id)
+ * - src/data/wotlk-item-gear-slots.json — valid gear slot indices per item id
  * - src/data/raid-loot-by-key.json — raid loot indexed by gear slot
  *
  * Pass --skip-ru to skip the WoWRoad Russian name fetch (network-heavy).
@@ -11,6 +12,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildItemGearSlotsMap, itemToGearSlots } from "./wow-item-gear-slots.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, "..");
@@ -30,33 +32,6 @@ const RAID_ZONE_IDS = {
   icecrownCitadel: [4812, 4813, 4820, 4809],
   rubySanctum: [4987],
 };
-
-function itemToGearSlots(item) {
-  const itemType = item.type;
-  if (itemType >= 1 && itemType <= 10) {
-    return [itemType - 1];
-  }
-  if (itemType === 11) {
-    return [10, 11];
-  }
-  if (itemType === 12) {
-    return [12, 13];
-  }
-  if (itemType === 13) {
-    const handType = item.handType;
-    if (handType === 3) {
-      return [15];
-    }
-    if (handType === 4 || handType === 1) {
-      return [14];
-    }
-    return [14, 15];
-  }
-  if (itemType === 14) {
-    return [16];
-  }
-  return [];
-}
 
 function dropsInZones(item, zoneIds) {
   const zoneSet = new Set(zoneIds);
@@ -187,6 +162,7 @@ async function main() {
   const itemLevelsPath = path.join(rootDir, "src/data/wotlk-item-levels.json");
   const namesOutPath = path.join(rootDir, "src/data/wotlk-item-names.json");
   const namesRuOutPath = path.join(rootDir, "src/data/wotlk-item-names-ru.json");
+  const gearSlotsOutPath = path.join(rootDir, "src/data/wotlk-item-gear-slots.json");
   const lootOutPath = path.join(rootDir, "src/data/raid-loot-by-key.json");
 
   const db = JSON.parse(fs.readFileSync(dbPath, "utf8"));
@@ -194,9 +170,11 @@ async function main() {
   const itemLevelIds = Object.keys(itemLevels);
 
   const names = buildItemNames(db.items, itemLevelIds);
+  const gearSlotsByItemId = buildItemGearSlotsMap(db.items);
   const lootByKey = buildRaidLoot(db.items);
 
   fs.writeFileSync(namesOutPath, `${JSON.stringify(names)}\n`);
+  fs.writeFileSync(gearSlotsOutPath, `${JSON.stringify(gearSlotsByItemId)}\n`);
   fs.writeFileSync(lootOutPath, `${JSON.stringify(lootByKey)}\n`);
 
   const slotCounts = Object.fromEntries(
@@ -207,6 +185,9 @@ async function main() {
   );
 
   console.log(`Wrote ${Object.keys(names).length} item names → ${namesOutPath}`);
+  console.log(
+    `Wrote ${Object.keys(gearSlotsByItemId).length} item gear slots → ${gearSlotsOutPath}`,
+  );
   console.log(`Wrote raid loot for ${Object.keys(lootByKey).length} raids → ${lootOutPath}`);
   console.log("Slots covered per raid:", slotCounts);
 
