@@ -40,11 +40,12 @@ Open [http://localhost:5173](http://localhost:5173).
 6. **Search** — Use the search field under **Dungeon name** to filter rows by substring (matches full name or short name). If nothing matches, the table shows a “No dungeons match your search” hint.
 7. **Export** — Filter dungeons with search (e.g. `ICC` or `ЦЛК`), then click **Export** in the toolbar. The panel lists one line per visible raid with characters still without CD (toggle off), ready to copy — e.g. `ICC25H - Elst: Udk 6.6, Blood 6 / Beta: SP 5.8` (class-scoped short spec labels + gear score when set), or `ЦЛК25хм - …` for Russian short raid names. Heroic lines use suffix `H` (Latin) or `хм` (Cyrillic). Per character, choose which specs to include via icon checkboxes (main/off when set); characters without specs have a single include checkbox. New characters are selected by default while the panel is open. Raids where everyone has CD are omitted. Export gear scores are numeric only (no `k` suffix, rounded down); the table still shows compact scores with `k` in headers/tooltips.
 8. **Edit character** — **Edit** icon in a character column header opens a dialog to update main/off spec and gear score (name and class stay fixed).
-9. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Other template raids have no emblem unless you add one in data.
-10. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
-11. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
-12. **Delete** — Delete icon on each dungeon row or remove icon in a character header opens a confirmation dialog (entity name, irreversible warning); confirm with **Delete** / **Remove** or dismiss with **Cancel**.
-13. **Theme** — Sun/moon icon in the header toggles light/dark mode (saved in `localStorage`; uses system preference when unset).
+9. **Edit dungeon** — **Edit** icon on each dungeon row opens a dialog to update name, short name, size, mode (Normal/Heroic), and emblem badge (item levels and toggles stay fixed).
+10. **Emblem icons** — Template rows with an `emblem` in `DungeonList` show that icon beside the name (Frost on Icecrown Citadel and Ruby Sanctum in 3.3.5a). Custom dungeons can set or clear a badge via **Edit dungeon**.
+11. **Reset per character** — Icon in the character header (tooltip: reset toggles) clears that character’s toggles.
+12. **Reset all toggles** — **Reset all toggles** in the toolbar clears every toggle (dungeon list unchanged).
+13. **Delete** — Delete icon on each dungeon row or remove icon in a character header opens a confirmation dialog (entity name, irreversible warning); confirm with **Delete** / **Remove** or dismiss with **Cancel**.
+14. **Theme** — Sun/moon icon in the header toggles light/dark mode (saved in `localStorage`; uses system preference when unset).
 
 The sticky header shows the app name, tracker actions (on narrow screens below `md`, a menu icon opens **Add from template**, **Add character**, **Add dungeon**, **Export**, and **Reset all toggles**), theme toggle, a GitHub icon (tooltip: author attribution), and the version label (`v.x.y.z` from `package.json` at build time) on the right.
 
@@ -70,11 +71,11 @@ When there are no dungeons, the table body shows a hint to add a dungeon or use 
 |-------|------|-------------|
 | `id` | `string` | UUID |
 | `name` | `string` | Dungeon name |
-| `shortName` | optional string | Abbreviation for compact table display; template rows and known raid names get defaults from `RaidNames` (`shortRu` / `shortEn`); user override via add form or saved field |
+| `shortName` | optional string | Abbreviation for compact table display; template rows and known raid names get defaults from `RaidNames` (`shortRu` / `shortEn`); user override via add form, edit dialog, or saved field |
 | `size` | `5 \| 10 \| 20 \| 25 \| 40` | Raid size |
 | `itemLevel` | `number[]` | Item level(s), e.g. `[200, 213]` |
 | `difficulty` | `"Normal" \| "Heroic"` | Raid mode; **Mode** column shows **N** or **H** chips |
-| `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows, optional for custom dungeons; loaded only from this field (no raid-name backfill) |
+| `emblem` | optional string | WotLK emblem key for display (`triumph`, `frost`, …); set on template rows; custom dungeons can set or clear via **Edit dungeon**; loaded only from this field (no raid-name backfill) |
 
 Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load. Saves include `schemaVersion` (currently `3`). Missing `shortName` on load is backfilled when the dungeon name matches a known template raid (Russian or English). Legacy character saves (`schemaVersion` 2) with flat `mainSpec`/`offSpec` strings or a single `gearScore` migrate to nested spec objects on load. Corrupted local data is reset and an error is shown on load.
 
@@ -92,7 +93,7 @@ Older saves may use a legacy `mode` field; it is mapped to `difficulty` on load.
 
 ```
 src/
-├── components/       # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, export-panel, tracker-controls, …
+├── components/       # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, dungeon-edit-dialog, dungeon-customization-fields, export-panel, tracker-controls, …
 │   raid-tracker-table/   # grid, use-raid-tracker-table-state, head/row, character-header-cell, pinned-column-renderers, …
 ├── constants/        # character.ts, dungeon-form-defaults.ts
 ├── contexts/         # raid-tracker-provider, raid-tracker-context, color-mode-provider

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.15.0] - 2026-06-26
+
+### Added
+
+- **Edit dungeon:** **Edit** icon on each dungeon row opens `DungeonEditDialog` to customize name, short name, size, mode (Normal/Heroic), and emblem badge. Item levels and cooldown toggles are unchanged.
+
 ## [1.14.0] - 2026-06-24
 
 ### Added
