@@ -54,13 +54,18 @@ function buildItemNames(dbItems, itemLevelIds) {
   return names;
 }
 
-function buildRaidLoot(dbItems) {
+function buildRaidLoot(dbItems, itemLevelIds) {
+  const bundledItemIds = new Set(itemLevelIds);
   const lootByKey = {};
 
   for (const [raidKey, zoneIds] of Object.entries(RAID_ZONE_IDS)) {
     const slotItems = {};
 
     for (const item of dbItems) {
+      if (!bundledItemIds.has(String(item.id))) {
+        continue;
+      }
+
       if (!dropsInZones(item, zoneIds)) {
         continue;
       }
@@ -203,8 +208,8 @@ async function main() {
   const itemLevelIds = Object.keys(itemLevels);
 
   const names = buildItemNames(db.items, itemLevelIds);
-  const gearSlotsByItemId = buildItemGearSlotsMap(db.items);
-  const lootByKey = buildRaidLoot(db.items);
+  const gearSlotsByItemId = buildItemGearSlotsMap(db.items, itemLevelIds);
+  const lootByKey = buildRaidLoot(db.items, itemLevelIds);
 
   fs.writeFileSync(namesOutPath, `${JSON.stringify(names)}\n`);
   fs.writeFileSync(gearSlotsOutPath, `${JSON.stringify(gearSlotsByItemId)}\n`);
