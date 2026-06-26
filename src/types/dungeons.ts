@@ -1,4 +1,5 @@
 import type { EmblemKey } from "../assets/emblems/emblem-icons.ts";
+import type { RaidKey } from "../data/raid-names.ts";
 
 export const DungeonDifficulty = {
   NORMAL: "Normal",
@@ -20,6 +21,8 @@ export type Dungeon = {
   difficulty: DungeonDifficulty;
   /** WotLK emblem primarily rewarded by this raid (display only). */
   emblem?: EmblemKey;
+  /** Template raid key for loot / upgrade hints (optional for custom rows). */
+  raidKey?: RaidKey;
 };
 
 export type DungeonRecord = Dungeon & { id: string };

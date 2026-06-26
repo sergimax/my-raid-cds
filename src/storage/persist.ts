@@ -30,6 +30,7 @@ export function saveRaidTrackerState(
     difficulty: dungeon.difficulty,
     ...(dungeon.shortName ? { shortName: dungeon.shortName } : {}),
     ...(dungeon.emblem ? { emblem: dungeon.emblem } : {}),
+    ...(dungeon.raidKey ? { raidKey: dungeon.raidKey } : {}),
   }));
 
   const storedToggles = pruneToggles(dungeonToggles, {
