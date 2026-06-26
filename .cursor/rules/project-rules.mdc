@@ -85,10 +85,11 @@ Example: `feat(auth): add login form`
 
 - **Add from template** — one-shot: loads `DungeonList` only when the dungeon list is empty; `handleAddFromTemplate` no-ops if dungeons already exist (UI hides the action; guard covers other callers)
 - **Reset all toggles** — toolbar control clears all cooldown toggles (keeps characters and dungeons)
-- **Delete dungeon** — per-row delete icon in the pinned actions column removes that dungeon and its toggles
+- **Delete dungeon** — per-row edit and delete icons in the pinned actions column; delete removes that dungeon and its toggles
 - **Reset per character** — icon in the character column header clears toggles for that character only
 - **Add forms** — only one of character or dungeon form open at a time; submit closes the form; duplicate character (name + class) is rejected; character form accepts optional main/off spec and gear score (WotLK specs for selected class; main and off must differ when both set); dungeon form accepts optional short name (defaults from `RaidNames` when name matches a known raid)
 - **Edit character** — edit icon in character column header opens `CharacterEditDialog` to update main/off spec and gear score (name and class unchanged)
+- **Edit dungeon** — edit icon on each dungeon row opens `DungeonEditDialog` to update name, short name, size, mode, and emblem badge (item levels and toggles unchanged)
 - **Character column** — shows class icon, name, optional spec icons with compact gear score (`6.6k`, rounded down); tooltip has full spec names
 - **Compact table** — below `md`, pinned columns are actions + name only; name cell shows `shortName` when set (full name in tooltip)
 - **Export** — filter dungeons with table search, then **Export** in toolbar; one line per visible raid lists characters without CD. Per character: icon checkboxes for main/off spec (when set), or a single checkbox when no specs; format `Name: ShortSpec gs` with `,` between specs and ` / ` between characters (e.g. `ICC25 - Elst: Udk 6.6, Blood 6 / Beta: SP 5.8`; export gear scores omit `k`; see `format-character-export.ts`, `build-export-status.ts`, `format-dungeon-label.ts`)
@@ -99,13 +100,13 @@ Example: `feat(auth): add login form`
 - **kebab-case** for component dirs (e.g. `character-form/`)
 - Typical folder: `index.tsx`; add `types.ts` and/or `styles.css` when needed (not every component has all three)
 - complex components like `raid-tracker-table/` may include colocated subcomponents (e.g. `dungeon-cells.tsx`, `character-header-cell.tsx`, `raid-tracker-table-head.tsx`, `dungeon-table-row.tsx`, `pinned-column-renderers.tsx`, `use-raid-tracker-table-state.ts`)
-- Domain state lives in `useTrackerDomain` (persistence, toggles, deletes, template, `updateCharacter`); `RaidTrackerProvider` + `useRaidTrackerContext()` expose domain to the table and main content. `TrackerLayout` composes toolbar (`TrackerControls`), `useTrackerForms`, and export panel state; add-form field state is not in context (avoids re-rendering toolbar/table on keystrokes). Validation in `utils/validate-character.ts` and `utils/validate-dungeon.ts`. `CharacterForm` / `DungeonForm` / `CharacterEditDialog` stay presentational. `App` mounts provider + `TrackerLayout` only. Ephemeral table UI state (sort, search, pending delete, compact columns, edit-character dialog) lives in `useRaidTrackerTableState` colocated with the table. Character name display sx in `utils/character-display.ts`; spec/gear display in `utils/format-character-details.ts` and `components/spec-option-label/`.
+- Domain state lives in `useTrackerDomain` (persistence, toggles, deletes, template, `updateCharacter`, `updateDungeon`); `RaidTrackerProvider` + `useRaidTrackerContext()` expose domain to the table and main content. `TrackerLayout` composes toolbar (`TrackerControls`), `useTrackerForms`, and export panel state; add-form field state is not in context (avoids re-rendering toolbar/table on keystrokes). Validation in `utils/validate-character.ts` and `utils/validate-dungeon.ts`. `CharacterForm` / `DungeonForm` / `CharacterEditDialog` / `DungeonEditDialog` stay presentational. `App` mounts provider + `TrackerLayout` only. Ephemeral table UI state (sort, search, pending delete, compact columns) lives in `useRaidTrackerTableState` colocated with the table; edit-character and edit-dungeon dialog state lives in `RaidTrackerTable`. Character name display sx in `utils/character-display.ts`; spec/gear display in `utils/format-character-details.ts` and `components/spec-option-label/`.
 
 ## Project Structure
 
 ```
 src/
-├── components/ # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, raid-tracker-table, tracker-controls (+ actions.ts), export-panel, …
+├── components/ # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, dungeon-edit-dialog, dungeon-customization-fields, raid-tracker-table, tracker-controls (+ actions.ts), export-panel, …
 ├── constants/ # character.ts, dungeon-form-defaults.ts
 ├── contexts/ # raid-tracker-context.ts, raid-tracker-provider.tsx, color-mode-provider.tsx
 ├── hooks/ # use-tracker-domain.ts, use-compact-layout.ts, use-raid-tracker-context.ts, use-tracker-forms.ts, use-*-form-state.ts, use-export-panel-state.ts, color-mode.ts, …
