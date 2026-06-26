@@ -149,6 +149,33 @@ export function useBisListsDomain() {
     [localState, persistState],
   );
 
+  const updateSelectedLocalPresetSlots = useCallback(
+    (className: ClassName, spec: string, slots: BisListSlot[]) => {
+      const storageKey = specBisStorageKey(className, spec);
+      const existingEntry = localState.entries[storageKey];
+      if (!existingEntry) {
+        return;
+      }
+
+      const selectedPreset = getSelectedPresetForSpec(className, spec, localState);
+      if (!selectedPreset || !isLocalBisPreset(selectedPreset)) {
+        return;
+      }
+
+      const updatedPresets = existingEntry.presets.map((preset) =>
+        preset.id === selectedPreset.id ? { ...preset, slots } : preset,
+      );
+
+      persistState(
+        upsertLocalSpecEntry(localState, className, spec, {
+          selectedPresetId: existingEntry.selectedPresetId,
+          presets: updatedPresets,
+        }),
+      );
+    },
+    [localState, persistState],
+  );
+
   return useMemo(
     () => ({
       localState,
@@ -160,6 +187,7 @@ export function useBisListsDomain() {
       savePresetByName,
       deleteLocalPreset,
       resetSpecToBuiltIn,
+      updateSelectedLocalPresetSlots,
     }),
     [
       deleteLocalPreset,
@@ -171,6 +199,7 @@ export function useBisListsDomain() {
       resetSpecToBuiltIn,
       savePresetByName,
       selectPreset,
+      updateSelectedLocalPresetSlots,
     ],
   );
 }
