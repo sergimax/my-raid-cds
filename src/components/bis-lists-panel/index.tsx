@@ -27,7 +27,7 @@ import {
   formatBisSlotItems,
   hasBuiltInBisForSpec,
   isLocalBisPreset,
-  resolveItemNamesToIds,
+  validateBisSlotItemsText,
 } from "../../utils/bis-lists.ts";
 import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
@@ -46,7 +46,7 @@ const slotRowSx = {
   display: "grid",
   gridTemplateColumns: "6.25rem minmax(0, 1fr)",
   columnGap: 1,
-  alignItems: "center",
+  alignItems: "start",
   py: 0.375,
   minHeight: 32,
 } as const;
@@ -67,34 +67,58 @@ function slotDraftsToPresetSlots(slotDrafts: SlotDraft[]): {
   error: string;
 } {
   const slots: BisListSlot[] = [];
-  const unknownNames: string[] = [];
+  const errors: string[] = [];
 
   for (const slotDraft of slotDrafts) {
-    const resolved = resolveItemNamesToIds(slotDraft.itemsText);
-    if (resolved.unknownNames.length > 0) {
-      unknownNames.push(...resolved.unknownNames);
+    const validated = validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, "strict");
+    if (validated.error) {
+      errors.push(`${gearSlotLabel(slotDraft.slot)}: ${validated.error}`);
+      continue;
     }
-    if (resolved.itemIds.length > 0) {
-      slots.push({ slot: slotDraft.slot, itemIds: resolved.itemIds });
+    if (validated.itemIds.length > 0) {
+      slots.push({ slot: slotDraft.slot, itemIds: validated.itemIds });
     }
   }
 
-  if (unknownNames.length > 0) {
+  if (errors.length > 0) {
     return {
       slots: [],
-      error: `Unknown item name or id: ${unknownNames.join(", ")}`,
+      error: errors.join("; "),
     };
   }
 
   return { slots, error: "" };
 }
 
+function collectSlotValidationErrors(
+  slotDrafts: SlotDraft[],
+  mode: "partial" | "strict",
+): Record<number, string> {
+  const errors: Record<number, string> = {};
+
+  for (const slotDraft of slotDrafts) {
+    const validated = validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, mode);
+    if (validated.error) {
+      errors[slotDraft.slot] = validated.error;
+    }
+  }
+
+  return errors;
+}
+
 type BisSlotRowProps = {
   slotDraft: SlotDraft;
+  validationError?: string;
   onItemsTextChange: (nextValue: string) => void;
+  onItemsTextBlur: (itemsText: string) => void;
 };
 
-function BisSlotRow({ slotDraft, onItemsTextChange }: BisSlotRowProps) {
+function BisSlotRow({
+  slotDraft,
+  validationError,
+  onItemsTextChange,
+  onItemsTextBlur,
+}: BisSlotRowProps) {
   return (
     <Box sx={slotRowSx}>
       <Typography
@@ -109,10 +133,16 @@ function BisSlotRow({ slotDraft, onItemsTextChange }: BisSlotRowProps) {
         fullWidth
         value={slotDraft.itemsText}
         onChange={(event) => onItemsTextChange(event.target.value)}
+        onBlur={(event) => onItemsTextBlur(event.target.value)}
         placeholder="Name, id, or #id"
+        error={Boolean(validationError)}
+        helperText={validationError}
         slotProps={{
           input: {
             sx: { py: 0.75, fontSize: "0.8125rem" },
+          },
+          formHelperText: {
+            sx: { mx: 0, mt: 0.25, lineHeight: 1.3 },
           },
         }}
       />
@@ -126,6 +156,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   const [className, setClassName] = useState<ClassNameType>(ClassName.DeathKnight);
   const [spec, setSpec] = useState("Unholy");
   const [slotDrafts, setSlotDrafts] = useState<SlotDraft[]>([]);
+  const [slotErrors, setSlotErrors] = useState<Record<number, string>>({});
   const [saveListName, setSaveListName] = useState("");
   const [error, setError] = useState("");
 
@@ -150,7 +181,31 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     [activeSpec, bisLists, className],
   );
 
+  const hasSlotErrors = Object.keys(slotErrors).length > 0;
+
+  const updateSlotValidation = useCallback((slot: number, itemsText: string, mode: "partial" | "strict") => {
+    const validated = validateBisSlotItemsText(slot, itemsText, mode);
+    setSlotErrors((previousErrors) => {
+      if (validated.error) {
+        return { ...previousErrors, [slot]: validated.error };
+      }
+      if (!(slot in previousErrors)) {
+        return previousErrors;
+      }
+      const nextErrors = { ...previousErrors };
+      delete nextErrors[slot];
+      return nextErrors;
+    });
+  }, []);
+
   const handleSaveList = useCallback(() => {
+    const strictErrors = collectSlotValidationErrors(slotDrafts, "strict");
+    if (Object.keys(strictErrors).length > 0) {
+      setSlotErrors(strictErrors);
+      setError("Fix item errors before saving.");
+      return;
+    }
+
     const parsed = slotDraftsToPresetSlots(slotDrafts);
     if (parsed.error) {
       setError(parsed.error);
@@ -186,12 +241,15 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
 
   useEffect(() => {
     if (selectedPreset) {
-      setSlotDrafts(presetToSlotDrafts(selectedPreset));
+      const nextDrafts = presetToSlotDrafts(selectedPreset);
+      setSlotDrafts(nextDrafts);
+      setSlotErrors(collectSlotValidationErrors(nextDrafts, "strict"));
       setSaveListName(
         isLocalBisPreset(selectedPreset) ? selectedPreset.name : "",
       );
     } else {
       setSlotDrafts([]);
+      setSlotErrors({});
       setSaveListName("");
     }
     setError("");
@@ -333,6 +391,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                 <BisSlotRow
                   key={slotDraft.slot}
                   slotDraft={slotDraft}
+                  validationError={slotErrors[slotDraft.slot]}
                   onItemsTextChange={(nextValue) => {
                     setSlotDrafts((previousDrafts) =>
                       previousDrafts.map((entry, entryIndex) =>
@@ -341,7 +400,11 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                           : entry,
                       ),
                     );
+                    updateSlotValidation(slotDraft.slot, nextValue, "partial");
                     setError("");
+                  }}
+                  onItemsTextBlur={(itemsText) => {
+                    updateSlotValidation(slotDraft.slot, itemsText, "strict");
                   }}
                 />
               ))}
@@ -365,6 +428,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                 variant="contained"
                 startIcon={<SaveIcon />}
                 onClick={handleSaveList}
+                disabled={hasSlotErrors}
                 sx={{ alignSelf: "flex-start" }}
               >
                 Save list

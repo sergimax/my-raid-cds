@@ -9,6 +9,7 @@ import {
   resolveItemNamesToIds,
   resolveSaveLocalPresetByName,
   specBisStorageKey,
+  validateBisSlotItemsText,
 } from "./bis-lists.ts";
 
 describe("buildBisSlotMap", () => {
@@ -76,6 +77,40 @@ describe("isLocalBisPreset", () => {
       true,
     );
     expect(isLocalBisPreset(unholyDeathKnightBis.presets[0])).toBe(false);
+  });
+});
+
+describe("validateBisSlotItemsText", () => {
+  it("accepts items that match the gear slot", () => {
+    const validated = validateBisSlotItemsText(0, "51312", "strict");
+    expect(validated.error).toBeUndefined();
+    expect(validated.itemIds).toEqual([51312]);
+  });
+
+  it("rejects items placed in the wrong gear slot", () => {
+    const validated = validateBisSlotItemsText(
+      0,
+      "Sanctified Scourgelord Handguards",
+      "strict",
+    );
+    expect(validated.itemIds).toEqual([]);
+    expect(validated.error).toContain("Hands");
+    expect(validated.error).toContain("Head");
+  });
+
+  it("validates complete ids while typing without waiting for blur", () => {
+    const validated = validateBisSlotItemsText(0, "51132", "partial");
+    expect(validated.error).toContain("Hands");
+  });
+
+  it("does not flag incomplete name segments while typing", () => {
+    const validated = validateBisSlotItemsText(0, "Sanctified Scour", "partial");
+    expect(validated.error).toBeUndefined();
+  });
+
+  it("reports unknown items on strict validation", () => {
+    const validated = validateBisSlotItemsText(0, "Not A Real Item", "strict");
+    expect(validated.error).toContain("Unknown item");
   });
 });
 
