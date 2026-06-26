@@ -44,7 +44,7 @@ const PINNED_CELL_BASE_SX = {
 
 // Keep these widths stable so sticky offsets work predictably.
 export const PINNED_WIDTHS = {
-  actions: 36,
+  actions: 68,
   name: 200,
   size: 60,
   difficulty: 84,

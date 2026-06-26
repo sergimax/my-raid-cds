@@ -21,3 +21,13 @@ export const emblemIcons: Record<EmblemKey, string> = {
   [EmblemKey.TRIUMPH]: triumphIcon,
   [EmblemKey.VALOR]: valorIcon,
 };
+
+export const EMBLEM_OPTIONS = Object.values(EmblemKey);
+
+export const emblemLabels: Record<EmblemKey, string> = {
+  [EmblemKey.CONQUEST]: "Conquest",
+  [EmblemKey.FROST]: "Frost",
+  [EmblemKey.HEROISM]: "Heroism",
+  [EmblemKey.TRIUMPH]: "Triumph",
+  [EmblemKey.VALOR]: "Valor",
+};

@@ -2,6 +2,7 @@ import { Stack, Table, TableBody, TableContainer } from "@mui/material";
 import { memo, useCallback, useMemo, useState } from "react";
 import { ExportPanel } from "../export-panel/index.tsx";
 import { CharacterEditDialog } from "../character-edit-dialog/index.tsx";
+import { DungeonEditDialog } from "../dungeon-edit-dialog/index.tsx";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import { DungeonTableRow } from "./dungeon-table-row.tsx";
@@ -31,14 +32,20 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
     handleDeleteDungeon: onDeleteDungeon,
     handleResetCharacterToggles: onResetCharacterToggles,
     updateCharacter,
+    updateDungeon,
   } = domain;
 
   const [editingCharacterId, setEditingCharacterId] = useState<string | null>(
     null,
   );
+  const [editingDungeonId, setEditingDungeonId] = useState<string | null>(null);
   const editingCharacter = useMemo(
     () => characters.find((character) => character.id === editingCharacterId) ?? null,
     [characters, editingCharacterId],
+  );
+  const editingDungeon = useMemo(
+    () => dungeons.find((dungeon) => dungeon.id === editingDungeonId) ?? null,
+    [dungeons, editingDungeonId],
   );
 
   const handleEditCharacter = useCallback((characterId: string) => {
@@ -47,6 +54,14 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
 
   const handleCloseEditCharacter = useCallback(() => {
     setEditingCharacterId(null);
+  }, []);
+
+  const handleEditDungeon = useCallback((dungeonId: string) => {
+    setEditingDungeonId(dungeonId);
+  }, []);
+
+  const handleCloseEditDungeon = useCallback(() => {
+    setEditingDungeonId(null);
   }, []);
 
   const tableState = useRaidTrackerTableState({
@@ -146,6 +161,7 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
                   characterCount={characterCount}
                   dungeonToggles={dungeonToggles}
                   onDungeonToggle={onDungeonToggle}
+                  onEditDungeon={handleEditDungeon}
                   onRequestDeleteDungeon={handleRequestDeleteDungeon}
                 />
               ))
@@ -162,6 +178,11 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
         character={editingCharacter}
         onClose={handleCloseEditCharacter}
         onSave={updateCharacter}
+      />
+      <DungeonEditDialog
+        dungeon={editingDungeon}
+        onClose={handleCloseEditDungeon}
+        onSave={updateDungeon}
       />
     </Stack>
   );

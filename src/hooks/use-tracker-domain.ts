@@ -2,7 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { DungeonList } from "../data/dungeons.ts";
 import { loadRaidTrackerState, saveRaidTrackerState } from "../storage/index.ts";
 import type { CharacterRecord, CharacterSpecGearUpdate } from "../types/characters.ts";
-import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
+import type {
+  DungeonCustomizationUpdate,
+  DungeonRecord,
+  DungeonToggles,
+} from "../types/dungeons.ts";
 import {
   flipCooldown,
   hasAnyCooldownOn,
@@ -73,6 +77,29 @@ export function useTrackerDomain() {
     setDungeons((previous) => [...previous, dungeon]);
   }, []);
 
+  const updateDungeon = useCallback(
+    (dungeonId: string, customization: DungeonCustomizationUpdate) => {
+      setDungeons((previous) =>
+        previous.map((dungeon) => {
+          if (dungeon.id !== dungeonId) {
+            return dungeon;
+          }
+          const next: DungeonRecord = {
+            id: dungeon.id,
+            name: customization.name,
+            size: customization.size,
+            itemLevel: dungeon.itemLevel,
+            difficulty: customization.difficulty,
+            ...(customization.shortName ? { shortName: customization.shortName } : {}),
+            ...(customization.emblem ? { emblem: customization.emblem } : {}),
+          };
+          return next;
+        }),
+      );
+    },
+    [],
+  );
+
   const handleDungeonToggle = useCallback(
     (characterId: string, dungeonId: string) => {
       setDungeonToggles((previous) =>
@@ -136,6 +163,7 @@ export function useTrackerDomain() {
     addCharacter,
     updateCharacter,
     addDungeon,
+    updateDungeon,
     handleDungeonToggle,
     handleDeleteCharacter,
     handleDeleteDungeon,
