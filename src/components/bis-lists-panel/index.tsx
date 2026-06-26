@@ -15,7 +15,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { specsForClass } from "../../data/class-specs.ts";
 import { gearSlotLabel } from "../../data/gear-slot-names.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
@@ -27,6 +27,7 @@ import {
   hasBuiltInBisForSpec,
   resolveItemNamesToIds,
 } from "../../utils/bis-lists.ts";
+import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 import { WowItemAlternatives } from "../wow-item-link/index.tsx";
 
@@ -156,6 +157,13 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     setError("");
   }, [activeSpec, bisLists, className]);
 
+  const handleClose = useCallback(() => {
+    hideExternalWowTooltips();
+    onClose();
+  }, [onClose]);
+
+  useEffect(() => () => hideExternalWowTooltips(), []);
+
   return (
     <Paper ref={panelRef} variant="outlined" sx={{ p: 2 }}>
       <Stack spacing={2}>
@@ -171,7 +179,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
               each character&apos;s main spec.
             </Typography>
           </Box>
-          <IconButton aria-label="Close BiS lists panel" onClick={onClose}>
+          <IconButton aria-label="Close BiS lists panel" onClick={handleClose}>
             <CloseIcon />
           </IconButton>
         </Stack>
