@@ -3,7 +3,10 @@
  *
  * Outputs:
  * - src/data/wotlk-item-names.json — English item names for bundled ilvl ids
+ * - src/data/wotlk-item-names-ru.json — Russian names from WoWRoad (by item id)
  * - src/data/raid-loot-by-key.json — raid loot indexed by gear slot
+ *
+ * Pass --skip-ru to skip the WoWRoad Russian name fetch (network-heavy).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -11,6 +14,10 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, "..");
+
+const WOWROAD_RU_LOCALE = 8;
+const WOWROAD_FETCH_CONCURRENCY = 12;
+const WOWROAD_FETCH_RETRIES = 2;
 
 /** WowSims drop zone ids grouped by template raid key. */
 const RAID_ZONE_IDS = {
@@ -105,10 +112,81 @@ function buildRaidLoot(dbItems) {
   return lootByKey;
 }
 
-function main() {
+function parseWowRoadRussianName(responseText) {
+  const match = responseText.match(/name_ruru:\s*'((?:\\.|[^'\\])*?)'/);
+  if (!match) {
+    return undefined;
+  }
+
+  return match[1].replaceAll("\\'", "'");
+}
+
+async function fetchWowRoadRussianName(itemId) {
+  const url = `https://wowroad.info/ajax.php?item=${itemId}&power&locale=${WOWROAD_RU_LOCALE}`;
+
+  for (let attempt = 0; attempt <= WOWROAD_FETCH_RETRIES; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: { Accept: "text/javascript,*/*" },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const responseText = await response.text();
+      return parseWowRoadRussianName(responseText);
+    } catch (error) {
+      if (attempt === WOWROAD_FETCH_RETRIES) {
+        console.warn(`WoWRoad name fetch failed for item ${itemId}:`, error);
+        return undefined;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+    }
+  }
+
+  return undefined;
+}
+
+async function buildRussianItemNames(itemLevelIds) {
+  const names = {};
+  let nextIndex = 0;
+  let resolvedCount = 0;
+  let failedCount = 0;
+
+  async function worker() {
+    while (nextIndex < itemLevelIds.length) {
+      const itemId = itemLevelIds[nextIndex];
+      nextIndex += 1;
+
+      const russianName = await fetchWowRoadRussianName(itemId);
+      if (russianName) {
+        names[itemId] = russianName;
+        resolvedCount += 1;
+      } else {
+        failedCount += 1;
+      }
+
+      if ((resolvedCount + failedCount) % 250 === 0) {
+        console.log(
+          `WoWRoad RU names: ${resolvedCount + failedCount}/${itemLevelIds.length} processed (${resolvedCount} resolved)`,
+        );
+      }
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: WOWROAD_FETCH_CONCURRENCY }, () => worker()),
+  );
+
+  return { names, resolvedCount, failedCount };
+}
+
+async function main() {
+  const skipRu = process.argv.includes("--skip-ru");
   const dbPath = path.join(rootDir, "scripts/wowsims-db.json");
   const itemLevelsPath = path.join(rootDir, "src/data/wotlk-item-levels.json");
   const namesOutPath = path.join(rootDir, "src/data/wotlk-item-names.json");
+  const namesRuOutPath = path.join(rootDir, "src/data/wotlk-item-names-ru.json");
   const lootOutPath = path.join(rootDir, "src/data/raid-loot-by-key.json");
 
   const db = JSON.parse(fs.readFileSync(dbPath, "utf8"));
@@ -131,6 +209,26 @@ function main() {
   console.log(`Wrote ${Object.keys(names).length} item names → ${namesOutPath}`);
   console.log(`Wrote raid loot for ${Object.keys(lootByKey).length} raids → ${lootOutPath}`);
   console.log("Slots covered per raid:", slotCounts);
+
+  if (skipRu) {
+    console.log("Skipped Russian item names (--skip-ru).");
+    return;
+  }
+
+  console.log(
+    `Fetching ${itemLevelIds.length} Russian item names from WoWRoad (concurrency ${WOWROAD_FETCH_CONCURRENCY})…`,
+  );
+  const { names: russianNames, resolvedCount, failedCount } =
+    await buildRussianItemNames(itemLevelIds);
+
+  fs.writeFileSync(namesRuOutPath, `${JSON.stringify(russianNames)}\n`);
+  console.log(
+    `Wrote ${Object.keys(russianNames).length} Russian item names (${failedCount} missing) → ${namesRuOutPath}`,
+  );
+  console.log(`Resolved ${resolvedCount}/${itemLevelIds.length} WoWRoad names.`);
 }
 
-main();
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
