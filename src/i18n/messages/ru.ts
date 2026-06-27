@@ -1,0 +1,214 @@
+import type { Messages } from "./en.ts";
+
+export const ruMessages: Messages = {
+  common: {
+    cancel: "Отмена",
+    save: "Сохранить",
+    close: "Закрыть",
+    delete: "Удалить",
+    remove: "Убрать",
+    none: "Нет",
+    name: "Имя",
+    class: "Класс",
+    spec: "Спек",
+    size: "Размер",
+    mode: "Режим",
+    searchPlaceholder: "Поиск…",
+  },
+  header: {
+    appTitle: "My Raid CDs",
+    themeLight: "Светлая тема",
+    themeDark: "Тёмная тема",
+    localeTooltipEn:
+      "Язык интерфейса: английский. Нажмите для русского. Подсказки предметов — Cavern of Time.",
+    localeTooltipRu:
+      "Язык интерфейса: русский. Нажмите для английского. Подсказки предметов — WoWRoad.",
+    localeAria: "Язык интерфейса {{locale}}. Переключить на {{nextLocale}}.",
+    versionAria: "Версия {{version}}",
+    authorHint: "by sergimax via cursor",
+  },
+  intro: {
+    body:
+      "Добавьте персонажей и подземелья, отмечайте использование КД в ячейках. Данные сохраняются в браузере. Если список пуст, используйте",
+    addFromTemplate: "Добавить из шаблона",
+    bodySuffix: "для загрузки рейдов WotLK (русские названия).",
+  },
+  toolbar: {
+    actionsAria: "Действия трекера",
+    addFromTemplate: "Добавить из шаблона",
+    addCharacter: "Добавить персонажа",
+    addDungeon: "Добавить подземелье",
+    bisLists: "BiS списки",
+    export: "Экспорт",
+    resetAllToggles: "Сбросить все переключатели",
+  },
+  table: {
+    dungeonName: "Название подземелья",
+    itemLevel: "Уровень предметов",
+    complete: "Готово",
+    rowActions: "Действия строки",
+    filterByDungeonName: "Фильтр по названию подземелья",
+    emptyNoDungeons:
+      "Добавьте подземелье или используйте «Добавить из шаблона».",
+    emptyNoSearchMatches: "Нет подземелий по вашему запросу.",
+    ariaNoDungeons: "Трекер КД рейдов, нет подземелий",
+    ariaNoSearchMatches: "Трекер КД рейдов, нет совпадений по поиску",
+    ariaDefault: "Трекер КД рейдов по подземельям и персонажам",
+    editDungeon: "Изменить: {{name}}",
+    deleteDungeon: "Удалить подземелье: {{name}}",
+    editCharacter: "Изменить: {{name}}",
+    resetCharacterToggles: "Сбросить переключатели для {{name}}",
+    removeCharacter: "Удалить персонажа {{name}}",
+    toggleAria: "{{character}} — {{dungeon}}",
+    difficultyNormal: "N",
+    difficultyHeroic: "H ☠️",
+    emptyIlvl: "—",
+  },
+  characterForm: {
+    title: "Новый персонаж",
+    addCharacter: "Добавить персонажа",
+    main: "Основной",
+    off: "Второй",
+    gearScore: "GearScore",
+    gearScoreHelper: "Необязательно — из аддона GearScore",
+  },
+  dungeonForm: {
+    title: "Новое подземелье",
+    addDungeon: "Добавить подземелье",
+    shortName: "Короткое имя",
+    shortNameHelper:
+      "Сокращение для компактного вида. Оставьте пустым для известных рейдов.",
+    itemLevels: "Уровни предметов",
+    itemLevelsHelper:
+      "Одно или несколько значений через / или запятую (напр. 200 или 200 / 213).",
+    difficulty: "Сложность",
+    badge: "Эмблема",
+  },
+  difficulty: {
+    normal: "Обычный",
+    heroic: "Героический",
+  },
+  characterEdit: {
+    title: "Изменить персонажа",
+    importGear: "Импорт экипировки из WowSimsExporter",
+    storedGear: "Сохранённая экипировка",
+    avgIlvl: " · ср. ilvl {{ilvl}}",
+    unknownItemIds: "{{count}} id предметов нет в базе ilvl",
+    wseJson: "JSON WowSimsExporter",
+    wsePlaceholder: "Вставьте вывод /wse export",
+    wseHelper:
+      "Импортирует экипировку (id, зачарования, камни). GearScore вручную.",
+    importButton: "Импорт экипировки",
+    importedSummary: "Импортировано: {{summary}}.",
+    importedSpec: "Спек: {{spec}}.",
+  },
+  dungeonEdit: {
+    title: "Изменить подземелье",
+  },
+  deleteDialog: {
+    removeCharacterTitle: "Удалить персонажа?",
+    removeCharacterMessage:
+      'Удалить «{{name}}» и все переключатели КД? Это нельзя отменить.',
+    deleteDungeonTitle: "Удалить подземелье?",
+    deleteDungeonMessage:
+      'Удалить «{{name}}» и все переключатели КД? Это нельзя отменить.',
+  },
+  bisPanel: {
+    title: "BiS списки",
+    layoutHint:
+      "Класс и спек слева · предметы в центре · списки и сохранение справа",
+    helpTooltip:
+      "Пресеты BiS по спекам. Сохраняйте свои списки; повторное сохранение с тем же именем обновляет список. Подсказки апгрейда используют выбранный список для основного спека персонажа.",
+    classAndSpec: "Класс и спек",
+    items: "Предметы",
+    lists: "Списки",
+    builtinReadOnly:
+      "Встроенный список (только чтение). Сохраните под своим именем для редактирования.",
+    editHint:
+      "Наведите на предмет для подсказки. Редактируйте слот, подтвердите ✓ или отмените ✕.",
+    noBuiltinList: "Нет встроенного BiS для {{class}} {{spec}}.",
+    noBuiltinListDev:
+      "Нет встроенного BiS для {{class}} {{spec}}. Добавьте пресеты в src/data/bis-presets/.",
+    listName: "Имя списка",
+    listNamePlaceholder: "Имя своего списка",
+    saveList: "Сохранить список",
+    localListsOnly: "Для этого спека только локальные списки.",
+    itemSearchPlaceholder: "Имя, id или #id",
+    confirmHelper: "Подтвердите ✓ или отмените ✕",
+    cancelEditing: "Отменить редактирование",
+    confirmItem: "Подтвердить предмет для слота",
+    editSlot: "Редактировать слот",
+    cancelEditingAria: "Отменить редактирование {{slot}}",
+    confirmItemAria: "Подтвердить {{slot}}",
+    editSlotAria: "Редактировать {{slot}}",
+    closeAria: "Закрыть панель BiS",
+    confirmAllSlots: "Подтвердите все слоты перед сохранением списка.",
+    fixItemErrors: "Исправьте ошибки предметов перед сохранением.",
+    presetDefault: "По умолчанию",
+  },
+  exportPanel: {
+    title: "Экспорт",
+    instructions:
+      "Отфильтруйте подземелья поиском в таблице, скопируйте строки ниже — по одной на рейд с персонажами без КД (переключатель выкл.). Отметьте спеки для каждого персонажа.",
+    noCharacters: "Добавьте персонажа для формирования сводки.",
+    exportText: "Текст экспорта",
+    includeSpecAria: "Включить {{spec}} для {{name}}",
+    includeCharacterAria: "Включить {{name}} в экспорт",
+    textareaAria: "Персонажи без КД по подземельям, для копирования",
+    noDungeonsFilter: "Нет подземелий по текущему фильтру.",
+    selectCharacter: "Выберите хотя бы одного персонажа.",
+    allHaveCd: "У всех выбранных персонажей есть КД на подходящих подземельях.",
+  },
+  gearHint: {
+    bisMissing: "{{count}} BiS слот(ов) без целей",
+    raidLootUpgrades: "{{count}} слот(ов) с лутом из рейда",
+    belowIlvl: "{{count}} из {{total}} предметов ниже ilvl {{ilvl}}",
+    moreSlots: "+ещё {{count}}",
+    slotArrow: "{{slot}} → {{item}}",
+  },
+  storedGear: {
+    ilvlUnknown: "ilvl ?",
+    ilvl: "ilvl {{ilvl}}",
+    itemCount: "{{count}} предм.",
+    avgIlvl: "ср. ilvl {{ilvl}}",
+    unknownIds: "{{count}} неизвестных id",
+  },
+  validation: {
+    characterNameRequired: "Введите имя и выберите класс.",
+    characterNameTooLong: "Имя персонажа — не более {{max}} символов.",
+    characterDuplicate: "Персонаж с таким именем и классом уже есть.",
+    gearScoreRange:
+      "GearScore {{specLabel}} — целое число от {{min}} до {{max}}.",
+    gearScoreNeedsSpec:
+      "Выберите спек {{specLabel}} для привязки GearScore.",
+    invalidMainSpec: "Выберите корректный основной спек для этого класса.",
+    invalidOffSpec: "Выберите корректный второй спек для этого класса.",
+    specsMustDiffer: "Основной и второй спек должны отличаться.",
+    mainSpecLabel: "Основной спек",
+    offSpecLabel: "Второй спек",
+    dungeonNameRequired: "Введите название подземелья.",
+    shortNameTooLong: "Короткое имя — не более {{max}} символов.",
+    invalidEmblem: "Выберите корректную эмблему.",
+    itemLevelRequired:
+      "Введите хотя бы один уровень предметов (напр. 200 или 200 / 213).",
+    bisListNameRequired: "Требуется имя списка",
+    bisListNameBuiltin: "Используйте своё имя (не имя встроенного списка)",
+    bisUnknownItem: "Неизвестный предмет: {{name}}",
+    bisUnknownItemId: "Неизвестный id предмета: {{id}}",
+    bisWrongSlot: '«{{item}}» относится к {{expectedSlots}}, а не к {{slot}}',
+    wsePasteRequired: "Вставьте JSON WowSimsExporter для импорта.",
+    wseInvalidJson: "Некорректный JSON. Скопируйте полный экспорт из /wse export.",
+    wseNotObject: "Экспорт должен быть JSON-объектом.",
+    wseNoItems: "В экспорте нет экипированных предметов.",
+    wseClassMismatch:
+      "Класс в экспорте — {{exportClass}}, а персонаж — {{expected}}.",
+    wseSpecMismatch:
+      'Не удалось сопоставить спек «{{spec}}» для {{class}}.',
+  },
+  storage: {
+    corrupted:
+      "Сохранённые данные повреждены и сброшены. Предыдущие данные не загрузились.",
+    quotaExceeded: "Превышена квота хранилища. Освободите место.",
+    saveFailed: "Не удалось сохранить данные. Попробуйте снова.",
+  },
+};
