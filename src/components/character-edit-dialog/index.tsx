@@ -12,11 +12,7 @@ import {
 import type { SubmitEvent } from "react";
 import { useCallback, useState, useEffect } from "react";
 import type { CharacterGearItem } from "../../types/character-gear.ts";
-import type {
-  CharacterRecord,
-  CharacterSpecGear,
-  CharacterSpecGearUpdate,
-} from "../../types/characters.ts";
+import type { CharacterRecord, CharacterSpecGearUpdate } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedClassName, getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import {
@@ -28,6 +24,11 @@ import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.
 import { CharacterSpecGearFields } from "../character-spec-gear-fields/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 import { CharacterSpecGearImportSection } from "./character-spec-gear-import-section.tsx";
+import {
+  attachGearToSpec,
+  gearItemsForSpecSave,
+  initialGearLoadedForSpec,
+} from "./character-edit-spec-gear.ts";
 
 type CharacterEditDialogProps = {
   character: CharacterRecord | null;
@@ -40,23 +41,6 @@ type CharacterEditDialogContentProps = {
   onClose: () => void;
   onSave: (characterId: string, specGear: CharacterSpecGearUpdate) => void;
 };
-
-function attachGearToSpec(
-  specGear: CharacterSpecGear | undefined,
-  gearItems: CharacterGearItem[] | undefined,
-): CharacterSpecGear | undefined {
-  if (!specGear) {
-    return undefined;
-  }
-  const next: CharacterSpecGear = { spec: specGear.spec };
-  if (specGear.gearScore !== undefined) {
-    next.gearScore = specGear.gearScore;
-  }
-  if (gearItems && gearItems.length > 0) {
-    next.gearItems = gearItems;
-  }
-  return next;
-}
 
 function CharacterEditDialogContent({
   character,
@@ -76,12 +60,52 @@ function CharacterEditDialogContent({
   const [mainGearItems, setMainGearItems] = useState<
     CharacterGearItem[] | undefined
   >(character.mainSpec?.gearItems);
+  const [mainGearLoadedForSpec, setMainGearLoadedForSpec] = useState(() =>
+    initialGearLoadedForSpec(character.mainSpec),
+  );
   const [offGearItems, setOffGearItems] = useState<
     CharacterGearItem[] | undefined
   >(character.offSpec?.gearItems);
+  const [offGearLoadedForSpec, setOffGearLoadedForSpec] = useState(() =>
+    initialGearLoadedForSpec(character.offSpec),
+  );
   const [error, setError] = useState("");
 
   useEffect(() => () => hideExternalWowTooltips(), []);
+
+  const handleMainSpecChange = useCallback((value: string) => {
+    setMainSpec(value);
+    if (value !== mainGearLoadedForSpec) {
+      setMainGearItems(undefined);
+      setMainGearLoadedForSpec("");
+    }
+    setError("");
+  }, [mainGearLoadedForSpec]);
+
+  const handleOffSpecChange = useCallback((value: string) => {
+    setOffSpec(value);
+    if (value !== offGearLoadedForSpec) {
+      setOffGearItems(undefined);
+      setOffGearLoadedForSpec("");
+    }
+    setError("");
+  }, [offGearLoadedForSpec]);
+
+  const handleMainGearItemsChange = useCallback(
+    (gearItems: CharacterGearItem[] | undefined) => {
+      setMainGearItems(gearItems);
+      setMainGearLoadedForSpec(mainSpec);
+    },
+    [mainSpec],
+  );
+
+  const handleOffGearItemsChange = useCallback(
+    (gearItems: CharacterGearItem[] | undefined) => {
+      setOffGearItems(gearItems);
+      setOffGearLoadedForSpec(offSpec);
+    },
+    [offSpec],
+  );
 
   const handleSubmit = useCallback(
     (event: SubmitEvent<HTMLFormElement>) => {
@@ -100,8 +124,22 @@ function CharacterEditDialogContent({
         return;
       }
       onSave(character.id, {
-        mainSpec: attachGearToSpec(result.mainSpec, mainGearItems),
-        offSpec: attachGearToSpec(result.offSpec, offGearItems),
+        mainSpec: attachGearToSpec(
+          result.mainSpec,
+          gearItemsForSpecSave(
+            result.mainSpec?.spec,
+            mainGearItems,
+            mainGearLoadedForSpec,
+          ),
+        ),
+        offSpec: attachGearToSpec(
+          result.offSpec,
+          gearItemsForSpecSave(
+            result.offSpec?.spec,
+            offGearItems,
+            offGearLoadedForSpec,
+          ),
+        ),
       });
       onClose();
     },
@@ -110,9 +148,11 @@ function CharacterEditDialogContent({
       character.id,
       locale,
       mainGearItems,
+      mainGearLoadedForSpec,
       mainGearScoreText,
       mainSpec,
       offGearItems,
+      offGearLoadedForSpec,
       offGearScoreText,
       offSpec,
       onClose,
@@ -155,18 +195,12 @@ function CharacterEditDialogContent({
                 mainGearScoreText={mainGearScoreText}
                 offSpec={offSpec}
                 offGearScoreText={offGearScoreText}
-                onMainSpecChange={(value) => {
-                  setMainSpec(value);
-                  setError("");
-                }}
+                onMainSpecChange={handleMainSpecChange}
                 onMainGearScoreTextChange={(value) => {
                   setMainGearScoreText(value);
                   setError("");
                 }}
-                onOffSpecChange={(value) => {
-                  setOffSpec(value);
-                  setError("");
-                }}
+                onOffSpecChange={handleOffSpecChange}
                 onOffGearScoreTextChange={(value) => {
                   setOffGearScoreText(value);
                   setError("");
@@ -179,7 +213,7 @@ function CharacterEditDialogContent({
                 label={mainSpecLabel}
                 characterClass={character.class}
                 gearItems={mainGearItems}
-                onGearItemsChange={setMainGearItems}
+                onGearItemsChange={handleMainGearItemsChange}
                 onError={setError}
                 onClearError={() => setError("")}
                 locale={locale}
@@ -192,7 +226,7 @@ function CharacterEditDialogContent({
                     label={offSpecLabel}
                     characterClass={character.class}
                     gearItems={offGearItems}
-                    onGearItemsChange={setOffGearItems}
+                    onGearItemsChange={handleOffGearItemsChange}
                     onError={setError}
                     onClearError={() => setError("")}
                     locale={locale}
