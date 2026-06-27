@@ -19,7 +19,7 @@ describe("buildBisSlotMap", () => {
     const slotMap = buildBisSlotMap(unholyDeathKnightBis.presets[0]);
     expect(slotMap.get(1)).toContain(54581);
     expect(slotMap.get(14)).toContain(49623);
-    expect(slotMap.get(16)).toEqual([50459, 47673]);
+    expect(slotMap.get(16)).toBeUndefined();
   });
 });
 
@@ -60,13 +60,13 @@ describe("getSelectedPresetForSpec", () => {
       schemaVersion: 1,
       entries: {
         [storageKey]: {
-          selectedPresetId: "default",
+          selectedPresetId: "warmane-drakantas-udk-str",
           presets: [],
         },
       },
     });
 
-    expect(selected?.id).toBe("default");
+    expect(selected?.id).toBe("warmane-drakantas-udk-str");
     expect(selected?.slots.some((slot) => slot.itemIds.includes(54581))).toBe(
       true,
     );
