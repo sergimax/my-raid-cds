@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.18.0] - 2026-06-27
+
+### Added
+
+- **Tier set token hints:** Gear-upgrade tooltips on character toggle cells include a token table when the hovered dungeon row drops sanctification / ToC tokens and the character’s BiS list targets tier set pieces still needing an upgrade. Shows token name (linked), quantity, and gear slots; ICC (10H / 25N / 25H) and ToC token bosses only — no table on raids that do not drop tokens (e.g. Ruby Sanctum).
+- **Bundled tier set data:** `tier-sets-by-item-id.json` (upgrade chains per set slot), `tier-set-tokens.ts` (T10 + T9 token ids and drop sources), `evaluateTierSetHint` in `utils/tier-set-hint.ts`; `GearHintTooltipContent` composes loot summary and token rows.
+
+### Changed
+
+- **`npm run build:wow-data`:** Also writes `src/data/tier-sets-by-item-id.json` from `scripts/wowsims-db.json` (PvE tier sets T8–T10; excludes PvP Gladiator sets).
+
 ## [1.17.1] - 2026-06-27
 
 ### Changed
