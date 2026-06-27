@@ -1,8 +1,10 @@
 import type { ClassName } from "../../types/characters.ts";
 import type { BisListPreset, BuiltInSpecBis } from "../../types/bis-lists.ts";
+import { bloodDeathKnightBis } from "./blood-death-knight.ts";
 import { unholyDeathKnightBis } from "./unholy-death-knight.ts";
 
 export const BuiltInBisPresets: readonly BuiltInSpecBis[] = [
+  bloodDeathKnightBis,
   unholyDeathKnightBis,
 ];
 
