@@ -127,9 +127,8 @@ export const enMessages = {
       "Built-in list (read-only). Save under a custom name to create an editable copy.",
     editHint:
       "Hover item names for tooltips. Edit a slot, then confirm with ✓ or cancel with ✕.",
-    noBuiltinList: "No built-in BiS list for {{class}} {{spec}} yet.",
-    noBuiltinListDev:
-      "No built-in BiS list for {{class}} {{spec}} yet. Add presets in src/data/bis-presets/.",
+    createCustomListHint:
+      "No built-in BiS list for {{class}} {{spec}}. Add items below and save under a custom name.",
     listName: "List name",
     listNamePlaceholder: "Custom list name",
     saveList: "Save list",
