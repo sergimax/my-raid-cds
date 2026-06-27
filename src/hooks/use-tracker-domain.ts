@@ -66,11 +66,6 @@ export function useTrackerDomain() {
           if (specGear.offSpec !== undefined) {
             next.offSpec = specGear.offSpec;
           }
-          if (specGear.gearItems !== undefined) {
-            next.gearItems = specGear.gearItems;
-          } else if (character.gearItems !== undefined) {
-            next.gearItems = character.gearItems;
-          }
           return next;
         }),
       );

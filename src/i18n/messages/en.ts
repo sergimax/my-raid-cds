@@ -88,6 +88,8 @@ export const enMessages = {
   characterEdit: {
     title: "Edit character details",
     importGear: "Import gear from WowSimsExporter",
+    mainSpecGear: "Main spec gear",
+    offSpecGear: "Off spec gear",
     storedGear: "Stored gear",
     avgIlvl: " · avg ilvl {{ilvl}}",
     unknownItemIds: "{{count}} item id(s) not in the ilvl database",
@@ -115,7 +117,7 @@ export const enMessages = {
     layoutHint:
       "Choose class & spec on the left. Items in the center. Lists & save on the right. The active list will be used for upgrade hints in the table.",
     helpTooltip:
-      "Preset best-in-slot targets per spec. Save custom lists with a name; saving again with the same name updates that list. Upgrade hints use the selected list for each character's main spec.",
+      "Preset best-in-slot targets per spec. Save custom lists with a name; saving again with the same name updates that list. Upgrade hints use the selected list for each character's main and off spec.",
     classAndSpec: "Class & spec",
     items: "Items",
     lists: "Lists",

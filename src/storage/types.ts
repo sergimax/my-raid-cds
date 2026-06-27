@@ -17,6 +17,7 @@ export type LoadRaidTrackerResult = {
 export type StoredCharacterSpecGear = {
   spec: string;
   gearScore?: number;
+  gearItems?: StoredCharacterGearItem[];
 };
 
 export type StoredCharacterGearItem = {
@@ -34,6 +35,7 @@ export type StoredCharacter = {
   offSpec?: StoredCharacterSpecGear | string;
   /** Legacy v2 flat gear score — migrated to main spec on load. */
   gearScore?: number;
+  /** Legacy v4 flat gear — migrated to main spec on load. */
   gearItems?: StoredCharacterGearItem[];
 };
 

@@ -224,9 +224,41 @@ describe("loadRaidTrackerState", () => {
     });
 
     const result = loadRaidTrackerState();
-    expect(result.state.characters[0]?.gearItems).toEqual([
+    expect(result.state.characters[0]?.mainSpec?.gearItems).toEqual([
       { slot: 0, id: 51197, enchant: 3817, gems: [41398, 40118] },
       { slot: 14, id: 50426, enchant: 3789 },
+    ]);
+  });
+
+  it("loads per-spec gear items from stored spec objects", () => {
+    writeStoredPayload({
+      schemaVersion: 5,
+      characters: [
+        {
+          id: "character-1",
+          name: "Rhee",
+          className: Classes[7].name,
+          mainSpec: {
+            spec: "Enhancement",
+            gearScore: 6400,
+            gearItems: [{ slot: 0, id: 51197 }],
+          },
+          offSpec: {
+            spec: "Restoration",
+            gearItems: [{ slot: 1, id: 50426 }],
+          },
+        },
+      ],
+      dungeons: [],
+      dungeonToggles: {},
+    });
+
+    const result = loadRaidTrackerState();
+    expect(result.state.characters[0]?.mainSpec?.gearItems).toEqual([
+      { slot: 0, id: 51197 },
+    ]);
+    expect(result.state.characters[0]?.offSpec?.gearItems).toEqual([
+      { slot: 1, id: 50426 },
     ]);
   });
 });

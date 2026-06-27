@@ -338,3 +338,49 @@ export function gearUpgradeHintCellSx(
     ),
   });
 }
+
+function hintLevelBackgroundColor(
+  hintLevel: GearUpgradeHintLevel,
+  dungeonItemLevels: readonly number[],
+  theme: Theme,
+): string | undefined {
+  if (hintLevel === 0 || dungeonItemLevels.length === 0) {
+    return undefined;
+  }
+  const dungeonTier = getItemLevelTier([...dungeonItemLevels]);
+  return alpha(
+    getItemLevelTierColor(dungeonTier, theme.palette.mode),
+    GEAR_UPGRADE_HINT_ALPHAS[hintLevel],
+  );
+}
+
+/** Split cell tint when both main and off spec have upgrade hints. */
+export function gearUpgradeHintDualCellSx(
+  mainLevel: GearUpgradeHintLevel,
+  offLevel: GearUpgradeHintLevel,
+  dungeonItemLevels: readonly number[],
+): SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>) {
+  if (dungeonItemLevels.length === 0) {
+    return {};
+  }
+  if (mainLevel === 0 && offLevel === 0) {
+    return {};
+  }
+  if (offLevel === 0) {
+    return gearUpgradeHintCellSx(mainLevel, dungeonItemLevels);
+  }
+  if (mainLevel === 0) {
+    return gearUpgradeHintCellSx(offLevel, dungeonItemLevels);
+  }
+
+  return (theme) => {
+    const mainColor = hintLevelBackgroundColor(mainLevel, dungeonItemLevels, theme);
+    const offColor = hintLevelBackgroundColor(offLevel, dungeonItemLevels, theme);
+    if (!mainColor || !offColor) {
+      return {};
+    }
+    return {
+      background: `linear-gradient(to right, ${mainColor} 50%, ${offColor} 50%)`,
+    };
+  };
+}

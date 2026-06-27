@@ -3,7 +3,21 @@ import {
   STORAGE_KEY,
 } from "./constants.ts";
 import { pruneToggles } from "../utils/dungeon-toggles.ts";
-import type { PersistedTrackerState, StoredCharacter, StoredDungeon, StoredPayload } from "./types.ts";
+import type { CharacterRecord } from "../types/characters.ts";
+import type { PersistedTrackerState, StoredCharacter, StoredCharacterSpecGear, StoredDungeon, StoredPayload } from "./types.ts";
+
+function toStoredSpecGear(
+  specGear: NonNullable<CharacterRecord["mainSpec"]>,
+): StoredCharacterSpecGear {
+  const stored: StoredCharacterSpecGear = { spec: specGear.spec };
+  if (specGear.gearScore !== undefined) {
+    stored.gearScore = specGear.gearScore;
+  }
+  if (specGear.gearItems) {
+    stored.gearItems = specGear.gearItems;
+  }
+  return stored;
+}
 
 export function saveRaidTrackerState(
   state: PersistedTrackerState,
@@ -17,9 +31,8 @@ export function saveRaidTrackerState(
     id: character.id,
     name: character.name,
     className: character.class?.name ?? "",
-    ...(character.mainSpec ? { mainSpec: character.mainSpec } : {}),
-    ...(character.offSpec ? { offSpec: character.offSpec } : {}),
-    ...(character.gearItems ? { gearItems: character.gearItems } : {}),
+    ...(character.mainSpec ? { mainSpec: toStoredSpecGear(character.mainSpec) } : {}),
+    ...(character.offSpec ? { offSpec: toStoredSpecGear(character.offSpec) } : {}),
   }));
 
   const storedDungeons: StoredDungeon[] = dungeons.map((dungeon) => ({

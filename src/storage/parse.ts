@@ -160,7 +160,15 @@ function parseStoredSpecGearPair(
       return undefined;
     }
     const gearScore = parseOptionalStoredInteger(record.gearScore);
-    return gearScore !== undefined ? { spec, gearScore } : { spec };
+    const gearItems = parseStoredGearItems(record.gearItems);
+    const result: CharacterSpecGear = { spec };
+    if (gearScore !== undefined) {
+      result.gearScore = gearScore;
+    }
+    if (gearItems) {
+      result.gearItems = gearItems;
+    }
+    return result;
   }
 
   if (typeof storedValue === "string") {
@@ -168,7 +176,11 @@ function parseStoredSpecGearPair(
     if (!spec) {
       return undefined;
     }
-    return legacyGearScore !== undefined ? { spec, gearScore: legacyGearScore } : { spec };
+    const result: CharacterSpecGear = { spec };
+    if (legacyGearScore !== undefined) {
+      result.gearScore = legacyGearScore;
+    }
+    return result;
   }
 
   return undefined;
@@ -237,13 +249,17 @@ function parseCharacters(storedCharacters: StoredCharacter[]): CharacterRecord[]
       if (!charClass) return null;
 
       const legacyGearScore = parseOptionalStoredInteger(stored.gearScore);
-      const mainSpec = parseStoredSpecGearPair(
+      const legacyGearItems = parseStoredGearItems(stored.gearItems);
+      let mainSpec = parseStoredSpecGearPair(
         charClass.name,
         stored.mainSpec,
         legacyGearScore,
       );
       const offSpec = parseStoredSpecGearPair(charClass.name, stored.offSpec);
-      const gearItems = parseStoredGearItems(stored.gearItems);
+
+      if (mainSpec && legacyGearItems && !mainSpec.gearItems) {
+        mainSpec = { ...mainSpec, gearItems: legacyGearItems };
+      }
 
       return {
         id: stored.id,
@@ -251,7 +267,6 @@ function parseCharacters(storedCharacters: StoredCharacter[]): CharacterRecord[]
         class: charClass,
         ...(mainSpec ? { mainSpec } : {}),
         ...(offSpec && offSpec.spec !== mainSpec?.spec ? { offSpec } : {}),
-        ...(gearItems ? { gearItems } : {}),
       } as CharacterRecord;
     })
     .filter((character): character is CharacterRecord => character !== null);

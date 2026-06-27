@@ -5,31 +5,29 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 import type { SubmitEvent } from "react";
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import type { CharacterGearItem } from "../../types/character-gear.ts";
-import type { CharacterRecord, CharacterSpecGearUpdate } from "../../types/characters.ts";
+import type {
+  CharacterRecord,
+  CharacterSpecGear,
+  CharacterSpecGearUpdate,
+} from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
-import { getLocalizedClassName } from "../../i18n/localized-domain.ts";
-import {
-  formatGearSummary,
-  sortGearItemsBySlot,
-} from "../../utils/format-stored-gear.ts";
-import { summarizeGearItemLevels } from "../../utils/summarize-gear-item-levels.ts";
-import { StoredGearItemLine } from "../stored-gear-item-line/index.tsx";
+import { getLocalizedClassName, getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import {
   characterSpecGearFormValues,
   parseCharacterSpecGearFields,
 } from "../../utils/validate-character.ts";
 import { characterNameDisplaySx } from "../../utils/character-display.ts";
-import { parseWowSimsExporterJson } from "../../utils/parse-wowsims-exporter.ts";
 import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { CharacterSpecGearFields } from "../character-spec-gear-fields/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
+import { CharacterSpecGearImportSection } from "./character-spec-gear-import-section.tsx";
 
 type CharacterEditDialogProps = {
   character: CharacterRecord | null;
@@ -42,6 +40,23 @@ type CharacterEditDialogContentProps = {
   onClose: () => void;
   onSave: (characterId: string, specGear: CharacterSpecGearUpdate) => void;
 };
+
+function attachGearToSpec(
+  specGear: CharacterSpecGear | undefined,
+  gearItems: CharacterGearItem[] | undefined,
+): CharacterSpecGear | undefined {
+  if (!specGear) {
+    return undefined;
+  }
+  const next: CharacterSpecGear = { spec: specGear.spec };
+  if (specGear.gearScore !== undefined) {
+    next.gearScore = specGear.gearScore;
+  }
+  if (gearItems && gearItems.length > 0) {
+    next.gearItems = gearItems;
+  }
+  return next;
+}
 
 function CharacterEditDialogContent({
   character,
@@ -58,69 +73,15 @@ function CharacterEditDialogContent({
   const [offGearScoreText, setOffGearScoreText] = useState(
     initialValues.offGearScoreText,
   );
-  const [gearItems, setGearItems] = useState<CharacterGearItem[] | undefined>(
-    character.gearItems,
-  );
-  const [wowsimsImportText, setWowsimsImportText] = useState("");
-  const [importNotice, setImportNotice] = useState("");
+  const [mainGearItems, setMainGearItems] = useState<
+    CharacterGearItem[] | undefined
+  >(character.mainSpec?.gearItems);
+  const [offGearItems, setOffGearItems] = useState<
+    CharacterGearItem[] | undefined
+  >(character.offSpec?.gearItems);
   const [error, setError] = useState("");
 
-  const storedGearSummary = useMemo(() => {
-    if (!gearItems || gearItems.length === 0) {
-      return null;
-    }
-    return summarizeGearItemLevels(gearItems);
-  }, [gearItems]);
-
-  const sortedGearItems = useMemo(
-    () => (gearItems ? sortGearItemsBySlot(gearItems) : []),
-    [gearItems],
-  );
-
   useEffect(() => () => hideExternalWowTooltips(), []);
-
-  const handleImportGear = useCallback(() => {
-    if (!character.class) {
-      return;
-    }
-
-    setError("");
-    setImportNotice("");
-
-    const result = parseWowSimsExporterJson(
-      wowsimsImportText,
-      character.class.name,
-      locale,
-    );
-    if (!result.ok) {
-      setError(result.error);
-      return;
-    }
-
-    setGearItems(result.gearItems);
-
-    if (result.exportSpec) {
-      if (!mainSpec || mainSpec === result.exportSpec) {
-        setMainSpec(result.exportSpec);
-      }
-    }
-
-    const noticeParts = [
-      t("characterEdit.importedSummary", {
-        summary: formatGearSummary(result.gearItems, locale),
-      }),
-    ];
-    if (result.exportSpec) {
-      noticeParts.push(
-        t("characterEdit.importedSpec", { spec: result.exportSpec }),
-      );
-    }
-    if (result.warnings.length > 0) {
-      noticeParts.push(result.warnings.join(" "));
-    }
-    setImportNotice(noticeParts.join(" "));
-    setWowsimsImportText("");
-  }, [character.class, locale, mainSpec, t, wowsimsImportText]);
 
   const handleSubmit = useCallback(
     (event: SubmitEvent<HTMLFormElement>) => {
@@ -139,25 +100,34 @@ function CharacterEditDialogContent({
         return;
       }
       onSave(character.id, {
-        mainSpec: result.mainSpec,
-        offSpec: result.offSpec,
-        gearItems,
+        mainSpec: attachGearToSpec(result.mainSpec, mainGearItems),
+        offSpec: attachGearToSpec(result.offSpec, offGearItems),
       });
       onClose();
     },
     [
       character.class,
       character.id,
-      gearItems,
       locale,
+      mainGearItems,
       mainGearScoreText,
       mainSpec,
+      offGearItems,
       offGearScoreText,
       offSpec,
       onClose,
       onSave,
     ],
   );
+
+  const mainSpecLabel =
+    mainSpec && character.class
+      ? getLocalizedSpecName(character.class.name, mainSpec, locale)
+      : t("characterEdit.mainSpecGear");
+  const offSpecLabel =
+    offSpec && character.class
+      ? getLocalizedSpecName(character.class.name, offSpec, locale)
+      : t("characterEdit.offSpecGear");
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -202,74 +172,34 @@ function CharacterEditDialogContent({
                   setError("");
                 }}
               />
-              <Stack spacing={1}>
-                <Typography variant="body2" color="text.secondary">
-                  {t("characterEdit.importGear")}
-                </Typography>
-                {storedGearSummary ? (
-                  <Stack spacing={0.5}>
-                    <Typography variant="body2">
-                      {t("characterEdit.storedGear")}
-                      {storedGearSummary.averageItemLevel !== undefined
-                        ? t("characterEdit.avgIlvl", {
-                            ilvl: storedGearSummary.averageItemLevel,
-                          })
-                        : ""}
-                    </Typography>
-                    <Box
-                      component="ul"
-                      sx={{ m: 0, pl: 2.5, maxHeight: 160, overflowY: "auto" }}
-                    >
-                      {sortedGearItems.map((item) => (
-                        <Typography
-                          key={`${item.slot}-${item.id}`}
-                          component="li"
-                          variant="body2"
-                        >
-                          <StoredGearItemLine item={item} />
-                        </Typography>
-                      ))}
-                    </Box>
-                    {storedGearSummary.unknownItemIds.length > 0 ? (
-                      <Typography variant="caption" color="warning.main">
-                        {t("characterEdit.unknownItemIds", {
-                          count: storedGearSummary.unknownItemIds.length,
-                        })}
-                      </Typography>
-                    ) : null}
-                  </Stack>
-                ) : null}
-                <TextField
-                  label={t("characterEdit.wseJson")}
-                  value={wowsimsImportText}
-                  onChange={(event) => {
-                    setWowsimsImportText(event.target.value);
-                    setError("");
-                    setImportNotice("");
-                  }}
-                  multiline
-                  minRows={4}
-                  maxRows={10}
-                  placeholder={t("characterEdit.wsePlaceholder")}
-                  helperText={t("characterEdit.wseHelper")}
-                  fullWidth
-                />
-                <Box>
-                  <Button
-                    type="button"
-                    variant="outlined"
-                    onClick={handleImportGear}
-                    disabled={wowsimsImportText.trim() === ""}
-                  >
-                    {t("characterEdit.importButton")}
-                  </Button>
-                </Box>
-                {importNotice ? (
-                  <Typography variant="body2" color="success.main">
-                    {importNotice}
-                  </Typography>
-                ) : null}
-              </Stack>
+              <Typography variant="body2" color="text.secondary">
+                {t("characterEdit.importGear")}
+              </Typography>
+              <CharacterSpecGearImportSection
+                label={mainSpecLabel}
+                characterClass={character.class}
+                gearItems={mainGearItems}
+                onGearItemsChange={setMainGearItems}
+                onError={setError}
+                onClearError={() => setError("")}
+                locale={locale}
+                t={t}
+              />
+              {offSpec ? (
+                <>
+                  <Divider />
+                  <CharacterSpecGearImportSection
+                    label={offSpecLabel}
+                    characterClass={character.class}
+                    gearItems={offGearItems}
+                    onGearItemsChange={setOffGearItems}
+                    onError={setError}
+                    onClearError={() => setError("")}
+                    locale={locale}
+                    t={t}
+                  />
+                </>
+              ) : null}
             </>
           ) : null}
           {error ? <FormErrorMessage message={error} /> : null}
