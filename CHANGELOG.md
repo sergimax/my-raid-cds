@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.0] - 2026-06-27
+
+### Added
+
+- **Titans BiS presets:** Built-in **Titans** lists for 21 WotLK specs (Death Knight Blood/Frost/Unholy, Druid Balance/Feral/Restoration, Hunter Marksmanship, Mage Arcane/Fire, Paladin Holy/Protection/Retribution, Priest Discipline/Shadow, Rogue Combat, Shaman Elemental/Enhancement/Restoration, Warlock Affliction/Demonology, Warrior Fury) — ICC/RS tier from Titans guild guides in `data/bis-presets/`.
+- **Titans BiS tooling:** `npm run generate:titans-bis` parses `scripts/titans-bis/source.md` and writes or merges preset TypeScript; `npm run comment:bis-presets` adds slot + item name trailing comments via `scripts/bis-preset-format.mjs`.
+
+### Changed
+
+- **Blood / Unholy DK presets:** Existing **Default** lists kept; **Titans** variant added alongside; all preset slot lines include inline item-name comments.
+- **Type column:** `formatDungeonTypeLabel` supports a `skull` style; `DungeonTypeCell` uses the localized skull marker for Heroic rows (export labels still use `H` / `хм` suffixes).
+
 ## [1.21.0] - 2026-06-27
 
 ### Changed
