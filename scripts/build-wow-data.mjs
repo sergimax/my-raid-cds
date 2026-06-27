@@ -6,6 +6,7 @@
  * - src/data/wotlk-item-names-ru.json — Russian names from WoWRoad (by item id)
  * - src/data/wotlk-item-gear-slots.json — valid gear slot indices per item id
  * - src/data/raid-loot-by-key.json — raid loot indexed by gear slot
+ * - src/data/tier-sets-by-item-id.json — tier set piece upgrade chains
  *
  * Pass --skip-ru to skip the WoWRoad Russian name fetch (network-heavy).
  */
@@ -90,6 +91,257 @@ function buildRaidLoot(dbItems, itemLevelIds) {
   }
 
   return lootByKey;
+}
+
+const TIER_SET_GEAR_SLOTS = new Set([0, 2, 4, 6, 8, 10]);
+
+/** ICC / ToC token category per tier 10 set name (from in-game vendor groups). */
+const T10_TOKEN_TYPE_BY_SET = {
+  "Ahn'Kahar Blood Hunter's Battlegear": "protector",
+  "Bloodmage's Regalia": "vanquisher",
+  "Crimson Acolyte's Raiment": "conqueror",
+  "Crimson Acolyte's Regalia": "conqueror",
+  "Dark Coven's Regalia": "vanquisher",
+  "Frost Witch's Battlegear": "protector",
+  "Frost Witch's Garb": "protector",
+  "Frost Witch's Regalia": "protector",
+  "Lasherweave Battlegear": "vanquisher",
+  "Lasherweave Garb": "vanquisher",
+  "Lasherweave Regalia": "vanquisher",
+  "Lightsworn Battlegear": "conqueror",
+  "Lightsworn Garb": "conqueror",
+  "Lightsworn Plate": "conqueror",
+  "Scourgelord's Battlegear": "vanquisher",
+  "Scourgelord's Plate": "protector",
+  "Shadowblade's Battlegear": "vanquisher",
+  "Ymirjar Lord's Battlegear": "protector",
+  "Ymirjar Lord's Plate": "protector",
+};
+
+/** ToC tier 9 sets share the same token groups as ICC tier 10. */
+const T9_TOKEN_TYPE_BY_SET = {
+  "Garona's Battlegear": "vanquisher",
+  "Gul'dan's Regalia": "vanquisher",
+  "Hellscream's Battlegear": "protector",
+  "Hellscream's Plate": "protector",
+  "Kel'Thuzad's Regalia": "vanquisher",
+  "Khadgar's Regalia": "vanquisher",
+  "Koltira's Battlegear": "vanquisher",
+  "Koltira's Plate": "protector",
+  "Liadrin's Battlegear": "conqueror",
+  "Liadrin's Garb": "conqueror",
+  "Liadrin's Plate": "conqueror",
+  "Malfurion's Battlegear": "vanquisher",
+  "Malfurion's Garb": "vanquisher",
+  "Malfurion's Regalia": "vanquisher",
+  "Nobundo's Battlegear": "protector",
+  "Nobundo's Garb": "protector",
+  "Nobundo's Regalia": "protector",
+  "Runetotem's Battlegear": "vanquisher",
+  "Runetotem's Garb": "vanquisher",
+  "Runetotem's Regalia": "vanquisher",
+  "Sunstrider's Regalia": "vanquisher",
+  "Thassarian's Battlegear": "vanquisher",
+  "Thassarian's Plate": "protector",
+  "Thrall's Battlegear": "protector",
+  "Thrall's Garb": "protector",
+  "Thrall's Regalia": "protector",
+  "Turalyon's Battlegear": "conqueror",
+  "Turalyon's Garb": "conqueror",
+  "Turalyon's Plate": "conqueror",
+  "VanCleef's Battlegear": "vanquisher",
+  "Velen's Raiment": "conqueror",
+  "Velen's Regalia": "conqueror",
+  "Windrunner's Battlegear": "protector",
+  "Windrunner's Pursuit": "protector",
+  "Wrynn's Battlegear": "protector",
+  "Wrynn's Plate": "protector",
+  "Zabra's Raiment": "conqueror",
+  "Zabra's Regalia": "conqueror",
+};
+
+/** Ulduar tier 8 token groups (Runed Orb upgrades use the same categories). */
+const T8_TOKEN_TYPE_BY_SET = {
+  "Aegis Battlegear": "conqueror",
+  "Aegis Plate": "conqueror",
+  "Aegis Regalia": "conqueror",
+  "Darkruned Battlegear": "vanquisher",
+  "Darkruned Plate": "protector",
+  "Deathbringer Garb": "vanquisher",
+  "Nightsong Battlegear": "vanquisher",
+  "Nightsong Garb": "vanquisher",
+  "Nightsong Regalia": "vanquisher",
+  "Sanctification Garb": "conqueror",
+  "Sanctification Regalia": "conqueror",
+  "Scourgestalker Battlegear": "protector",
+  "Siegebreaker Battlegear": "protector",
+  "Siegebreaker Plate": "protector",
+  "Terrorblade Battlegear": "vanquisher",
+  "Worldbreaker Battlegear": "protector",
+  "Worldbreaker Garb": "protector",
+  "Worldbreaker Regalia": "protector",
+};
+
+const T10_NORMAL_TOKEN_BY_TYPE = {
+  vanquisher: 52005,
+  protector: 52006,
+  conqueror: 52007,
+};
+
+const T10_HEROIC_TOKEN_BY_TYPE = {
+  vanquisher: 52030,
+  protector: 52031,
+  conqueror: 52032,
+};
+
+const T9_NORMAL_TOKEN_BY_TYPE = {
+  vanquisher: 47559,
+  protector: 47558,
+  conqueror: 47557,
+};
+
+const T9_HEROIC_TOKEN_BY_TYPE = {
+  vanquisher: 47554,
+  protector: 47556,
+  conqueror: 47555,
+};
+
+function inferTierFromItemLevels(itemLevels) {
+  if (itemLevels.includes(277)) {
+    return "t10";
+  }
+  if (itemLevels.includes(258)) {
+    return "t9";
+  }
+  if (itemLevels.includes(245)) {
+    return "t9";
+  }
+  return "t8";
+}
+
+function tokenTypeForSet(setName, tier) {
+  if (tier === "t10") {
+    return T10_TOKEN_TYPE_BY_SET[setName];
+  }
+  if (tier === "t9") {
+    return T9_TOKEN_TYPE_BY_SET[setName];
+  }
+  return T8_TOKEN_TYPE_BY_SET[setName];
+}
+
+function tokenItemIdForStep(tokenType, tier, step) {
+  if (!tokenType) {
+    return undefined;
+  }
+
+  if (tier === "t10") {
+    return step === 3
+      ? T10_HEROIC_TOKEN_BY_TYPE[tokenType]
+      : T10_NORMAL_TOKEN_BY_TYPE[tokenType];
+  }
+
+  if (tier === "t9") {
+    return step === 3
+      ? T9_HEROIC_TOKEN_BY_TYPE[tokenType]
+      : T9_NORMAL_TOKEN_BY_TYPE[tokenType];
+  }
+
+  return undefined;
+}
+
+function buildTierSetsByItemId(dbItems) {
+  const piecesBySet = {};
+
+  for (const item of dbItems) {
+    if (!item.setName || item.ilvl < 219) {
+      continue;
+    }
+
+    if (item.setName.startsWith("Gladiator's")) {
+      continue;
+    }
+
+    const slot = itemToGearSlots(item).find((gearSlot) =>
+      TIER_SET_GEAR_SLOTS.has(gearSlot),
+    );
+    if (slot === undefined) {
+      continue;
+    }
+
+    if (!piecesBySet[item.setName]) {
+      piecesBySet[item.setName] = {};
+    }
+    if (!piecesBySet[item.setName][slot]) {
+      piecesBySet[item.setName][slot] = [];
+    }
+
+    piecesBySet[item.setName][slot].push({
+      id: item.id,
+      itemLevel: item.ilvl,
+    });
+  }
+
+  const tierSetsByItemId = {};
+
+  for (const [setName, slots] of Object.entries(piecesBySet)) {
+    const allItemLevels = [
+      ...new Set(
+        Object.values(slots).flatMap((pieces) => pieces.map((piece) => piece.itemLevel)),
+      ),
+    ];
+    const tier = inferTierFromItemLevels(allItemLevels);
+    const tokenType = tokenTypeForSet(setName, tier);
+    if (!tokenType) {
+      continue;
+    }
+
+    for (const [slotKey, pieces] of Object.entries(slots)) {
+      const sortedPieces = [...pieces].sort(
+        (leftPiece, rightPiece) => leftPiece.itemLevel - rightPiece.itemLevel,
+      );
+      const uniqueLevels = [
+        ...new Set(sortedPieces.map((piece) => piece.itemLevel)),
+      ].sort((leftLevel, rightLevel) => leftLevel - rightLevel);
+
+      for (let index = 0; index < sortedPieces.length; index += 1) {
+        const piece = sortedPieces[index];
+        const step = (uniqueLevels.indexOf(piece.itemLevel) + 1);
+        if (step < 1 || step > 3) {
+          continue;
+        }
+
+        const prevItemLevel = uniqueLevels[step - 2];
+        const prevPiece =
+          prevItemLevel === undefined
+            ? undefined
+            : sortedPieces.find(
+                (candidate) => candidate.itemLevel === prevItemLevel,
+              );
+
+        const entry = {
+          setName,
+          slot: Number(slotKey),
+          itemLevel: piece.itemLevel,
+          tier,
+          step,
+          tokenType,
+        };
+
+        if (prevPiece) {
+          entry.prevItemId = prevPiece.id;
+        }
+
+        const tokenItemId = tokenItemIdForStep(tokenType, tier, step);
+        if (tokenItemId !== undefined && step > 1) {
+          entry.tokenItemId = tokenItemId;
+        }
+
+        tierSetsByItemId[String(piece.id)] = entry;
+      }
+    }
+  }
+
+  return tierSetsByItemId;
 }
 
 function parseWowRoadRussianName(responseText) {
@@ -202,6 +454,7 @@ async function main() {
   const namesRuOutPath = path.join(rootDir, "src/data/wotlk-item-names-ru.json");
   const gearSlotsOutPath = path.join(rootDir, "src/data/wotlk-item-gear-slots.json");
   const lootOutPath = path.join(rootDir, "src/data/raid-loot-by-key.json");
+  const tierSetsOutPath = path.join(rootDir, "src/data/tier-sets-by-item-id.json");
 
   const db = JSON.parse(fs.readFileSync(dbPath, "utf8"));
   const itemLevels = JSON.parse(fs.readFileSync(itemLevelsPath, "utf8"));
@@ -210,10 +463,12 @@ async function main() {
   const names = buildItemNames(db.items, itemLevelIds);
   const gearSlotsByItemId = buildItemGearSlotsMap(db.items, itemLevelIds);
   const lootByKey = buildRaidLoot(db.items, itemLevelIds);
+  const tierSetsByItemId = buildTierSetsByItemId(db.items);
 
   fs.writeFileSync(namesOutPath, `${JSON.stringify(names)}\n`);
   fs.writeFileSync(gearSlotsOutPath, `${JSON.stringify(gearSlotsByItemId)}\n`);
   fs.writeFileSync(lootOutPath, `${JSON.stringify(lootByKey)}\n`);
+  fs.writeFileSync(tierSetsOutPath, `${JSON.stringify(tierSetsByItemId)}\n`);
 
   const slotCounts = Object.fromEntries(
     Object.entries(lootByKey).map(([raidKey, loot]) => [
@@ -228,6 +483,9 @@ async function main() {
   );
   console.log(`Wrote raid loot for ${Object.keys(lootByKey).length} raids → ${lootOutPath}`);
   console.log("Slots covered per raid:", slotCounts);
+  console.log(
+    `Wrote ${Object.keys(tierSetsByItemId).length} tier set pieces → ${tierSetsOutPath}`,
+  );
 
   if (skipRu) {
     console.log("Skipped Russian item names (--skip-ru).");

@@ -11,6 +11,11 @@ import {
   formatGearUpgradeHintTooltip,
   gearUpgradeHintCellSx,
 } from "../../utils/gear-upgrade-hint.ts";
+import {
+  evaluateTierSetHint,
+  hasTierSetTokenHint,
+} from "../../utils/tier-set-hint.ts";
+import { GearHintTooltipContent } from "../gear-hint-tooltip/index.tsx";
 import { CHARACTER_BODY_CELL_SX } from "./table-layout.ts";
 
 type CharacterToggleCellProps = {
@@ -38,7 +43,13 @@ export function CharacterToggleCell({
     [bisSlotMap, character.gearItems, dungeon],
   );
 
-  const tooltipTitle = formatGearUpgradeHintTooltip(upgradeHint, locale, t);
+  const tierSetHint = useMemo(
+    () => evaluateTierSetHint(character.gearItems, dungeon, bisSlotMap),
+    [bisSlotMap, character.gearItems, dungeon],
+  );
+
+  const gearSummary = formatGearUpgradeHintTooltip(upgradeHint, locale, t);
+  const showTooltip = Boolean(gearSummary) || hasTierSetTokenHint(tierSetHint);
   const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
 
   const toggleSwitch = (
@@ -67,8 +78,23 @@ export function CharacterToggleCell({
         gearUpgradeHintCellSx(upgradeHint.level, dungeon.itemLevel),
       ]}
     >
-      {tooltipTitle ? (
-        <Tooltip title={tooltipTitle}>
+      {showTooltip ? (
+        <Tooltip
+          disableInteractive={false}
+          slotProps={{
+            tooltip: {
+              sx: { maxWidth: "none", p: 1 },
+            },
+          }}
+          title={
+            <GearHintTooltipContent
+              gearHint={upgradeHint}
+              tierSetHint={tierSetHint}
+              locale={locale}
+              t={t}
+            />
+          }
+        >
           <span>{toggleSwitch}</span>
         </Tooltip>
       ) : (
