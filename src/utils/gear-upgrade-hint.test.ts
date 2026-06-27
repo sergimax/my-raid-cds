@@ -234,6 +234,23 @@ describe("evaluateGearUpgradeHint", () => {
     expect(hint.slotAware).toBe(true);
     expect(hint.upgradeSlotCount).toBe(0);
   });
+
+  it("does not suggest crossbow ranged upgrades for priests", () => {
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 16, id: 50033 }],
+      {
+        name: "ICC25 HM",
+        raidKey: "icecrownCitadel",
+        itemLevel: [277, 284],
+      },
+      undefined,
+      { className: ClassName.Priest, spec: "Shadow" },
+    );
+
+    const rangedHint = hint.upgradeSlots.find((slotHint) => slotHint.slot === 16);
+    expect(rangedHint?.bestLootItemId).not.toBe(49981);
+    expect(rangedHint?.bestLootItemId).not.toBe(50733);
+  });
 });
 
 describe("formatGearUpgradeHintTooltip", () => {

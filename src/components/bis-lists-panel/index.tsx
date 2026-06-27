@@ -36,6 +36,7 @@ import {
   isLocalBisPreset,
   validateBisSlotItemsText,
 } from "../../utils/bis-lists.ts";
+import type { CharacterEquipContext } from "../../utils/item-equip-restrictions.ts";
 import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 import { WowItemAlternatives } from "../wow-item-link/index.tsx";
@@ -105,6 +106,7 @@ function presetToSlotDrafts(preset: BisListPreset): SlotDraft[] {
 function slotDraftsToPresetSlots(
   slotDrafts: SlotDraft[],
   locale: AppLocale,
+  equipContext: CharacterEquipContext,
 ): {
   slots: BisListSlot[];
   error: string;
@@ -113,7 +115,12 @@ function slotDraftsToPresetSlots(
   const errors: string[] = [];
 
   for (const slotDraft of slotDrafts) {
-    const validated = validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, "strict");
+    const validated = validateBisSlotItemsText(
+      slotDraft.slot,
+      slotDraft.itemsText,
+      "strict",
+      equipContext,
+    );
     if (validated.error) {
       errors.push(
         `${getLocalizedGearSlotLabel(slotDraft.slot, locale)}: ${validated.error}`,
@@ -138,11 +145,17 @@ function slotDraftsToPresetSlots(
 function collectSlotValidationErrors(
   slotDrafts: SlotDraft[],
   mode: "partial" | "strict",
+  equipContext: CharacterEquipContext,
 ): Record<number, string> {
   const errors: Record<number, string> = {};
 
   for (const slotDraft of slotDrafts) {
-    const validated = validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, mode);
+    const validated = validateBisSlotItemsText(
+      slotDraft.slot,
+      slotDraft.itemsText,
+      mode,
+      equipContext,
+    );
     if (validated.error) {
       errors[slotDraft.slot] = validated.error;
     }
@@ -156,6 +169,7 @@ type BisSlotRowProps = {
   validationError?: string;
   isEditing: boolean;
   readOnly: boolean;
+  equipContext: CharacterEquipContext;
   onItemsTextChange: (nextValue: string) => void;
   onItemsTextBlur: (itemsText: string) => void;
   onConfirm: () => void;
@@ -168,6 +182,7 @@ function BisSlotRow({
   validationError,
   isEditing,
   readOnly,
+  equipContext,
   onItemsTextChange,
   onItemsTextBlur,
   onConfirm,
@@ -180,8 +195,8 @@ function BisSlotRow({
   const canConfirm =
     isEditing &&
     !validationError &&
-    validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, "strict").error ===
-      undefined &&
+    validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, "strict", equipContext)
+      .error === undefined &&
     isSlotDraftDirty(slotDraft);
 
   useEffect(() => {
@@ -328,11 +343,16 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   const [trackedEditorSessionKey, setTrackedEditorSessionKey] =
     useState(editorSessionKey);
 
+  const equipContext = useMemo<CharacterEquipContext>(
+    () => ({ className, spec: activeSpec }),
+    [activeSpec, className],
+  );
+
   if (editorSessionKey !== trackedEditorSessionKey) {
     setTrackedEditorSessionKey(editorSessionKey);
     const nextDrafts = selectedPreset ? presetToSlotDrafts(selectedPreset) : [];
     setSlotDrafts(nextDrafts);
-    setSlotErrors(collectSlotValidationErrors(nextDrafts, "strict"));
+    setSlotErrors(collectSlotValidationErrors(nextDrafts, "strict", equipContext));
     setEditingSlots({});
     setSaveListName(
       selectedPreset && isLocalBisPreset(selectedPreset) ? selectedPreset.name : "",
@@ -352,7 +372,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   const hasUnconfirmedSlots = slotDrafts.some(isSlotDraftDirty);
 
   const updateSlotValidation = useCallback((slot: number, itemsText: string, mode: "partial" | "strict") => {
-    const validated = validateBisSlotItemsText(slot, itemsText, mode);
+    const validated = validateBisSlotItemsText(slot, itemsText, mode, equipContext);
     setSlotErrors((previousErrors) => {
       if (validated.error) {
         return { ...previousErrors, [slot]: validated.error };
@@ -364,7 +384,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
       delete nextErrors[slot];
       return nextErrors;
     });
-  }, []);
+  }, [equipContext]);
 
   const handleConfirmSlot = useCallback(
     (slotIndex: number) => {
@@ -373,7 +393,11 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
         return;
       }
 
-      const confirmed = confirmBisSlotItemsText(slotDraft.slot, slotDraft.itemsText);
+      const confirmed = confirmBisSlotItemsText(
+        slotDraft.slot,
+        slotDraft.itemsText,
+        equipContext,
+      );
       if (!confirmed.ok) {
         setSlotErrors((previousErrors) => ({
           ...previousErrors,
@@ -420,7 +444,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
         );
       }
     },
-    [activeSpec, bisLists, className, selectedPreset, slotDrafts],
+    [activeSpec, bisLists, className, equipContext, selectedPreset, slotDrafts],
   );
 
   const handleStartEditSlot = useCallback(
@@ -472,14 +496,14 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
       return;
     }
 
-    const strictErrors = collectSlotValidationErrors(slotDrafts, "strict");
+    const strictErrors = collectSlotValidationErrors(slotDrafts, "strict", equipContext);
     if (Object.keys(strictErrors).length > 0) {
       setSlotErrors(strictErrors);
       setError(t("bisPanel.fixItemErrors"));
       return;
     }
 
-    const parsed = slotDraftsToPresetSlots(slotDrafts, locale);
+    const parsed = slotDraftsToPresetSlots(slotDrafts, locale, equipContext);
     if (parsed.error) {
       setError(parsed.error);
       return;
@@ -497,7 +521,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     }
 
     setError("");
-  }, [activeSpec, bisLists, className, hasUnconfirmedSlots, locale, saveListName, slotDrafts, t]);
+  }, [activeSpec, bisLists, className, equipContext, hasUnconfirmedSlots, locale, saveListName, slotDrafts, t]);
 
   const handleDeleteLocalPreset = useCallback(
     (presetId: string) => {
@@ -540,6 +564,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
             validationError={slotErrors[slotDraft.slot]}
             isEditing={isSlotEditing(slotDraft, editingSlots, isBuiltInPresetSelected)}
             readOnly={isBuiltInPresetSelected}
+            equipContext={equipContext}
             onItemsTextChange={(nextValue) => {
               setSlotDrafts((previousDrafts) =>
                 previousDrafts.map((entry, entryIndex) =>

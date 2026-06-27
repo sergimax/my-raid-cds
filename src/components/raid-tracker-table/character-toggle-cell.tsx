@@ -39,8 +39,12 @@ export function CharacterToggleCell({
   );
 
   const upgradeHint = useMemo(
-    () => evaluateGearUpgradeHint(character.gearItems, dungeon, bisSlotMap),
-    [bisSlotMap, character.gearItems, dungeon],
+    () =>
+      evaluateGearUpgradeHint(character.gearItems, dungeon, bisSlotMap, {
+        className: character.class?.name,
+        spec: character.mainSpec?.spec,
+      }),
+    [bisSlotMap, character.class?.name, character.gearItems, character.mainSpec?.spec, dungeon],
   );
 
   const tierSetHint = useMemo(
