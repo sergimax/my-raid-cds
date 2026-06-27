@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.20.0] - 2026-06-27
+
+### Added
+
+- **Per-spec gear import:** **Edit character** has separate WowSimsExporter import sections for main and off spec (off section when off spec is set); each spec stores its own equipped items.
+- **Dual-spec upgrade hints:** Table toggle cells evaluate hints per spec — each uses that spec’s imported gear and selected BiS list. When both specs have hints, the cell uses a split background tint (main left, off right); tooltips show labeled sections per spec.
+- **Blood DK BiS preset:** Built-in **Default** list for Death Knight / Blood (Warmane ICC / RS guide) in `data/bis-presets/blood-death-knight.ts`.
+
+### Changed
+
+- **Character storage:** `gearItems` live on `mainSpec` / `offSpec` (`{ spec, gearScore?, gearItems? }`); legacy v4 top-level `gearItems` migrate to `mainSpec.gearItems` on load. Tracker `schemaVersion` **5**.
+- **Gear hints:** `evaluateCharacterGearHints` in `utils/character-gear-hints.ts` replaces main-spec-only hint path; `GearHintTooltipContent` composes per-spec sections.
+
 ## [1.19.0] - 2026-06-27
 
 ### Added
