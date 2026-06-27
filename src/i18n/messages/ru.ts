@@ -166,6 +166,12 @@ export const ruMessages: Messages = {
     moreSlots: "+ещё {{count}}",
     slotArrow: "{{slot}} → {{item}}",
   },
+  tierSet: {
+    tokensFromRaid: "{{count}} жетон(ов) сета из этого рейда",
+    tokenColumn: "Жетон",
+    countColumn: "Кол-во",
+    slotsColumn: "Слоты",
+  },
   storedGear: {
     ilvlUnknown: "ilvl ?",
     ilvl: "ilvl {{ilvl}}",

@@ -163,6 +163,12 @@ export const enMessages = {
     moreSlots: "+{{count}} more",
     slotArrow: "{{slot}} → {{item}}",
   },
+  tierSet: {
+    tokensFromRaid: "{{count}} tier set token(s) from this raid",
+    tokenColumn: "Token",
+    countColumn: "Qty",
+    slotsColumn: "Slots",
+  },
   storedGear: {
     ilvlUnknown: "ilvl ?",
     ilvl: "ilvl {{ilvl}}",
