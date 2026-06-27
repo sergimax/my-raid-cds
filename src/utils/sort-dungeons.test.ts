@@ -59,6 +59,27 @@ describe("sortDungeons", () => {
     expect(sorted.map((dungeon) => dungeon.id)).toEqual(["25h", "25n", "10n"]);
   });
 
+  it("sorts same type by item level descending (higher ilvl first)", () => {
+    const mixed = [
+      createTestDungeon({
+        id: "low",
+        name: "ICC",
+        size: 25,
+        difficulty: DungeonDifficulty.NORMAL,
+        itemLevel: [264],
+      }),
+      createTestDungeon({
+        id: "high",
+        name: "ICC",
+        size: 25,
+        difficulty: DungeonDifficulty.NORMAL,
+        itemLevel: [277],
+      }),
+    ];
+    const sorted = sortDungeons(mixed, "type", "desc");
+    expect(sorted.map((dungeon) => dungeon.id)).toEqual(["high", "low"]);
+  });
+
   it("sorts by item level using starting tier", () => {
     const mixed = [
       createTestDungeon({ id: "low", name: "Low", itemLevel: [200] }),
