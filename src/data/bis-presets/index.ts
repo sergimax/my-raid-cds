@@ -1,49 +1,15 @@
 import type { ClassName } from "../../types/characters.ts";
 import type { BisListPreset, BuiltInSpecBis } from "../../types/bis-lists.ts";
-import { bloodDeathKnightBis } from "./blood-death-knight.ts";
 import { unholyDeathKnightBis } from "./unholy-death-knight.ts";
 import { enhancementShamanBis } from "./enhancement-shaman.ts";
-import { restorationShamanBis } from "./restoration-shaman.ts";
-import { elementalShamanBis } from "./elemental-shaman.ts";
-import { afflictionWarlockBis } from "./affliction-warlock.ts";
-import { demonologyWarlockBis } from "./demonology-warlock.ts";
-import { frostDeathKnightBis } from "./frost-death-knight.ts";
-import { combatRogueBis } from "./combat-rogue.ts";
-import { holyPaladinBis } from "./holy-paladin.ts";
-import { protectionPaladinBis } from "./protection-paladin.ts";
-import { retributionPaladinBis } from "./retribution-paladin.ts";
-import { marksmanshipHunterBis } from "./marksmanship-hunter.ts";
-import { fireMageBis } from "./fire-mage.ts";
-import { arcaneMageBis } from "./arcane-mage.ts";
-import { disciplinePriestBis } from "./discipline-priest.ts";
-import { shadowPriestBis } from "./shadow-priest.ts";
-import { restorationDruidBis } from "./restoration-druid.ts";
-import { balanceDruidBis } from "./balance-druid.ts";
 import { feralDruidBis } from "./feral-druid.ts";
-import { furyWarriorBis } from "./fury-warrior.ts";
+import { restorationDruidBis } from "./restoration-druid.ts";
 
 export const BuiltInBisPresets: readonly BuiltInSpecBis[] = [
-  bloodDeathKnightBis,
   unholyDeathKnightBis,
-  furyWarriorBis,
-  feralDruidBis,
-  balanceDruidBis,
-  restorationDruidBis,
-  shadowPriestBis,
-  disciplinePriestBis,
-  arcaneMageBis,
-  fireMageBis,
-  marksmanshipHunterBis,
-  retributionPaladinBis,
-  protectionPaladinBis,
-  holyPaladinBis,
-  combatRogueBis,
-  frostDeathKnightBis,
-  demonologyWarlockBis,
-  afflictionWarlockBis,
-  elementalShamanBis,
-  restorationShamanBis,
   enhancementShamanBis,
+  feralDruidBis,
+  restorationDruidBis,
 ];
 
 export function findBuiltInSpecBis(
