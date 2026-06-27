@@ -7,14 +7,13 @@ import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
 import {
-  evaluateGearUpgradeHint,
-  formatGearUpgradeHintTooltip,
+  evaluateCharacterGearHints,
+  hasAnyGearHint,
+} from "../../utils/character-gear-hints.ts";
+import {
+  gearUpgradeHintDualCellSx,
   gearUpgradeHintCellSx,
 } from "../../utils/gear-upgrade-hint.ts";
-import {
-  evaluateTierSetHint,
-  hasTierSetTokenHint,
-} from "../../utils/tier-set-hint.ts";
 import { GearHintTooltipContent } from "../gear-hint-tooltip/index.tsx";
 import { CHARACTER_BODY_CELL_SX } from "./table-layout.ts";
 
@@ -33,28 +32,29 @@ export function CharacterToggleCell({
 }: CharacterToggleCellProps) {
   const bisLists = useBisListsContext();
   const { locale, t } = useTranslation();
-  const bisSlotMap = useMemo(
-    () => bisLists.getBisSlotMapForCharacter(character),
-    [bisLists, character],
-  );
 
-  const upgradeHint = useMemo(
+  const gearHints = useMemo(
     () =>
-      evaluateGearUpgradeHint(character.gearItems, dungeon, bisSlotMap, {
-        className: character.class?.name,
-        spec: character.mainSpec?.spec,
-      }),
-    [bisSlotMap, character.class?.name, character.gearItems, character.mainSpec?.spec, dungeon],
+      evaluateCharacterGearHints(
+        character,
+        dungeon,
+        bisLists.getBisSlotMapForSpec,
+      ),
+    [bisLists.getBisSlotMapForSpec, character, dungeon],
   );
 
-  const tierSetHint = useMemo(
-    () => evaluateTierSetHint(character.gearItems, dungeon, bisSlotMap),
-    [bisSlotMap, character.gearItems, dungeon],
-  );
-
-  const gearSummary = formatGearUpgradeHintTooltip(upgradeHint, locale, t);
-  const showTooltip = Boolean(gearSummary) || hasTierSetTokenHint(tierSetHint);
+  const showTooltip = hasAnyGearHint(gearHints);
   const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
+
+  const mainLevel = gearHints.main?.gearHint.level ?? 0;
+  const offLevel = gearHints.off?.gearHint.level ?? 0;
+  const hasBothSpecHints = Boolean(gearHints.main && gearHints.off);
+  const cellHintSx = hasBothSpecHints
+    ? gearUpgradeHintDualCellSx(mainLevel, offLevel, dungeon.itemLevel)
+    : gearUpgradeHintCellSx(
+        Math.max(mainLevel, offLevel),
+        dungeon.itemLevel,
+      );
 
   const toggleSwitch = (
     <Switch
@@ -77,10 +77,7 @@ export function CharacterToggleCell({
   return (
     <TableCell
       align="center"
-      sx={[
-        CHARACTER_BODY_CELL_SX,
-        gearUpgradeHintCellSx(upgradeHint.level, dungeon.itemLevel),
-      ]}
+      sx={[CHARACTER_BODY_CELL_SX, cellHintSx]}
     >
       {showTooltip ? (
         <Tooltip
@@ -92,8 +89,8 @@ export function CharacterToggleCell({
           }}
           title={
             <GearHintTooltipContent
-              gearHint={upgradeHint}
-              tierSetHint={tierSetHint}
+              gearHints={gearHints}
+              characterClassName={character.class?.name}
               locale={locale}
               t={t}
             />

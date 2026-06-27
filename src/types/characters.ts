@@ -36,10 +36,11 @@ export const Classes: Array<CharacterClass> = [
 
 import type { CharacterGearItem } from "./character-gear.ts";
 
-/** Talent specialization with optional GearScore for that spec's gear set. */
+/** Talent specialization with optional GearScore and imported gear for that spec. */
 export type CharacterSpecGear = {
   spec: string;
   gearScore?: number;
+  gearItems?: CharacterGearItem[];
 };
 
 export type Character = {
@@ -47,7 +48,6 @@ export type Character = {
   class?: CharacterClass;
   mainSpec?: CharacterSpecGear;
   offSpec?: CharacterSpecGear;
-  gearItems?: CharacterGearItem[];
 };
 
 export type CharacterRecord = Character & { id: string };
@@ -55,5 +55,4 @@ export type CharacterRecord = Character & { id: string };
 export type CharacterSpecGearUpdate = {
   mainSpec?: CharacterSpecGear;
   offSpec?: CharacterSpecGear;
-  gearItems?: CharacterGearItem[];
 };
