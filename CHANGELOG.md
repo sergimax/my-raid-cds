@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.1] - 2026-06-27
+
+### Changed
+
+- **BiS lists — specs without built-in preset:** When a class/spec has no built-in list (e.g. Warrior Arms), the BiS panel shows an empty slot editor and save form so you can create a local list instead of a developer-only placeholder message.
+
 ## [1.22.0] - 2026-06-27
 
 ### Added
