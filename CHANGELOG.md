@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.0] - 2026-06-27
+
+### Added
+
+- **UI locale:** Header **EN** / **RU** toggles the full interface — toolbar, forms, dialogs, table, BiS panel, export, validation errors, and storage alerts — in addition to item tooltips. Copy lives in `src/i18n/messages/` (`en.ts`, `ru.ts`); components use `useTranslation()` (`t("key")`). Domain labels (classes, specs, template raid names, gear slots, difficulties, emblems) resolve via `src/i18n/localized-domain.ts` and existing `RaidNames` / `ClassSpecNames` metadata.
+
+### Changed
+
+- **Export & table display:** Dungeon short names, spec labels in export lines, and template raid names in the grid follow the selected locale (e.g. ICC ↔ ЦЛК, heroic `H` vs `хм`).
+- **Locale storage:** Same `localStorage` key as before (`my-raid-cds-item-tooltip-locale`); preference now drives UI strings and item tooltip provider (Cavern of Time / WoWRoad).
+
 ## [1.16.0] - 2026-06-27
 
 ### Added
