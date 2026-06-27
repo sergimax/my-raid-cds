@@ -1,27 +1,24 @@
 import {
-  DungeonDifficulty,
-  type DungeonDifficulty as DungeonDifficultyValue,
   type DungeonRecord,
   type DungeonToggles,
 } from "../types/dungeons.ts";
+import { compareDungeonType } from "./dungeon-type.ts";
 import { getStartingItemLevel } from "./item-level-tier.ts";
 import { isCooldownOn } from "./dungeon-toggles.ts";
 
 export type DungeonSortKey =
   | "name"
-  | "size"
-  | "difficulty"
+  | "type"
   | "itemLevel"
   | "completions";
 
 export type SortDirection = "asc" | "desc";
 
-function difficultySortRank(difficulty: DungeonDifficultyValue): number {
-  return difficulty === DungeonDifficulty.NORMAL ? 0 : 1;
-}
-
 export function defaultSortDirectionForKey(key: DungeonSortKey): SortDirection {
-  return key === "itemLevel" || key === "completions" ? "desc" : "asc";
+  if (key === "itemLevel" || key === "completions" || key === "type") {
+    return "desc";
+  }
+  return "asc";
 }
 
 export function sortDungeons(
@@ -46,17 +43,12 @@ export function sortDungeons(
     if (key === "name") {
       comparison =
         firstDungeon.name.localeCompare(secondDungeon.name) ||
-        firstDungeon.size - secondDungeon.size;
-    } else if (key === "size") {
+        compareDungeonType(firstDungeon, secondDungeon);
+    } else if (key === "type") {
       comparison =
-        firstDungeon.size - secondDungeon.size ||
-        firstDungeon.name.localeCompare(secondDungeon.name);
-    } else if (key === "difficulty") {
-      comparison =
-        difficultySortRank(firstDungeon.difficulty) -
-          difficultySortRank(secondDungeon.difficulty) ||
-        firstDungeon.name.localeCompare(secondDungeon.name) ||
-        firstDungeon.size - secondDungeon.size;
+        compareDungeonType(firstDungeon, secondDungeon) ||
+        getCachedStartingItemLevel(secondDungeon) -
+          getCachedStartingItemLevel(firstDungeon);
     } else if (key === "itemLevel") {
       comparison =
         getCachedStartingItemLevel(firstDungeon) -
@@ -68,7 +60,7 @@ export function sortDungeons(
       comparison =
         firstCount - secondCount ||
         firstDungeon.name.localeCompare(secondDungeon.name) ||
-        firstDungeon.size - secondDungeon.size;
+        compareDungeonType(firstDungeon, secondDungeon);
     }
     return direction === "asc" ? comparison : -comparison;
   });
@@ -95,7 +87,7 @@ export function sortDungeonsByCharacterToggle(
     const comparison =
       firstValue - secondValue ||
       firstDungeon.name.localeCompare(secondDungeon.name) ||
-      firstDungeon.size - secondDungeon.size;
+      compareDungeonType(firstDungeon, secondDungeon);
     return direction === "asc" ? comparison : -comparison;
   });
   return sorted;

@@ -42,6 +42,7 @@ export const enMessages = {
   },
   table: {
     dungeonName: "Dungeon name",
+    type: "Type",
     itemLevel: "Item level",
     complete: "Complete",
     rowActions: "Row actions",

@@ -8,9 +8,8 @@ import type { DungeonRecord } from "../../types/dungeons.ts";
 import type { DungeonSortKey, SortDirection } from "../../utils/sort-dungeons.ts";
 import {
   CompletionCountChip,
-  DungeonDifficultyCell,
   DungeonNameCell,
-  DungeonSizeCell,
+  DungeonTypeCell,
   ItemLevelCell,
 } from "./dungeon-cells.tsx";
 import { DungeonNameHeaderCell } from "./dungeon-name-header-cell.tsx";
@@ -113,10 +112,13 @@ function renderPinnedBody(
           emblem={dungeon.emblem ?? null}
         />
       );
-    case "size":
-      return <DungeonSizeCell size={dungeon.size} />;
-    case "difficulty":
-      return <DungeonDifficultyCell difficulty={dungeon.difficulty} />;
+    case "type":
+      return (
+        <DungeonTypeCell
+          size={dungeon.size}
+          difficulty={dungeon.difficulty}
+        />
+      );
     case "itemLevel":
       return <ItemLevelCell itemLevels={dungeon.itemLevel} />;
     case "complete":
