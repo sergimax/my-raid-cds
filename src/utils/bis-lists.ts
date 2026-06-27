@@ -5,6 +5,10 @@ import {
 import { gearSlotLabel } from "../data/gear-slot-names.ts";
 import { getWotlkItemGearSlots } from "../data/wotlk-item-gear-slots.ts";
 import { getWotlkItemName } from "../data/wotlk-item-names.ts";
+import {
+  canEquipItemForCharacter,
+  type CharacterEquipContext,
+} from "./item-equip-restrictions.ts";
 import itemNamesJson from "../data/wotlk-item-names.json";
 import type { ClassName } from "../types/characters.ts";
 import type {
@@ -205,6 +209,7 @@ export function validateBisSlotItemsText(
   gearSlot: number,
   itemsText: string,
   mode: BisSlotValidationMode = "strict",
+  equipContext: CharacterEquipContext = {},
 ): { itemIds: number[]; error?: string } {
   const trimmedText = itemsText.trim();
   if (!trimmedText || trimmedText === "—") {
@@ -247,6 +252,17 @@ export function validateBisSlotItemsText(
       continue;
     }
 
+    if (
+      equipContext.className &&
+      !canEquipItemForCharacter(itemId, gearSlot, equipContext)
+    ) {
+      const itemLabel = getWotlkItemName(itemId) ?? `#${itemId}`;
+      const classLabel = equipContext.className;
+      const specLabel = equipContext.spec ? ` (${equipContext.spec})` : "";
+      errors.push(`"${itemLabel}" is not usable by ${classLabel}${specLabel}`);
+      continue;
+    }
+
     itemIds.push(itemId);
   }
 
@@ -259,8 +275,9 @@ export function validateBisSlotItemsText(
 export function confirmBisSlotItemsText(
   gearSlot: number,
   itemsText: string,
+  equipContext: CharacterEquipContext = {},
 ): { ok: true; itemsText: string; itemIds: number[] } | { ok: false; error: string } {
-  const validated = validateBisSlotItemsText(gearSlot, itemsText, "strict");
+  const validated = validateBisSlotItemsText(gearSlot, itemsText, "strict", equipContext);
   if (validated.error) {
     return { ok: false, error: validated.error };
   }

@@ -1,0 +1,104 @@
+import { describe, expect, it } from "vitest";
+import { ClassName } from "../types/characters.ts";
+import {
+  canEquipItemForCharacter,
+  filterUsableLootItemIds,
+} from "./item-equip-restrictions.ts";
+
+describe("canEquipItemForCharacter", () => {
+  it("allows all items when class is unknown", () => {
+    expect(canEquipItemForCharacter(49981, 16, {})).toBe(true);
+  });
+
+  it("rejects crossbows for priests in the ranged slot", () => {
+    expect(
+      canEquipItemForCharacter(49981, 16, {
+        className: ClassName.Priest,
+        spec: "Shadow",
+      }),
+    ).toBe(false);
+  });
+
+  it("allows wands for priests in the ranged slot", () => {
+    expect(
+      canEquipItemForCharacter(50033, 16, {
+        className: ClassName.Priest,
+        spec: "Shadow",
+      }),
+    ).toBe(true);
+  });
+
+  it("allows crossbows for hunters", () => {
+    expect(
+      canEquipItemForCharacter(49981, 16, {
+        className: ClassName.Hunter,
+        spec: "Marksmanship",
+      }),
+    ).toBe(true);
+  });
+
+  it("allows Fury warriors to equip a 2H weapon in the off-hand", () => {
+    expect(
+      canEquipItemForCharacter(49623, 15, {
+        className: ClassName.Warrior,
+        spec: "Fury",
+      }),
+    ).toBe(true);
+  });
+
+  it("allows Protection warriors to dual wield one-handed weapons", () => {
+    expect(
+      canEquipItemForCharacter(50426, 15, {
+        className: ClassName.Warrior,
+        spec: "Protection",
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects 2H off-hand weapons for Protection warriors", () => {
+    expect(
+      canEquipItemForCharacter(49623, 15, {
+        className: ClassName.Warrior,
+        spec: "Protection",
+      }),
+    ).toBe(false);
+  });
+
+  it("allows Enhancement shamans to dual wield one-handed weapons", () => {
+    expect(
+      canEquipItemForCharacter(50426, 15, {
+        className: ClassName.Shaman,
+        spec: "Enhancement",
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects one-handed off-hand weapons for Elemental shamans", () => {
+    expect(
+      canEquipItemForCharacter(50426, 15, {
+        className: ClassName.Shaman,
+        spec: "Elemental",
+      }),
+    ).toBe(false);
+  });
+
+  it("rejects plate armor for priests", () => {
+    expect(
+      canEquipItemForCharacter(51197, 0, {
+        className: ClassName.Priest,
+        spec: "Holy",
+      }),
+    ).toBe(false);
+  });
+});
+
+describe("filterUsableLootItemIds", () => {
+  it("filters unusable ranged loot for priests", () => {
+    const filtered = filterUsableLootItemIds(
+      [49981, 50033],
+      16,
+      { className: ClassName.Priest, spec: "Shadow" },
+    );
+    expect(filtered).toEqual([50033]);
+  });
+});

@@ -11,6 +11,10 @@ import type { CharacterGearItem } from "../types/character-gear.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { BisSlotMap } from "./bis-lists.ts";
 import {
+  type CharacterEquipContext,
+  filterUsableLootItemIds,
+} from "./item-equip-restrictions.ts";
+import {
   getItemLevelTier,
   getItemLevelTierColor,
 } from "./item-level-tier.ts";
@@ -71,11 +75,16 @@ function isSlotUpgradeableNaive(
   return itemLevel === undefined || itemLevel < peakDungeonItemLevel;
 }
 
-function pickBestLootItemId(itemIds: readonly number[]): number | undefined {
+function pickBestLootItemId(
+  itemIds: readonly number[],
+  gearSlot: number,
+  equipContext: CharacterEquipContext,
+): number | undefined {
+  const usableItemIds = filterUsableLootItemIds(itemIds, gearSlot, equipContext);
   let bestItemId: number | undefined;
   let bestItemLevel = -1;
 
-  for (const itemId of itemIds) {
+  for (const itemId of usableItemIds) {
     const itemLevel = getWotlkItemLevel(itemId);
     if (itemLevel !== undefined && itemLevel > bestItemLevel) {
       bestItemLevel = itemLevel;
@@ -86,8 +95,13 @@ function pickBestLootItemId(itemIds: readonly number[]): number | undefined {
   return bestItemId;
 }
 
-function pickBestLootItemLevel(itemIds: readonly number[]): number | undefined {
-  const itemLevels = itemIds
+function pickBestLootItemLevel(
+  itemIds: readonly number[],
+  gearSlot: number,
+  equipContext: CharacterEquipContext,
+): number | undefined {
+  const usableItemIds = filterUsableLootItemIds(itemIds, gearSlot, equipContext);
+  const itemLevels = usableItemIds
     .map((itemId) => getWotlkItemLevel(itemId))
     .filter((itemLevel): itemLevel is number => itemLevel !== undefined);
 
@@ -102,12 +116,13 @@ function isSlotUpgradeableWithLoot(
   item: CharacterGearItem,
   raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
   dungeonItemLevels: readonly number[],
+  equipContext: CharacterEquipContext,
   bisItemIdsForSlot?: readonly number[],
 ): GearUpgradeSlotHint | null {
-  const raidLootIds = getRaidLootItemIdsForTier(
-    raidKey,
+  const raidLootIds = filterUsableLootItemIds(
+    getRaidLootItemIdsForTier(raidKey, item.slot, dungeonItemLevels),
     item.slot,
-    dungeonItemLevels,
+    equipContext,
   );
 
   const relevantLootIds =
@@ -119,7 +134,11 @@ function isSlotUpgradeableWithLoot(
     return null;
   }
 
-  const bestLootItemLevel = pickBestLootItemLevel(relevantLootIds);
+  const bestLootItemLevel = pickBestLootItemLevel(
+    relevantLootIds,
+    item.slot,
+    equipContext,
+  );
   if (bestLootItemLevel === undefined) {
     return null;
   }
@@ -131,7 +150,7 @@ function isSlotUpgradeableWithLoot(
 
     return {
       slot: item.slot,
-      bestLootItemId: pickBestLootItemId(relevantLootIds),
+      bestLootItemId: pickBestLootItemId(relevantLootIds, item.slot, equipContext),
       bestLootItemLevel,
     };
   }
@@ -143,7 +162,7 @@ function isSlotUpgradeableWithLoot(
 
   return {
     slot: item.slot,
-    bestLootItemId: pickBestLootItemId(relevantLootIds),
+    bestLootItemId: pickBestLootItemId(relevantLootIds, item.slot, equipContext),
     bestLootItemLevel,
   };
 }
@@ -179,6 +198,7 @@ function evaluateSlotAwareGearUpgradeHint(
   dungeonItemLevels: readonly number[],
   peakDungeonItemLevel: number,
   raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
+  equipContext: CharacterEquipContext,
   bisSlotMap?: BisSlotMap,
 ): GearUpgradeHint {
   const bisFiltered = bisSlotMap !== undefined && bisSlotMap.size > 0;
@@ -196,6 +216,7 @@ function evaluateSlotAwareGearUpgradeHint(
       item,
       raidKey,
       dungeonItemLevels,
+      equipContext,
       bisItemIdsForSlot,
     );
     if (slotHint) {
@@ -220,6 +241,7 @@ export function evaluateGearUpgradeHint(
   gearItems: readonly CharacterGearItem[] | undefined,
   dungeon: Pick<DungeonRecord, "name" | "raidKey" | "itemLevel">,
   bisSlotMap?: BisSlotMap,
+  equipContext: CharacterEquipContext = {},
 ): GearUpgradeHint {
   const dungeonItemLevels = dungeon.itemLevel;
   const peakDungeonItemLevel = getDungeonPeakItemLevel(dungeonItemLevels);
@@ -244,6 +266,7 @@ export function evaluateGearUpgradeHint(
       dungeonItemLevels,
       peakDungeonItemLevel,
       raidKey,
+      equipContext,
       bisSlotMap,
     );
   }

@@ -5,6 +5,7 @@
  * - src/data/wotlk-item-names.json — English item names for bundled ilvl ids
  * - src/data/wotlk-item-names-ru.json — Russian names from WoWRoad (by item id)
  * - src/data/wotlk-item-gear-slots.json — valid gear slot indices per item id
+ * - src/data/wotlk-item-equip-props.json — item type/armor/weapon metadata for class equip rules
  * - src/data/raid-loot-by-key.json — raid loot indexed by gear slot
  * - src/data/tier-sets-by-item-id.json — tier set piece upgrade chains
  *
@@ -53,6 +54,39 @@ function buildItemNames(dbItems, itemLevelIds) {
   }
 
   return names;
+}
+
+function buildItemEquipProps(dbItems, itemLevelIds) {
+  const itemsById = new Map(dbItems.map((item) => [item.id, item]));
+  const propsByItemId = {};
+
+  for (const itemId of itemLevelIds) {
+    const item = itemsById.get(Number(itemId));
+    if (!item || item.type === undefined) {
+      continue;
+    }
+
+    const entry = { t: item.type };
+    if (item.armorType) {
+      entry.a = item.armorType;
+    }
+    if (item.weaponType) {
+      entry.w = item.weaponType;
+    }
+    if (item.handType) {
+      entry.h = item.handType;
+    }
+    if (item.rangedWeaponType) {
+      entry.r = item.rangedWeaponType;
+    }
+    if (Array.isArray(item.classAllowlist) && item.classAllowlist.length > 0) {
+      entry.c = item.classAllowlist;
+    }
+
+    propsByItemId[itemId] = entry;
+  }
+
+  return propsByItemId;
 }
 
 function buildRaidLoot(dbItems, itemLevelIds) {
@@ -453,6 +487,7 @@ async function main() {
   const namesOutPath = path.join(rootDir, "src/data/wotlk-item-names.json");
   const namesRuOutPath = path.join(rootDir, "src/data/wotlk-item-names-ru.json");
   const gearSlotsOutPath = path.join(rootDir, "src/data/wotlk-item-gear-slots.json");
+  const equipPropsOutPath = path.join(rootDir, "src/data/wotlk-item-equip-props.json");
   const lootOutPath = path.join(rootDir, "src/data/raid-loot-by-key.json");
   const tierSetsOutPath = path.join(rootDir, "src/data/tier-sets-by-item-id.json");
 
@@ -462,11 +497,13 @@ async function main() {
 
   const names = buildItemNames(db.items, itemLevelIds);
   const gearSlotsByItemId = buildItemGearSlotsMap(db.items, itemLevelIds);
+  const equipPropsByItemId = buildItemEquipProps(db.items, itemLevelIds);
   const lootByKey = buildRaidLoot(db.items, itemLevelIds);
   const tierSetsByItemId = buildTierSetsByItemId(db.items);
 
   fs.writeFileSync(namesOutPath, `${JSON.stringify(names)}\n`);
   fs.writeFileSync(gearSlotsOutPath, `${JSON.stringify(gearSlotsByItemId)}\n`);
+  fs.writeFileSync(equipPropsOutPath, `${JSON.stringify(equipPropsByItemId)}\n`);
   fs.writeFileSync(lootOutPath, `${JSON.stringify(lootByKey)}\n`);
   fs.writeFileSync(tierSetsOutPath, `${JSON.stringify(tierSetsByItemId)}\n`);
 
@@ -480,6 +517,9 @@ async function main() {
   console.log(`Wrote ${Object.keys(names).length} item names → ${namesOutPath}`);
   console.log(
     `Wrote ${Object.keys(gearSlotsByItemId).length} item gear slots → ${gearSlotsOutPath}`,
+  );
+  console.log(
+    `Wrote ${Object.keys(equipPropsByItemId).length} item equip props → ${equipPropsOutPath}`,
   );
   console.log(`Wrote raid loot for ${Object.keys(lootByKey).length} raids → ${lootOutPath}`);
   console.log("Slots covered per raid:", slotCounts);
