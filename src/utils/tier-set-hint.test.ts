@@ -9,18 +9,21 @@ import {
 
 describe("evaluateTierSetHint", () => {
   const icc25Heroic = {
+    name: "Icecrown Citadel",
     raidKey: "icecrownCitadel" as const,
     size: 25 as const,
     difficulty: DungeonDifficulty.HEROIC,
   };
 
   const icc10Heroic = {
+    name: "Icecrown Citadel",
     raidKey: "icecrownCitadel" as const,
     size: 10 as const,
     difficulty: DungeonDifficulty.HEROIC,
   };
 
   const rubySanctum25Heroic = {
+    name: "Ruby Sanctum",
     raidKey: "rubySanctum" as const,
     size: 25 as const,
     difficulty: DungeonDifficulty.HEROIC,
