@@ -1,6 +1,7 @@
 import type { SubmitEvent } from "react";
 import { useCallback, useState } from "react";
 import { defaultDungeonFormValues } from "../constants/dungeon-form-defaults.ts";
+import { useTranslation } from "../i18n/use-translation.ts";
 import type {
   DungeonDifficulty as DungeonDifficultyValue,
   DungeonRecord,
@@ -16,6 +17,7 @@ type UseDungeonFormStateOptions = {
 export function useDungeonFormState({
   onDungeonAdded,
 }: UseDungeonFormStateOptions) {
+  const { locale } = useTranslation();
   const defaults = defaultDungeonFormValues();
   const [isOpen, setIsOpen] = useState(false);
   const [name, setNameState] = useState(defaults.name);
@@ -75,13 +77,16 @@ export function useDungeonFormState({
     (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
       setError("");
-      const result = parseDungeonForm({
-        name,
-        shortName,
-        size,
-        itemLevelText,
-        difficulty,
-      });
+      const result = parseDungeonForm(
+        {
+          name,
+          shortName,
+          size,
+          itemLevelText,
+          difficulty,
+        },
+        locale,
+      );
       if (!result.ok) {
         setError(result.error);
         return;
@@ -93,7 +98,7 @@ export function useDungeonFormState({
       setIsOpen(false);
       resetFields();
     },
-    [difficulty, itemLevelText, name, onDungeonAdded, resetFields, shortName, size],
+    [difficulty, itemLevelText, locale, name, onDungeonAdded, resetFields, shortName, size],
   );
 
   return {

@@ -30,6 +30,6 @@ describe("formatDungeonExportLabel", () => {
       size: 25,
       difficulty: DungeonDifficulty.HEROIC,
     });
-    expect(formatDungeonExportLabel(dungeon)).toBe("ЦЛК25хм");
+    expect(formatDungeonExportLabel(dungeon, "ru")).toBe("ЦЛК25хм");
   });
 });

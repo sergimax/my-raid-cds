@@ -1,14 +1,14 @@
 import { IconButton, Tooltip, Typography } from "@mui/material";
 import { useItemTooltipLocale } from "../../hooks/use-item-tooltip-locale.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
 
 export function ItemTooltipLocaleToggle() {
-  const { locale, toggleLocale } = useItemTooltipLocale();
+  const { locale, t } = useTranslation();
+  const { toggleLocale } = useItemTooltipLocale();
   const nextLocale = locale === "en" ? "ru" : "en";
 
   const tooltipTitle =
-    locale === "en"
-      ? "Item tooltips: English (Cavern of Time). Click for Russian."
-      : "Item tooltips: Russian (WoWRoad). Click for English.";
+    locale === "en" ? t("header.localeTooltipEn") : t("header.localeTooltipRu");
 
   return (
     <Tooltip title={tooltipTitle}>
@@ -16,7 +16,10 @@ export function ItemTooltipLocaleToggle() {
         size="small"
         color="inherit"
         onClick={toggleLocale}
-        aria-label={`Item tooltip language ${locale.toUpperCase()}. Switch to ${nextLocale.toUpperCase()}.`}
+        aria-label={t("header.localeAria", {
+          locale: locale.toUpperCase(),
+          nextLocale: nextLocale.toUpperCase(),
+        })}
       >
         <Typography
           component="span"

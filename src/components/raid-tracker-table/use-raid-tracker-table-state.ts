@@ -6,6 +6,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useCompactLayout } from "../../hooks/use-compact-layout.ts";
 import { usePendingDelete } from "../../hooks/use-pending-delete.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import {
   countCompletedForCharacter,
@@ -29,10 +30,11 @@ export function useRaidTrackerTableState({
   onDeleteCharacter,
   onDeleteDungeon,
 }: UseRaidTrackerTableStateParams) {
+  const { t } = useTranslation();
   const compactTable = useCompactLayout();
   const visiblePinnedColumns = useMemo(
-    () => pinnedColumnsForLayout(compactTable),
-    [compactTable],
+    () => pinnedColumnsForLayout(compactTable, t),
+    [compactTable, t],
   );
 
   const dungeonCount = dungeons.length;

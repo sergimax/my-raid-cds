@@ -13,6 +13,8 @@ import type { SubmitEvent } from "react";
 import { useCallback, useMemo, useState, useEffect } from "react";
 import type { CharacterGearItem } from "../../types/character-gear.ts";
 import type { CharacterRecord, CharacterSpecGearUpdate } from "../../types/characters.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import { getLocalizedClassName } from "../../i18n/localized-domain.ts";
 import {
   formatGearSummary,
   sortGearItemsBySlot,
@@ -46,6 +48,7 @@ function CharacterEditDialogContent({
   onClose,
   onSave,
 }: CharacterEditDialogContentProps) {
+  const { t, locale } = useTranslation();
   const initialValues = characterSpecGearFormValues(character);
   const [mainSpec, setMainSpec] = useState(initialValues.mainSpec);
   const [mainGearScoreText, setMainGearScoreText] = useState(
@@ -87,6 +90,7 @@ function CharacterEditDialogContent({
     const result = parseWowSimsExporterJson(
       wowsimsImportText,
       character.class.name,
+      locale,
     );
     if (!result.ok) {
       setError(result.error);
@@ -101,16 +105,22 @@ function CharacterEditDialogContent({
       }
     }
 
-    const noticeParts = [`Imported ${formatGearSummary(result.gearItems)}.`];
+    const noticeParts = [
+      t("characterEdit.importedSummary", {
+        summary: formatGearSummary(result.gearItems, locale),
+      }),
+    ];
     if (result.exportSpec) {
-      noticeParts.push(`Spec: ${result.exportSpec}.`);
+      noticeParts.push(
+        t("characterEdit.importedSpec", { spec: result.exportSpec }),
+      );
     }
     if (result.warnings.length > 0) {
       noticeParts.push(result.warnings.join(" "));
     }
     setImportNotice(noticeParts.join(" "));
     setWowsimsImportText("");
-  }, [character.class, mainSpec, wowsimsImportText]);
+  }, [character.class, locale, mainSpec, t, wowsimsImportText]);
 
   const handleSubmit = useCallback(
     (event: SubmitEvent<HTMLFormElement>) => {
@@ -122,6 +132,7 @@ function CharacterEditDialogContent({
       const result = parseCharacterSpecGearFields(
         { mainSpec, mainGearScoreText, offSpec, offGearScoreText },
         character.class,
+        locale,
       );
       if (!result.ok) {
         setError(result.error);
@@ -138,6 +149,7 @@ function CharacterEditDialogContent({
       character.class,
       character.id,
       gearItems,
+      locale,
       mainGearScoreText,
       mainSpec,
       offGearScoreText,
@@ -149,7 +161,7 @@ function CharacterEditDialogContent({
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <DialogTitle>Edit character details</DialogTitle>
+      <DialogTitle>{t("characterEdit.title")}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ pt: 1 }}>
           <Box>
@@ -161,7 +173,7 @@ function CharacterEditDialogContent({
             </Typography>
             {character.class ? (
               <Typography variant="body2" color="text.secondary">
-                {character.class.name}
+                {getLocalizedClassName(character.class.name, locale)}
               </Typography>
             ) : null}
           </Box>
@@ -192,14 +204,16 @@ function CharacterEditDialogContent({
               />
               <Stack spacing={1}>
                 <Typography variant="body2" color="text.secondary">
-                  Import gear from WowSimsExporter
+                  {t("characterEdit.importGear")}
                 </Typography>
                 {storedGearSummary ? (
                   <Stack spacing={0.5}>
                     <Typography variant="body2">
-                      Stored gear
+                      {t("characterEdit.storedGear")}
                       {storedGearSummary.averageItemLevel !== undefined
-                        ? ` · avg ilvl ${storedGearSummary.averageItemLevel}`
+                        ? t("characterEdit.avgIlvl", {
+                            ilvl: storedGearSummary.averageItemLevel,
+                          })
                         : ""}
                     </Typography>
                     <Box
@@ -218,14 +232,15 @@ function CharacterEditDialogContent({
                     </Box>
                     {storedGearSummary.unknownItemIds.length > 0 ? (
                       <Typography variant="caption" color="warning.main">
-                        {storedGearSummary.unknownItemIds.length} item id(s) not
-                        in the ilvl database
+                        {t("characterEdit.unknownItemIds", {
+                          count: storedGearSummary.unknownItemIds.length,
+                        })}
                       </Typography>
                     ) : null}
                   </Stack>
                 ) : null}
                 <TextField
-                  label="WowSimsExporter JSON"
+                  label={t("characterEdit.wseJson")}
                   value={wowsimsImportText}
                   onChange={(event) => {
                     setWowsimsImportText(event.target.value);
@@ -235,8 +250,8 @@ function CharacterEditDialogContent({
                   multiline
                   minRows={4}
                   maxRows={10}
-                  placeholder='Paste output from /wse export'
-                  helperText="Imports equipped items (item ids, enchants, gems). Gear score stays manual."
+                  placeholder={t("characterEdit.wsePlaceholder")}
+                  helperText={t("characterEdit.wseHelper")}
                   fullWidth
                 />
                 <Box>
@@ -246,7 +261,7 @@ function CharacterEditDialogContent({
                     onClick={handleImportGear}
                     disabled={wowsimsImportText.trim() === ""}
                   >
-                    Import gear
+                    {t("characterEdit.importButton")}
                   </Button>
                 </Box>
                 {importNotice ? (
@@ -261,9 +276,9 @@ function CharacterEditDialogContent({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t("common.cancel")}</Button>
         <Button type="submit" variant="contained">
-          Save
+          {t("common.save")}
         </Button>
       </DialogActions>
     </form>

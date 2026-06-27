@@ -1,6 +1,9 @@
 import { Alert, Stack } from "@mui/material";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { TrackerFormsState } from "../../hooks/use-tracker-forms.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import type { TranslateFn } from "../../i18n/translate.ts";
+import { LOAD_WARNING_CORRUPTED_SAVE } from "../../storage/constants.ts";
 import { AppIntro } from "../app-intro/index.tsx";
 import { BisListsPanel } from "../bis-lists-panel/index.tsx";
 import { CharacterForm } from "../character-form/index.tsx";
@@ -15,6 +18,22 @@ type RaidTrackerMainProps = {
   closeBisListsPanel: () => void;
 };
 
+const STORAGE_QUOTA_MESSAGE = "Storage quota exceeded. Please free up space.";
+const STORAGE_SAVE_FAILED_MESSAGE = "Failed to save data. Please try again.";
+
+function localizeStorageMessage(message: string, t: TranslateFn): string {
+  if (message === LOAD_WARNING_CORRUPTED_SAVE) {
+    return t("storage.corrupted");
+  }
+  if (message === STORAGE_QUOTA_MESSAGE) {
+    return t("storage.quotaExceeded");
+  }
+  if (message === STORAGE_SAVE_FAILED_MESSAGE) {
+    return t("storage.saveFailed");
+  }
+  return message;
+}
+
 export function RaidTrackerMain({
   forms,
   showExportPanel,
@@ -22,6 +41,7 @@ export function RaidTrackerMain({
   showBisListsPanel,
   closeBisListsPanel,
 }: RaidTrackerMainProps) {
+  const { t } = useTranslation();
   const domain = useRaidTrackerContext();
   const showIntro =
     domain.characters.length === 0 && domain.dungeons.length === 0;
@@ -31,7 +51,9 @@ export function RaidTrackerMain({
       <AppIntro visible={showIntro} />
 
       {domain.storageError ? (
-        <Alert severity="error">{domain.storageError}</Alert>
+        <Alert severity="error">
+          {localizeStorageMessage(domain.storageError, t)}
+        </Alert>
       ) : null}
 
       {forms.showCharacterForm ? (

@@ -1,5 +1,6 @@
 import type { SubmitEvent } from "react";
 import { useCallback, useState } from "react";
+import { useTranslation } from "../i18n/use-translation.ts";
 import type { CharacterClass, CharacterRecord } from "../types/characters.ts";
 import { isSpecValidForClass } from "../data/class-specs.ts";
 import { parseCharacterForm } from "../utils/validate-character.ts";
@@ -21,6 +22,7 @@ export function useCharacterFormState({
   characters,
   onCharacterAdded,
 }: UseCharacterFormStateOptions) {
+  const { locale } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [name, setNameState] = useState("");
   const [characterClass, setCharacterClassState] = useState<CharacterClass | "">(
@@ -106,6 +108,7 @@ export function useCharacterFormState({
           offGearScoreText,
         },
         characters,
+        locale,
       );
       if (!result.ok) {
         setError(result.error);
@@ -129,6 +132,7 @@ export function useCharacterFormState({
       name,
       offGearScoreText,
       offSpec,
+      locale,
       onCharacterAdded,
       resetFields,
     ],

@@ -1,3 +1,4 @@
+import { useTranslation } from "../../i18n/use-translation.ts";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog.tsx";
 import { getRaidTrackerDeleteDialogProps } from "./raid-tracker-delete-dialog.ts";
 import type { RaidTrackerPendingDelete } from "./types.ts";
@@ -13,8 +14,9 @@ export function RaidTrackerDeleteDialog({
   onConfirm,
   onCancel,
 }: RaidTrackerDeleteDialogProps) {
+  const { t } = useTranslation();
   const { title, message, confirmLabel } =
-    getRaidTrackerDeleteDialogProps(pendingDelete);
+    getRaidTrackerDeleteDialogProps(pendingDelete, t);
 
   return (
     <DeleteConfirmDialog

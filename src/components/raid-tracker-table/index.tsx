@@ -4,6 +4,7 @@ import { ExportPanel } from "../export-panel/index.tsx";
 import { CharacterEditDialog } from "../character-edit-dialog/index.tsx";
 import { DungeonEditDialog } from "../dungeon-edit-dialog/index.tsx";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
 import { DungeonTableRow } from "./dungeon-table-row.tsx";
 import { RaidTrackerDeleteDialog } from "./raid-tracker-delete-dialog.tsx";
@@ -22,6 +23,7 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
   showExportPanel,
   closeExportPanel,
 }: RaidTrackerTableProps) {
+  const { t } = useTranslation();
   const domain = useRaidTrackerContext();
   const {
     characters,
@@ -108,7 +110,11 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
       ) : null}
       <TableContainer sx={{ overflowX: "auto" }}>
         <Table
-          aria-label={raidTrackerTableAriaLabel(dungeons.length, sortedDungeons.length)}
+          aria-label={raidTrackerTableAriaLabel(
+            dungeons.length,
+            sortedDungeons.length,
+            t,
+          )}
           className={
             compactTable
               ? "raid-tracker-table raid-tracker-table--compact"

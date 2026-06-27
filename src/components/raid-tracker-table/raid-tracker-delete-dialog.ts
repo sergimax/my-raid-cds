@@ -1,3 +1,4 @@
+import type { TranslateFn } from "../../i18n/translate.ts";
 import type { RaidTrackerPendingDelete } from "./types.ts";
 
 export type RaidTrackerDeleteDialogContent = {
@@ -9,11 +10,12 @@ export type RaidTrackerDeleteDialogContent = {
 const EMPTY_DIALOG_CONTENT: RaidTrackerDeleteDialogContent = {
   title: "",
   message: "",
-  confirmLabel: "Delete",
+  confirmLabel: "",
 };
 
 export function getRaidTrackerDeleteDialogProps(
   pendingDelete: RaidTrackerPendingDelete | null,
+  t: TranslateFn,
 ): RaidTrackerDeleteDialogContent {
   if (pendingDelete === null) {
     return EMPTY_DIALOG_CONTENT;
@@ -21,15 +23,17 @@ export function getRaidTrackerDeleteDialogProps(
 
   if (pendingDelete.kind === "character") {
     return {
-      title: "Remove character?",
-      message: `Remove "${pendingDelete.name}" and all cooldown toggles for this character? This cannot be undone.`,
-      confirmLabel: "Remove",
+      title: t("deleteDialog.removeCharacterTitle"),
+      message: t("deleteDialog.removeCharacterMessage", {
+        name: pendingDelete.name,
+      }),
+      confirmLabel: t("common.remove"),
     };
   }
 
   return {
-    title: "Delete dungeon?",
-    message: `Delete "${pendingDelete.name}" and all cooldown toggles for this dungeon? This cannot be undone.`,
-    confirmLabel: "Delete",
+    title: t("deleteDialog.deleteDungeonTitle"),
+    message: t("deleteDialog.deleteDungeonMessage", { name: pendingDelete.name }),
+    confirmLabel: t("common.delete"),
   };
 }

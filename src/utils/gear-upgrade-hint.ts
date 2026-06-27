@@ -2,7 +2,8 @@ import type { SystemStyleObject } from "@mui/system";
 import type { Theme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
 import type { ItemTooltipLocale } from "../constants/item-tooltips.ts";
-import { gearSlotLabel } from "../data/gear-slot-names.ts";
+import { getLocalizedGearSlotLabel } from "../i18n/localized-domain.ts";
+import type { TranslateFn } from "../i18n/translate.ts";
 import { getRaidLootItemIdsForTier } from "../data/raid-loot.ts";
 import { getWotlkItemLevel } from "../data/wotlk-item-levels.ts";
 import { getWotlkItemName } from "../data/wotlk-item-names.ts";
@@ -253,12 +254,13 @@ export function evaluateGearUpgradeHint(
 function formatUpgradeSlotLabel(
   slotHint: GearUpgradeSlotHint,
   locale: ItemTooltipLocale,
+  t: TranslateFn,
 ): string {
-  const slotLabel = gearSlotLabel(slotHint.slot);
+  const slotLabel = getLocalizedGearSlotLabel(slotHint.slot, locale);
   if (slotHint.bestLootItemId !== undefined) {
     const itemName = getWotlkItemName(slotHint.bestLootItemId, locale);
     if (itemName) {
-      return `${slotLabel} → ${itemName}`;
+      return t("gearHint.slotArrow", { slot: slotLabel, item: itemName });
     }
   }
   return slotLabel;
@@ -267,26 +269,31 @@ function formatUpgradeSlotLabel(
 export function formatGearUpgradeHintTooltip(
   hint: GearUpgradeHint,
   locale: ItemTooltipLocale = "en",
+  t: TranslateFn,
 ): string {
   if (hint.level === 0) {
     return "";
   }
 
   const slotLabels = hint.upgradeSlots.map((slotHint) =>
-    formatUpgradeSlotLabel(slotHint, locale),
+    formatUpgradeSlotLabel(slotHint, locale, t),
   );
   const visibleLabels = slotLabels.slice(0, MAX_TOOLTIP_SLOT_LABELS);
   const remainingCount = slotLabels.length - visibleLabels.length;
   const slotSummary =
     remainingCount > 0
-      ? `${visibleLabels.join(", ")} +${remainingCount} more`
+      ? `${visibleLabels.join(", ")} ${t("gearHint.moreSlots", { count: remainingCount })}`
       : visibleLabels.join(", ");
 
   const intro = hint.bisFiltered
-    ? `${hint.upgradeSlotCount} BiS slot(s) missing targets`
+    ? t("gearHint.bisMissing", { count: hint.upgradeSlotCount })
     : hint.slotAware
-      ? `${hint.upgradeSlotCount} slot(s) with raid loot upgrades`
-      : `${hint.upgradeSlotCount} of ${hint.equippedCount} items below ilvl ${hint.peakDungeonItemLevel}`;
+      ? t("gearHint.raidLootUpgrades", { count: hint.upgradeSlotCount })
+      : t("gearHint.belowIlvl", {
+          count: hint.upgradeSlotCount,
+          total: hint.equippedCount,
+          ilvl: hint.peakDungeonItemLevel,
+        });
 
   return `${intro}: ${slotSummary}`;
 }

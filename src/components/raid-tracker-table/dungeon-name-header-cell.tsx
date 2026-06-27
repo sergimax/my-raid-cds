@@ -1,5 +1,6 @@
 import type { SxProps, Theme } from "@mui/material";
 import { Stack, TableCell, TableSortLabel, TextField } from "@mui/material";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import type { DungeonSortKey, SortDirection } from "../../utils/sort-dungeons.ts";
 
 type DungeonNameHeaderCellProps = {
@@ -19,6 +20,7 @@ export function DungeonNameHeaderCell({
   onSearchQueryChange,
   sx,
 }: DungeonNameHeaderCellProps) {
+  const { t } = useTranslation();
   const isActive = activeSortKey === "name";
 
   return (
@@ -35,12 +37,12 @@ export function DungeonNameHeaderCell({
             onSort("name");
           }}
         >
-          Dungeon name
+          {t("table.dungeonName")}
         </TableSortLabel>
         <TextField
           className="raid-tracker-table__dungeon-search"
           size="small"
-          placeholder="Search…"
+          placeholder={t("common.searchPlaceholder")}
           value={searchQuery}
           onChange={(event) => {
             onSearchQueryChange(event.target.value);
@@ -53,7 +55,7 @@ export function DungeonNameHeaderCell({
           }}
           slotProps={{
             htmlInput: {
-              "aria-label": "Filter by dungeon name",
+              "aria-label": t("table.filterByDungeonName"),
             },
           }}
           fullWidth

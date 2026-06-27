@@ -2,6 +2,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Box, IconButton, Menu } from "@mui/material";
 import { memo, useCallback, useId, useMemo, useState, type MouseEvent } from "react";
 import { useCompactLayout } from "../../hooks/use-compact-layout.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import { buildTrackerActions } from "./actions.ts";
 import { renderTrackerAction } from "./render-tracker-action.tsx";
 import type { TrackerControlsSource } from "./types.ts";
@@ -13,7 +14,8 @@ type TrackerControlsProps = {
 export const TrackerControls = memo(function TrackerControls({
   source,
 }: TrackerControlsProps) {
-  const actions = useMemo(() => buildTrackerActions(source), [source]);
+  const { t } = useTranslation();
+  const actions = useMemo(() => buildTrackerActions(source, t), [source, t]);
 
   const menuLayout = useCompactLayout();
   const menuId = useId();
@@ -32,7 +34,7 @@ export const TrackerControls = memo(function TrackerControls({
         <IconButton
           size="small"
           color="inherit"
-          aria-label="Tracker actions"
+          aria-label={t("toolbar.actionsAria")}
           aria-controls={menuOpen ? menuId : undefined}
           aria-haspopup="true"
           aria-expanded={menuOpen}
@@ -59,7 +61,7 @@ export const TrackerControls = memo(function TrackerControls({
   return (
     <Box
       component="nav"
-      aria-label="Tracker actions"
+      aria-label={t("toolbar.actionsAria")}
       sx={{
         display: "flex",
         alignItems: "center",

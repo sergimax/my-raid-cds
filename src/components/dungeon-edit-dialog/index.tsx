@@ -9,6 +9,7 @@ import {
 import type { SubmitEvent } from "react";
 import { useCallback, useState } from "react";
 import type { EmblemKey } from "../../assets/emblems/emblem-icons.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import type {
   DungeonCustomizationUpdate,
   DungeonRecord,
@@ -39,6 +40,7 @@ function DungeonEditDialogContent({
   onClose,
   onSave,
 }: DungeonEditDialogContentProps) {
+  const { t, locale } = useTranslation();
   const initialValues = dungeonCustomizationFormValues(dungeon);
   const [name, setName] = useState(initialValues.name);
   const [shortName, setShortName] = useState(initialValues.shortName);
@@ -53,13 +55,16 @@ function DungeonEditDialogContent({
     (event: SubmitEvent<HTMLFormElement>) => {
       event.preventDefault();
       setError("");
-      const result = parseDungeonCustomizationForm({
-        name,
-        shortName,
-        size,
-        difficulty,
-        emblem,
-      });
+      const result = parseDungeonCustomizationForm(
+        {
+          name,
+          shortName,
+          size,
+          difficulty,
+          emblem,
+        },
+        locale,
+      );
       if (!result.ok) {
         setError(result.error);
         return;
@@ -67,12 +72,12 @@ function DungeonEditDialogContent({
       onSave(dungeon.id, result.fields);
       onClose();
     },
-    [difficulty, dungeon.id, emblem, name, onClose, onSave, shortName, size],
+    [difficulty, dungeon.id, emblem, locale, name, onClose, onSave, shortName, size],
   );
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <DialogTitle>Edit dungeon details</DialogTitle>
+      <DialogTitle>{t("dungeonEdit.title")}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ pt: 1 }}>
           <DungeonCustomizationFields
@@ -106,9 +111,9 @@ function DungeonEditDialogContent({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{t("common.cancel")}</Button>
         <Button type="submit" variant="contained">
-          Save
+          {t("common.save")}
         </Button>
       </DialogActions>
     </form>

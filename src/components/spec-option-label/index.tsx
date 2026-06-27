@@ -1,5 +1,7 @@
 import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { specIconFor } from "../../assets/class-icons/spec-icons.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import type { ClassName, CharacterClass } from "../../types/characters.ts";
 import { formatCompactGearScore } from "../../utils/format-character-details.ts";
 
@@ -23,11 +25,13 @@ export function SpecOptionLabel({
   color = "inherit",
   showSpecName = true,
 }: SpecOptionLabelProps) {
+  const { locale } = useTranslation();
   const icon = specIconFor(className, spec);
+  const displaySpec = getLocalizedSpecName(className, spec, locale);
   const gearScoreText =
     gearScore !== undefined ? formatCompactGearScore(gearScore) : undefined;
   const detailLabel =
-    gearScoreText !== undefined ? `${spec} · ${gearScoreText}` : spec;
+    gearScoreText !== undefined ? `${displaySpec} · ${gearScoreText}` : displaySpec;
 
   const content = (
     <Stack
@@ -39,7 +43,7 @@ export function SpecOptionLabel({
         <Box
           component="img"
           src={icon}
-          alt={showSpecName ? "" : spec}
+          alt={showSpecName ? "" : displaySpec}
           width={iconSize}
           height={iconSize}
           sx={{ borderRadius: "4px", flexShrink: 0 }}
@@ -47,7 +51,7 @@ export function SpecOptionLabel({
       ) : null}
       {showSpecName ? (
         <Typography component="span" variant={variant} color={color} sx={{ minWidth: 0 }}>
-          {spec}
+          {displaySpec}
           {gearScoreText !== undefined ? ` · ${gearScoreText}` : null}
         </Typography>
       ) : gearScoreText !== undefined ? (

@@ -5,6 +5,8 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { IconButton, Stack, TableCell, TableRow, Tooltip } from "@mui/material";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 import { CharacterToggleCell } from "./character-toggle-cell.tsx";
@@ -43,30 +45,33 @@ export function DungeonTableRow({
   onEditDungeon,
   onRequestDeleteDungeon,
 }: DungeonTableRowProps) {
+  const { t, locale } = useTranslation();
+  const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
+
   return (
     <TableRow hover>
       <TableCell sx={pinnedActionsColumnSx(compactTable, false)}>
         <Stack direction="row" spacing={0.25} sx={{ justifyContent: "center" }}>
-          <Tooltip title={`Edit details for ${dungeon.name}`}>
+          <Tooltip title={t("table.editDungeon", { name: dungeonDisplayName })}>
             <IconButton
               size="small"
               color="default"
               onClick={() => {
                 onEditDungeon(dungeon.id);
               }}
-              aria-label={`Edit details for ${dungeon.name}`}
+              aria-label={t("table.editDungeon", { name: dungeonDisplayName })}
             >
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip title={`Delete dungeon: ${dungeon.name}`}>
+          <Tooltip title={t("table.deleteDungeon", { name: dungeonDisplayName })}>
           <IconButton
             size="small"
             color="error"
             onClick={() => {
               onRequestDeleteDungeon(dungeon);
             }}
-            aria-label={`Delete dungeon: ${dungeon.name}`}
+            aria-label={t("table.deleteDungeon", { name: dungeonDisplayName })}
           >
             <DeleteIcon fontSize="small" />
           </IconButton>

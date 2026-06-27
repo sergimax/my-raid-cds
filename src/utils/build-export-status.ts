@@ -1,5 +1,7 @@
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
+import type { AppLocale } from "../i18n/types.ts";
+import type { TranslateFn } from "../i18n/translate.ts";
 import {
   formatCharacterExportLabel,
   resolveExportSpecSelection,
@@ -13,6 +15,8 @@ export type BuildExportStatusParams = {
   dungeons: DungeonRecord[];
   dungeonToggles: DungeonToggles;
   exportSpecSelectionByCharacterId?: ExportSpecSelectionByCharacterId;
+  locale?: AppLocale;
+  t: TranslateFn;
 };
 
 /** Characters without CD (toggle off) per visible dungeon, one line each. */
@@ -21,12 +25,14 @@ export function buildExportStatusString({
   dungeons,
   dungeonToggles,
   exportSpecSelectionByCharacterId,
+  locale = "en",
+  t,
 }: BuildExportStatusParams): string {
   if (dungeons.length === 0) {
-    return "No dungeons match the current filter.";
+    return t("exportPanel.noDungeonsFilter");
   }
   if (characters.length === 0) {
-    return "Select at least one character.";
+    return t("exportPanel.selectCharacter");
   }
 
   const lines: string[] = [];
@@ -39,7 +45,7 @@ export function buildExportStatusString({
     if (charactersWithoutCd.length === 0) {
       continue;
     }
-    const label = formatDungeonExportLabel(dungeon);
+    const label = formatDungeonExportLabel(dungeon, locale);
     const names = charactersWithoutCd
       .map((character) =>
         formatCharacterExportLabel(
@@ -48,6 +54,7 @@ export function buildExportStatusString({
             character,
             exportSpecSelectionByCharacterId,
           ),
+          locale,
         ),
       )
       .filter((entry): entry is string => entry !== null)
@@ -59,7 +66,7 @@ export function buildExportStatusString({
   }
 
   if (lines.length === 0) {
-    return "All selected characters have CD on matching dungeons.";
+    return t("exportPanel.allHaveCd");
   }
 
   return lines.join("\n");

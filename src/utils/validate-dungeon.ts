@@ -4,6 +4,8 @@ import {
   MAX_DUNGEON_SHORT_NAME_LENGTH,
   type DungeonFormValues,
 } from "../constants/dungeon-form-defaults.ts";
+import type { AppLocale } from "../i18n/types.ts";
+import { createTranslator } from "../i18n/translate.ts";
 import type {
   DungeonCustomizationUpdate,
   DungeonRecord,
@@ -41,21 +43,25 @@ export function dungeonCustomizationFormValues(
 
 export function parseDungeonCustomizationForm(
   values: DungeonCustomizationValues,
+  locale: AppLocale = "en",
 ): ParseDungeonCustomizationResult {
+  const t = createTranslator(locale);
   const trimmedName = values.name.trim();
   if (!trimmedName) {
-    return { ok: false, error: "Enter a dungeon name." };
+    return { ok: false, error: t("validation.dungeonNameRequired") };
   }
   const trimmedShortName = values.shortName.trim();
   if (trimmedShortName.length > MAX_DUNGEON_SHORT_NAME_LENGTH) {
     return {
       ok: false,
-      error: `Short name must be at most ${MAX_DUNGEON_SHORT_NAME_LENGTH} characters.`,
+      error: t("validation.shortNameTooLong", {
+        max: MAX_DUNGEON_SHORT_NAME_LENGTH,
+      }),
     };
   }
   const emblemValue = values.emblem.trim();
   if (emblemValue && !VALID_EMBLEM_KEYS.has(emblemValue)) {
-    return { ok: false, error: "Choose a valid emblem badge." };
+    return { ok: false, error: t("validation.invalidEmblem") };
   }
   const shortName =
     trimmedShortName || defaultShortNameForDungeonName(trimmedName) || undefined;
@@ -86,24 +92,25 @@ export type ParseDungeonFormResult =
 
 export function parseDungeonForm(
   values: DungeonFormValues,
+  locale: AppLocale = "en",
 ): ParseDungeonFormResult {
+  const t = createTranslator(locale);
   const trimmedName = values.name.trim();
   if (!trimmedName) {
-    return { ok: false, error: "Enter a dungeon name." };
+    return { ok: false, error: t("validation.dungeonNameRequired") };
   }
   const trimmedShortName = values.shortName.trim();
   if (trimmedShortName.length > MAX_DUNGEON_SHORT_NAME_LENGTH) {
     return {
       ok: false,
-      error: `Short name must be at most ${MAX_DUNGEON_SHORT_NAME_LENGTH} characters.`,
+      error: t("validation.shortNameTooLong", {
+        max: MAX_DUNGEON_SHORT_NAME_LENGTH,
+      }),
     };
   }
   const itemLevels = parseItemLevelInput(values.itemLevelText);
   if (itemLevels.length === 0) {
-    return {
-      ok: false,
-      error: "Enter at least one item level (e.g. 200 or range like 200 / 213).",
-    };
+    return { ok: false, error: t("validation.itemLevelRequired") };
   }
   const shortName =
     trimmedShortName || defaultShortNameForDungeonName(trimmedName) || undefined;

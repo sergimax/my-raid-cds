@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Classes } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
 import { buildExportStatusString } from "./build-export-status.ts";
+import { testTranslator } from "../test/i18n.ts";
 import {
   createTestCharacter,
   createTestDungeon,
@@ -9,9 +10,12 @@ import {
 } from "../test/fixtures.ts";
 
 describe("buildExportStatusString", () => {
+  const baseParams = { t: testTranslator, locale: "en" as const };
+
   it("returns message when no dungeons are visible", () => {
     expect(
       buildExportStatusString({
+        ...baseParams,
         characters: [createTestCharacter()],
         dungeons: [],
         dungeonToggles: {},
@@ -22,6 +26,7 @@ describe("buildExportStatusString", () => {
   it("returns message when no characters are selected", () => {
     expect(
       buildExportStatusString({
+        ...baseParams,
         characters: [],
         dungeons: [createTestDungeon()],
         dungeonToggles: {},
@@ -50,6 +55,7 @@ describe("buildExportStatusString", () => {
 
     expect(
       buildExportStatusString({
+        ...baseParams,
         characters: [alpha, beta],
         dungeons: [dungeon],
         dungeonToggles: toggles,
@@ -83,6 +89,7 @@ describe("buildExportStatusString", () => {
 
     expect(
       buildExportStatusString({
+        ...baseParams,
         characters: [alpha, beta],
         dungeons: [dungeon],
         dungeonToggles: toggles,
@@ -99,6 +106,7 @@ describe("buildExportStatusString", () => {
 
     expect(
       buildExportStatusString({
+        ...baseParams,
         characters: [alpha],
         dungeons: [dungeon],
         dungeonToggles: toggles,
@@ -121,6 +129,7 @@ describe("buildExportStatusString", () => {
 
     expect(
       buildExportStatusString({
+        ...baseParams,
         characters: [character],
         dungeons: [dungeon],
         dungeonToggles: toggles,
@@ -150,6 +159,7 @@ describe("buildExportStatusString", () => {
 
     expect(
       buildExportStatusString({
+        ...baseParams,
         characters: [character],
         dungeons: [dungeon],
         dungeonToggles: toggles,

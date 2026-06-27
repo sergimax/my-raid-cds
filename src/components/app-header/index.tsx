@@ -2,11 +2,14 @@ import { AppBar, Box, Container, Toolbar, Typography } from "@mui/material";
 import { AppMetaInfo, AppVersionLabel } from "../app-meta-info/index.tsx";
 import { ItemTooltipLocaleToggle } from "../item-tooltip-locale-toggle/index.tsx";
 import { ThemeModeToggle } from "../theme-mode-toggle/index.tsx";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import type { AppHeaderProps } from "./types.ts";
 
 export type { AppHeaderProps } from "./types.ts";
 
 export function AppHeader({ center }: AppHeaderProps) {
+  const { t } = useTranslation();
+
   return (
     <AppBar
       position="sticky"
@@ -42,7 +45,7 @@ export function AppHeader({ center }: AppHeaderProps) {
               noWrap
               sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
             >
-              My Raid CDs
+              {t("header.appTitle")}
             </Typography>
           </Box>
 

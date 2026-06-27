@@ -3,6 +3,7 @@ import { ClassName } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
 import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
 import { createTestDungeon } from "../test/fixtures.ts";
+import { testTranslator } from "../test/i18n.ts";
 import { buildBisSlotMap } from "./bis-lists.ts";
 import {
   evaluateGearUpgradeHint,
@@ -237,7 +238,8 @@ describe("evaluateGearUpgradeHint", () => {
 
 describe("formatGearUpgradeHintTooltip", () => {
   it("lists upgrade slots with item names when loot data is available", () => {
-    const tooltip = formatGearUpgradeHintTooltip({
+    const tooltip = formatGearUpgradeHintTooltip(
+      {
       level: 2,
       upgradeSlotCount: 2,
       equippedCount: 17,
@@ -248,7 +250,10 @@ describe("formatGearUpgradeHintTooltip", () => {
         { slot: 12, bestLootItemId: 54569, bestLootItemLevel: 284 },
         { slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 },
       ],
-    });
+    },
+      "en",
+      testTranslator,
+    );
 
     expect(tooltip).toContain("2 BiS slot(s) missing targets");
     expect(tooltip).toContain("Trinket 1");

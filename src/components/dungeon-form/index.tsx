@@ -9,6 +9,8 @@ import {
   Typography,
 } from "@mui/material";
 import { MAX_DUNGEON_SHORT_NAME_LENGTH } from "../../constants/dungeon-form-defaults.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import { getLocalizedDifficulty } from "../../i18n/localized-domain.ts";
 import {
   DungeonDifficulty,
   DungeonSizes,
@@ -34,15 +36,17 @@ export function DungeonForm({
   onCancel,
   onSubmit,
 }: DungeonFormProps) {
+  const { t, locale } = useTranslation();
+
   return (
     <Box>
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
-        New dungeon
+        {t("dungeonForm.title")}
       </Typography>
       <form onSubmit={onSubmit} noValidate>
         <Stack spacing={2} sx={{ maxWidth: 480 }}>
           <TextField
-            label="Name"
+            label={t("common.name")}
             name="dungeonName"
             value={name}
             onChange={(event) => {
@@ -52,21 +56,21 @@ export function DungeonForm({
             autoComplete="off"
           />
           <TextField
-            label="Short name"
+            label={t("dungeonForm.shortName")}
             name="dungeonShortName"
             value={shortName}
             onChange={(event) => {
               onShortNameChange(event.target.value);
             }}
-            helperText="Optional abbreviation shown in compact table view. Leave blank to use a default for known raids."
+            helperText={t("dungeonForm.shortNameHelper")}
             slotProps={{ htmlInput: { maxLength: MAX_DUNGEON_SHORT_NAME_LENGTH } }}
             autoComplete="off"
           />
           <FormControl required>
-            <InputLabel id="dungeon-size-label">Size</InputLabel>
+            <InputLabel id="dungeon-size-label">{t("common.size")}</InputLabel>
             <Select
               labelId="dungeon-size-label"
-              label="Size"
+              label={t("common.size")}
               name="dungeonSize"
               value={size}
               onChange={(event) => {
@@ -81,21 +85,23 @@ export function DungeonForm({
             </Select>
           </FormControl>
           <TextField
-            label="Item levels"
+            label={t("dungeonForm.itemLevels")}
             name="dungeonItemLevels"
             value={itemLevelText}
             onChange={(event) => {
               onItemLevelTextChange(event.target.value);
             }}
-            helperText="One or more values, separated by / or comma (e.g. 200 or 200 / 213)."
+            helperText={t("dungeonForm.itemLevelsHelper")}
             required
             autoComplete="off"
           />
           <FormControl>
-            <InputLabel id="dungeon-difficulty-label">Difficulty</InputLabel>
+            <InputLabel id="dungeon-difficulty-label">
+              {t("dungeonForm.difficulty")}
+            </InputLabel>
             <Select
               labelId="dungeon-difficulty-label"
-              label="Difficulty"
+              label={t("dungeonForm.difficulty")}
               name="dungeonDifficulty"
               value={difficulty}
               onChange={(event) => {
@@ -105,14 +111,17 @@ export function DungeonForm({
               }}
             >
               <MenuItem value={DungeonDifficulty.NORMAL}>
-                {DungeonDifficulty.NORMAL}
+                {getLocalizedDifficulty(DungeonDifficulty.NORMAL, locale)}
               </MenuItem>
               <MenuItem value={DungeonDifficulty.HEROIC}>
-                {DungeonDifficulty.HEROIC}
+                {getLocalizedDifficulty(DungeonDifficulty.HEROIC, locale)}
               </MenuItem>
             </Select>
           </FormControl>
-          <FormActionsRow submitLabel="Add dungeon" onCancel={onCancel} />
+          <FormActionsRow
+            submitLabel={t("dungeonForm.addDungeon")}
+            onCancel={onCancel}
+          />
           {error ? <FormErrorMessage message={error} /> : null}
         </Stack>
       </form>
