@@ -1,5 +1,5 @@
-import type { AppLocale, TranslationParams } from "../types.ts";
-import { enMessages } from "./messages/en.ts";
+import type { AppLocale, TranslationParams } from "./types.ts";
+import { enMessages, type Messages } from "./messages/en.ts";
 import { ruMessages } from "./messages/ru.ts";
 
 type MessageTree = typeof enMessages;
@@ -17,12 +17,12 @@ type NestedKeyOf<T, Prefix extends string = ""> = T extends string
 
 export type MessageKey = NestedKeyOf<MessageTree>;
 
-const catalogs: Record<AppLocale, MessageTree> = {
+const catalogs: Record<AppLocale, Messages> = {
   en: enMessages,
   ru: ruMessages,
 };
 
-function getNestedValue(tree: MessageTree, key: MessageKey): string {
+function getNestedValue(tree: Messages, key: MessageKey): string {
   const parts = key.split(".");
   let current: unknown = tree;
   for (const part of parts) {
