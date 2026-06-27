@@ -4,16 +4,23 @@ import {
 } from "../types/dungeons.ts";
 import type { AppLocale } from "../i18n/types.ts";
 
+export type DungeonTypeLabelStyle = "suffix" | "skull";
+
 /**
- * WotLK table/export type label: size plus optional heroic suffix (`25H`, `25`, `10хм`, …).
+ * WotLK type label: size only for Normal; Heroic uses `25H`/`25хм` (export) or `25 ☠️` (table).
  */
 export function formatDungeonTypeLabel(
   dungeon: Pick<DungeonRecord, "size" | "difficulty">,
   locale: AppLocale = "en",
+  style: DungeonTypeLabelStyle = "suffix",
+  heroicMarker = "☠️",
 ): string {
   const base = String(dungeon.size);
   if (dungeon.difficulty === DungeonDifficulty.NORMAL) {
     return base;
+  }
+  if (style === "skull") {
+    return `${base} ${heroicMarker}`;
   }
   return locale === "ru" ? `${base}хм` : `${base}H`;
 }

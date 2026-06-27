@@ -31,6 +31,17 @@ describe("formatDungeonTypeLabel", () => {
       ),
     ).toBe("25хм");
   });
+
+  it("formats heroic table label with skull marker", () => {
+    expect(
+      formatDungeonTypeLabel(
+        { size: 10, difficulty: DungeonDifficulty.HEROIC },
+        "en",
+        "skull",
+        "☠️",
+      ),
+    ).toBe("10 ☠️");
+  });
 });
 
 describe("dungeonTypeSortRank", () => {
