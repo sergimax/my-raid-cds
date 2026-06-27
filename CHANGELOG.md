@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.21.0] - 2026-06-27
+
+### Changed
+
+- **Raid tracker table — Type column:** Replaced separate **Size** and **Mode** pinned columns with a single **Type** column (`DungeonTypeCell`): size for Normal rows; size plus skull icon for Heroic (export labels still use `H` / `хм` via `formatDungeonTypeLabel`).
+- **Type sort:** New `type` sort key with WotLK priority order descending: `25H` → `25` → `10H` → `10` → `5` → `40` → `20` (`utils/dungeon-type.ts`, `compareDungeonType`); default direction is descending. Same-type ties break by item level (higher first when descending).
+- **Compact table:** Below `md`, hides **Type** (not size/mode separately) along with item level and completions.
+
+### Fixed
+
+- **Type sort tiebreaker:** Same-type rows no longer sort by item level in the opposite direction when using descending sort.
+
 ## [1.20.0] - 2026-06-27
 
 ### Added
