@@ -26,6 +26,7 @@ export const furyWarriorBis: BuiltInSpecBis = {
         { slot: 13, itemIds: [54590] }, // Trinket 2: Sharpened Twilight Scale
         { slot: 14, itemIds: [49623] }, // Main hand: Shadowmourne
         { slot: 15, itemIds: [50730] }, // Off hand: Glorenzelg, High-Blade of the Silver Hand
+        { slot: 16, itemIds: [50733] }, // Ranged: Fal'inrush, Defender of Quel'thalas
       ],
     },
   ],

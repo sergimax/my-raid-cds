@@ -26,6 +26,7 @@ export const combatRogueBis: BuiltInSpecBis = {
         { slot: 13, itemIds: [54590] }, // Trinket 2: Sharpened Twilight Scale
         { slot: 14, itemIds: [50737] }, // Main hand: Havoc's Call, Blade of Lordaeron Kings
         { slot: 15, itemIds: [50654] }, // Off hand: Scourgeborne Waraxe
+        { slot: 16, itemIds: [50733] }, // Ranged: Fal'inrush, Defender of Quel'thalas
       ],
     },
   ],
