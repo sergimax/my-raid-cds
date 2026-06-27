@@ -7,7 +7,6 @@ import {
   type DungeonDifficulty as DungeonDifficultyType,
   type DungeonSize,
 } from "../../types/dungeons.ts";
-import { formatDungeonTypeLabel } from "../../utils/dungeon-type.ts";
 import { completionChipFill } from "../../utils/completion-chip-color.ts";
 import {
   dungeonNameTierSx,
@@ -122,10 +121,12 @@ export function DungeonTypeCell({
   size: DungeonSize;
   difficulty: DungeonDifficultyType;
 }) {
-  const { locale } = useTranslation();
+  const { t } = useTranslation();
   const isHeroic = difficulty === DungeonDifficulty.HEROIC;
   const chipColor = sizeChipColor(size);
-  const label = formatDungeonTypeLabel({ size, difficulty }, locale);
+  const label = isHeroic
+    ? `${size} ${t("table.heroicSkullIcon")}`
+    : String(size);
 
   return (
     <Chip
