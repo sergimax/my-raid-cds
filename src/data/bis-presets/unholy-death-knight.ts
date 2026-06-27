@@ -8,7 +8,7 @@ export const unholyDeathKnightBis: BuiltInSpecBis = {
   presets: [
     {
       id: "default",
-      name: "Default",
+      name: "Warmane/Gnimo/Itemisation 1",
       slots: [
         { slot: 0, itemIds: [51312] }, // Head: Sanctified Scourgelord Helmet
         { slot: 2, itemIds: [51314] }, // Shoulder: Sanctified Scourgelord Shoulderplates
@@ -30,7 +30,7 @@ export const unholyDeathKnightBis: BuiltInSpecBis = {
     },
     {
       id: "titans",
-      name: "Titans",
+      name: "Circle/Titans",
       slots: [
         { slot: 0, itemIds: [51312] }, // Head: Sanctified Scourgelord Helmet
         { slot: 1, itemIds: [54581] }, // Neck: Penumbra Pendant

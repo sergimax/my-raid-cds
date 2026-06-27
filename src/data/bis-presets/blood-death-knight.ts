@@ -8,7 +8,7 @@ export const bloodDeathKnightBis: BuiltInSpecBis = {
   presets: [
     {
       id: "default",
-      name: "Default",
+      name: "Warmane/Gnimo/Itemisation 1",
       slots: [
         { slot: 0, itemIds: [51306] }, // Head: Sanctified Scourgelord Faceguard
         { slot: 1, itemIds: [50682] }, // Neck: Bile-Encrusted Medallion
@@ -30,7 +30,7 @@ export const bloodDeathKnightBis: BuiltInSpecBis = {
     },
     {
       id: "titans",
-      name: "Titans",
+      name: "Circle/Titans",
       slots: [
         { slot: 0, itemIds: [50640] }, // Head: Broken Ram Skull Helm
         { slot: 1, itemIds: [50627] }, // Neck: Noose of Malachite
