@@ -27,7 +27,10 @@ type GetBisSlotMapForSpec = (
 function evaluateSpecGearHint(
   specGear: CharacterSpecGear,
   className: ClassName,
-  dungeon: Pick<DungeonRecord, "name" | "raidKey" | "itemLevel">,
+  dungeon: Pick<
+    DungeonRecord,
+    "name" | "raidKey" | "itemLevel" | "size" | "difficulty"
+  >,
   getBisSlotMapForSpec: GetBisSlotMapForSpec,
 ): SpecGearHint {
   const slotMap = getBisSlotMapForSpec(className, specGear.spec);

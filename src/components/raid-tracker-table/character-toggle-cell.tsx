@@ -48,13 +48,11 @@ export function CharacterToggleCell({
 
   const mainLevel = gearHints.main?.gearHint.level ?? 0;
   const offLevel = gearHints.off?.gearHint.level ?? 0;
+  const peakHintLevel = mainLevel >= offLevel ? mainLevel : offLevel;
   const hasBothSpecHints = Boolean(gearHints.main && gearHints.off);
   const cellHintSx = hasBothSpecHints
     ? gearUpgradeHintDualCellSx(mainLevel, offLevel, dungeon.itemLevel)
-    : gearUpgradeHintCellSx(
-        Math.max(mainLevel, offLevel),
-        dungeon.itemLevel,
-      );
+    : gearUpgradeHintCellSx(peakHintLevel, dungeon.itemLevel);
 
   const toggleSwitch = (
     <Switch
