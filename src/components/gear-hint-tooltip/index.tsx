@@ -50,7 +50,7 @@ export function GearHintTooltipContent({
       {tokenRows.length > 0 ? (
         <>
           <Typography variant="caption" component="p" sx={{ fontWeight: 600, mb: 0.5 }}>
-            {t("tierSet.tokensFromRaid", { count: tierSetHint.tokenNeeds.length })}
+            {t("tierSet.tokensFromRaid", { count: tokenRows.length })}
           </Typography>
           <Table size="small" sx={{ "& td, & th": { border: 0, py: 0.25, px: 0.5 } }}>
             <TableHead>
