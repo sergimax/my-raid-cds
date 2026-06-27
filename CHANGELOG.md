@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Character storage:** `gearItems` live on `mainSpec` / `offSpec` (`{ spec, gearScore?, gearItems? }`); legacy v4 top-level `gearItems` migrate to `mainSpec.gearItems` on load. Tracker `schemaVersion` **5**.
 - **Gear hints:** `evaluateCharacterGearHints` in `utils/character-gear-hints.ts` replaces main-spec-only hint path; `GearHintTooltipContent` composes per-spec sections.
 
+### Fixed
+
+- **Edit character:** Changing main or off spec without re-importing gear no longer saves the previous spec’s items under the new spec; gear drafts are cleared on spec change and only persist when tied to the selected spec name (`character-edit-spec-gear.ts`).
+
 ## [1.19.0] - 2026-06-27
 
 ### Added
