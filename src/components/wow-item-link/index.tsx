@@ -3,14 +3,7 @@ import { Fragment, type ReactNode } from "react";
 import { getWotlkItemName } from "../../data/wotlk-item-names.ts";
 import { useItemTooltipLocale } from "../../hooks/use-item-tooltip-locale.ts";
 import { buildWowItemUrl } from "../../utils/wow-item-url.ts";
-
-const itemLinkSx = {
-  color: "inherit",
-  textDecoration: "none",
-  "&:hover": {
-    textDecoration: "underline",
-  },
-} as const;
+import { wowItemLinkSx } from "./item-link-styles.ts";
 
 type WowItemLinkProps = {
   itemId: number;
@@ -24,10 +17,11 @@ export function WowItemLink({ itemId, children }: WowItemLinkProps) {
   return (
     <Box
       component="a"
+      className="wow-item-link"
       href={buildWowItemUrl(itemId, locale)}
       target="_blank"
       rel="noopener noreferrer"
-      sx={itemLinkSx}
+      sx={wowItemLinkSx(itemId)}
     >
       {label}
     </Box>
