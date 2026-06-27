@@ -30,7 +30,7 @@ Open [http://localhost:5173](http://localhost:5173).
 | `npm run test` | Run tests in watch mode |
 | `npm run test:run` | Run tests once (CI) |
 | `npm run build:wow-data` | Regenerate bundled item names, gear slots, equip metadata, raid loot, and tier sets from `scripts/wowsims-db.json` (use `--skip-ru` to skip WoWRoad Russian name fetch) |
-| `npm run generate:titans-bis` | Generate or merge Titans guild BiS preset TypeScript from `scripts/titans-bis/source.md` |
+| `npm run generate:titans-bis` | Generate or merge Titans guild BiS preset TypeScript from `scripts/titans-bis/source.md` (weapon lines: `+` for main/off/ranged, `/` for main-hand alternatives) |
 | `npm run comment:bis-presets` | Add slot + item name trailing comments to built-in BiS preset files |
 
 ## Usage

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.22.1] - 2026-06-27
+
+### Fixed
+
+- **Titans BiS generator — `index.ts` registration:** `generate:titans-bis` adds imports and array entries via structural updates to `BuiltInBisPresets` (throws on failure) instead of hard-coded anchor regexes that could silently skip new presets.
+- **Titans BiS generator — weapon slots:** Assigns main hand, off hand, and ranged from `source.md` using `wotlk-item-equip-props.json` (Titan's Grip, caster shields, ranged items); supports `+`-separated weapons and `MainAlt1 / MainAlt2 + OffHand` lines. Fixes Fury (Shadowmourne + Glorenzelg + Fal'inrush), Holy Paladin / Elemental / Restoration Shaman (Terenas + Bulwark of Smouldering Steel), and similar multi-weapon presets.
+- **Smouldering Steel item mapping:** Manual alias `Сила тлеющей стали` now resolves to **50616** (Bulwark of Smouldering Steel), not Bloodvenom Blade.
+
 ## [1.22.0] - 2026-06-27
 
 ### Added
