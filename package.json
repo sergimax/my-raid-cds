@@ -11,6 +11,7 @@
     "test": "vitest",
     "build:wow-data": "node scripts/build-wow-data.mjs",
     "generate:titans-bis": "node scripts/titans-bis/generate.mjs",
+    "generate:bis-sources": "node scripts/resolve-bis-sources.mjs",
     "comment:bis-presets": "node scripts/comment-bis-presets.mjs",
     "test:run": "vitest run"
   },
