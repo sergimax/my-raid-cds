@@ -36,15 +36,15 @@ export const ruMessages: Messages = {
   toolbar: {
     actionsAria: "Действия трекера",
     addFromTemplate: "Добавить из шаблона",
-    addCharacter: "Добавить персонажа",
-    addDungeon: "Добавить подземелье",
-    bisLists: "BiS списки",
+    addCharacter: "+ персонаж",
+    addDungeon: "+ рейд",
+    bisLists: "BIS",
     export: "Экспорт",
-    resetAllToggles: "Сбросить все переключатели",
+    resetAllToggles: "Сброс статистики",
   },
   table: {
     dungeonName: "Название подземелья",
-    itemLevel: "Уровень предметов",
+    itemLevel: "ilvl",
     complete: "Готово",
     rowActions: "Действия строки",
     filterByDungeonName: "Фильтр по названию подземелья",
@@ -78,7 +78,7 @@ export const ruMessages: Messages = {
     shortName: "Короткое имя",
     shortNameHelper:
       "Сокращение для компактного вида. Оставьте пустым для известных рейдов.",
-    itemLevels: "Уровни предметов",
+    itemLevels: "ilvl",
     itemLevelsHelper:
       "Одно или несколько значений через / или запятую (напр. 200 или 200 / 213).",
     difficulty: "Сложность",
@@ -114,9 +114,9 @@ export const ruMessages: Messages = {
       'Удалить «{{name}}» и все переключатели КД? Это нельзя отменить.',
   },
   bisPanel: {
-    title: "BiS списки",
+    title: "BIS листы",
     layoutHint:
-      "Класс и спек слева · предметы в центре · списки и сохранение справа",
+      "Выбор класса и спека слева. Предметы в центре. Списки и сохранение справа. Активный список будет использован для подсказок апгрейда в таблице",
     helpTooltip:
       "Пресеты BiS по спекам. Сохраняйте свои списки; повторное сохранение с тем же именем обновляет список. Подсказки апгрейда используют выбранный список для основного спека персонажа.",
     classAndSpec: "Класс и спек",

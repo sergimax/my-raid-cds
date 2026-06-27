@@ -113,7 +113,7 @@ export const enMessages = {
   bisPanel: {
     title: "BiS lists",
     layoutHint:
-      "Class & spec on the left · items in the center · lists & save on the right",
+      "Choose class & spec on the left. Items in the center. Lists & save on the right. The active list will be used for upgrade hints in the table.",
     helpTooltip:
       "Preset best-in-slot targets per spec. Save custom lists with a name; saving again with the same name updates that list. Upgrade hints use the selected list for each character's main spec.",
     classAndSpec: "Class & spec",
