@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import type { CharacterGearItem } from "../../types/character-gear.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedGearSlotLabel } from "../../i18n/localized-domain.ts";
@@ -9,13 +9,22 @@ type StoredGearItemLineProps = {
   item: CharacterGearItem;
 };
 
+const mutedMetaSx = { color: "text.secondary" } as const;
+
 export function StoredGearItemLine({ item }: StoredGearItemLineProps) {
   const { locale } = useTranslation();
 
   return (
-    <Typography component="span" variant="body2" color="text.secondary">
-      {getLocalizedGearSlotLabel(item.slot, locale)} · <WowItemLink itemId={item.id} /> ·{" "}
-      {formatStoredGearItemLevelLabel(item, locale)}
-    </Typography>
+    <Box component="span" sx={{ display: "inline" }}>
+      <Typography component="span" variant="body2" sx={mutedMetaSx}>
+        {getLocalizedGearSlotLabel(item.slot, locale)}
+        {" · "}
+      </Typography>
+      <WowItemLink itemId={item.id} />
+      <Typography component="span" variant="body2" sx={mutedMetaSx}>
+        {" · "}
+        {formatStoredGearItemLevelLabel(item, locale)}
+      </Typography>
+    </Box>
   );
 }
