@@ -91,10 +91,10 @@ Example: `feat(auth): add login form`
 - **Delete dungeon** — per-row edit and delete icons in the pinned actions column; delete removes that dungeon and its toggles
 - **Reset per character** — icon in the character column header clears toggles for that character only
 - **Add forms** — only one of character or dungeon form open at a time; submit closes the form; duplicate character (name + class) is rejected; character form accepts optional main/off spec and gear score (WotLK specs for selected class; main and off must differ when both set); dungeon form accepts optional short name (defaults from `RaidNames` when name matches a known raid)
-- **Edit character** — edit icon in character column header opens `CharacterEditDialog` to update main/off spec and gear score (name and class unchanged); WowSimsExporter JSON paste imports `gearItems`
+- **Edit character** — edit icon in character column header opens `CharacterEditDialog` to update main/off spec and gear score (name and class unchanged); WowSimsExporter JSON paste imports `gearItems`; `StoredGearItemLine` shows slot/ilvl muted with `WowItemLink` item names styled via `item-link-styles.ts`
 - **BiS lists** — toolbar **BiS lists** opens `BisListsPanel`; built-in presets read-only; local presets editable (item IDs per slot, confirm per slot, save/delete); selection drives `getBisSlotMapForCharacter` for upgrade hints
 - **Gear upgrade hints** — `CharacterToggleCell` tints toggle background via `evaluateGearUpgradeHint` (equipped gear vs dungeon ilvl tier + optional BiS-filtered raid loot from `raid-loot-by-key.json`)
-- **UI locale** — header **EN**/**RU** toggle (`my-raid-cds-item-tooltip-locale`); `useTranslation()` / `t("key")` for UI copy; item links in `wow-item-link`, gear summary, BiS panel follow locale; export and table dungeon/spec labels respect locale
+- **UI locale** — header **EN**/**RU** toggle (`my-raid-cds-item-tooltip-locale`); `useTranslation()` / `t("key")` for UI copy; item links in `wow-item-link` (`item-link-styles.ts`: ilvl-tier color, bold, dotted underline), gear summary, BiS panel follow locale; export and table dungeon/spec labels respect locale
 - **Edit dungeon** — edit icon on each dungeon row opens `DungeonEditDialog` to update name, short name, size, mode, and emblem badge (item levels and toggles unchanged)
 - **Character column** — shows class icon, name, optional spec icons with compact gear score (`6.6k`, rounded down); tooltip has full spec names
 - **Compact table** — below `md`, pinned columns are actions + name only; name cell shows `shortName` when set (full name in tooltip)
@@ -112,7 +112,7 @@ Example: `feat(auth): add login form`
 
 ```
 src/
-├── components/ # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, dungeon-edit-dialog, dungeon-customization-fields, raid-tracker-table, tracker-controls (+ actions.ts), export-panel, bis-lists-panel, wow-item-link, stored-gear-item-line, item-tooltip-locale-toggle, …
+├── components/ # app-header, tracker-layout, raid-tracker-main, character-form, character-edit-dialog, character-spec-gear-fields, spec-option-label, dungeon-form, dungeon-edit-dialog, dungeon-customization-fields, raid-tracker-table, tracker-controls (+ actions.ts), export-panel, bis-lists-panel, wow-item-link (+ item-link-styles.ts), stored-gear-item-line, item-tooltip-locale-toggle, …
 ├── i18n/ # messages/en.ts, messages/ru.ts, translate.ts, localized-domain.ts, use-translation.ts, types.ts
 ├── constants/ # character.ts, dungeon-form-defaults.ts, item-tooltips.ts
 ├── contexts/ # raid-tracker-context.ts, raid-tracker-provider.tsx, color-mode-provider.tsx, bis-lists-provider.tsx, item-tooltip-locale-provider.tsx

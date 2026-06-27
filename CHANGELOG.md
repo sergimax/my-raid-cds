@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.17.1] - 2026-06-27
+
+### Changed
+
+- **Item links:** `WowItemLink` names use ilvl-tier color (same scale as dungeon ilvl), bold weight, and a dotted underline so items stand out from slot labels and plain text in stored gear and BiS lists. Unknown item ids use a purple fallback. Styles in `wow-item-link/item-link-styles.ts`.
+
 ## [1.17.0] - 2026-06-27
 
 ### Added
