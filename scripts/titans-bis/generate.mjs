@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { formatPresetSlots } from "../bis-preset-format.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, "../..");
@@ -333,10 +334,7 @@ function classNameEnum(className) {
 }
 
 function formatPreset(slots) {
-  const lines = slots.map(
-    (entry) => `        { slot: ${entry.slot}, itemIds: [${entry.itemIds.join(", ")}] },`,
-  );
-  return lines.join("\n");
+  return formatPresetSlots(slots);
 }
 
 function writePresetFile(fileName, exportName, className, spec, slots) {
