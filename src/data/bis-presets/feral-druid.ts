@@ -10,21 +10,21 @@ export const feralDruidBis: BuiltInSpecBis = {
       id: "titans",
       name: "Titans",
       slots: [
-        { slot: 0, itemIds: [51296] },
-        { slot: 1, itemIds: [50633] },
-        { slot: 2, itemIds: [51299] },
-        { slot: 3, itemIds: [47546] },
-        { slot: 4, itemIds: [51300] },
-        { slot: 5, itemIds: [54580] },
-        { slot: 6, itemIds: [50675] },
-        { slot: 7, itemIds: [50707] },
-        { slot: 8, itemIds: [51297] },
-        { slot: 9, itemIds: [50607] },
-        { slot: 10, itemIds: [50402] },
-        { slot: 11, itemIds: [54576] },
-        { slot: 12, itemIds: [50363] },
-        { slot: 13, itemIds: [54590] },
-        { slot: 14, itemIds: [50735] },
+        { slot: 0, itemIds: [51296] }, // Head: Sanctified Lasherweave Headguard
+        { slot: 1, itemIds: [50633] }, // Neck: Sindragosa's Cruel Claw
+        { slot: 2, itemIds: [51299] }, // Shoulder: Sanctified Lasherweave Shoulderpads
+        { slot: 3, itemIds: [47546] }, // Back: Sylvanas' Cunning
+        { slot: 4, itemIds: [51300] }, // Chest: Sanctified Lasherweave Robes
+        { slot: 5, itemIds: [54580] }, // Wrist: Umbrage Armbands
+        { slot: 6, itemIds: [50675] }, // Hands: Aldriana's Gloves of Secrecy
+        { slot: 7, itemIds: [50707] }, // Waist: Astrylian's Sutured Cinch
+        { slot: 8, itemIds: [51297] }, // Legs: Sanctified Lasherweave Legguards
+        { slot: 9, itemIds: [50607] }, // Feet: Frostbitten Fur Boots
+        { slot: 10, itemIds: [50402] }, // Finger 1: Ashen Band of Endless Vengeance
+        { slot: 11, itemIds: [54576] }, // Finger 2: Signet of Twilight
+        { slot: 12, itemIds: [50363] }, // Trinket 1: Deathbringer's Will
+        { slot: 13, itemIds: [54590] }, // Trinket 2: Sharpened Twilight Scale
+        { slot: 14, itemIds: [50735] }, // Main hand: Oathbinder, Charge of the Ranger-General
       ],
     },
   ],

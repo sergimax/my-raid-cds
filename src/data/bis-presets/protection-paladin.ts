@@ -10,22 +10,22 @@ export const protectionPaladinBis: BuiltInSpecBis = {
       id: "titans",
       name: "Titans",
       slots: [
-        { slot: 0, itemIds: [50640] },
-        { slot: 1, itemIds: [50682] },
-        { slot: 2, itemIds: [51269] },
-        { slot: 3, itemIds: [50718] },
-        { slot: 4, itemIds: [51265] },
-        { slot: 5, itemIds: [50611] },
-        { slot: 6, itemIds: [51267] },
-        { slot: 7, itemIds: [50691] },
-        { slot: 8, itemIds: [51268] },
-        { slot: 9, itemIds: [54579] },
-        { slot: 10, itemIds: [50404] },
-        { slot: 11, itemIds: [50642] },
-        { slot: 12, itemIds: [50364] },
-        { slot: 13, itemIds: [50356] },
-        { slot: 14, itemIds: [50737] },
-        { slot: 15, itemIds: [50729] },
+        { slot: 0, itemIds: [50640] }, // Head: Broken Ram Skull Helm
+        { slot: 1, itemIds: [50682] }, // Neck: Bile-Encrusted Medallion
+        { slot: 2, itemIds: [51269] }, // Shoulder: Sanctified Lightsworn Shoulderguards
+        { slot: 3, itemIds: [50718] }, // Back: Royal Crimson Cloak
+        { slot: 4, itemIds: [51265] }, // Chest: Sanctified Lightsworn Chestguard
+        { slot: 5, itemIds: [50611] }, // Wrist: Bracers of Dark Reckoning
+        { slot: 6, itemIds: [51267] }, // Hands: Sanctified Lightsworn Handguards
+        { slot: 7, itemIds: [50691] }, // Waist: Belt of Broken Bones
+        { slot: 8, itemIds: [51268] }, // Legs: Sanctified Lightsworn Legguards
+        { slot: 9, itemIds: [54579] }, // Feet: Treads of Impending Resurrection
+        { slot: 10, itemIds: [50404] }, // Finger 1: Ashen Band of Endless Courage
+        { slot: 11, itemIds: [50642] }, // Finger 2: Juggernaut Band
+        { slot: 12, itemIds: [50364] }, // Trinket 1: Sindragosa's Flawless Fang
+        { slot: 13, itemIds: [50356] }, // Trinket 2: Corroded Skeleton Key
+        { slot: 14, itemIds: [50737] }, // Main hand: Havoc's Call, Blade of Lordaeron Kings
+        { slot: 15, itemIds: [50729] }, // Off hand: Icecrown Glacial Wall
       ],
     },
   ],
