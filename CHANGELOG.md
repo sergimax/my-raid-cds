@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.23.0] - 2026-06-27
+
+### Added
+
+- **Community BiS presets:** Built-in lists from forum and Icy-Veins guides for Unholy Death Knight, Enhancement Shaman (Warmane, Circle, Icy-Veins), Feral Druid (Warmane, Circle, Icy-Veins), and Restoration Druid (Warmane) — each preset named by source and author (e.g. `Udk-STR (Warmane · Drakantas)`).
+- **Community BiS tooling:** `npm run generate:bis-sources` parses `scripts/bis-list-sources.md`, resolves English and Russian item names to ids, and writes the matching preset TypeScript under `data/bis-presets/` (does not modify `index.ts`).
+
+### Changed
+
+- **Unholy / Enhancement / Feral / Restoration Druid presets:** Replaced Titans-only (or legacy Default/Titans) built-in lists for those specs with the new community-source presets; other specs still use **Titans** lists from `generate:titans-bis`.
+
+### Fixed
+
+- **BiS panel — first render:** Item rows appear immediately when opening the panel for a spec with built-in presets (slot drafts sync on mount via `activeSlotDrafts` instead of waiting for a second render).
+
 ## [1.22.1] - 2026-06-27
 
 ### Changed
