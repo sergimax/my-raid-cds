@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.19.0] - 2026-06-27
+
+### Added
+
+- **Class/spec equip rules:** Gear upgrade hints and BiS slot validation respect WotLK usability — armor type, weapon proficiencies, ranged slot (wands vs bows, etc.), dual wield (e.g. Enhancement shaman), and Titan’s Grip (Fury/Arms warrior 2H off-hand). Rules mirror WowSims `canEquipItem`; loot suggestions no longer offer items the character cannot wear (e.g. crossbows for priests).
+- **Bundled equip metadata:** `wotlk-item-equip-props.json` (weapon/armor/ranged types + class allowlists per item id); `utils/item-equip-restrictions.ts` with `canEquipItemForCharacter` and `filterUsableLootItemIds`.
+
+### Changed
+
+- **Gear upgrade hints:** `evaluateGearUpgradeHint` takes the character’s class and main spec and filters raid loot before picking best upgrades per slot.
+- **BiS lists:** Confirming or saving slot items rejects gear not usable by the panel’s selected class/spec.
+- **`npm run build:wow-data`:** Also writes `src/data/wotlk-item-equip-props.json`.
+
 ## [1.18.0] - 2026-06-27
 
 ### Added
