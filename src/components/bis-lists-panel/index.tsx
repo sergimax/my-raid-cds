@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { specsForClass } from "../../data/class-specs.ts";
+import { GearSlotNames } from "../../data/gear-slot-names.ts";
 import type { AppLocale } from "../../i18n/types.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedClassName, getLocalizedGearSlotLabel, getLocalizedSpecName } from "../../i18n/localized-domain.ts";
@@ -101,6 +102,15 @@ function presetToSlotDrafts(preset: BisListPreset): SlotDraft[] {
         itemIds: [...slotEntry.itemIds],
       };
     });
+}
+
+function createEmptySlotDrafts(): SlotDraft[] {
+  return GearSlotNames.map((_, slot) => ({
+    slot,
+    itemsText: "",
+    confirmedText: "",
+    itemIds: [],
+  }));
 }
 
 function slotDraftsToPresetSlots(
@@ -335,6 +345,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     [activeSpec, bisLists, className],
   );
   const hasBuiltIn = hasBuiltInBisForSpec(className, activeSpec);
+  const isCustomListCreation = !hasBuiltIn && presets.length === 0;
   const selectedPresetId = selectedPreset?.id;
   const isBuiltInPresetSelected = Boolean(
     selectedPreset && !isLocalBisPreset(selectedPreset),
@@ -350,7 +361,9 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
 
   if (editorSessionKey !== trackedEditorSessionKey) {
     setTrackedEditorSessionKey(editorSessionKey);
-    const nextDrafts = selectedPreset ? presetToSlotDrafts(selectedPreset) : [];
+    const nextDrafts = selectedPreset
+      ? presetToSlotDrafts(selectedPreset)
+      : createEmptySlotDrafts();
     setSlotDrafts(nextDrafts);
     setSlotErrors(collectSlotValidationErrors(nextDrafts, "strict", equipContext));
     setEditingSlots({});
@@ -538,7 +551,32 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
 
   useEffect(() => () => hideExternalWowTooltips(), []);
 
-  const slotEditor = presets.length === 0 ? null : (
+  const saveListForm = (
+    <Stack spacing={1}>
+      <TextField
+        size="small"
+        label={t("bisPanel.listName")}
+        value={saveListName}
+        onChange={(event) => {
+          setSaveListName(event.target.value);
+          setError("");
+        }}
+        placeholder={t("bisPanel.listNamePlaceholder")}
+        fullWidth
+      />
+      <Button
+        variant="contained"
+        startIcon={<SaveIcon />}
+        onClick={handleSaveList}
+        disabled={hasSlotErrors || hasUnconfirmedSlots}
+        fullWidth
+      >
+        {t("bisPanel.saveList")}
+      </Button>
+    </Stack>
+  );
+
+  const slotEditor = slotDrafts.length === 0 ? null : (
     <>
       <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.75 }}>
         {isBuiltInPresetSelected
@@ -586,13 +624,19 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     </>
   );
 
-  const presetsSidebar = presets.length === 0 ? (
-    <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8125rem" }}>
-      {t("bisPanel.noBuiltinList", {
-        class: getLocalizedClassName(className, locale),
-        spec: getLocalizedSpecName(className, activeSpec, locale),
-      })}
-    </Typography>
+  const presetsSidebar = isCustomListCreation ? (
+    <Stack spacing={1.25} sx={{ minWidth: 0 }}>
+      <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8125rem" }}>
+        {t("bisPanel.createCustomListHint", {
+          class: getLocalizedClassName(className, locale),
+          spec: getLocalizedSpecName(className, activeSpec, locale),
+        })}
+      </Typography>
+      {saveListForm}
+      <Typography variant="caption" color="text.secondary">
+        {t("bisPanel.localListsOnly")}
+      </Typography>
+    </Stack>
   ) : (
     <Stack spacing={1.25} sx={{ minWidth: 0 }}>
       <Stack spacing={0.75}>
@@ -630,28 +674,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
 
       <Divider />
 
-      <Stack spacing={1}>
-        <TextField
-          size="small"
-          label={t("bisPanel.listName")}
-          value={saveListName}
-          onChange={(event) => {
-            setSaveListName(event.target.value);
-            setError("");
-          }}
-          placeholder={t("bisPanel.listNamePlaceholder")}
-          fullWidth
-        />
-        <Button
-          variant="contained"
-          startIcon={<SaveIcon />}
-          onClick={handleSaveList}
-          disabled={hasSlotErrors || hasUnconfirmedSlots}
-          fullWidth
-        >
-          {t("bisPanel.saveList")}
-        </Button>
-      </Stack>
+      {saveListForm}
 
       {!hasBuiltIn ? (
         <Typography variant="caption" color="text.secondary">
@@ -766,9 +789,9 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
           <Box
             sx={{
               minWidth: 0,
-              borderRight: { md: presets.length > 0 ? 1 : 0 },
+              borderRight: { md: 1 },
               borderColor: { md: "divider" },
-              pr: { md: presets.length > 0 ? 2 : 0 },
+              pr: { md: 2 },
             }}
           >
             <Typography
@@ -777,16 +800,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
             >
               {t("bisPanel.items")}
             </Typography>
-            {presets.length === 0 ? (
-              <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8125rem" }}>
-                {t("bisPanel.noBuiltinListDev", {
-                  class: getLocalizedClassName(className, locale),
-                  spec: getLocalizedSpecName(className, activeSpec, locale),
-                })}
-              </Typography>
-            ) : (
-              slotEditor
-            )}
+            {slotEditor}
           </Box>
 
           <Stack spacing={1} sx={{ minWidth: 0 }}>

@@ -130,9 +130,8 @@ export const ruMessages: Messages = {
       "Встроенный список (только чтение). Сохраните под своим именем для редактирования.",
     editHint:
       "Наведите на предмет для подсказки. Редактируйте слот, подтвердите ✓ или отмените ✕.",
-    noBuiltinList: "Нет встроенного BiS для {{class}} {{spec}}.",
-    noBuiltinListDev:
-      "Нет встроенного BiS для {{class}} {{spec}}. Добавьте пресеты в src/data/bis-presets/.",
+    createCustomListHint:
+      "Нет встроенного BiS для {{class}} {{spec}}. Добавьте предметы ниже и сохраните список под своим именем.",
     listName: "Имя списка",
     listNamePlaceholder: "Имя своего списка",
     saveList: "Сохранить список",
