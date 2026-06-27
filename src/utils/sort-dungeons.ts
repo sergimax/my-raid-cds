@@ -47,8 +47,8 @@ export function sortDungeons(
     } else if (key === "type") {
       comparison =
         compareDungeonType(firstDungeon, secondDungeon) ||
-        getCachedStartingItemLevel(secondDungeon) -
-          getCachedStartingItemLevel(firstDungeon);
+        getCachedStartingItemLevel(firstDungeon) -
+          getCachedStartingItemLevel(secondDungeon);
     } else if (key === "itemLevel") {
       comparison =
         getCachedStartingItemLevel(firstDungeon) -
