@@ -24,6 +24,7 @@ export const marksmanshipHunterBis: BuiltInSpecBis = {
         { slot: 11, itemIds: [50618] }, // Finger 2: Frostbrood Sapphire Ring
         { slot: 12, itemIds: [50363] }, // Trinket 1: Deathbringer's Will
         { slot: 13, itemIds: [54590] }, // Trinket 2: Sharpened Twilight Scale
+        { slot: 14, itemIds: [50735] }, // Main hand: Oathbinder, Charge of the Ranger-General
         { slot: 16, itemIds: [50733] }, // Ranged: Fal'inrush, Defender of Quel'thalas
       ],
     },

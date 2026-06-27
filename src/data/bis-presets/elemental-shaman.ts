@@ -25,7 +25,7 @@ export const elementalShamanBis: BuiltInSpecBis = {
         { slot: 12, itemIds: [54588] }, // Trinket 1: Charred Twilight Scale
         { slot: 13, itemIds: [50365] }, // Trinket 2: Phylactery of the Nameless Lich
         { slot: 14, itemIds: [50734] }, // Main hand: Royal Scepter of Terenas II
-        { slot: 15, itemIds: [50672] }, // Off hand: Bloodvenom Blade
+        { slot: 15, itemIds: [50616] }, // Off hand: Bulwark of Smouldering Steel
       ],
     },
   ],

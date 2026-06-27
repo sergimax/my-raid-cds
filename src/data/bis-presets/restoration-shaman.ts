@@ -25,6 +25,7 @@ export const restorationShamanBis: BuiltInSpecBis = {
         { slot: 12, itemIds: [54589] }, // Trinket 1: Glowing Twilight Scale
         { slot: 13, itemIds: [50366] }, // Trinket 2: Althor's Abacus
         { slot: 14, itemIds: [50734] }, // Main hand: Royal Scepter of Terenas II
+        { slot: 15, itemIds: [50616] }, // Off hand: Bulwark of Smouldering Steel
       ],
     },
   ],

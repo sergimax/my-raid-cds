@@ -22,6 +22,13 @@ const ilvls = JSON.parse(
 const gearSlots = JSON.parse(
   fs.readFileSync(path.join(dataDir, "wotlk-item-gear-slots.json"), "utf8"),
 );
+const equipProps = JSON.parse(
+  fs.readFileSync(path.join(dataDir, "wotlk-item-equip-props.json"), "utf8"),
+);
+
+const ItemType = { Weapon: 13, Ranged: 14 };
+const WeaponType = { OffHand: 5 };
+const HandType = { MainHand: 1, OneHand: 2, OffHand: 3, TwoHand: 4 };
 
 /** Sanctified T10 (277) by class|spec. */
 const T10_BY_SPEC = {
@@ -61,7 +68,7 @@ const MANUAL_ITEM_IDS = {
   "катушка тенешелка": 50719,
   "шип для пронзания трупов": 50684,
   "кованая плетью секира": 50654,
-  "сила тлеющей стали": 50672,
+  "сила тлеющей стали": 50616,
   "теренаска": 50734,
   "темная скорбь": 49623,
   "поручи полой тени": 54580,
@@ -188,10 +195,42 @@ function splitItemParts(value) {
 }
 
 function splitWeaponParts(value) {
-  const primary = stripSourceHints(value.split(/\s*\/\s*/)[0]);
+  const segments = value.split(/\s*\/\s*/);
+  const primarySegment = stripSourceHints(segments[0]);
+  const primaryParts = primarySegment
+    .split(/\s*\+\s*/)
+    .map((part) => cleanItemPart(part))
+    .filter(Boolean);
+
+  if (primaryParts.length > 1) {
+    return primaryParts;
+  }
+
+  // "MainAlt1 / MainAlt2 + OffHand" — first main option + shared off-hand after +
+  for (let index = 1; index < segments.length; index += 1) {
+    const segment = stripSourceHints(segments[index]);
+    const plusIndex = segment.indexOf("+");
+    if (plusIndex === -1) continue;
+    const offHandParts = segment
+      .slice(plusIndex + 1)
+      .split(/\s*\+\s*/)
+      .map((part) => cleanItemPart(part))
+      .filter(Boolean);
+    if (offHandParts.length > 0) {
+      const mainPart = primaryParts[0] ?? cleanItemPart(primarySegment);
+      return [mainPart, ...offHandParts];
+    }
+  }
+
+  if (primaryParts.length === 1) {
+    return primaryParts;
+  }
+
+  const primary = primarySegment.trim();
   if (primary.includes("+")) {
     return splitItemParts(value);
   }
+
   const splitPrefixes = [
     "Солнечные часы",
     "Катушка",
@@ -210,9 +249,67 @@ function splitWeaponParts(value) {
   return [primary.trim()];
 }
 
+function canDualWield(className, spec) {
+  if (
+    className === "Warrior" ||
+    className === "Death Knight" ||
+    className === "Hunter" ||
+    className === "Rogue"
+  ) {
+    return true;
+  }
+  return className === "Shaman" && spec === "Enhancement";
+}
+
+function canEquipTwoHandInOffHand(className, spec) {
+  return className === "Warrior" && spec !== "Protection";
+}
+
+function isRangedItem(itemId) {
+  return equipProps[String(itemId)]?.t === ItemType.Ranged;
+}
+
+/** Mirrors app equip rules for weapon slot assignment (main → off → ranged). */
+function canEquipWeaponInSlot(itemId, gearSlot, className, spec) {
+  const props = equipProps[String(itemId)];
+  if (!props) {
+    return gearSlot >= 14 && gearSlot <= 16;
+  }
+  if (props.t === ItemType.Ranged) {
+    return gearSlot === 16;
+  }
+  if (props.t !== ItemType.Weapon) {
+    return false;
+  }
+
+  const handType = props.h ?? 0;
+  const weaponType = props.w ?? 0;
+
+  if (gearSlot === 16) {
+    return false;
+  }
+  if (gearSlot === 14) {
+    return handType !== HandType.OffHand;
+  }
+  if (gearSlot === 15) {
+    if (handType === HandType.TwoHand) {
+      return canEquipTwoHandInOffHand(className, spec);
+    }
+    if (weaponType === WeaponType.OffHand || handType === HandType.OffHand) {
+      return true;
+    }
+    if (handType === HandType.OneHand) {
+      return canDualWield(className, spec);
+    }
+    return false;
+  }
+  return false;
+}
+
 function assignWeaponSlots(parts, sourceHint, className, spec) {
   const assigned = [];
-  const usedSlots = new Set();
+  const weaponSlots = [14, 15];
+  let nextWeaponSlotIndex = 0;
 
   for (const rawPart of parts) {
     if (/^т10$/i.test(rawPart)) continue;
@@ -224,21 +321,35 @@ function assignWeaponSlots(parts, sourceHint, className, spec) {
       continue;
     }
     const itemId = itemIds[0];
-    const validSlots = (gearSlots[itemId] ?? []).filter((slot) => slot >= 14);
-    if (isDual && validSlots.includes(14) && validSlots.includes(15)) {
+
+    if (isDual) {
       assigned.push({ slot: 14, itemIds: [itemId], label: part });
       assigned.push({ slot: 15, itemIds: [itemId], label: part });
-      usedSlots.add(14);
-      usedSlots.add(15);
+      nextWeaponSlotIndex = weaponSlots.length;
       continue;
     }
-    const slot = validSlots.find((candidate) => !usedSlots.has(candidate));
-    if (slot != null) {
-      assigned.push({ slot, itemIds: [itemId], label: part });
-      usedSlots.add(slot);
-    } else if (validSlots.length > 0) {
-      assigned.push({ slot: validSlots[0], itemIds: [itemId], label: part });
+
+    if (isRangedItem(itemId)) {
+      assigned.push({ slot: 16, itemIds: [itemId], label: part });
+      continue;
     }
+
+    let slot = null;
+    while (nextWeaponSlotIndex < weaponSlots.length) {
+      const candidate = weaponSlots[nextWeaponSlotIndex];
+      if (canEquipWeaponInSlot(itemId, candidate, className, spec)) {
+        slot = candidate;
+        nextWeaponSlotIndex += 1;
+        break;
+      }
+      nextWeaponSlotIndex += 1;
+    }
+
+    if (slot == null) {
+      assigned.push({ slot: null, itemIds: [itemId], label: part });
+      continue;
+    }
+    assigned.push({ slot, itemIds: [itemId], label: part });
   }
   return assigned;
 }
@@ -374,6 +485,72 @@ ${formatPreset(slots)}
   fs.writeFileSync(filePath, updated, "utf8");
 }
 
+function hasPresetImport(source, exportName) {
+  return new RegExp(`^import \\{ ${exportName} \\} from "\\./`, "m").test(source);
+}
+
+function hasPresetArrayEntry(source, exportName) {
+  return new RegExp(`^  ${exportName},$`, "m").test(source);
+}
+
+function addPresetImports(source, entries) {
+  const importLines = entries
+    .map(
+      ({ file, export: exportName }) =>
+        `import { ${exportName} } from "./${file}";`,
+    )
+    .join("\n");
+  const updated = source.replace(
+    /\nexport const BuiltInBisPresets/,
+    `\n${importLines}\nexport const BuiltInBisPresets`,
+  );
+  if (updated === source) {
+    throw new Error(
+      "Failed to update bis-presets/index.ts: could not locate BuiltInBisPresets export.",
+    );
+  }
+  return updated;
+}
+
+function addPresetArrayEntries(source, exportNames) {
+  const arrayLines = exportNames.map((exportName) => `  ${exportName},`).join("\n");
+  const updated = source.replace(
+    /(export const BuiltInBisPresets: readonly BuiltInSpecBis\[\] = \[\n)([\s\S]*?)(\n];)/,
+    `$1$2\n${arrayLines}$3`,
+  );
+  if (updated === source) {
+    throw new Error(
+      "Failed to update bis-presets/index.ts: could not locate BuiltInBisPresets array.",
+    );
+  }
+  return updated;
+}
+
+function updateIndexSource(indexSource, newExports) {
+  const needsImport = newExports.filter(
+    ({ export: exportName }) => !hasPresetImport(indexSource, exportName),
+  );
+  const needsArray = newExports.filter(
+    ({ export: exportName }) => !hasPresetArrayEntry(indexSource, exportName),
+  );
+
+  if (needsImport.length === 0 && needsArray.length === 0) {
+    return indexSource;
+  }
+
+  let updated = indexSource;
+  if (needsImport.length > 0) {
+    updated = addPresetImports(updated, needsImport);
+  }
+  if (needsArray.length > 0) {
+    updated = addPresetArrayEntries(
+      updated,
+      needsArray.map(({ export: exportName }) => exportName),
+    );
+  }
+  return updated;
+}
+
 const markdown = fs.readFileSync(sourceMd, "utf8");
 const resolved = parseSections(markdown).map(resolveSection);
 const newExports = [];
@@ -395,21 +572,8 @@ for (const result of resolved) {
 }
 
 const indexPath = path.join(presetsDir, "index.ts");
-let indexSource = fs.readFileSync(indexPath, "utf8");
+const indexSource = fs.readFileSync(indexPath, "utf8");
+const updatedIndexSource = updateIndexSource(indexSource, newExports);
 
-for (const { file, export: exportName } of newExports) {
-  const importPath = `./${file.replace(/\.ts$/, ".ts")}`;
-  if (!indexSource.includes(exportName)) {
-    indexSource = indexSource.replace(
-      /(import { furyWarriorBis } from "\.\/fury-warrior\.ts";)/,
-      `$1\nimport { ${exportName} } from "${importPath}";`,
-    );
-    indexSource = indexSource.replace(
-      /(  enhancementShamanBis,\n\];)/,
-      `  ${exportName},\n$1`,
-    );
-  }
-}
-
-fs.writeFileSync(indexPath, indexSource, "utf8");
+fs.writeFileSync(indexPath, updatedIndexSource, "utf8");
 console.log("Generated Titans presets.");
