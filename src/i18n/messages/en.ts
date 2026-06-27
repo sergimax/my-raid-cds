@@ -60,6 +60,7 @@ export const enMessages = {
     toggleAria: "{{character}} — {{dungeon}}",
     difficultyNormal: "N",
     difficultyHeroic: "H ☠️",
+    heroicSkullIcon: "☠️",
     emptyIlvl: "—",
   },
   characterForm: {

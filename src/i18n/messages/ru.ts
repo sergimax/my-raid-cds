@@ -63,6 +63,7 @@ export const ruMessages: Messages = {
     toggleAria: "{{character}} — {{dungeon}}",
     difficultyNormal: "N",
     difficultyHeroic: "H ☠️",
+    heroicSkullIcon: "☠️",
     emptyIlvl: "—",
   },
   characterForm: {
