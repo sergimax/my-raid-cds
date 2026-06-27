@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { MAX_CHARACTER_NAME_LENGTH } from "../../constants/character.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import { Classes } from "../../types/characters.ts";
 import { ClassOptionLabel } from "../class-option-label/index.tsx";
 import { CharacterSpecGearFields } from "../character-spec-gear-fields/index.tsx";
@@ -33,15 +34,17 @@ export function CharacterForm({
   onCancel,
   onSubmit,
 }: CharacterFormProps) {
+  const { t } = useTranslation();
+
   return (
     <Box>
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
-        New character
+        {t("characterForm.title")}
       </Typography>
       <form onSubmit={onSubmit} noValidate>
         <Stack spacing={2} sx={{ maxWidth: 480 }}>
           <TextField
-            label="Name"
+            label={t("common.name")}
             name="characterName"
             value={name}
             onChange={(event) => {
@@ -55,10 +58,10 @@ export function CharacterForm({
             helperText={`${name.length}/${MAX_CHARACTER_NAME_LENGTH}`}
           />
           <FormControl required>
-            <InputLabel id="character-class-label">Class</InputLabel>
+            <InputLabel id="character-class-label">{t("common.class")}</InputLabel>
             <Select
               labelId="character-class-label"
-              label="Class"
+              label={t("common.class")}
               name="characterClass"
               value={characterClass === "" ? "" : characterClass.name}
               renderValue={(selectedName) => {
@@ -99,7 +102,10 @@ export function CharacterForm({
             onOffSpecChange={onOffSpecChange}
             onOffGearScoreTextChange={onOffGearScoreTextChange}
           />
-          <FormActionsRow submitLabel="Add character" onCancel={onCancel} />
+          <FormActionsRow
+            submitLabel={t("characterForm.addCharacter")}
+            onCancel={onCancel}
+          />
           {error ? <FormErrorMessage message={error} /> : null}
         </Stack>
       </form>

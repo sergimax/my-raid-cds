@@ -21,7 +21,9 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { specsForClass } from "../../data/class-specs.ts";
-import { gearSlotLabel } from "../../data/gear-slot-names.ts";
+import type { AppLocale } from "../../i18n/types.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import { getLocalizedClassName, getLocalizedGearSlotLabel, getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useScrollIntoViewOnMount } from "../../hooks/use-scroll-into-view-on-mount.ts";
 import { Classes, ClassName, type ClassName as ClassNameType } from "../../types/characters.ts";
@@ -100,7 +102,10 @@ function presetToSlotDrafts(preset: BisListPreset): SlotDraft[] {
     });
 }
 
-function slotDraftsToPresetSlots(slotDrafts: SlotDraft[]): {
+function slotDraftsToPresetSlots(
+  slotDrafts: SlotDraft[],
+  locale: AppLocale,
+): {
   slots: BisListSlot[];
   error: string;
 } {
@@ -110,7 +115,9 @@ function slotDraftsToPresetSlots(slotDrafts: SlotDraft[]): {
   for (const slotDraft of slotDrafts) {
     const validated = validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, "strict");
     if (validated.error) {
-      errors.push(`${gearSlotLabel(slotDraft.slot)}: ${validated.error}`);
+      errors.push(
+        `${getLocalizedGearSlotLabel(slotDraft.slot, locale)}: ${validated.error}`,
+      );
       continue;
     }
     if (validated.itemIds.length > 0) {
@@ -167,6 +174,8 @@ function BisSlotRow({
   onStartEdit,
   onCancelEdit,
 }: BisSlotRowProps) {
+  const { t, locale } = useTranslation();
+  const slotLabel = getLocalizedGearSlotLabel(slotDraft.slot, locale);
   const inputRef = useRef<HTMLInputElement>(null);
   const canConfirm =
     isEditing &&
@@ -201,7 +210,7 @@ function BisSlotRow({
           alignSelf: isEditing ? "start" : "center",
         }}
       >
-        {gearSlotLabel(slotDraft.slot)}
+        {slotLabel}
       </Typography>
 
       {isEditing ? (
@@ -222,9 +231,9 @@ function BisSlotRow({
               onCancelEdit();
             }
           }}
-          placeholder="Name, id, or #id"
+          placeholder={t("bisPanel.itemSearchPlaceholder")}
           error={Boolean(validationError)}
-          helperText={validationError ?? "Confirm with ✓ or cancel with ✕"}
+          helperText={validationError ?? t("bisPanel.confirmHelper")}
           slotProps={{
             input: {
               sx: { py: 0.75, fontSize: "0.8125rem" },
@@ -247,20 +256,20 @@ function BisSlotRow({
 
       {isEditing ? (
         <Stack direction="row" spacing={0.25} sx={{ mt: 0.25, alignSelf: "start" }}>
-          <Tooltip title="Cancel editing">
+          <Tooltip title={t("bisPanel.cancelEditing")}>
             <IconButton
               size="small"
-              aria-label={`Cancel editing ${gearSlotLabel(slotDraft.slot)} item`}
+              aria-label={t("bisPanel.cancelEditingAria", { slot: slotLabel })}
               onClick={onCancelEdit}
             >
               <CloseIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Confirm item for this slot">
+          <Tooltip title={t("bisPanel.confirmItem")}>
             <span>
               <IconButton
                 size="small"
-                aria-label={`Confirm ${gearSlotLabel(slotDraft.slot)} item`}
+                aria-label={t("bisPanel.confirmItemAria", { slot: slotLabel })}
                 onClick={onConfirm}
                 disabled={!canConfirm}
                 color="primary"
@@ -272,10 +281,10 @@ function BisSlotRow({
         </Stack>
       ) : (
         readOnly ? null : (
-          <Tooltip title="Edit this slot">
+          <Tooltip title={t("bisPanel.editSlot")}>
             <IconButton
               size="small"
-              aria-label={`Edit ${gearSlotLabel(slotDraft.slot)} item`}
+              aria-label={t("bisPanel.editSlotAria", { slot: slotLabel })}
               onClick={onStartEdit}
               sx={{ alignSelf: "center" }}
             >
@@ -289,6 +298,7 @@ function BisSlotRow({
 }
 
 export function BisListsPanel({ onClose }: BisListsPanelProps) {
+  const { t, locale } = useTranslation();
   const panelRef = useScrollIntoViewOnMount<HTMLDivElement>();
   const bisLists = useBisListsContext();
   const [className, setClassName] = useState<ClassNameType>(ClassName.DeathKnight);
@@ -458,18 +468,18 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
 
   const handleSaveList = useCallback(() => {
     if (hasUnconfirmedSlots) {
-      setError("Confirm all edited slots before saving the list.");
+      setError(t("bisPanel.confirmAllSlots"));
       return;
     }
 
     const strictErrors = collectSlotValidationErrors(slotDrafts, "strict");
     if (Object.keys(strictErrors).length > 0) {
       setSlotErrors(strictErrors);
-      setError("Fix item errors before saving.");
+      setError(t("bisPanel.fixItemErrors"));
       return;
     }
 
-    const parsed = slotDraftsToPresetSlots(slotDrafts);
+    const parsed = slotDraftsToPresetSlots(slotDrafts, locale);
     if (parsed.error) {
       setError(parsed.error);
       return;
@@ -487,7 +497,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     }
 
     setError("");
-  }, [activeSpec, bisLists, className, hasUnconfirmedSlots, saveListName, slotDrafts]);
+  }, [activeSpec, bisLists, className, hasUnconfirmedSlots, locale, saveListName, slotDrafts, t]);
 
   const handleDeleteLocalPreset = useCallback(
     (presetId: string) => {
@@ -508,8 +518,8 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     <>
       <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.75 }}>
         {isBuiltInPresetSelected
-          ? "Built-in list (read-only). Save under a custom name to create an editable copy."
-          : "Hover item names for tooltips. Edit a slot, then confirm with ✓ or cancel with ✕."}
+          ? t("bisPanel.builtinReadOnly")
+          : t("bisPanel.editHint")}
       </Typography>
       <Box
         sx={{
@@ -553,7 +563,10 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
 
   const presetsSidebar = presets.length === 0 ? (
     <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8125rem" }}>
-      No built-in BiS list for {className} {activeSpec} yet.
+      {t("bisPanel.noBuiltinList", {
+        class: getLocalizedClassName(className, locale),
+        spec: getLocalizedSpecName(className, activeSpec, locale),
+      })}
     </Typography>
   ) : (
     <Stack spacing={1.25} sx={{ minWidth: 0 }}>
@@ -595,13 +608,13 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
       <Stack spacing={1}>
         <TextField
           size="small"
-          label="List name"
+          label={t("bisPanel.listName")}
           value={saveListName}
           onChange={(event) => {
             setSaveListName(event.target.value);
             setError("");
           }}
-          placeholder="Custom list name"
+          placeholder={t("bisPanel.listNamePlaceholder")}
           fullWidth
         />
         <Button
@@ -611,13 +624,13 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
           disabled={hasSlotErrors || hasUnconfirmedSlots}
           fullWidth
         >
-          Save list
+          {t("bisPanel.saveList")}
         </Button>
       </Stack>
 
       {!hasBuiltIn ? (
         <Typography variant="caption" color="text.secondary">
-          This spec uses only local lists.
+          {t("bisPanel.localListsOnly")}
         </Typography>
       ) : null}
     </Stack>
@@ -633,12 +646,9 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
         >
           <Box sx={{ minWidth: 0 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
-              BiS lists
+              {t("bisPanel.title")}
             </Typography>
-            <Tooltip
-              title="Preset best-in-slot targets per spec. Save custom lists with a name; saving again with the same name updates that list. Upgrade hints use the selected list for each character's main spec."
-              placement="bottom-start"
-            >
+            <Tooltip title={t("bisPanel.helpTooltip")} placement="bottom-start">
               <Typography
                 variant="caption"
                 color="text.secondary"
@@ -648,13 +658,13 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                   cursor: "help",
                 }}
               >
-                Class & spec on the left · items in the center · lists & save on the right
+                {t("bisPanel.layoutHint")}
               </Typography>
             </Tooltip>
           </Box>
           <IconButton
             size="small"
-            aria-label="Close BiS lists panel"
+            aria-label={t("bisPanel.closeAria")}
             onClick={handleClose}
             sx={{ mt: -0.25, mr: -0.5 }}
           >
@@ -685,13 +695,13 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
             }}
           >
             <Typography variant="overline" sx={{ lineHeight: 1.2, color: "text.secondary" }}>
-              Class & spec
+              {t("bisPanel.classAndSpec")}
             </Typography>
             <FormControl size="small" fullWidth>
-              <InputLabel id="bis-class-label">Class</InputLabel>
+              <InputLabel id="bis-class-label">{t("common.class")}</InputLabel>
               <Select
                 labelId="bis-class-label"
-                label="Class"
+                label={t("common.class")}
                 value={className}
                 onChange={(event) => {
                   const nextClass = event.target.value as ClassNameType;
@@ -702,17 +712,17 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
               >
                 {Classes.map((characterClass) => (
                   <MenuItem key={characterClass.name} value={characterClass.name}>
-                    {characterClass.name}
+                    {getLocalizedClassName(characterClass.name, locale)}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
 
             <FormControl size="small" fullWidth>
-              <InputLabel id="bis-spec-label">Spec</InputLabel>
+              <InputLabel id="bis-spec-label">{t("common.spec")}</InputLabel>
               <Select
                 labelId="bis-spec-label"
-                label="Spec"
+                label={t("common.spec")}
                 value={activeSpec}
                 onChange={(event) => {
                   setSpec(event.target.value);
@@ -721,7 +731,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
               >
                 {classSpecs.map((specName) => (
                   <MenuItem key={specName} value={specName}>
-                    {specName}
+                    {getLocalizedSpecName(className, specName, locale)}
                   </MenuItem>
                 ))}
               </Select>
@@ -740,15 +750,14 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
               variant="overline"
               sx={{ lineHeight: 1.2, color: "text.secondary", display: "block", mb: 1 }}
             >
-              Items
+              {t("bisPanel.items")}
             </Typography>
             {presets.length === 0 ? (
               <Typography variant="body2" color="text.secondary" sx={{ fontSize: "0.8125rem" }}>
-                No built-in BiS list for {className} {activeSpec} yet. Add presets in{" "}
-                <Box component="code" sx={{ fontSize: "0.85em" }}>
-                  src/data/bis-presets/
-                </Box>
-                .
+                {t("bisPanel.noBuiltinListDev", {
+                  class: getLocalizedClassName(className, locale),
+                  spec: getLocalizedSpecName(className, activeSpec, locale),
+                })}
               </Typography>
             ) : (
               slotEditor
@@ -757,7 +766,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
 
           <Stack spacing={1} sx={{ minWidth: 0 }}>
             <Typography variant="overline" sx={{ lineHeight: 1.2, color: "text.secondary" }}>
-              Lists
+              {t("bisPanel.lists")}
             </Typography>
             {presetsSidebar}
           </Stack>

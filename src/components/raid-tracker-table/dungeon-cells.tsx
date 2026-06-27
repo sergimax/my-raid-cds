@@ -1,6 +1,11 @@
 import { Box, Chip, Stack, Tooltip, Typography, useTheme } from "@mui/material";
-import { DungeonDifficulty, type DungeonDifficulty as DungeonDifficultyType } from "../../types/dungeons.ts";
-import { getDungeonDisplayName } from "../../utils/dungeon-short-name.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
+import {
+  DungeonDifficulty,
+  type Dungeon,
+  type DungeonDifficulty as DungeonDifficultyType,
+} from "../../types/dungeons.ts";
 import { completionChipFill } from "../../utils/completion-chip-color.ts";
 import {
   dungeonNameTierSx,
@@ -22,19 +27,24 @@ function sizeChipColor(size: number): SizeChipColor {
 export function DungeonNameCell({
   name,
   shortName,
+  raidKey,
   compact,
   itemLevels,
   emblem,
 }: {
   name: string;
   shortName?: string;
+  raidKey?: Dungeon["raidKey"];
   compact: boolean;
   itemLevels: number[];
   emblem: EmblemKey | null;
 }) {
+  const { locale } = useTranslation();
+  const dungeon = { name, shortName, raidKey };
   const nameTier = getItemLevelTier(itemLevels);
-  const displayName = getDungeonDisplayName({ name, shortName }, compact);
-  const showFullNameTooltip = compact && shortName != null && shortName !== name;
+  const displayName = getLocalizedDungeonDisplayName(dungeon, locale, compact);
+  const fullName = getLocalizedDungeonDisplayName(dungeon, locale, false);
+  const showFullNameTooltip = compact && displayName !== fullName;
 
   const nameLabel = (
     <Typography
@@ -62,7 +72,7 @@ export function DungeonNameCell({
         />
       ) : null}
       {showFullNameTooltip ? (
-        <Tooltip title={name}>
+        <Tooltip title={fullName}>
           <span className="raid-tracker-table__dungeon-name-wrap">{nameLabel}</span>
         </Tooltip>
       ) : (
@@ -73,10 +83,12 @@ export function DungeonNameCell({
 }
 
 export function ItemLevelCell({ itemLevels }: { itemLevels: number[] }) {
+  const { t } = useTranslation();
+
   if (itemLevels.length === 0) {
     return (
       <Typography component="span" variant="body2" color="text.secondary">
-        —
+        {t("table.emptyIlvl")}
       </Typography>
     );
   }
@@ -149,8 +161,9 @@ export function DungeonDifficultyCell({
 }: {
   difficulty: DungeonDifficultyType;
 }) {
+  const { t } = useTranslation();
   const isHeroic = difficulty === DungeonDifficulty.HEROIC;
-  const label = isHeroic ? "H ☠️" : "N";
+  const label = isHeroic ? t("table.difficultyHeroic") : t("table.difficultyNormal");
 
   return (
     <Chip
@@ -171,4 +184,3 @@ export function DungeonDifficultyCell({
     />
   );
 }
-

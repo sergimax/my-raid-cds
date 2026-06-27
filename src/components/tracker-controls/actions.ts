@@ -1,5 +1,6 @@
 import type { ButtonProps } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
+import type { TranslateFn } from "../../i18n/translate.ts";
 import type { TrackerControlsSource } from "./types.ts";
 
 export type { TrackerControlsSource } from "./types.ts";
@@ -27,6 +28,7 @@ export type TrackerAction = {
 
 export function buildTrackerActions(
   source: TrackerControlsSource,
+  t: TranslateFn,
 ): TrackerAction[] {
   const showAddFromTemplate = source.dungeonsCount === 0;
   const resetAllTogglesDisabled = !source.canResetAllToggles;
@@ -34,7 +36,7 @@ export function buildTrackerActions(
   return [
     {
       id: "addFromTemplate",
-      label: "Add from template",
+      label: t("toolbar.addFromTemplate"),
       onClick: source.handleAddFromTemplate,
       visible: showAddFromTemplate,
       buttonVariant: "contained",
@@ -42,7 +44,7 @@ export function buildTrackerActions(
     },
     {
       id: "addCharacter",
-      label: "Add character",
+      label: t("toolbar.addCharacter"),
       onClick: source.toggleCharacterForm,
       selected: source.showCharacterForm,
       buttonVariant: source.showCharacterForm ? "contained" : "outlined",
@@ -51,7 +53,7 @@ export function buildTrackerActions(
     },
     {
       id: "addDungeon",
-      label: "Add dungeon",
+      label: t("toolbar.addDungeon"),
       onClick: source.toggleDungeonForm,
       selected: source.showDungeonForm,
       buttonVariant: source.showDungeonForm ? "contained" : "outlined",
@@ -60,7 +62,7 @@ export function buildTrackerActions(
     },
     {
       id: "bisLists",
-      label: "BiS lists",
+      label: t("toolbar.bisLists"),
       onClick: source.toggleBisListsPanel,
       selected: source.showBisListsPanel,
       buttonVariant: source.showBisListsPanel ? "contained" : "outlined",
@@ -69,7 +71,7 @@ export function buildTrackerActions(
     },
     {
       id: "exportStatus",
-      label: "Export",
+      label: t("toolbar.export"),
       onClick: source.toggleExportPanel,
       selected: source.showExportPanel,
       buttonVariant: source.showExportPanel ? "contained" : "outlined",
@@ -79,7 +81,7 @@ export function buildTrackerActions(
     },
     {
       id: "resetAllToggles",
-      label: "Reset all toggles",
+      label: t("toolbar.resetAllToggles"),
       onClick: source.handleResetAllToggles,
       disabled: resetAllTogglesDisabled,
       buttonVariant: "text",

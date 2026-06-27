@@ -1,4 +1,7 @@
 import type { CharacterSpecGear, CharacterRecord } from "../types/characters.ts";
+import type { AppLocale } from "../i18n/types.ts";
+import { getLocalizedSpecName } from "../i18n/localized-domain.ts";
+import type { ClassName } from "../types/characters.ts";
 
 function formatGearScoreShort(gearScore: number, suffix: "k" | ""): string {
   if (gearScore < 1000) {
@@ -20,28 +23,41 @@ export function formatExportGearScore(gearScore: number): string {
   return formatGearScoreShort(gearScore, "");
 }
 
-export function formatSpecGearLine(pair: CharacterSpecGear): string {
+export function formatSpecGearLine(
+  pair: CharacterSpecGear,
+  className?: ClassName,
+  locale: AppLocale = "en",
+): string {
+  const specLabel =
+    className !== undefined
+      ? getLocalizedSpecName(className, pair.spec, locale)
+      : pair.spec;
   if (pair.gearScore !== undefined) {
-    return `${pair.spec} · ${formatCompactGearScore(pair.gearScore)}`;
+    return `${specLabel} · ${formatCompactGearScore(pair.gearScore)}`;
   }
-  return pair.spec;
+  return specLabel;
 }
 
 export function formatCharacterSpecGearSummary(
-  character: Pick<CharacterRecord, "mainSpec" | "offSpec">,
+  character: Pick<CharacterRecord, "mainSpec" | "offSpec" | "class">,
+  locale: AppLocale = "en",
 ): string | null {
+  const className = character.class?.name;
   const parts: string[] = [];
   if (character.mainSpec) {
-    parts.push(formatSpecGearLine(character.mainSpec));
+    parts.push(formatSpecGearLine(character.mainSpec, className, locale));
   }
   if (character.offSpec) {
-    parts.push(formatSpecGearLine(character.offSpec));
+    parts.push(formatSpecGearLine(character.offSpec, className, locale));
   }
   return parts.length > 0 ? parts.join(" / ") : null;
 }
 
-export function formatCharacterDetailsTooltip(character: CharacterRecord): string {
-  const specGearSummary = formatCharacterSpecGearSummary(character);
+export function formatCharacterDetailsTooltip(
+  character: CharacterRecord,
+  locale: AppLocale = "en",
+): string {
+  const specGearSummary = formatCharacterSpecGearSummary(character, locale);
   if (!specGearSummary) {
     return character.name;
   }

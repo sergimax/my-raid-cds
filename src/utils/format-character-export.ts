@@ -1,4 +1,5 @@
-import { shortSpecName } from "../data/class-specs.ts";
+import { getLocalizedSpecName } from "../i18n/localized-domain.ts";
+import type { AppLocale } from "../i18n/types.ts";
 import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import { formatExportGearScore } from "./format-character-details.ts";
 
@@ -59,8 +60,9 @@ export function isCharacterIncludedInExport(
 function formatSpecExportSegment(
   className: ClassName,
   specGear: CharacterSpecGear,
+  locale: AppLocale = "en",
 ): string {
-  const spec = shortSpecName(className, specGear.spec);
+  const spec = getLocalizedSpecName(className, specGear.spec, locale, true);
   if (specGear.gearScore !== undefined) {
     return `${spec} ${formatExportGearScore(specGear.gearScore)}`;
   }
@@ -74,6 +76,7 @@ function formatSpecExportSegment(
 export function formatCharacterExportLabel(
   character: CharacterRecord,
   selection: CharacterExportSpecSelection = defaultExportSpecSelection(character),
+  locale: AppLocale = "en",
 ): string | null {
   if (!isCharacterIncludedInExport(character, selection)) {
     return null;
@@ -83,10 +86,10 @@ export function formatCharacterExportLabel(
   const specSegments: string[] = [];
 
   if (selection.includeMain && character.mainSpec && className) {
-    specSegments.push(formatSpecExportSegment(className, character.mainSpec));
+    specSegments.push(formatSpecExportSegment(className, character.mainSpec, locale));
   }
   if (selection.includeOff && character.offSpec && className) {
-    specSegments.push(formatSpecExportSegment(className, character.offSpec));
+    specSegments.push(formatSpecExportSegment(className, character.offSpec, locale));
   }
 
   if (specSegments.length === 0) {

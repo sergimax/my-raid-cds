@@ -1,5 +1,16 @@
 import type { DungeonRecord } from "../../types/dungeons.ts";
+import type { TranslateFn } from "../../i18n/translate.ts";
 import type { DungeonSortKey } from "../../utils/sort-dungeons.ts";
+
+export function buildPinnedColumns(t: TranslateFn): ReadonlyArray<PinnedColumnDef> {
+  return [
+    { key: "name", sortKey: "name", label: t("table.dungeonName") },
+    { key: "size", sortKey: "size", label: t("common.size") },
+    { key: "difficulty", sortKey: "difficulty", label: t("common.mode") },
+    { key: "itemLevel", sortKey: "itemLevel", label: t("table.itemLevel") },
+    { key: "complete", sortKey: "completions", label: t("table.complete") },
+  ];
+}
 
 export const STATIC_COLUMNS: ReadonlyArray<{
   key: keyof Pick<DungeonRecord, "name" | "size" | "difficulty" | "itemLevel">;
@@ -33,6 +44,26 @@ export const PINNED_COLUMNS: ReadonlyArray<PinnedColumnDef> = [
   ...STATIC_COLUMNS,
   COMPLETE_COLUMN,
 ];
+
+const HIDDEN_PINNED_COLUMNS_ON_COMPACT: ReadonlySet<PinnedColumnKey> = new Set([
+  "size",
+  "difficulty",
+  "itemLevel",
+  "complete",
+]);
+
+export function pinnedColumnsForLayout(
+  compact: boolean,
+  t: TranslateFn,
+): ReadonlyArray<PinnedColumnDef> {
+  const columns = buildPinnedColumns(t);
+  if (!compact) {
+    return columns;
+  }
+  return columns.filter(
+    (column) => !HIDDEN_PINNED_COLUMNS_ON_COMPACT.has(column.key),
+  );
+}
 
 const PINNED_CELL_BASE_SX = {
   position: "sticky",
@@ -82,22 +113,6 @@ export const COMPACT_PINNED_LEFT = {
   actions: 0,
   name: COMPACT_PINNED_WIDTHS.actions,
 } as const;
-
-const HIDDEN_PINNED_COLUMNS_ON_COMPACT: ReadonlySet<PinnedColumnKey> = new Set([
-  "size",
-  "difficulty",
-  "itemLevel",
-  "complete",
-]);
-
-export function pinnedColumnsForLayout(compact: boolean): ReadonlyArray<PinnedColumnDef> {
-  if (!compact) {
-    return PINNED_COLUMNS;
-  }
-  return PINNED_COLUMNS.filter(
-    (column) => !HIDDEN_PINNED_COLUMNS_ON_COMPACT.has(column.key),
-  );
-}
 
 /** Actions column + pinned dungeon columns + character columns. */
 export function raidTrackerTableColumnCount(

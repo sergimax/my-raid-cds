@@ -107,6 +107,7 @@ function renderPinnedBody(
         <DungeonNameCell
           name={dungeon.name}
           shortName={dungeon.shortName}
+          raidKey={dungeon.raidKey}
           compact={compactTable}
           itemLevels={dungeon.itemLevel}
           emblem={dungeon.emblem ?? null}

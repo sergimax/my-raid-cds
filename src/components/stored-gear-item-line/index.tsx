@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
 import type { CharacterGearItem } from "../../types/character-gear.ts";
-import { gearSlotLabel } from "../../data/gear-slot-names.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import { getLocalizedGearSlotLabel } from "../../i18n/localized-domain.ts";
 import { formatStoredGearItemLevelLabel } from "../../utils/format-stored-gear.ts";
 import { WowItemLink } from "../wow-item-link/index.tsx";
 
@@ -9,10 +10,12 @@ type StoredGearItemLineProps = {
 };
 
 export function StoredGearItemLine({ item }: StoredGearItemLineProps) {
+  const { locale } = useTranslation();
+
   return (
     <Typography component="span" variant="body2" color="text.secondary">
-      {gearSlotLabel(item.slot)} · <WowItemLink itemId={item.id} /> ·{" "}
-      {formatStoredGearItemLevelLabel(item)}
+      {getLocalizedGearSlotLabel(item.slot, locale)} · <WowItemLink itemId={item.id} /> ·{" "}
+      {formatStoredGearItemLevelLabel(item, locale)}
     </Typography>
   );
 }

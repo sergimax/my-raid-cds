@@ -10,6 +10,8 @@ import {
 import { useMemo, useState } from "react";
 import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
 import { useScrollIntoViewOnMount } from "../../hooks/use-scroll-into-view-on-mount.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import {
   characterHasExportSpecs,
   isCharacterIncludedInExport,
@@ -40,9 +42,17 @@ function ExportSpecCheckbox({
   checked,
   onCheckedChange,
 }: ExportSpecCheckboxProps) {
+  const { t, locale } = useTranslation();
+
   if (!character.class) {
     return null;
   }
+
+  const specLabel = getLocalizedSpecName(
+    character.class.name,
+    specGear.spec,
+    locale,
+  );
 
   return (
     <FormControlLabel
@@ -55,7 +65,10 @@ function ExportSpecCheckbox({
           }}
           slotProps={{
             input: {
-              "aria-label": `Include ${specGear.spec} for ${character.name}`,
+              "aria-label": t("exportPanel.includeSpecAria", {
+                spec: specLabel,
+                name: character.name,
+              }),
             },
           }}
         />
@@ -80,6 +93,7 @@ export function ExportPanel({
   dungeonToggles,
   onClose,
 }: ExportPanelProps) {
+  const { t, locale } = useTranslation();
   const panelRef = useScrollIntoViewOnMount<HTMLDivElement>();
   const [exportSpecSelectionByCharacterId, setExportSpecSelectionByCharacterId] =
     useState<Record<string, StoredExportSpecSelection>>({});
@@ -105,11 +119,15 @@ export function ExportPanel({
         dungeons: visibleDungeons,
         dungeonToggles,
         exportSpecSelectionByCharacterId,
+        locale,
+        t,
       }),
     [
       dungeonToggles,
       exportSpecSelectionByCharacterId,
       includedCharacters,
+      locale,
+      t,
       visibleDungeons,
     ],
   );
@@ -140,13 +158,11 @@ export function ExportPanel({
   return (
     <Box ref={panelRef}>
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
-        Export
+        {t("exportPanel.title")}
       </Typography>
       <Stack spacing={2} sx={{ maxWidth: 640 }}>
         <Typography variant="body2" color="text.secondary">
-          Filter dungeons with the table search, then copy lines below — one per
-          matching raid listing characters still without CD (toggle off). Check
-          which specs to include for each character.
+          {t("exportPanel.instructions")}
         </Typography>
         {characters.length > 0 ? (
           <Stack spacing={1}>
@@ -204,7 +220,9 @@ export function ExportPanel({
                       }}
                       slotProps={{
                         input: {
-                          "aria-label": `Include ${character.name} in export`,
+                          "aria-label": t("exportPanel.includeCharacterAria", {
+                            name: character.name,
+                          }),
                         },
                       }}
                     />
@@ -215,11 +233,11 @@ export function ExportPanel({
           </Stack>
         ) : (
           <Typography variant="body2" color="text.secondary">
-            Add a character to build a status summary.
+            {t("exportPanel.noCharacters")}
           </Typography>
         )}
         <TextField
-          label="Export text"
+          label={t("exportPanel.exportText")}
           value={statusText}
           multiline
           minRows={4}
@@ -229,7 +247,7 @@ export function ExportPanel({
               readOnly: true,
             },
             htmlInput: {
-              "aria-label": "Characters without CD per dungeon, for copy",
+              "aria-label": t("exportPanel.textareaAria"),
             },
           }}
           onFocus={(event) => {
@@ -238,7 +256,7 @@ export function ExportPanel({
         />
         <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
           <Button variant="text" type="button" onClick={onClose}>
-            Close
+            {t("common.close")}
           </Button>
         </Stack>
       </Stack>

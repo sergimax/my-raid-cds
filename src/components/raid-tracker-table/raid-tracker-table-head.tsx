@@ -4,6 +4,7 @@
  */
 import { Fragment } from "react";
 import { TableCell, TableHead, TableRow } from "@mui/material";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonSortKey, SortDirection } from "../../utils/sort-dungeons.ts";
 import { CharacterHeaderCell } from "./character-header-cell.tsx";
@@ -47,12 +48,14 @@ export function RaidTrackerTableHead({
   onEditCharacter,
   onRequestDeleteCharacter,
 }: RaidTrackerTableHeadProps) {
+  const { t } = useTranslation();
+
   return (
     <TableHead>
       <TableRow>
         <TableCell
           sx={pinnedActionsColumnSx(compactTable, true)}
-          aria-label="Row actions"
+          aria-label={t("table.rowActions")}
         />
         {visiblePinnedColumns.map((column) => (
           <Fragment key={column.key}>

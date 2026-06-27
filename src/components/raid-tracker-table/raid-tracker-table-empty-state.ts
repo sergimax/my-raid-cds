@@ -1,21 +1,27 @@
+import type { TranslateFn } from "../../i18n/translate.ts";
+
 export type RaidTrackerTableEmptyVariant = "no-dungeons" | "no-search-matches";
 
-export function emptyStateMessage(variant: RaidTrackerTableEmptyVariant): string {
+export function emptyStateMessage(
+  variant: RaidTrackerTableEmptyVariant,
+  t: TranslateFn,
+): string {
   if (variant === "no-dungeons") {
-    return "Add a dungeon or use Add from template to get started.";
+    return t("table.emptyNoDungeons");
   }
-  return "No dungeons match your search.";
+  return t("table.emptyNoSearchMatches");
 }
 
 export function raidTrackerTableAriaLabel(
   dungeonCount: number,
   visibleRowCount: number,
+  t: TranslateFn,
 ): string {
   if (dungeonCount === 0) {
-    return "Raid cooldown tracker, no dungeons";
+    return t("table.ariaNoDungeons");
   }
   if (visibleRowCount === 0) {
-    return "Raid cooldown tracker, no dungeons match search";
+    return t("table.ariaNoSearchMatches");
   }
-  return "Raid cooldown tracker by dungeon and character";
+  return t("table.ariaDefault");
 }

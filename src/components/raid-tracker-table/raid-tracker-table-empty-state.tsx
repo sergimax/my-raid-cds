@@ -3,6 +3,7 @@ import {
   emptyStateMessage,
   type RaidTrackerTableEmptyVariant,
 } from "./raid-tracker-table-empty-state.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import {
   raidTrackerTableColumnCount,
   type PinnedColumnDef,
@@ -19,6 +20,7 @@ export function RaidTrackerTableEmptyState({
   visiblePinnedColumns,
   characterCount,
 }: RaidTrackerTableEmptyStateProps) {
+  const { t } = useTranslation();
   const columnCount = raidTrackerTableColumnCount(
     visiblePinnedColumns,
     characterCount,
@@ -33,7 +35,7 @@ export function RaidTrackerTableEmptyState({
           role="status"
           aria-live="polite"
         >
-          {emptyStateMessage(variant)}
+          {emptyStateMessage(variant, t)}
         </Typography>
       </TableCell>
     </TableRow>

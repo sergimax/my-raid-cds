@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import { useTranslation } from "../../i18n/use-translation.ts";
 
 type DeleteConfirmDialogProps = {
   open: boolean;
@@ -20,10 +21,13 @@ export function DeleteConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = "Delete",
+  confirmLabel,
   onConfirm,
   onCancel,
 }: DeleteConfirmDialogProps) {
+  const { t } = useTranslation();
+  const resolvedConfirmLabel = confirmLabel ?? t("common.delete");
+
   // MUI Dialog → Modal: focus trap, scroll lock, Escape to close, restore focus on exit.
   return (
     <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
@@ -32,9 +36,9 @@ export function DeleteConfirmDialog({
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCancel}>Cancel</Button>
+        <Button onClick={onCancel}>{t("common.cancel")}</Button>
         <Button onClick={onConfirm} color="error" variant="contained" autoFocus>
-          {confirmLabel}
+          {resolvedConfirmLabel}
         </Button>
       </DialogActions>
     </Dialog>

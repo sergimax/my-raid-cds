@@ -10,10 +10,11 @@ import {
 import {
   EMBLEM_OPTIONS,
   emblemIcons,
-  emblemLabels,
   type EmblemKey,
 } from "../../assets/emblems/emblem-icons.ts";
 import { MAX_DUNGEON_SHORT_NAME_LENGTH } from "../../constants/dungeon-form-defaults.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
+import { getLocalizedDifficulty, getLocalizedEmblemLabel } from "../../i18n/localized-domain.ts";
 import {
   DungeonDifficulty,
   DungeonSizes,
@@ -46,10 +47,12 @@ export function DungeonCustomizationFields({
   onDifficultyChange,
   onEmblemChange,
 }: DungeonCustomizationFieldsProps) {
+  const { t, locale } = useTranslation();
+
   return (
     <Stack spacing={2}>
       <TextField
-        label="Name"
+        label={t("common.name")}
         name="dungeonName"
         value={name}
         onChange={(event) => {
@@ -59,21 +62,21 @@ export function DungeonCustomizationFields({
         autoComplete="off"
       />
       <TextField
-        label="Short name"
+        label={t("dungeonForm.shortName")}
         name="dungeonShortName"
         value={shortName}
         onChange={(event) => {
           onShortNameChange(event.target.value);
         }}
-        helperText="Optional abbreviation shown in compact table view. Leave blank to use a default for known raids."
+        helperText={t("dungeonForm.shortNameHelper")}
         slotProps={{ htmlInput: { maxLength: MAX_DUNGEON_SHORT_NAME_LENGTH } }}
         autoComplete="off"
       />
       <FormControl required>
-        <InputLabel id="dungeon-size-label">Size</InputLabel>
+        <InputLabel id="dungeon-size-label">{t("common.size")}</InputLabel>
         <Select
           labelId="dungeon-size-label"
-          label="Size"
+          label={t("common.size")}
           name="dungeonSize"
           value={size}
           onChange={(event) => {
@@ -88,10 +91,10 @@ export function DungeonCustomizationFields({
         </Select>
       </FormControl>
       <FormControl>
-        <InputLabel id="dungeon-difficulty-label">Mode</InputLabel>
+        <InputLabel id="dungeon-difficulty-label">{t("common.mode")}</InputLabel>
         <Select
           labelId="dungeon-difficulty-label"
-          label="Mode"
+          label={t("common.mode")}
           name="dungeonDifficulty"
           value={difficulty}
           onChange={(event) => {
@@ -99,18 +102,18 @@ export function DungeonCustomizationFields({
           }}
         >
           <MenuItem value={DungeonDifficulty.NORMAL}>
-            {DungeonDifficulty.NORMAL}
+            {getLocalizedDifficulty(DungeonDifficulty.NORMAL, locale)}
           </MenuItem>
           <MenuItem value={DungeonDifficulty.HEROIC}>
-            {DungeonDifficulty.HEROIC}
+            {getLocalizedDifficulty(DungeonDifficulty.HEROIC, locale)}
           </MenuItem>
         </Select>
       </FormControl>
       <FormControl>
-        <InputLabel id="dungeon-emblem-label">Badge</InputLabel>
+        <InputLabel id="dungeon-emblem-label">{t("dungeonForm.badge")}</InputLabel>
         <Select
           labelId="dungeon-emblem-label"
-          label="Badge"
+          label={t("dungeonForm.badge")}
           name="dungeonEmblem"
           value={emblem}
           onChange={(event) => {
@@ -118,7 +121,7 @@ export function DungeonCustomizationFields({
           }}
           renderValue={(selected) => {
             if (!selected) {
-              return "None";
+              return t("common.none");
             }
             return (
               <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
@@ -128,13 +131,13 @@ export function DungeonCustomizationFields({
                   alt=""
                   sx={{ width: 18, height: 18, borderRadius: "4px" }}
                 />
-                <span>{emblemLabels[selected]}</span>
+                <span>{getLocalizedEmblemLabel(selected, locale)}</span>
               </Stack>
             );
           }}
         >
           <MenuItem value="">
-            <em>None</em>
+            <em>{t("common.none")}</em>
           </MenuItem>
           {EMBLEM_OPTIONS.map((emblemKey) => (
             <MenuItem key={emblemKey} value={emblemKey}>
@@ -145,7 +148,7 @@ export function DungeonCustomizationFields({
                   alt=""
                   sx={{ width: 18, height: 18, borderRadius: "4px" }}
                 />
-                <span>{emblemLabels[emblemKey]}</span>
+                <span>{getLocalizedEmblemLabel(emblemKey, locale)}</span>
               </Stack>
             </MenuItem>
           ))}

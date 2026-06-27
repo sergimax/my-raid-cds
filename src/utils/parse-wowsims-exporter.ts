@@ -1,3 +1,6 @@
+import type { AppLocale } from "../i18n/types.ts";
+import { createTranslator } from "../i18n/translate.ts";
+import { getLocalizedClassName } from "../i18n/localized-domain.ts";
 import { specsForClass } from "../data/class-specs.ts";
 import { Classes, ClassName, type ClassName as ClassNameType } from "../types/characters.ts";
 import type { CharacterGearItem } from "../types/character-gear.ts";
@@ -99,26 +102,28 @@ function parseGearItems(value: unknown): CharacterGearItem[] {
 export function parseWowSimsExporterJson(
   rawText: string,
   expectedClassName?: ClassNameType,
+  locale: AppLocale = "en",
 ): ParseWowSimsExportResult {
+  const t = createTranslator(locale);
   const trimmed = rawText.trim();
   if (!trimmed) {
-    return { ok: false, error: "Paste WowSimsExporter JSON to import gear." };
+    return { ok: false, error: t("validation.wsePasteRequired") };
   }
 
   let parsed: unknown;
   try {
     parsed = JSON.parse(trimmed);
   } catch {
-    return { ok: false, error: "Invalid JSON. Copy the full export from /wse export." };
+    return { ok: false, error: t("validation.wseInvalidJson") };
   }
 
   if (!isRecord(parsed)) {
-    return { ok: false, error: "Export must be a JSON object." };
+    return { ok: false, error: t("validation.wseNotObject") };
   }
 
   const gearItems = parseGearItems(parsed.gear);
   if (gearItems.length === 0) {
-    return { ok: false, error: "No equipped items found in the export." };
+    return { ok: false, error: t("validation.wseNoItems") };
   }
 
   const warnings: string[] = [];
@@ -130,7 +135,10 @@ export function parseWowSimsExporterJson(
 
   if (expectedClassName && exportClass && exportClass !== expectedClassName) {
     warnings.push(
-      `Export class is ${exportClass}, but this character is ${expectedClassName}.`,
+      t("validation.wseClassMismatch", {
+        exportClass: getLocalizedClassName(exportClass, locale),
+        expected: getLocalizedClassName(expectedClassName, locale),
+      }),
     );
   }
 
@@ -143,7 +151,12 @@ export function parseWowSimsExporterJson(
       parsed.spec.trim() !== "" &&
       !exportSpec
     ) {
-      warnings.push(`Could not match export spec "${parsed.spec}" for ${specClass}.`);
+      warnings.push(
+        t("validation.wseSpecMismatch", {
+          spec: parsed.spec,
+          class: getLocalizedClassName(specClass, locale),
+        }),
+      );
     }
   }
 

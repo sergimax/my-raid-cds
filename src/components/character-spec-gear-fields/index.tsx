@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { specsForClass } from "../../data/class-specs.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import type { CharacterClass } from "../../types/characters.ts";
 import { SpecOptionLabel } from "../spec-option-label/index.tsx";
 
@@ -48,6 +49,8 @@ function SpecGearRow({
   onSpecChange: (value: string) => void;
   onGearScoreTextChange: (value: string) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <Stack spacing={0.5}>
       <Typography variant="body2" color="text.secondary">
@@ -55,10 +58,10 @@ function SpecGearRow({
       </Typography>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
         <FormControl sx={{ flex: 1 }} disabled={disabled}>
-          <InputLabel id={specLabelId}>Spec</InputLabel>
+          <InputLabel id={specLabelId}>{t("common.spec")}</InputLabel>
           <Select
             labelId={specLabelId}
-            label="Spec"
+            label={t("common.spec")}
             name={specName}
             value={spec}
             onChange={(event) => {
@@ -66,7 +69,7 @@ function SpecGearRow({
             }}
           >
             <MenuItem value="">
-              <em>None</em>
+              <em>{t("common.none")}</em>
             </MenuItem>
             {classSpecs.map((option) => (
               <MenuItem key={option} value={option}>
@@ -83,14 +86,14 @@ function SpecGearRow({
           </Select>
         </FormControl>
         <TextField
-          label="Gear score"
+          label={t("characterForm.gearScore")}
           name={gearScoreName}
           value={gearScoreText}
           onChange={(event) => {
             onGearScoreTextChange(event.target.value);
           }}
           autoComplete="off"
-          helperText="Optional — from GearScore addon"
+          helperText={t("characterForm.gearScoreHelper")}
           disabled={disabled}
           sx={{ flex: 1 }}
         />
@@ -110,6 +113,7 @@ export function CharacterSpecGearFields({
   onOffSpecChange,
   onOffGearScoreTextChange,
 }: CharacterSpecGearFieldsProps) {
+  const { t } = useTranslation();
   const classSpecs =
     characterClass === "" ? [] : specsForClass(characterClass.name);
   const specsDisabled = characterClass === "";
@@ -117,7 +121,7 @@ export function CharacterSpecGearFields({
   return (
     <Stack spacing={2}>
       <SpecGearRow
-        label="Main"
+        label={t("characterForm.main")}
         spec={mainSpec}
         gearScoreText={mainGearScoreText}
         specName="mainSpec"
@@ -130,7 +134,7 @@ export function CharacterSpecGearFields({
         onGearScoreTextChange={onMainGearScoreTextChange}
       />
       <SpecGearRow
-        label="Off"
+        label={t("characterForm.off")}
         spec={offSpec}
         gearScoreText={offGearScoreText}
         specName="offSpec"

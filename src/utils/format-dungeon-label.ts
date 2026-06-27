@@ -2,13 +2,19 @@ import {
   DungeonDifficulty,
   type DungeonRecord,
 } from "../types/dungeons.ts";
+import type { AppLocale } from "../i18n/types.ts";
+import { getLocalizedDungeonDisplayName } from "../i18n/localized-domain.ts";
 
 const CYRILLIC_PATTERN = /[\u0400-\u04FF]/;
 
 function usesRussianExportLabel(
-  dungeon: Pick<DungeonRecord, "name" | "shortName">,
+  dungeon: Pick<DungeonRecord, "name" | "shortName" | "raidKey">,
+  locale: AppLocale,
 ): boolean {
-  const label = dungeon.shortName ?? dungeon.name;
+  if (locale === "ru") {
+    return true;
+  }
+  const label = getLocalizedDungeonDisplayName(dungeon, locale, true);
   return CYRILLIC_PATTERN.test(label);
 }
 
@@ -17,12 +23,13 @@ function usesRussianExportLabel(
  * Normal: `{shortName}{size}`; Heroic: `{shortName}{size}H` or `{shortName}{size}хм`.
  */
 export function formatDungeonExportLabel(
-  dungeon: Pick<DungeonRecord, "name" | "shortName" | "size" | "difficulty">,
+  dungeon: Pick<DungeonRecord, "name" | "shortName" | "size" | "difficulty" | "raidKey">,
+  locale: AppLocale = "en",
 ): string {
-  const name = dungeon.shortName ?? dungeon.name;
+  const name = getLocalizedDungeonDisplayName(dungeon, locale, true);
   const base = `${name}${dungeon.size}`;
   if (dungeon.difficulty === DungeonDifficulty.NORMAL) {
     return base;
   }
-  return usesRussianExportLabel(dungeon) ? `${base}хм` : `${base}H`;
+  return usesRussianExportLabel(dungeon, locale) ? `${base}хм` : `${base}H`;
 }

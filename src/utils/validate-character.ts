@@ -4,6 +4,8 @@ import {
   MIN_CHARACTER_GEAR_SCORE,
 } from "../constants/character.ts";
 import { isSpecValidForClass } from "../data/class-specs.ts";
+import type { AppLocale } from "../i18n/types.ts";
+import { createTranslator } from "../i18n/translate.ts";
 import type {
   CharacterClass,
   CharacterRecord,
@@ -58,20 +60,30 @@ function parseGearScoreField(text: string): number | undefined | typeof Number.N
 function parseSpecGearPair(
   specValue: string,
   gearScoreText: string,
-  specLabel: string,
+  specLabelKey: "validation.mainSpecLabel" | "validation.offSpecLabel",
+  locale: AppLocale,
 ): CharacterSpecGear | undefined | { error: string } {
+  const t = createTranslator(locale);
+  const specLabel = t(specLabelKey);
+
   const spec = specValue.trim() || undefined;
   const gearScore = parseGearScoreField(gearScoreText);
 
   if (Number.isNaN(gearScore)) {
     return {
-      error: `${specLabel} gear score must be a whole number from ${MIN_CHARACTER_GEAR_SCORE} to ${MAX_CHARACTER_GEAR_SCORE}.`,
+      error: t("validation.gearScoreRange", {
+        specLabel,
+        min: MIN_CHARACTER_GEAR_SCORE,
+        max: MAX_CHARACTER_GEAR_SCORE,
+      }),
     };
   }
 
   if (!spec && gearScore !== undefined) {
     return {
-      error: `Choose a ${specLabel.toLowerCase()} specialization to attach a gear score.`,
+      error: t("validation.gearScoreNeedsSpec", {
+        specLabel: specLabel.toLowerCase(),
+      }),
     };
   }
 
@@ -85,11 +97,15 @@ function parseSpecGearPair(
 export function parseCharacterSpecGearFields(
   values: CharacterSpecGearFormValues,
   characterClass: CharacterClass,
+  locale: AppLocale = "en",
 ): ParseCharacterSpecGearResult {
+  const t = createTranslator(locale);
+
   const mainResult = parseSpecGearPair(
     values.mainSpec,
     values.mainGearScoreText,
-    "Main spec",
+    "validation.mainSpecLabel",
+    locale,
   );
   if (mainResult && "error" in mainResult) {
     return { ok: false, error: mainResult.error };
@@ -98,7 +114,8 @@ export function parseCharacterSpecGearFields(
   const offResult = parseSpecGearPair(
     values.offSpec,
     values.offGearScoreText,
-    "Off spec",
+    "validation.offSpecLabel",
+    locale,
   );
   if (offResult && "error" in offResult) {
     return { ok: false, error: offResult.error };
@@ -108,16 +125,13 @@ export function parseCharacterSpecGearFields(
   const offSpec = offResult;
 
   if (mainSpec && !isSpecValidForClass(characterClass.name, mainSpec.spec)) {
-    return { ok: false, error: "Choose a valid main specialization for this class." };
+    return { ok: false, error: t("validation.invalidMainSpec") };
   }
   if (offSpec && !isSpecValidForClass(characterClass.name, offSpec.spec)) {
-    return { ok: false, error: "Choose a valid off specialization for this class." };
+    return { ok: false, error: t("validation.invalidOffSpec") };
   }
   if (mainSpec && offSpec && mainSpec.spec === offSpec.spec) {
-    return {
-      ok: false,
-      error: "Main and off specialization must be different.",
-    };
+    return { ok: false, error: t("validation.specsMustDiffer") };
   }
 
   return { ok: true, mainSpec, offSpec };
@@ -126,16 +140,20 @@ export function parseCharacterSpecGearFields(
 export function parseCharacterForm(
   values: CharacterFormValues,
   existingCharacters: CharacterRecord[],
+  locale: AppLocale = "en",
 ): ParseCharacterFormResult {
+  const t = createTranslator(locale);
   const trimmedName = values.name.trim();
   const { characterClass } = values;
   if (!trimmedName || !characterClass) {
-    return { ok: false, error: "Enter a name and choose a class." };
+    return { ok: false, error: t("validation.characterNameRequired") };
   }
   if (trimmedName.length > MAX_CHARACTER_NAME_LENGTH) {
     return {
       ok: false,
-      error: `Character name must be at most ${MAX_CHARACTER_NAME_LENGTH} characters.`,
+      error: t("validation.characterNameTooLong", {
+        max: MAX_CHARACTER_NAME_LENGTH,
+      }),
     };
   }
   const isDuplicate = existingCharacters.some(
@@ -144,13 +162,10 @@ export function parseCharacterForm(
       existing.class?.name === characterClass.name,
   );
   if (isDuplicate) {
-    return {
-      ok: false,
-      error: "A character with this name and class already exists.",
-    };
+    return { ok: false, error: t("validation.characterDuplicate") };
   }
 
-  const specGearResult = parseCharacterSpecGearFields(values, characterClass);
+  const specGearResult = parseCharacterSpecGearFields(values, characterClass, locale);
   if (!specGearResult.ok) {
     return specGearResult;
   }
