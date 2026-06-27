@@ -10,23 +10,23 @@ export const disciplinePriestBis: BuiltInSpecBis = {
       id: "titans",
       name: "Titans",
       slots: [
-        { slot: 0, itemIds: [51261] },
-        { slot: 1, itemIds: [50724] },
-        { slot: 2, itemIds: [51264] },
-        { slot: 3, itemIds: [54583] },
-        { slot: 4, itemIds: [50717] },
-        { slot: 5, itemIds: [54582] },
-        { slot: 6, itemIds: [51260] },
-        { slot: 7, itemIds: [50702] },
-        { slot: 8, itemIds: [51262] },
-        { slot: 9, itemIds: [50699] },
-        { slot: 10, itemIds: [50664] },
-        { slot: 11, itemIds: [54585] },
-        { slot: 12, itemIds: [54589] },
-        { slot: 13, itemIds: [47432] },
-        { slot: 14, itemIds: [50734] },
-        { slot: 15, itemIds: [50719] },
-        { slot: 16, itemIds: [50684] },
+        { slot: 0, itemIds: [51261] }, // Head: Sanctified Crimson Acolyte Hood
+        { slot: 1, itemIds: [50724] }, // Neck: Blood Queen's Crimson Choker
+        { slot: 2, itemIds: [51264] }, // Shoulder: Sanctified Crimson Acolyte Shoulderpads
+        { slot: 3, itemIds: [54583] }, // Back: Cloak of Burning Dusk
+        { slot: 4, itemIds: [50717] }, // Chest: Sanguine Silk Robes
+        { slot: 5, itemIds: [54582] }, // Wrist: Bracers of Fiery Night
+        { slot: 6, itemIds: [51260] }, // Hands: Sanctified Crimson Acolyte Gloves
+        { slot: 7, itemIds: [50702] }, // Waist: Lingering Illness
+        { slot: 8, itemIds: [51262] }, // Legs: Sanctified Crimson Acolyte Leggings
+        { slot: 9, itemIds: [50699] }, // Feet: Plague Scientist's Boots
+        { slot: 10, itemIds: [50664] }, // Finger 1: Ring of Rapid Ascent
+        { slot: 11, itemIds: [54585] }, // Finger 2: Ring of Phased Regeneration
+        { slot: 12, itemIds: [54589] }, // Trinket 1: Glowing Twilight Scale
+        { slot: 13, itemIds: [47432] }, // Trinket 2: Solace of the Fallen
+        { slot: 14, itemIds: [50734] }, // Main hand: Royal Scepter of Terenas II
+        { slot: 15, itemIds: [50719] }, // Off hand: Shadow Silk Spindle
+        { slot: 16, itemIds: [50684] }, // Ranged: Corpse-Impaling Spike
       ],
     },
   ],
