@@ -1,25 +1,22 @@
-import type { DungeonRecord } from "../../types/dungeons.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import type { DungeonSortKey } from "../../utils/sort-dungeons.ts";
 
 export function buildPinnedColumns(t: TranslateFn): ReadonlyArray<PinnedColumnDef> {
   return [
     { key: "name", sortKey: "name", label: t("table.dungeonName") },
-    { key: "size", sortKey: "size", label: t("common.size") },
-    { key: "difficulty", sortKey: "difficulty", label: t("common.mode") },
+    { key: "type", sortKey: "type", label: t("table.type") },
     { key: "itemLevel", sortKey: "itemLevel", label: t("table.itemLevel") },
     { key: "complete", sortKey: "completions", label: t("table.complete") },
   ];
 }
 
 export const STATIC_COLUMNS: ReadonlyArray<{
-  key: keyof Pick<DungeonRecord, "name" | "size" | "difficulty" | "itemLevel">;
+  key: "name" | "type" | "itemLevel";
   sortKey: DungeonSortKey;
   label: string;
 }> = [
   { key: "name", sortKey: "name", label: "Dungeon name" },
-  { key: "size", sortKey: "size", label: "Size" },
-  { key: "difficulty", sortKey: "difficulty", label: "Mode" },
+  { key: "type", sortKey: "type", label: "Type" },
   { key: "itemLevel", sortKey: "itemLevel", label: "Item level" },
 ];
 
@@ -46,8 +43,7 @@ export const PINNED_COLUMNS: ReadonlyArray<PinnedColumnDef> = [
 ];
 
 const HIDDEN_PINNED_COLUMNS_ON_COMPACT: ReadonlySet<PinnedColumnKey> = new Set([
-  "size",
-  "difficulty",
+  "type",
   "itemLevel",
   "complete",
 ]);
@@ -77,8 +73,7 @@ const PINNED_CELL_BASE_SX = {
 export const PINNED_WIDTHS = {
   actions: 68,
   name: 200,
-  size: 60,
-  difficulty: 84,
+  type: 72,
   itemLevel: 104,
   complete: 78,
 } as const;
@@ -88,22 +83,17 @@ export const CHARACTER_COLUMN_WIDTH = 132;
 export const PINNED_LEFT = {
   actions: 0,
   name: PINNED_WIDTHS.actions,
-  size: PINNED_WIDTHS.actions + PINNED_WIDTHS.name,
-  difficulty: PINNED_WIDTHS.actions + PINNED_WIDTHS.name + PINNED_WIDTHS.size,
+  type: PINNED_WIDTHS.actions + PINNED_WIDTHS.name,
   itemLevel:
-    PINNED_WIDTHS.actions +
-    PINNED_WIDTHS.name +
-    PINNED_WIDTHS.size +
-    PINNED_WIDTHS.difficulty,
+    PINNED_WIDTHS.actions + PINNED_WIDTHS.name + PINNED_WIDTHS.type,
   complete:
     PINNED_WIDTHS.actions +
     PINNED_WIDTHS.name +
-    PINNED_WIDTHS.size +
-    PINNED_WIDTHS.difficulty +
+    PINNED_WIDTHS.type +
     PINNED_WIDTHS.itemLevel,
 } as const;
 
-/** Narrow screens: hide size, mode, item level, and completions; pin actions and name only. */
+/** Narrow screens: hide type, item level, and completions; pin actions and name only. */
 export const COMPACT_PINNED_WIDTHS = {
   actions: PINNED_WIDTHS.actions,
   name: 132,

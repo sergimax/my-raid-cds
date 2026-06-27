@@ -5,7 +5,9 @@ import {
   DungeonDifficulty,
   type Dungeon,
   type DungeonDifficulty as DungeonDifficultyType,
+  type DungeonSize,
 } from "../../types/dungeons.ts";
+import { formatDungeonTypeLabel } from "../../utils/dungeon-type.ts";
 import { completionChipFill } from "../../utils/completion-chip-color.ts";
 import {
   dungeonNameTierSx,
@@ -113,17 +115,32 @@ export function ItemLevelCell({ itemLevels }: { itemLevels: number[] }) {
   );
 }
 
-export function DungeonSizeCell({ size }: { size: number }) {
+export function DungeonTypeCell({
+  size,
+  difficulty,
+}: {
+  size: DungeonSize;
+  difficulty: DungeonDifficultyType;
+}) {
+  const { locale } = useTranslation();
+  const isHeroic = difficulty === DungeonDifficulty.HEROIC;
   const chipColor = sizeChipColor(size);
+  const label = formatDungeonTypeLabel({ size, difficulty }, locale);
 
   return (
     <Chip
       size="small"
       variant="filled"
       color={chipColor}
-      label={size}
+      label={label}
       sx={{
         maxWidth: "100%",
+        ...(isHeroic
+          ? {
+              backgroundColor: (theme) => theme.palette.error.dark,
+              color: (theme) => theme.palette.error.contrastText,
+            }
+          : {}),
         "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" },
       }}
     />
@@ -156,31 +173,3 @@ export function CompletionCountChip({
   );
 }
 
-export function DungeonDifficultyCell({
-  difficulty,
-}: {
-  difficulty: DungeonDifficultyType;
-}) {
-  const { t } = useTranslation();
-  const isHeroic = difficulty === DungeonDifficulty.HEROIC;
-  const label = isHeroic ? t("table.difficultyHeroic") : t("table.difficultyNormal");
-
-  return (
-    <Chip
-      size="small"
-      variant="filled"
-      color={isHeroic ? "warning" : "success"}
-      label={label}
-      sx={{
-        maxWidth: "100%",
-        ...(isHeroic
-          ? {
-              backgroundColor: (theme) => theme.palette.error.dark,
-              color: (theme) => theme.palette.error.contrastText,
-            }
-          : {}),
-        "& .MuiChip-label": { overflow: "hidden", textOverflow: "ellipsis" },
-      }}
-    />
-  );
-}

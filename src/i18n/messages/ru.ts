@@ -44,6 +44,7 @@ export const ruMessages: Messages = {
   },
   table: {
     dungeonName: "Название подземелья",
+    type: "Тип",
     itemLevel: "ilvl",
     complete: "Готово",
     rowActions: "Действия строки",
