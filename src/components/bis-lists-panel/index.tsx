@@ -24,7 +24,7 @@ import { specsForClass } from "../../data/class-specs.ts";
 import { GearSlotNames } from "../../data/gear-slot-names.ts";
 import type { AppLocale } from "../../i18n/types.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
-import { getLocalizedClassName, getLocalizedGearSlotLabel, getLocalizedSpecName } from "../../i18n/localized-domain.ts";
+import { getLocalizedGearSlotLabel } from "../../i18n/localized-domain.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useScrollIntoViewOnMount } from "../../hooks/use-scroll-into-view-on-mount.ts";
 import { Classes, ClassName, type ClassName as ClassNameType } from "../../types/characters.ts";
@@ -39,7 +39,9 @@ import {
 } from "../../utils/bis-lists.ts";
 import type { CharacterEquipContext } from "../../utils/item-equip-restrictions.ts";
 import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
+import { ClassOptionLabel } from "../class-option-label/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
+import { SpecOptionLabel } from "../spec-option-label/index.tsx";
 import { WowItemAlternatives } from "../wow-item-link/index.tsx";
 
 type BisListsPanelProps = {
@@ -60,6 +62,15 @@ const slotRowSx = {
   alignItems: "start",
   py: 0.375,
   minHeight: 32,
+} as const;
+
+const bisClassSpecSelectSx = {
+  "& .MuiSelect-select": {
+    display: "flex",
+    alignItems: "center",
+    overflow: "hidden",
+    pr: "2rem !important",
+  },
 } as const;
 
 function isSlotDraftDirty(slotDraft: SlotDraft): boolean {
@@ -725,8 +736,8 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
             display: "grid",
             gridTemplateColumns: {
               xs: "1fr",
-              md: "10.5rem minmax(0, 1fr) 14rem",
-              lg: "11.5rem minmax(0, 1fr) 16rem",
+              md: "13rem minmax(0, 1fr) 14rem",
+              lg: "14.5rem minmax(0, 1fr) 16rem",
             },
             gap: { xs: 1.5, md: 2 },
             alignItems: "start",
@@ -735,7 +746,6 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
           <Stack
             spacing={1.25}
             sx={{
-              minWidth: 0,
               pb: { xs: 0, md: 0 },
               borderRight: { md: 1 },
               borderColor: { md: "divider" },
@@ -751,6 +761,16 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                 labelId="bis-class-label"
                 label={t("common.class")}
                 value={className}
+                sx={bisClassSpecSelectSx}
+                renderValue={(selectedName) => {
+                  const selectedClass = Classes.find(
+                    (option) => option.name === selectedName,
+                  );
+                  if (!selectedClass) {
+                    return selectedName;
+                  }
+                  return <ClassOptionLabel characterClass={selectedClass} />;
+                }}
                 onChange={(event) => {
                   const nextClass = event.target.value as ClassNameType;
                   setClassName(nextClass);
@@ -760,7 +780,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
               >
                 {Classes.map((characterClass) => (
                   <MenuItem key={characterClass.name} value={characterClass.name}>
-                    {getLocalizedClassName(characterClass.name, locale)}
+                    <ClassOptionLabel characterClass={characterClass} />
                   </MenuItem>
                 ))}
               </Select>
@@ -772,6 +792,10 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
                 labelId="bis-spec-label"
                 label={t("common.spec")}
                 value={activeSpec}
+                sx={bisClassSpecSelectSx}
+                renderValue={(selectedSpec) => (
+                  <SpecOptionLabel className={className} spec={selectedSpec} />
+                )}
                 onChange={(event) => {
                   setSpec(event.target.value);
                   setError("");
@@ -779,7 +803,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
               >
                 {classSpecs.map((specName) => (
                   <MenuItem key={specName} value={specName}>
-                    {getLocalizedSpecName(className, specName, locale)}
+                    <SpecOptionLabel className={className} spec={specName} />
                   </MenuItem>
                 ))}
               </Select>

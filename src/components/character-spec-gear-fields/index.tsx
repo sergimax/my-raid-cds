@@ -64,6 +64,20 @@ function SpecGearRow({
             label={t("common.spec")}
             name={specName}
             value={spec}
+            renderValue={(selected) => {
+              if (!selected) {
+                return <em>{t("common.none")}</em>;
+              }
+              if (characterClass === "") {
+                return selected;
+              }
+              return (
+                <SpecOptionLabel
+                  className={characterClass.name}
+                  spec={selected}
+                />
+              );
+            }}
             onChange={(event) => {
               onSpecChange(event.target.value);
             }}

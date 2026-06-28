@@ -10,10 +10,12 @@ import {
 } from "../../utils/format-stored-gear.ts";
 import { summarizeGearItemLevels } from "../../utils/summarize-gear-item-levels.ts";
 import { parseWowSimsExporterJson } from "../../utils/parse-wowsims-exporter.ts";
+import { SpecOptionLabel } from "../spec-option-label/index.tsx";
 import { StoredGearItemLine } from "../stored-gear-item-line/index.tsx";
 
 type CharacterSpecGearImportSectionProps = {
   label: string;
+  spec?: string;
   characterClass: CharacterClass;
   gearItems: CharacterGearItem[] | undefined;
   onGearItemsChange: (gearItems: CharacterGearItem[] | undefined) => void;
@@ -25,6 +27,7 @@ type CharacterSpecGearImportSectionProps = {
 
 export function CharacterSpecGearImportSection({
   label,
+  spec,
   characterClass,
   gearItems,
   onGearItemsChange,
@@ -91,7 +94,16 @@ export function CharacterSpecGearImportSection({
 
   return (
     <Stack spacing={1}>
-      <Typography variant="subtitle2">{label}</Typography>
+      {spec ? (
+        <SpecOptionLabel
+          className={characterClass.name}
+          spec={spec}
+          variant="body2"
+          iconSize={20}
+        />
+      ) : (
+        <Typography variant="subtitle2">{label}</Typography>
+      )}
       {storedGearSummary ? (
         <Stack spacing={0.5}>
           <Typography variant="body2">

@@ -14,13 +14,14 @@ import { useCallback, useState, useEffect } from "react";
 import type { CharacterGearItem } from "../../types/character-gear.ts";
 import type { CharacterRecord, CharacterSpecGearUpdate } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
-import { getLocalizedClassName, getLocalizedSpecName } from "../../i18n/localized-domain.ts";
+import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import {
   characterSpecGearFormValues,
   parseCharacterSpecGearFields,
 } from "../../utils/validate-character.ts";
 import { characterNameDisplaySx } from "../../utils/character-display.ts";
 import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
+import { ClassOptionLabel } from "../class-option-label/index.tsx";
 import { CharacterSpecGearFields } from "../character-spec-gear-fields/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 import { CharacterSpecGearImportSection } from "./character-spec-gear-import-section.tsx";
@@ -182,9 +183,11 @@ function CharacterEditDialogContent({
               {character.name}
             </Typography>
             {character.class ? (
-              <Typography variant="body2" color="text.secondary">
-                {getLocalizedClassName(character.class.name, locale)}
-              </Typography>
+              <ClassOptionLabel
+                characterClass={character.class}
+                variant="body2"
+                iconSize={18}
+              />
             ) : null}
           </Box>
           {character.class ? (
@@ -211,6 +214,7 @@ function CharacterEditDialogContent({
               </Typography>
               <CharacterSpecGearImportSection
                 label={mainSpecLabel}
+                spec={mainSpec || undefined}
                 characterClass={character.class}
                 gearItems={mainGearItems}
                 onGearItemsChange={handleMainGearItemsChange}
@@ -224,6 +228,7 @@ function CharacterEditDialogContent({
                   <Divider />
                   <CharacterSpecGearImportSection
                     label={offSpecLabel}
+                    spec={offSpec}
                     characterClass={character.class}
                     gearItems={offGearItems}
                     onGearItemsChange={handleOffGearItemsChange}
