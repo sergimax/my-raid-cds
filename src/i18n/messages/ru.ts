@@ -167,8 +167,9 @@ export const ruMessages: Messages = {
   },
   gearHint: {
     bisMissing: "{{count}} BiS слот(ов) без целей",
-    raidLootUpgrades: "{{count}} слот(ов) с лутом из рейда",
-    belowIlvl: "{{count}} из {{total}} предметов ниже ilvl {{ilvl}}",
+    raidLootUpgrades: "До {{count}} предметов: возможен лут выше по ilvl",
+    belowIlvl: "До {{count}} из {{total}} предметов могут быть ниже ilvl {{ilvl}}",
+    ilvlEquipableOnly: "Только экипировка для класса/спека; статы не проверяются.",
     moreSlots: "+ещё {{count}}",
     slotArrow: "{{slot}} → {{item}}",
   },

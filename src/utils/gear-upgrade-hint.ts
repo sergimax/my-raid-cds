@@ -407,7 +407,12 @@ function formatHintTrackTooltip(
         })
       : t(introKey, { count: track.upgradeSlotCount });
 
-  return `${intro}: ${slotSummary}`;
+  const body = `${intro}: ${slotSummary}`;
+  if (introKey === "gearHint.bisMissing") {
+    return body;
+  }
+
+  return `${body}\n${t("gearHint.ilvlEquipableOnly")}`;
 }
 
 export function formatGearUpgradeHintTooltip(
