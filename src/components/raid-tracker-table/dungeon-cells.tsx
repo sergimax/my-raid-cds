@@ -9,11 +9,6 @@ import {
 } from "../../types/dungeons.ts";
 import { formatDungeonTypeLabel } from "../../utils/dungeon-type.ts";
 import { completionChipFill } from "../../utils/completion-chip-color.ts";
-import {
-  dungeonNameTierSx,
-  getItemLevelTier,
-  itemLevelTierSx,
-} from "../../utils/item-level-tier.ts";
 import { emblemIcons, type EmblemKey } from "../../assets/emblems/emblem-icons.ts";
 
 type SizeChipColor = "success" | "info" | "secondary" | "warning" | "error";
@@ -31,19 +26,16 @@ export function DungeonNameCell({
   shortName,
   raidKey,
   compact,
-  itemLevels,
   emblem,
 }: {
   name: string;
   shortName?: string;
   raidKey?: Dungeon["raidKey"];
   compact: boolean;
-  itemLevels: number[];
   emblem: EmblemKey | null;
 }) {
   const { locale } = useTranslation();
   const dungeon = { name, shortName, raidKey };
-  const nameTier = getItemLevelTier(itemLevels);
   const displayName = getLocalizedDungeonDisplayName(dungeon, locale, compact);
   const fullName = getLocalizedDungeonDisplayName(dungeon, locale, false);
   const showFullNameTooltip = compact && displayName !== fullName;
@@ -53,7 +45,13 @@ export function DungeonNameCell({
       component="span"
       variant="body2"
       className="raid-tracker-table__dungeon-name"
-      sx={dungeonNameTierSx(nameTier)}
+      sx={{
+        fontWeight: 600,
+        lineHeight: 1.3,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      }}
     >
       {displayName}
     </Typography>
@@ -105,7 +103,7 @@ export function ItemLevelCell({ itemLevels }: { itemLevels: number[] }) {
           <Box
             component="span"
             className="raid-tracker-table__ilvl"
-            sx={itemLevelTierSx(getItemLevelTier(itemLevel))}
+            sx={{ fontVariantNumeric: "tabular-nums", fontWeight: 600 }}
           >
             {itemLevel}
           </Box>
