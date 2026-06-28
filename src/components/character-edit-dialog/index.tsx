@@ -14,7 +14,6 @@ import { useCallback, useState, useEffect } from "react";
 import type { CharacterGearItem } from "../../types/character-gear.ts";
 import type { CharacterRecord, CharacterSpecGearUpdate } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
-import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import {
   characterSpecGearFormValues,
   parseCharacterSpecGearFields,
@@ -22,9 +21,8 @@ import {
 import { characterNameDisplaySx } from "../../utils/character-display.ts";
 import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { ClassOptionLabel } from "../class-option-label/index.tsx";
-import { CharacterSpecGearFields } from "../character-spec-gear-fields/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
-import { CharacterSpecGearImportSection } from "./character-spec-gear-import-section.tsx";
+import { CharacterSpecGearColumn } from "./character-spec-gear-column.tsx";
 import {
   attachGearToSpec,
   gearItemsForSpecSave,
@@ -161,14 +159,8 @@ function CharacterEditDialogContent({
     ],
   );
 
-  const mainSpecLabel =
-    mainSpec && character.class
-      ? getLocalizedSpecName(character.class.name, mainSpec, locale)
-      : t("characterEdit.mainSpecGear");
-  const offSpecLabel =
-    offSpec && character.class
-      ? getLocalizedSpecName(character.class.name, offSpec, locale)
-      : t("characterEdit.offSpecGear");
+  const mainSpecLabel = t("characterEdit.mainSpecGear");
+  const offSpecLabel = t("characterEdit.offSpecGear");
 
   return (
     <form onSubmit={handleSubmit} noValidate>
@@ -191,55 +183,61 @@ function CharacterEditDialogContent({
             ) : null}
           </Box>
           {character.class ? (
-            <>
-              <CharacterSpecGearFields
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              spacing={{ xs: 2, md: 3 }}
+              divider={
+                <Divider
+                  flexItem
+                  orientation="vertical"
+                  sx={{ display: { xs: "none", md: "block" } }}
+                />
+              }
+              sx={{ alignItems: "stretch" }}
+            >
+              <CharacterSpecGearColumn
+                roleLabel={t("characterForm.main")}
+                importSectionLabel={mainSpecLabel}
+                spec={mainSpec}
+                gearScoreText={mainGearScoreText}
+                specName="mainSpec"
+                gearScoreName="mainGearScore"
+                specLabelId="character-main-spec-label"
                 characterClass={character.class}
-                mainSpec={mainSpec}
-                mainGearScoreText={mainGearScoreText}
-                offSpec={offSpec}
-                offGearScoreText={offGearScoreText}
-                onMainSpecChange={handleMainSpecChange}
-                onMainGearScoreTextChange={(value) => {
+                gearItems={mainGearItems}
+                onSpecChange={handleMainSpecChange}
+                onGearScoreTextChange={(value) => {
                   setMainGearScoreText(value);
                   setError("");
                 }}
-                onOffSpecChange={handleOffSpecChange}
-                onOffGearScoreTextChange={(value) => {
-                  setOffGearScoreText(value);
-                  setError("");
-                }}
-              />
-              <Typography variant="body2" color="text.secondary">
-                {t("characterEdit.importGear")}
-              </Typography>
-              <CharacterSpecGearImportSection
-                label={mainSpecLabel}
-                spec={mainSpec || undefined}
-                characterClass={character.class}
-                gearItems={mainGearItems}
                 onGearItemsChange={handleMainGearItemsChange}
                 onError={setError}
                 onClearError={() => setError("")}
                 locale={locale}
                 t={t}
               />
-              {offSpec ? (
-                <>
-                  <Divider />
-                  <CharacterSpecGearImportSection
-                    label={offSpecLabel}
-                    spec={offSpec}
-                    characterClass={character.class}
-                    gearItems={offGearItems}
-                    onGearItemsChange={handleOffGearItemsChange}
-                    onError={setError}
-                    onClearError={() => setError("")}
-                    locale={locale}
-                    t={t}
-                  />
-                </>
-              ) : null}
-            </>
+              <CharacterSpecGearColumn
+                roleLabel={t("characterForm.off")}
+                importSectionLabel={offSpecLabel}
+                spec={offSpec}
+                gearScoreText={offGearScoreText}
+                specName="offSpec"
+                gearScoreName="offGearScore"
+                specLabelId="character-off-spec-label"
+                characterClass={character.class}
+                gearItems={offGearItems}
+                onSpecChange={handleOffSpecChange}
+                onGearScoreTextChange={(value) => {
+                  setOffGearScoreText(value);
+                  setError("");
+                }}
+                onGearItemsChange={handleOffGearItemsChange}
+                onError={setError}
+                onClearError={() => setError("")}
+                locale={locale}
+                t={t}
+              />
+            </Stack>
           ) : null}
           {error ? <FormErrorMessage message={error} /> : null}
         </Stack>
@@ -260,7 +258,7 @@ export function CharacterEditDialog({
   onSave,
 }: CharacterEditDialogProps) {
   return (
-    <Dialog open={character !== null} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={character !== null} onClose={onClose} maxWidth="lg" fullWidth>
       {character ? (
         <CharacterEditDialogContent
           key={character.id}

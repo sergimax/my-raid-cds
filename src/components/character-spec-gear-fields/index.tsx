@@ -24,19 +24,7 @@ export type CharacterSpecGearFieldsProps = {
   onOffGearScoreTextChange: (value: string) => void;
 };
 
-function SpecGearRow({
-  label,
-  spec,
-  gearScoreText,
-  specName,
-  gearScoreName,
-  specLabelId,
-  characterClass,
-  classSpecs,
-  disabled,
-  onSpecChange,
-  onGearScoreTextChange,
-}: {
+export type CharacterSingleSpecGearFieldsProps = {
   label: string;
   spec: string;
   gearScoreText: string;
@@ -46,17 +34,34 @@ function SpecGearRow({
   characterClass: CharacterClass | "";
   classSpecs: readonly string[];
   disabled: boolean;
+  layout?: "row" | "column";
   onSpecChange: (value: string) => void;
   onGearScoreTextChange: (value: string) => void;
-}) {
+};
+
+export function CharacterSingleSpecGearFields({
+  label,
+  spec,
+  gearScoreText,
+  specName,
+  gearScoreName,
+  specLabelId,
+  characterClass,
+  classSpecs,
+  disabled,
+  layout = "row",
+  onSpecChange,
+  onGearScoreTextChange,
+}: CharacterSingleSpecGearFieldsProps) {
   const { t } = useTranslation();
+  const fieldsDirection = layout === "column" ? "column" : { xs: "column", sm: "row" };
 
   return (
     <Stack spacing={0.5}>
       <Typography variant="body2" color="text.secondary">
         {label}
       </Typography>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+      <Stack direction={fieldsDirection} spacing={2}>
         <FormControl sx={{ flex: 1 }} disabled={disabled}>
           <InputLabel id={specLabelId}>{t("common.spec")}</InputLabel>
           <Select
@@ -134,7 +139,7 @@ export function CharacterSpecGearFields({
 
   return (
     <Stack spacing={2}>
-      <SpecGearRow
+      <CharacterSingleSpecGearFields
         label={t("characterForm.main")}
         spec={mainSpec}
         gearScoreText={mainGearScoreText}
@@ -147,7 +152,7 @@ export function CharacterSpecGearFields({
         onSpecChange={onMainSpecChange}
         onGearScoreTextChange={onMainGearScoreTextChange}
       />
-      <SpecGearRow
+      <CharacterSingleSpecGearFields
         label={t("characterForm.off")}
         spec={offSpec}
         gearScoreText={offGearScoreText}
