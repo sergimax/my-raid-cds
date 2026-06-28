@@ -28,24 +28,49 @@ export type GearUpgradeSlotHint = {
   bestLootItemLevel?: number;
 };
 
-export type GearUpgradeHint = {
+export type GearUpgradeHintTrack = {
   level: GearUpgradeHintLevel;
   upgradeSlotCount: number;
-  equippedCount: number;
-  peakDungeonItemLevel: number;
-  slotAware: boolean;
-  bisFiltered: boolean;
   upgradeSlots: GearUpgradeSlotHint[];
 };
 
-const GEAR_UPGRADE_HINT_ALPHAS: Record<GearUpgradeHintLevel, number> = {
+export type GearUpgradeHint = {
+  /** BiS-list targets available as upgrades in this dungeon (priority). */
+  bis: GearUpgradeHintTrack;
+  /** Raid loot or ilvl-based upgrades when equipped gear is below dungeon tier. */
+  ilvl: GearUpgradeHintTrack;
+  equippedCount: number;
+  peakDungeonItemLevel: number;
+  slotAware: boolean;
+  bisListActive: boolean;
+};
+
+export type GearHintCellDisplay = {
+  kind: "bis" | "ilvl";
+  level: GearUpgradeHintLevel;
+};
+
+const BIS_HINT_ALPHAS: Record<GearUpgradeHintLevel, number> = {
   0: 0,
-  1: 0.14,
-  2: 0.24,
-  3: 0.34,
+  1: 0.16,
+  2: 0.26,
+  3: 0.36,
+};
+
+const ILVL_HINT_ALPHAS: Record<GearUpgradeHintLevel, number> = {
+  0: 0,
+  1: 0.12,
+  2: 0.2,
+  3: 0.28,
 };
 
 const MAX_TOOLTIP_SLOT_LABELS = 4;
+
+const EMPTY_HINT_TRACK: GearUpgradeHintTrack = {
+  level: 0,
+  upgradeSlotCount: 0,
+  upgradeSlots: [],
+};
 
 /** Peak ilvl offered by a dungeon row (highest tier drop). */
 export function getDungeonPeakItemLevel(itemLevels: readonly number[]): number {
@@ -167,10 +192,26 @@ function isSlotUpgradeableWithLoot(
   };
 }
 
-function evaluateNaiveGearUpgradeHint(
+function buildHintTrack(
+  upgradeSlots: GearUpgradeSlotHint[],
+  equippedCount: number,
+): GearUpgradeHintTrack {
+  const level =
+    equippedCount === 0
+      ? 0
+      : upgradeHintLevelFromRatio(upgradeSlots.length / equippedCount);
+
+  return {
+    level,
+    upgradeSlotCount: upgradeSlots.length,
+    upgradeSlots,
+  };
+}
+
+function evaluateNaiveIlvlTrack(
   gearItems: readonly CharacterGearItem[],
   peakDungeonItemLevel: number,
-): GearUpgradeHint {
+): GearUpgradeHintTrack {
   const upgradeSlots: GearUpgradeSlotHint[] = [];
 
   for (const item of gearItems) {
@@ -180,35 +221,21 @@ function evaluateNaiveGearUpgradeHint(
     }
   }
 
-  const level = upgradeHintLevelFromRatio(upgradeSlots.length / gearItems.length);
-
-  return {
-    level,
-    upgradeSlotCount: upgradeSlots.length,
-    equippedCount: gearItems.length,
-    peakDungeonItemLevel,
-    slotAware: false,
-    bisFiltered: false,
-    upgradeSlots,
-  };
+  return buildHintTrack(upgradeSlots, gearItems.length);
 }
 
-function evaluateSlotAwareGearUpgradeHint(
+function evaluateBisTrack(
   gearItems: readonly CharacterGearItem[],
   dungeonItemLevels: readonly number[],
-  peakDungeonItemLevel: number,
   raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
   equipContext: CharacterEquipContext,
-  bisSlotMap?: BisSlotMap,
-): GearUpgradeHint {
-  const bisFiltered = bisSlotMap !== undefined && bisSlotMap.size > 0;
+  bisSlotMap: BisSlotMap,
+): GearUpgradeHintTrack {
   const upgradeSlots: GearUpgradeSlotHint[] = [];
 
   for (const item of gearItems) {
-    const bisItemIdsForSlot = bisFiltered
-      ? bisSlotMap.get(item.slot)
-      : undefined;
-    if (bisFiltered && (!bisItemIdsForSlot || bisItemIdsForSlot.length === 0)) {
+    const bisItemIdsForSlot = bisSlotMap.get(item.slot);
+    if (!bisItemIdsForSlot || bisItemIdsForSlot.length === 0) {
       continue;
     }
 
@@ -224,16 +251,45 @@ function evaluateSlotAwareGearUpgradeHint(
     }
   }
 
-  const level = upgradeHintLevelFromRatio(upgradeSlots.length / gearItems.length);
+  return buildHintTrack(upgradeSlots, gearItems.length);
+}
 
+function evaluateIlvlRaidLootTrack(
+  gearItems: readonly CharacterGearItem[],
+  dungeonItemLevels: readonly number[],
+  raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
+  equipContext: CharacterEquipContext,
+): GearUpgradeHintTrack {
+  const upgradeSlots: GearUpgradeSlotHint[] = [];
+
+  for (const item of gearItems) {
+    const slotHint = isSlotUpgradeableWithLoot(
+      item,
+      raidKey,
+      dungeonItemLevels,
+      equipContext,
+    );
+    if (slotHint) {
+      upgradeSlots.push(slotHint);
+    }
+  }
+
+  return buildHintTrack(upgradeSlots, gearItems.length);
+}
+
+function emptyGearUpgradeHint(
+  equippedCount: number,
+  peakDungeonItemLevel: number,
+  slotAware: boolean,
+  bisListActive: boolean,
+): GearUpgradeHint {
   return {
-    level,
-    upgradeSlotCount: upgradeSlots.length,
-    equippedCount: gearItems.length,
+    bis: EMPTY_HINT_TRACK,
+    ilvl: EMPTY_HINT_TRACK,
+    equippedCount,
     peakDungeonItemLevel,
-    slotAware: true,
-    bisFiltered,
-    upgradeSlots,
+    slotAware,
+    bisListActive,
   };
 }
 
@@ -246,32 +302,68 @@ export function evaluateGearUpgradeHint(
   const dungeonItemLevels = dungeon.itemLevel;
   const peakDungeonItemLevel = getDungeonPeakItemLevel(dungeonItemLevels);
   const equippedCount = gearItems?.length ?? 0;
+  const bisListActive = bisSlotMap !== undefined && bisSlotMap.size > 0;
 
   if (equippedCount === 0 || peakDungeonItemLevel === 0 || !gearItems) {
-    return {
-      level: 0,
-      upgradeSlotCount: 0,
+    return emptyGearUpgradeHint(
       equippedCount,
       peakDungeonItemLevel,
-      slotAware: false,
-      bisFiltered: false,
-      upgradeSlots: [],
-    };
+      false,
+      bisListActive,
+    );
   }
 
   const raidKey = resolveDungeonRaidKey(dungeon);
   if (raidKey) {
-    return evaluateSlotAwareGearUpgradeHint(
+    const bis =
+      bisListActive && bisSlotMap
+        ? evaluateBisTrack(
+            gearItems,
+            dungeonItemLevels,
+            raidKey,
+            equipContext,
+            bisSlotMap,
+          )
+        : EMPTY_HINT_TRACK;
+
+    const ilvl = evaluateIlvlRaidLootTrack(
       gearItems,
       dungeonItemLevels,
-      peakDungeonItemLevel,
       raidKey,
       equipContext,
-      bisSlotMap,
     );
+
+    return {
+      bis,
+      ilvl,
+      equippedCount,
+      peakDungeonItemLevel,
+      slotAware: true,
+      bisListActive,
+    };
   }
 
-  return evaluateNaiveGearUpgradeHint(gearItems, peakDungeonItemLevel);
+  return {
+    bis: EMPTY_HINT_TRACK,
+    ilvl: evaluateNaiveIlvlTrack(gearItems, peakDungeonItemLevel),
+    equippedCount,
+    peakDungeonItemLevel,
+    slotAware: false,
+    bisListActive,
+  };
+}
+
+/** Cell tint kind: BiS targets take priority over generic ilvl upgrades. */
+export function getGearHintCellDisplay(
+  hint: GearUpgradeHint,
+): GearHintCellDisplay | null {
+  if (hint.bisListActive && hint.bis.level > 0) {
+    return { kind: "bis", level: hint.bis.level };
+  }
+  if (hint.ilvl.level > 0) {
+    return { kind: "ilvl", level: hint.ilvl.level };
+  }
+  return null;
 }
 
 function formatUpgradeSlotLabel(
@@ -289,16 +381,14 @@ function formatUpgradeSlotLabel(
   return slotLabel;
 }
 
-export function formatGearUpgradeHintTooltip(
+function formatHintTrackTooltip(
+  track: GearUpgradeHintTrack,
+  introKey: "gearHint.bisMissing" | "gearHint.raidLootUpgrades" | "gearHint.belowIlvl",
   hint: GearUpgradeHint,
-  locale: ItemTooltipLocale = "en",
+  locale: ItemTooltipLocale,
   t: TranslateFn,
 ): string {
-  if (hint.level === 0) {
-    return "";
-  }
-
-  const slotLabels = hint.upgradeSlots.map((slotHint) =>
+  const slotLabels = track.upgradeSlots.map((slotHint) =>
     formatUpgradeSlotLabel(slotHint, locale, t),
   );
   const visibleLabels = slotLabels.slice(0, MAX_TOOLTIP_SLOT_LABELS);
@@ -308,74 +398,96 @@ export function formatGearUpgradeHintTooltip(
       ? `${visibleLabels.join(", ")} ${t("gearHint.moreSlots", { count: remainingCount })}`
       : visibleLabels.join(", ");
 
-  const intro = hint.bisFiltered
-    ? t("gearHint.bisMissing", { count: hint.upgradeSlotCount })
-    : hint.slotAware
-      ? t("gearHint.raidLootUpgrades", { count: hint.upgradeSlotCount })
-      : t("gearHint.belowIlvl", {
-          count: hint.upgradeSlotCount,
+  const intro =
+    introKey === "gearHint.belowIlvl"
+      ? t(introKey, {
+          count: track.upgradeSlotCount,
           total: hint.equippedCount,
           ilvl: hint.peakDungeonItemLevel,
-        });
+        })
+      : t(introKey, { count: track.upgradeSlotCount });
 
   return `${intro}: ${slotSummary}`;
 }
 
-export function gearUpgradeHintCellSx(
-  hintLevel: GearUpgradeHintLevel,
-  dungeonItemLevels: readonly number[],
-): SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>) {
-  if (hintLevel === 0 || dungeonItemLevels.length === 0) {
-    return {};
+export function formatGearUpgradeHintTooltip(
+  hint: GearUpgradeHint,
+  locale: ItemTooltipLocale = "en",
+  t: TranslateFn,
+): string {
+  const parts: string[] = [];
+
+  if (hint.bisListActive && hint.bis.level > 0) {
+    parts.push(
+      formatHintTrackTooltip(hint.bis, "gearHint.bisMissing", hint, locale, t),
+    );
   }
 
-  const dungeonTier = getItemLevelTier([...dungeonItemLevels]);
+  if (hint.ilvl.level > 0) {
+    const introKey = hint.slotAware
+      ? "gearHint.raidLootUpgrades"
+      : "gearHint.belowIlvl";
+    parts.push(formatHintTrackTooltip(hint.ilvl, introKey, hint, locale, t));
+  }
 
-  return (theme) => ({
-    backgroundColor: alpha(
-      getItemLevelTierColor(dungeonTier, theme.palette.mode),
-      GEAR_UPGRADE_HINT_ALPHAS[hintLevel],
-    ),
-  });
+  return parts.join("\n");
 }
 
-function hintLevelBackgroundColor(
-  hintLevel: GearUpgradeHintLevel,
+function hintDisplayBackgroundColor(
+  display: GearHintCellDisplay,
   dungeonItemLevels: readonly number[],
   theme: Theme,
 ): string | undefined {
-  if (hintLevel === 0 || dungeonItemLevels.length === 0) {
+  if (display.level === 0 || dungeonItemLevels.length === 0) {
     return undefined;
   }
+
+  if (display.kind === "bis") {
+    return alpha(theme.palette.warning.main, BIS_HINT_ALPHAS[display.level]);
+  }
+
   const dungeonTier = getItemLevelTier([...dungeonItemLevels]);
   return alpha(
     getItemLevelTierColor(dungeonTier, theme.palette.mode),
-    GEAR_UPGRADE_HINT_ALPHAS[hintLevel],
+    ILVL_HINT_ALPHAS[display.level],
   );
+}
+
+export function gearUpgradeHintCellSx(
+  display: GearHintCellDisplay | null,
+  dungeonItemLevels: readonly number[],
+): SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>) {
+  if (!display || display.level === 0 || dungeonItemLevels.length === 0) {
+    return {};
+  }
+
+  return (theme) => ({
+    backgroundColor: hintDisplayBackgroundColor(display, dungeonItemLevels, theme),
+  });
 }
 
 /** Split cell tint when both main and off spec have upgrade hints. */
 export function gearUpgradeHintDualCellSx(
-  mainLevel: GearUpgradeHintLevel,
-  offLevel: GearUpgradeHintLevel,
+  mainDisplay: GearHintCellDisplay | null,
+  offDisplay: GearHintCellDisplay | null,
   dungeonItemLevels: readonly number[],
 ): SystemStyleObject<Theme> | ((theme: Theme) => SystemStyleObject<Theme>) {
   if (dungeonItemLevels.length === 0) {
     return {};
   }
-  if (mainLevel === 0 && offLevel === 0) {
+  if (!mainDisplay && !offDisplay) {
     return {};
   }
-  if (offLevel === 0) {
-    return gearUpgradeHintCellSx(mainLevel, dungeonItemLevels);
+  if (!offDisplay) {
+    return gearUpgradeHintCellSx(mainDisplay, dungeonItemLevels);
   }
-  if (mainLevel === 0) {
-    return gearUpgradeHintCellSx(offLevel, dungeonItemLevels);
+  if (!mainDisplay) {
+    return gearUpgradeHintCellSx(offDisplay, dungeonItemLevels);
   }
 
   return (theme) => {
-    const mainColor = hintLevelBackgroundColor(mainLevel, dungeonItemLevels, theme);
-    const offColor = hintLevelBackgroundColor(offLevel, dungeonItemLevels, theme);
+    const mainColor = hintDisplayBackgroundColor(mainDisplay, dungeonItemLevels, theme);
+    const offColor = hintDisplayBackgroundColor(offDisplay, dungeonItemLevels, theme);
     if (!mainColor || !offColor) {
       return {};
     }

@@ -54,7 +54,11 @@ function SpecGearHintSection({
         {specLabel}
       </Typography>
       {gearSummary ? (
-        <Typography variant="caption" component="p" sx={{ mb: tokenRows.length > 0 ? 1 : 0 }}>
+        <Typography
+          variant="caption"
+          component="p"
+          sx={{ mb: tokenRows.length > 0 ? 1 : 0, whiteSpace: "pre-line" }}
+        >
           {gearSummary}
         </Typography>
       ) : null}
