@@ -169,6 +169,7 @@ export const enMessages = {
     ilvlEquipableOnly: "Equipable for your class/spec only; stats not checked.",
     moreSlots: "+{{count}} more",
     slotArrow: "{{slot}} → {{item}}",
+    bisBossLoot: "BiS loot in this raid",
   },
   tierSet: {
     tokensFromRaid: "{{count}} tier set token(s) from this raid",

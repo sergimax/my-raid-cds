@@ -7,6 +7,7 @@
  * - src/data/wotlk-item-gear-slots.json — valid gear slot indices per item id
  * - src/data/wotlk-item-equip-props.json — item type/armor/weapon metadata for class equip rules
  * - src/data/raid-loot-by-key.json — raid loot indexed by gear slot
+ * - src/data/wotlk-item-drop-sources.json — boss / raid drop sources per bundled item id
  * - src/data/tier-sets-by-item-id.json — tier set piece upgrade chains
  *
  * Pass --skip-ru to skip the WoWRoad Russian name fetch (network-heavy).
@@ -34,6 +35,58 @@ const RAID_ZONE_IDS = {
   icecrownCitadel: [4812, 4813, 4820, 4809],
   rubySanctum: [4987],
 };
+
+/** WowSims zone id → raid size when the zone encodes player count (ToC). */
+const ZONE_SIZE_HINT = {
+  4722: 10,
+  4723: 25,
+};
+
+/** WowSims drop difficulty → raid size / heroic mode hints. */
+const DROP_DIFFICULTY_HINT = {
+  1: { heroic: false },
+  2: { heroic: true },
+  3: { size: 10, heroic: false },
+  4: { size: 10, heroic: true },
+  5: { size: 25, heroic: false },
+  6: { size: 25, heroic: true },
+  8: { size: 25, heroic: false },
+};
+
+const DUNGEON_NORMAL = "Normal";
+const DUNGEON_HEROIC = "Heroic";
+
+/** Template raid rows (mirrors src/data/dungeon-list.ts). */
+const DUNGEON_TEMPLATES = [
+  { raidKey: "naxxramas", size: 10, difficulty: DUNGEON_NORMAL, itemLevel: [200] },
+  { raidKey: "naxxramas", size: 25, difficulty: DUNGEON_NORMAL, itemLevel: [213] },
+  { raidKey: "obsidianSanctum", size: 10, difficulty: DUNGEON_NORMAL, itemLevel: [200, 213] },
+  { raidKey: "obsidianSanctum", size: 25, difficulty: DUNGEON_NORMAL, itemLevel: [213, 226] },
+  { raidKey: "onyxiasLair", size: 10, difficulty: DUNGEON_NORMAL, itemLevel: [232] },
+  { raidKey: "onyxiasLair", size: 25, difficulty: DUNGEON_NORMAL, itemLevel: [245] },
+  { raidKey: "vaultOfArchavon", size: 10, difficulty: DUNGEON_NORMAL, itemLevel: [232, 251] },
+  { raidKey: "vaultOfArchavon", size: 25, difficulty: DUNGEON_NORMAL, itemLevel: [245, 264] },
+  { raidKey: "trialOfTheCrusader", size: 10, difficulty: DUNGEON_NORMAL, itemLevel: [232] },
+  { raidKey: "trialOfTheCrusader", size: 10, difficulty: DUNGEON_HEROIC, itemLevel: [245] },
+  { raidKey: "trialOfTheCrusader", size: 25, difficulty: DUNGEON_NORMAL, itemLevel: [245] },
+  { raidKey: "trialOfTheCrusader", size: 25, difficulty: DUNGEON_HEROIC, itemLevel: [258] },
+  { raidKey: "ulduar", size: 10, difficulty: DUNGEON_NORMAL, itemLevel: [219, 232] },
+  { raidKey: "ulduar", size: 25, difficulty: DUNGEON_NORMAL, itemLevel: [226, 239] },
+  { raidKey: "icecrownCitadel", size: 10, difficulty: DUNGEON_NORMAL, itemLevel: [251, 258] },
+  { raidKey: "icecrownCitadel", size: 10, difficulty: DUNGEON_HEROIC, itemLevel: [264, 271] },
+  { raidKey: "icecrownCitadel", size: 25, difficulty: DUNGEON_NORMAL, itemLevel: [264, 271] },
+  { raidKey: "icecrownCitadel", size: 25, difficulty: DUNGEON_HEROIC, itemLevel: [277, 284] },
+  { raidKey: "rubySanctum", size: 10, difficulty: DUNGEON_NORMAL, itemLevel: [258] },
+  { raidKey: "rubySanctum", size: 10, difficulty: DUNGEON_HEROIC, itemLevel: [271] },
+  { raidKey: "rubySanctum", size: 25, difficulty: DUNGEON_NORMAL, itemLevel: [271] },
+  { raidKey: "rubySanctum", size: 25, difficulty: DUNGEON_HEROIC, itemLevel: [284] },
+];
+
+const ZONE_TO_RAID_KEY = Object.fromEntries(
+  Object.entries(RAID_ZONE_IDS).flatMap(([raidKey, zoneIds]) =>
+    zoneIds.map((zoneId) => [zoneId, raidKey]),
+  ),
+);
 
 function dropsInZones(item, zoneIds) {
   const zoneSet = new Set(zoneIds);
@@ -125,6 +178,120 @@ function buildRaidLoot(dbItems, itemLevelIds) {
   }
 
   return lootByKey;
+}
+
+function getDropBossName(drop) {
+  if (typeof drop.otherName === "string" && drop.otherName.length > 0) {
+    return drop.otherName;
+  }
+  if (typeof drop.category === "string" && drop.category.length > 0) {
+    return drop.category;
+  }
+  return undefined;
+}
+
+function matchDungeonTemplates(raidKey, itemIlvl, dropDifficulty, itemHeroic, zoneId) {
+  const difficultyHint = DROP_DIFFICULTY_HINT[dropDifficulty] ?? {};
+  const zoneSizeHint = ZONE_SIZE_HINT[zoneId];
+  const heroic =
+    itemHeroic === true
+      ? true
+      : difficultyHint.heroic === true
+        ? true
+        : difficultyHint.heroic === false
+          ? false
+          : undefined;
+  const sizeHint = difficultyHint.size ?? zoneSizeHint;
+
+  let candidates = DUNGEON_TEMPLATES.filter((template) => template.raidKey === raidKey);
+  candidates = candidates.filter((template) => template.itemLevel.includes(itemIlvl));
+
+  if (candidates.length === 0) {
+    return [];
+  }
+
+  if (heroic !== undefined) {
+    const heroicDifficulty = heroic ? DUNGEON_HEROIC : DUNGEON_NORMAL;
+    const byHeroic = candidates.filter((template) => template.difficulty === heroicDifficulty);
+    if (byHeroic.length > 0) {
+      candidates = byHeroic;
+    }
+  }
+
+  if (sizeHint !== undefined) {
+    const bySize = candidates.filter((template) => template.size === sizeHint);
+    if (bySize.length > 0) {
+      candidates = bySize;
+    }
+  }
+
+  return candidates;
+}
+
+function dropSourceKey(entry) {
+  return `${entry.b}|${entry.k}|${entry.s}|${entry.d}`;
+}
+
+function buildItemDropSources(dbItems, itemLevelIds) {
+  const bundledItemIds = new Set(itemLevelIds);
+  const itemsById = new Map(dbItems.map((item) => [item.id, item]));
+  const sourcesByItemId = {};
+
+  for (const itemId of itemLevelIds) {
+    const item = itemsById.get(Number(itemId));
+    if (!item?.sources) {
+      continue;
+    }
+
+    const seen = new Set();
+    const entries = [];
+
+    for (const source of item.sources) {
+      const drop = source.drop;
+      if (!drop?.zoneId) {
+        continue;
+      }
+
+      const raidKey = ZONE_TO_RAID_KEY[drop.zoneId];
+      if (!raidKey) {
+        continue;
+      }
+
+      const bossName = getDropBossName(drop);
+      if (!bossName) {
+        continue;
+      }
+
+      const templates = matchDungeonTemplates(
+        raidKey,
+        item.ilvl,
+        drop.difficulty,
+        item.heroic === true,
+        drop.zoneId,
+      );
+
+      for (const template of templates) {
+        const entry = {
+          b: bossName,
+          k: raidKey,
+          s: template.size,
+          d: template.difficulty === DUNGEON_HEROIC ? "H" : "N",
+        };
+        const key = dropSourceKey(entry);
+        if (seen.has(key)) {
+          continue;
+        }
+        seen.add(key);
+        entries.push(entry);
+      }
+    }
+
+    if (entries.length > 0) {
+      sourcesByItemId[itemId] = entries;
+    }
+  }
+
+  return sourcesByItemId;
 }
 
 const TIER_SET_GEAR_SLOTS = new Set([0, 2, 4, 6, 8, 10]);
@@ -489,6 +656,7 @@ async function main() {
   const gearSlotsOutPath = path.join(rootDir, "src/data/wotlk-item-gear-slots.json");
   const equipPropsOutPath = path.join(rootDir, "src/data/wotlk-item-equip-props.json");
   const lootOutPath = path.join(rootDir, "src/data/raid-loot-by-key.json");
+  const dropSourcesOutPath = path.join(rootDir, "src/data/wotlk-item-drop-sources.json");
   const tierSetsOutPath = path.join(rootDir, "src/data/tier-sets-by-item-id.json");
 
   const db = JSON.parse(fs.readFileSync(dbPath, "utf8"));
@@ -499,12 +667,14 @@ async function main() {
   const gearSlotsByItemId = buildItemGearSlotsMap(db.items, itemLevelIds);
   const equipPropsByItemId = buildItemEquipProps(db.items, itemLevelIds);
   const lootByKey = buildRaidLoot(db.items, itemLevelIds);
+  const dropSourcesByItemId = buildItemDropSources(db.items, itemLevelIds);
   const tierSetsByItemId = buildTierSetsByItemId(db.items);
 
   fs.writeFileSync(namesOutPath, `${JSON.stringify(names)}\n`);
   fs.writeFileSync(gearSlotsOutPath, `${JSON.stringify(gearSlotsByItemId)}\n`);
   fs.writeFileSync(equipPropsOutPath, `${JSON.stringify(equipPropsByItemId)}\n`);
   fs.writeFileSync(lootOutPath, `${JSON.stringify(lootByKey)}\n`);
+  fs.writeFileSync(dropSourcesOutPath, `${JSON.stringify(dropSourcesByItemId)}\n`);
   fs.writeFileSync(tierSetsOutPath, `${JSON.stringify(tierSetsByItemId)}\n`);
 
   const slotCounts = Object.fromEntries(
@@ -523,6 +693,9 @@ async function main() {
   );
   console.log(`Wrote raid loot for ${Object.keys(lootByKey).length} raids → ${lootOutPath}`);
   console.log("Slots covered per raid:", slotCounts);
+  console.log(
+    `Wrote ${Object.keys(dropSourcesByItemId).length} item drop sources → ${dropSourcesOutPath}`,
+  );
   console.log(
     `Wrote ${Object.keys(tierSetsByItemId).length} tier set pieces → ${tierSetsOutPath}`,
   );
