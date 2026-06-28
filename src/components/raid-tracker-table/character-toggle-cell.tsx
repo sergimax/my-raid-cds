@@ -40,8 +40,9 @@ export function CharacterToggleCell({
         character,
         dungeon,
         bisLists.getBisSlotMapForSpec,
+        locale,
       ),
-    [bisLists.getBisSlotMapForSpec, character, dungeon],
+    [bisLists.getBisSlotMapForSpec, character, dungeon, locale],
   );
 
   const showTooltip = hasAnyGearHint(gearHints);

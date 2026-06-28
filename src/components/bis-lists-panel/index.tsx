@@ -45,6 +45,7 @@ import { ClassOptionLabel } from "../class-option-label/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 import { SpecOptionLabel } from "../spec-option-label/index.tsx";
 import { WowItemAlternatives } from "../wow-item-link/index.tsx";
+import { BisItemDropSources } from "../bis-item-drop-sources/index.tsx";
 
 type SlotDraft = {
   slot: number;
@@ -285,6 +286,7 @@ function BisSlotRow({
           sx={slotViewContentSx}
         >
           <WowItemAlternatives itemIds={slotDraft.itemIds} />
+          <BisItemDropSources itemIds={slotDraft.itemIds} locale={locale} />
         </Typography>
       )}
 

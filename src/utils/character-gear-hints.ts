@@ -1,3 +1,4 @@
+import type { AppLocale } from "../i18n/types.ts";
 import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { TierSetHint } from "../types/tier-sets.ts";
@@ -7,11 +8,16 @@ import {
   type GearUpgradeHint,
 } from "./gear-upgrade-hint.ts";
 import { evaluateTierSetHint } from "./tier-set-hint.ts";
+import {
+  groupBisItemIdsByBossForDungeon,
+  type BossBisLootGroup,
+} from "./item-drop-sources.ts";
 
 export type SpecGearHint = {
   specGear: CharacterSpecGear;
   gearHint: GearUpgradeHint;
   tierSetHint: TierSetHint;
+  bisBossLootGroups: BossBisLootGroup[];
 };
 
 export type CharacterGearHints = {
@@ -24,18 +30,39 @@ type GetBisSlotMapForSpec = (
   spec: string,
 ) => BisSlotMap;
 
+function collectBisItemIds(slotMap: BisSlotMap): number[] {
+  const itemIds: number[] = [];
+  for (const slotItemIds of slotMap.values()) {
+    for (const itemId of slotItemIds) {
+      if (!itemIds.includes(itemId)) {
+        itemIds.push(itemId);
+      }
+    }
+  }
+  return itemIds;
+}
+
 function evaluateSpecGearHint(
   specGear: CharacterSpecGear,
   className: ClassName,
   dungeon: Pick<
     DungeonRecord,
-    "name" | "raidKey" | "itemLevel" | "size" | "difficulty"
+    "name" | "shortName" | "raidKey" | "itemLevel" | "size" | "difficulty"
   >,
   getBisSlotMapForSpec: GetBisSlotMapForSpec,
+  locale: AppLocale,
 ): SpecGearHint {
   const slotMap = getBisSlotMapForSpec(className, specGear.spec);
   const bisSlotMap = slotMap.size > 0 ? slotMap : undefined;
   const equipContext = { className, spec: specGear.spec };
+  const bisBossLootGroups =
+    bisSlotMap !== undefined
+      ? groupBisItemIdsByBossForDungeon(
+          collectBisItemIds(bisSlotMap),
+          dungeon,
+          locale,
+        )
+      : [];
 
   return {
     specGear,
@@ -46,13 +73,18 @@ function evaluateSpecGearHint(
       equipContext,
     ),
     tierSetHint: evaluateTierSetHint(specGear.gearItems, dungeon, bisSlotMap),
+    bisBossLootGroups,
   };
 }
 
 export function evaluateCharacterGearHints(
   character: CharacterRecord,
-  dungeon: Pick<DungeonRecord, "name" | "raidKey" | "itemLevel" | "size" | "difficulty">,
+  dungeon: Pick<
+    DungeonRecord,
+    "name" | "shortName" | "raidKey" | "itemLevel" | "size" | "difficulty"
+  >,
   getBisSlotMapForSpec: GetBisSlotMapForSpec,
+  locale: AppLocale,
 ): CharacterGearHints {
   const className = character.class?.name;
   if (!className) {
@@ -67,6 +99,7 @@ export function evaluateCharacterGearHints(
       className,
       dungeon,
       getBisSlotMapForSpec,
+      locale,
     );
   }
 
@@ -76,6 +109,7 @@ export function evaluateCharacterGearHints(
       className,
       dungeon,
       getBisSlotMapForSpec,
+      locale,
     );
   }
 
@@ -87,11 +121,13 @@ export function hasAnyGearHint(hints: CharacterGearHints): boolean {
     hints.main &&
     (hints.main.gearHint.bis.level > 0 ||
       hints.main.gearHint.ilvl.level > 0 ||
-      hints.main.tierSetHint.tokenNeeds.length > 0);
+      hints.main.tierSetHint.tokenNeeds.length > 0 ||
+      hints.main.bisBossLootGroups.length > 0);
   const offActive =
     hints.off &&
     (hints.off.gearHint.bis.level > 0 ||
       hints.off.gearHint.ilvl.level > 0 ||
-      hints.off.tierSetHint.tokenNeeds.length > 0);
+      hints.off.tierSetHint.tokenNeeds.length > 0 ||
+      hints.off.bisBossLootGroups.length > 0);
   return Boolean(mainActive || offActive);
 }

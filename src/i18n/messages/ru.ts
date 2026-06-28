@@ -172,6 +172,7 @@ export const ruMessages: Messages = {
     ilvlEquipableOnly: "Только экипировка для класса/спека; статы не проверяются.",
     moreSlots: "+ещё {{count}}",
     slotArrow: "{{slot}} → {{item}}",
+    bisBossLoot: "BiS-лут в этом рейде",
   },
   tierSet: {
     tokensFromRaid: "{{count}} жетон(ов) сета из этого рейда",
