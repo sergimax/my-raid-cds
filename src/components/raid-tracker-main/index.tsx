@@ -1,9 +1,11 @@
 import { Alert, Stack } from "@mui/material";
+import { useMemo } from "react";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { TrackerFormsState } from "../../hooks/use-tracker-forms.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import { LOAD_WARNING_CORRUPTED_SAVE } from "../../storage/constants.ts";
+import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { AppIntro } from "../app-intro/index.tsx";
 import { BisListsPanel } from "../bis-lists-panel/index.tsx";
 import { CharacterForm } from "../character-form/index.tsx";
@@ -13,6 +15,7 @@ import {
   resolveMainToolbarPanelId,
   TrackerToolbarPanel,
 } from "../tracker-toolbar-panel/index.tsx";
+import { getMainToolbarPanelMeta } from "../tracker-toolbar-panel/toolbar-panel-meta.ts";
 
 type RaidTrackerMainProps = {
   forms: TrackerFormsState;
@@ -54,6 +57,26 @@ export function RaidTrackerMain({
     showDungeonForm: forms.showDungeonForm,
     showBisListsPanel,
   });
+  const mainToolbarPanelMeta = useMemo(() => {
+    if (!mainToolbarPanelId) {
+      return null;
+    }
+
+    return getMainToolbarPanelMeta(mainToolbarPanelId, t, {
+      closeCharacterForm: forms.closeCharacterForm,
+      closeDungeonForm: forms.closeDungeonForm,
+      closeBisListsPanel: () => {
+        hideExternalWowTooltips();
+        closeBisListsPanel();
+      },
+    });
+  }, [
+    closeBisListsPanel,
+    forms.closeCharacterForm,
+    forms.closeDungeonForm,
+    mainToolbarPanelId,
+    t,
+  ]);
 
   return (
     <Stack spacing={2}>
@@ -65,8 +88,8 @@ export function RaidTrackerMain({
         </Alert>
       ) : null}
 
-      {mainToolbarPanelId ? (
-        <TrackerToolbarPanel panelId={mainToolbarPanelId}>
+      {mainToolbarPanelId && mainToolbarPanelMeta ? (
+        <TrackerToolbarPanel panelId={mainToolbarPanelId} {...mainToolbarPanelMeta}>
           {forms.showCharacterForm ? (
             <CharacterForm
               name={forms.characterForm.name}
@@ -82,7 +105,6 @@ export function RaidTrackerMain({
               onMainGearScoreTextChange={forms.characterForm.setMainGearScoreText}
               onOffSpecChange={forms.characterForm.setOffSpec}
               onOffGearScoreTextChange={forms.characterForm.setOffGearScoreText}
-              onCancel={forms.closeCharacterForm}
               onSubmit={forms.characterForm.handleSubmit}
             />
           ) : null}
@@ -100,14 +122,11 @@ export function RaidTrackerMain({
               onSizeChange={forms.dungeonForm.setSize}
               onItemLevelTextChange={forms.dungeonForm.setItemLevelText}
               onDifficultyChange={forms.dungeonForm.setDifficulty}
-              onCancel={forms.closeDungeonForm}
               onSubmit={forms.dungeonForm.handleSubmit}
             />
           ) : null}
 
-          {showBisListsPanel ? (
-            <BisListsPanel onClose={closeBisListsPanel} />
-          ) : null}
+          {showBisListsPanel ? <BisListsPanel /> : null}
         </TrackerToolbarPanel>
       ) : null}
 

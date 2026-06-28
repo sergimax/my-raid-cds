@@ -5,5 +5,4 @@ export type ExportPanelProps = {
   characters: CharacterRecord[];
   visibleDungeons: DungeonRecord[];
   dungeonToggles: DungeonToggles;
-  onClose: () => void;
 };

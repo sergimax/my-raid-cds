@@ -1,6 +1,4 @@
 import {
-  Box,
-  Button,
   Checkbox,
   FormControlLabel,
   Stack,
@@ -90,7 +88,6 @@ export function ExportPanel({
   characters,
   visibleDungeons,
   dungeonToggles,
-  onClose,
 }: ExportPanelProps) {
   const { t, locale } = useTranslation();
   const [exportSpecSelectionByCharacterId, setExportSpecSelectionByCharacterId] =
@@ -154,15 +151,8 @@ export function ExportPanel({
   };
 
   return (
-    <Box>
-      <Typography variant="subtitle1" sx={{ mb: 1 }}>
-        {t("exportPanel.title")}
-      </Typography>
-      <Stack spacing={2} sx={{ maxWidth: 640 }}>
-        <Typography variant="body2" color="text.secondary">
-          {t("exportPanel.instructions")}
-        </Typography>
-        {characters.length > 0 ? (
+    <Stack spacing={2} sx={{ maxWidth: 640 }}>
+      {characters.length > 0 ? (
           <Stack spacing={1}>
             {characters.map((character) => {
               const selection = resolveExportSpecSelection(
@@ -248,16 +238,10 @@ export function ExportPanel({
               "aria-label": t("exportPanel.textareaAria"),
             },
           }}
-          onFocus={(event) => {
-            event.target.select();
-          }}
-        />
-        <Stack direction="row" spacing={1} sx={{ justifyContent: "flex-end" }}>
-          <Button variant="text" type="button" onClick={onClose}>
-            {t("common.close")}
-          </Button>
-        </Stack>
-      </Stack>
-    </Box>
+        onFocus={(event) => {
+          event.target.select();
+        }}
+      />
+    </Stack>
   );
 }

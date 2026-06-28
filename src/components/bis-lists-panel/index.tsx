@@ -12,7 +12,6 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Stack,
   TextField,
@@ -46,10 +45,6 @@ import { ClassOptionLabel } from "../class-option-label/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 import { SpecOptionLabel } from "../spec-option-label/index.tsx";
 import { WowItemAlternatives } from "../wow-item-link/index.tsx";
-
-type BisListsPanelProps = {
-  onClose: () => void;
-};
 
 type SlotDraft = {
   slot: number;
@@ -336,7 +331,7 @@ function BisSlotRow({
   );
 }
 
-export function BisListsPanel({ onClose }: BisListsPanelProps) {
+export function BisListsPanel() {
   const { t, locale } = useTranslation();
   const bisLists = useBisListsContext();
   const [className, setClassName] = useState<ClassNameType>(ClassName.DeathKnight);
@@ -557,11 +552,6 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
     [activeSpec, bisLists, className],
   );
 
-  const handleClose = useCallback(() => {
-    hideExternalWowTooltips();
-    onClose();
-  }, [onClose]);
-
   useEffect(() => () => hideExternalWowTooltips(), []);
 
   const saveListForm = (
@@ -698,53 +688,19 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   );
 
   return (
-    <Paper variant="outlined" sx={{ p: { xs: 1.25, sm: 1.5 } }}>
-      <Stack spacing={1.25}>
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{ alignItems: "flex-start", justifyContent: "space-between" }}
-        >
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
-              {t("bisPanel.title")}
-            </Typography>
-            <Tooltip title={t("bisPanel.helpTooltip")} placement="bottom-start">
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{
-                  display: "block",
-                  lineHeight: 1.35,
-                  cursor: "help",
-                }}
-              >
-                {t("bisPanel.layoutHint")}
-              </Typography>
-            </Tooltip>
-          </Box>
-          <IconButton
-            size="small"
-            aria-label={t("bisPanel.closeAria")}
-            onClick={handleClose}
-            sx={{ mt: -0.25, mr: -0.5 }}
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </Stack>
-
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              md: "13rem minmax(0, 1fr) 14rem",
-              lg: "14.5rem minmax(0, 1fr) 16rem",
-            },
-            gap: { xs: 1.5, md: 2 },
-            alignItems: "start",
-          }}
-        >
+    <Stack spacing={1.25}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            md: "13rem minmax(0, 1fr) 14rem",
+            lg: "14.5rem minmax(0, 1fr) 16rem",
+          },
+          gap: { xs: 1.5, md: 2 },
+          alignItems: "start",
+        }}
+      >
           <Stack
             spacing={1.25}
             sx={{
@@ -833,12 +789,11 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
             <Typography variant="overline" sx={{ lineHeight: 1.2, color: "text.secondary" }}>
               {t("bisPanel.lists")}
             </Typography>
-            {presetsSidebar}
-          </Stack>
-        </Box>
+          {presetsSidebar}
+        </Stack>
+      </Box>
 
-        {error ? <FormErrorMessage message={error} /> : null}
-      </Stack>
-    </Paper>
+      {error ? <FormErrorMessage message={error} /> : null}
+    </Stack>
   );
 }

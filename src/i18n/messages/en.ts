@@ -66,6 +66,7 @@ export const enMessages = {
   characterForm: {
     title: "New character",
     addCharacter: "Add character",
+    closeAria: "Close add character panel",
     main: "Main",
     off: "Off",
     gearScore: "Gear score",
@@ -74,6 +75,7 @@ export const enMessages = {
   dungeonForm: {
     title: "New dungeon",
     addDungeon: "Add dungeon",
+    closeAria: "Close add dungeon panel",
     shortName: "Short name",
     shortNameHelper:
       "Optional abbreviation shown in compact table view. Leave blank to use a default for known raids.",
@@ -148,6 +150,7 @@ export const enMessages = {
   },
   exportPanel: {
     title: "Export",
+    closeAria: "Close export panel",
     instructions:
       "Filter dungeons with the table search, then copy lines below — one per matching raid listing characters still without CD (toggle off). Check which specs to include for each character.",
     noCharacters: "Add a character to build a status summary.",
