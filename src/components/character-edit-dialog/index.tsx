@@ -93,7 +93,9 @@ function CharacterEditDialogContent({
   const handleMainGearItemsChange = useCallback(
     (gearItems: CharacterGearItem[] | undefined) => {
       setMainGearItems(gearItems);
-      setMainGearLoadedForSpec(mainSpec);
+      setMainGearLoadedForSpec(
+        gearItems && gearItems.length > 0 ? mainSpec : "",
+      );
     },
     [mainSpec],
   );
@@ -101,7 +103,9 @@ function CharacterEditDialogContent({
   const handleOffGearItemsChange = useCallback(
     (gearItems: CharacterGearItem[] | undefined) => {
       setOffGearItems(gearItems);
-      setOffGearLoadedForSpec(offSpec);
+      setOffGearLoadedForSpec(
+        gearItems && gearItems.length > 0 ? offSpec : "",
+      );
     },
     [offSpec],
   );

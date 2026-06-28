@@ -53,6 +53,13 @@ export function CharacterSpecGearImportSection({
     [gearItems],
   );
 
+  const handleClearGear = useCallback(() => {
+    onClearError();
+    setImportNotice("");
+    setWowsimsImportText("");
+    onGearItemsChange(undefined);
+  }, [onClearError, onGearItemsChange]);
+
   const handleImportGear = useCallback(() => {
     onClearError();
     setImportNotice("");
@@ -158,7 +165,12 @@ export function CharacterSpecGearImportSection({
           },
         }}
       />
-      <Box>
+      <Stack
+        direction="row"
+        spacing={1}
+        useFlexGap
+        sx={{ flexWrap: "wrap" }}
+      >
         <Button
           type="button"
           variant="outlined"
@@ -167,7 +179,17 @@ export function CharacterSpecGearImportSection({
         >
           {t("characterEdit.importButton")}
         </Button>
-      </Box>
+        {storedGearSummary ? (
+          <Button
+            type="button"
+            variant="outlined"
+            color="error"
+            onClick={handleClearGear}
+          >
+            {t("characterEdit.clearGearButton")}
+          </Button>
+        ) : null}
+      </Stack>
       {importNotice ? (
         <Typography variant="body2" color="success.main">
           {importNotice}

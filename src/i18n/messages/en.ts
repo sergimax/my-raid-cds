@@ -102,6 +102,7 @@ export const enMessages = {
     wseHelper:
       "Imports equipped items (item ids, enchants, gems)",
     importButton: "Import gear",
+    clearGearButton: "Clear gear",
     importedSummary: "Imported {{summary}}.",
     importedSpec: "Spec: {{spec}}.",
   },
