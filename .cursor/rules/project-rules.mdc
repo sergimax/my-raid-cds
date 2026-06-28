@@ -130,6 +130,8 @@ src/
 └── vite-env.d.ts # __APP_VERSION__ declaration
 
 scripts/ # build-wow-data.mjs, bis-preset-format.mjs, comment-bis-presets.mjs, resolve-bis-sources.mjs, bis-list-sources.md, titans-bis/ (generate.mjs, parse.mjs, source.md), wow-item-gear-slots.mjs, wowsims-db.json
+
+docs/ # roadmap.md (future feature ideas; stat-aware gear hints)
 ```
 
 Colocate tests as `*.test.ts` / `*.test.tsx` beside the module under test; use `src/test/fixtures.ts` for sample characters/dungeons/toggles and `renderWithTheme` for MUI component tests.

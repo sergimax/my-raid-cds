@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.26.0] - 2026-06-27
+
+### Added
+
+- **Gear upgrade hints — dual tracks:** Toggle cells use **amber** for missing BiS-list targets (priority) and **dungeon ilvl-tier color** for possible higher-ilvl raid loot; tooltips list BiS gaps and ilvl suggestions separately.
+- **Roadmap:** `docs/roadmap.md` for future feature ideas (e.g. stat-aware class/spec loot filtering).
+
+### Changed
+
+- **Ilvl upgrade tooltips:** Copy uses “may have” wording and notes that only equipability is checked (item stats not validated).
+
 ## [1.25.0] - 2026-06-27
 
 ### Added
