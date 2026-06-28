@@ -1,3 +1,4 @@
+import { RaidBossNames } from "../data/raid-boss-names.ts";
 import { RaidNames, type RaidKey } from "../data/raid-names.ts";
 import { ClassSpecNames } from "../data/class-specs.ts";
 import { ClassName, type ClassName as ClassNameType } from "../types/characters.ts";
@@ -68,6 +69,18 @@ export function getLocalizedClassName(
   locale: AppLocale,
 ): string {
   return locale === "ru" ? classNamesRu[className] : className;
+}
+
+/** WowSims drop boss label (`wotlk-item-drop-sources.json` `b` field). */
+export function getLocalizedBossName(
+  bossNameEn: string,
+  locale: AppLocale,
+): string {
+  const entry = RaidBossNames[bossNameEn];
+  if (!entry) {
+    return bossNameEn;
+  }
+  return locale === "ru" ? entry.ru : entry.en;
 }
 
 export function getLocalizedSpecName(

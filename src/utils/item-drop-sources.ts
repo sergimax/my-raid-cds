@@ -2,7 +2,10 @@ import type { ItemDropSource } from "../data/item-drop-sources.ts";
 import { getItemDropSources } from "../data/item-drop-sources.ts";
 import { RaidNames } from "../data/raid-names.ts";
 import type { AppLocale } from "../i18n/types.ts";
-import { getLocalizedDungeonDisplayName } from "../i18n/localized-domain.ts";
+import {
+  getLocalizedBossName,
+  getLocalizedDungeonDisplayName,
+} from "../i18n/localized-domain.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import { formatDungeonExportLabel } from "./format-dungeon-label.ts";
 import { resolveDungeonRaidKey } from "./resolve-dungeon-raid-key.ts";
@@ -54,7 +57,7 @@ export function formatItemDropSource(
   locale: AppLocale,
 ): FormattedItemDropSource {
   return {
-    bossName: source.bossName,
+    bossName: getLocalizedBossName(source.bossName, locale),
     raidLabel: formatRaidLabelForSource(source, locale),
     source,
   };
@@ -121,7 +124,7 @@ export function groupBisItemIdsByBossForDungeon(
 
     for (const source of matchingSources) {
       const formatted = formatItemDropSource(source, locale);
-      const key = bossGroupKey(formatted.bossName);
+      const key = bossGroupKey(source.bossName);
       const existing = groups.get(key);
       if (existing) {
         if (!existing.itemIds.includes(itemId)) {
