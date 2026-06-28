@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.29.0] - 2026-06-27
+
+### Added
+
+- **Stat-aware ilvl upgrade hints:** Generic ilvl track filters raid loot by spec-relevant stats (GearScore2-inspired weights in `spec-stat-priorities.ts`, scoring in `item-stat-fit.ts`; bundled `wotlk-item-stats.json` from `build:wow-data`).
+- **BiS normal/heroic variants:** Same English name + slot (e.g. ICC Astrylian belt N/H) count as satisfying BiS targets and appear as a separate **normal variants** tooltip section when the heroic id is on the list.
+- **Gear hint tooltip — three tiers:** Exact BiS boss loot, normal BiS variants, and a short ilvl summary (plus tier set tokens on ICC/ToC token rows).
+
+### Changed
+
+- **Toggle cell tints:** **Amber** (3 intensities) for missing BiS exact or variant targets; **blue** (3 intensities) for other ilvl upgrades — no longer tied to dungeon ilvl-tier colors on cells.
+- **Dungeon table styling:** Name and ilvl columns use plain typography; ilvl-tier colors remain on item links only.
+- **Gear hint tooltip:** Boss-grouped BiS lists show **missing** items only, inline per boss with a scroll cap; summary lines shortened (BiS counts omitted when boss lists are shown).
+- **Item links:** Render inline so alternatives and tooltip loot no longer stack one item per line.
+- **`build:wow-data`:** Also emits sparse item stat bundles (`wotlk-item-stats.json`).
+
 ## [1.28.0] - 2026-06-27
 
 ### Added
