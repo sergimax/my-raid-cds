@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
-import { useScrollIntoViewOnMount } from "../../hooks/use-scroll-into-view-on-mount.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import {
@@ -94,7 +93,6 @@ export function ExportPanel({
   onClose,
 }: ExportPanelProps) {
   const { t, locale } = useTranslation();
-  const panelRef = useScrollIntoViewOnMount<HTMLDivElement>();
   const [exportSpecSelectionByCharacterId, setExportSpecSelectionByCharacterId] =
     useState<Record<string, StoredExportSpecSelection>>({});
 
@@ -156,7 +154,7 @@ export function ExportPanel({
   };
 
   return (
-    <Box ref={panelRef}>
+    <Box>
       <Typography variant="subtitle1" sx={{ mb: 1 }}>
         {t("exportPanel.title")}
       </Typography>

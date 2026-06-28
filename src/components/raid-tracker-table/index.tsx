@@ -1,6 +1,7 @@
 import { Stack, Table, TableBody, TableContainer } from "@mui/material";
 import { memo, useCallback, useMemo, useState } from "react";
 import { ExportPanel } from "../export-panel/index.tsx";
+import { TrackerToolbarPanel } from "../tracker-toolbar-panel/index.tsx";
 import { CharacterEditDialog } from "../character-edit-dialog/index.tsx";
 import { DungeonEditDialog } from "../dungeon-edit-dialog/index.tsx";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
@@ -100,13 +101,14 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
   return (
     <Stack spacing={2}>
       {showExportPanel ? (
-        <ExportPanel
-          key="export-panel"
-          characters={characters}
-          visibleDungeons={sortedDungeons}
-          dungeonToggles={dungeonToggles}
-          onClose={closeExportPanel}
-        />
+        <TrackerToolbarPanel panelId="export">
+          <ExportPanel
+            characters={characters}
+            visibleDungeons={sortedDungeons}
+            dungeonToggles={dungeonToggles}
+            onClose={closeExportPanel}
+          />
+        </TrackerToolbarPanel>
       ) : null}
       <TableContainer sx={{ overflowX: "auto" }}>
         <Table

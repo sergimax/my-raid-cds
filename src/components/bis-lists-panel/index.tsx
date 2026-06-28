@@ -30,7 +30,6 @@ import {
   getLocalizedSpecName,
 } from "../../i18n/localized-domain.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
-import { useScrollIntoViewOnMount } from "../../hooks/use-scroll-into-view-on-mount.ts";
 import { Classes, ClassName, type ClassName as ClassNameType } from "../../types/characters.ts";
 import type { BisListPreset, BisListSlot } from "../../types/bis-lists.ts";
 import {
@@ -339,7 +338,6 @@ function BisSlotRow({
 
 export function BisListsPanel({ onClose }: BisListsPanelProps) {
   const { t, locale } = useTranslation();
-  const panelRef = useScrollIntoViewOnMount<HTMLDivElement>();
   const bisLists = useBisListsContext();
   const [className, setClassName] = useState<ClassNameType>(ClassName.DeathKnight);
   const [spec, setSpec] = useState("Unholy");
@@ -700,7 +698,7 @@ export function BisListsPanel({ onClose }: BisListsPanelProps) {
   );
 
   return (
-    <Paper ref={panelRef} variant="outlined" sx={{ p: { xs: 1.25, sm: 1.5 } }}>
+    <Paper variant="outlined" sx={{ p: { xs: 1.25, sm: 1.5 } }}>
       <Stack spacing={1.25}>
         <Stack
           direction="row"
