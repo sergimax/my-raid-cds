@@ -32,4 +32,24 @@ describe("TrackerToolbarPanel", () => {
     );
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it("applies maxWidth to the outlined card when provided", () => {
+    window.scrollTo = vi.fn();
+
+    render(
+      <TrackerToolbarPanel
+        panelId="character"
+        title="New character"
+        closeAriaLabel="Close"
+        onClose={vi.fn()}
+        maxWidth={480}
+      >
+        <div>Form body</div>
+      </TrackerToolbarPanel>,
+      { wrapper: TestProviders },
+    );
+
+    const panel = screen.getByText("New character").closest("[data-toolbar-panel]");
+    expect(panel).toHaveStyle({ maxWidth: "480px" });
+  });
 });

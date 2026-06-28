@@ -151,7 +151,7 @@ export function ExportPanel({
   };
 
   return (
-    <Stack spacing={2} sx={{ maxWidth: 640 }}>
+    <Stack spacing={2}>
       {characters.length > 0 ? (
           <Stack spacing={1}>
             {characters.map((character) => {

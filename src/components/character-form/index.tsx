@@ -35,7 +35,7 @@ export function CharacterForm({
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <Stack spacing={2} sx={{ maxWidth: 480 }}>
+      <Stack spacing={2}>
         <TextField
           label={t("common.name")}
           name="characterName"
