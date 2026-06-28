@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.24.0] - 2026-06-27
+
+### Added
+
+- **BiS panel — class/spec icons:** Class and spec dropdowns show WoW class and talent icons (same `ClassOptionLabel` / `SpecOptionLabel` as the character form).
+- **Edit character — class/spec icons:** Class row under the character name, spec dropdowns, and WowSimsExporter import section headers show matching icons.
+
+### Changed
+
+- **BiS panel layout:** Wider class/spec column so icon + localized labels do not overlap the select arrow.
+- **Character edit copy:** Gear score helper and WowSimsExporter import hints updated (EN/RU).
+- **Feral Druid (RU):** In-game spec label updated to «Сила зверя».
+
+### Fixed
+
+- **BiS panel — Warrior / Rogue:** Selecting classes whose default spec has no built-in list no longer crashes the app (custom-list hint path uses localization helpers again).
+
 ## [1.23.0] - 2026-06-27
 
 ### Added
