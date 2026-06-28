@@ -125,7 +125,10 @@ export function CharacterSpecGearImportSection({
                 })
               : ""}
           </Typography>
-          <Box component="ul" sx={{ m: 0, pl: 2.5 }}>
+          <Box
+            component="ul"
+            sx={{ m: 0, pl: 2.5, maxHeight: 160, overflowY: "auto" }}
+          >
             {sortedGearItems.map((item) => (
               <Typography
                 key={`${item.slot}-${item.id}`}

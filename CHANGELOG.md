@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Character edit dialog:** Main and off spec in side-by-side columns (spec, gear score, stored gear, WowSims import each); wider dialog; compact JSON paste field; gear lists scroll with the dialog instead of nested panes; off spec column always shown.
+- **Character edit dialog:** Main and off spec in side-by-side columns (spec, gear score, stored gear, WowSims import each); wider dialog; compact JSON paste field; stored gear lists scroll within a bounded pane per column; off spec column always shown.
 
 ## [1.27.0] - 2026-06-27
 
