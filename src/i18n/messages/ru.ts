@@ -72,7 +72,7 @@ export const ruMessages: Messages = {
     main: "Основной",
     off: "Второй",
     gearScore: "GearScore",
-    gearScoreHelper: "Необязательно — из аддона GearScore",
+    gearScoreHelper: "Значение GearScore персонажа",
   },
   dungeonForm: {
     title: "Новое подземелье",
@@ -92,7 +92,7 @@ export const ruMessages: Messages = {
   },
   characterEdit: {
     title: "Изменить персонажа",
-    importGear: "Импорт экипировки из WowSimsExporter",
+    importGear: "Импорт экипировки из аддона WowSimsExporter (экспорт /wse export)",
     mainSpecGear: "Экипировка основного спека",
     offSpecGear: "Экипировка второго спека",
     storedGear: "Сохранённая экипировка",
@@ -101,7 +101,7 @@ export const ruMessages: Messages = {
     wseJson: "JSON WowSimsExporter",
     wsePlaceholder: "Вставьте вывод /wse export",
     wseHelper:
-      "Импортирует экипировку (id, зачарования, камни). GearScore вручную.",
+      "Импортирует экипировку (id, зачарования, камни)",
     importButton: "Импорт экипировки",
     importedSummary: "Импортировано: {{summary}}.",
     importedSpec: "Спек: {{spec}}.",
