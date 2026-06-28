@@ -313,7 +313,30 @@ describe("formatGearUpgradeHintTooltip", () => {
     expect(tooltip).toContain("1 BiS slot(s) missing targets");
     expect(tooltip).toContain("Up to 2 slot(s) may have higher-ilvl raid loot");
     expect(tooltip).toContain("Equipable for your class/spec only");
-    expect(tooltip).toContain("Trinket 1");
+    expect(tooltip).toContain("Neck");
     expect(tooltip).toContain("→");
+    expect(tooltip).not.toContain("Trinket 1");
+  });
+
+  it("omits BiS slot list when boss-grouped loot covers missing targets", () => {
+    const tooltip = formatGearUpgradeHintTooltip(
+      {
+        bis: {
+          level: 2,
+          upgradeSlotCount: 1,
+          upgradeSlots: [{ slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 }],
+        },
+        ilvl: emptyTrack,
+        equippedCount: 17,
+        peakDungeonItemLevel: 284,
+        slotAware: true,
+        bisListActive: true,
+      },
+      "en",
+      testTranslator,
+      { listBisMissingSlots: false },
+    );
+
+    expect(tooltip).toBe("");
   });
 });

@@ -4,8 +4,9 @@ import {
 } from "@mui/material";
 import type { ItemTooltipLocale } from "../../constants/item-tooltips.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
-import { getLocalizedGearSlotLabel, getLocalizedSpecName } from "../../i18n/localized-domain.ts";
+import { getLocalizedGearSlotLabel } from "../../i18n/localized-domain.ts";
 import type { ClassName } from "../../types/characters.ts";
+import { SpecOptionLabel } from "../spec-option-label/index.tsx";
 import { WowItemAlternatives, WowItemLink } from "../wow-item-link/index.tsx";
 import { formatGearUpgradeHintTooltip } from "../../utils/gear-upgrade-hint.ts";
 import {
@@ -26,19 +27,26 @@ function BisBossLootSection({
   groups,
   t,
   marginBottom,
+  missingSlotCount,
 }: {
   groups: readonly BossBisLootGroup[];
   t: TranslateFn;
   marginBottom: number;
+  missingSlotCount?: number;
 }) {
   if (groups.length === 0) {
     return null;
   }
 
+  const sectionTitle =
+    missingSlotCount !== undefined && missingSlotCount > 0
+      ? t("gearHint.bisMissing", { count: missingSlotCount })
+      : t("gearHint.bisBossLoot");
+
   return (
     <Box sx={{ mb: marginBottom }}>
       <Typography variant="caption" component="p" sx={{ fontWeight: 600, mb: 0.5 }}>
-        {t("gearHint.bisBossLoot")}
+        {sectionTitle}
       </Typography>
       {groups.map((group) => (
         <Box key={group.bossName} sx={{ mb: 0.5, "&:last-child": { mb: 0 } }}>
@@ -65,13 +73,16 @@ function SpecGearHintSection({
   locale: ItemTooltipLocale;
   t: TranslateFn;
 }) {
-  const gearSummary = formatGearUpgradeHintTooltip(specHint.gearHint, locale, t);
-  const tokenRows = aggregateTierSetTokenNeeds(specHint.tierSetHint.tokenNeeds);
   const bossLootGroups = specHint.bisBossLootGroups;
-  const specLabel =
-    characterClassName !== undefined
-      ? getLocalizedSpecName(characterClassName, specHint.specGear.spec, locale)
-      : specHint.specGear.spec;
+  const specName = specHint.specGear.spec;
+
+  const gearSummary = formatGearUpgradeHintTooltip(
+    specHint.gearHint,
+    locale,
+    t,
+    { listBisMissingSlots: bossLootGroups.length === 0 },
+  );
+  const tokenRows = aggregateTierSetTokenNeeds(specHint.tierSetHint.tokenNeeds);
 
   if (!gearSummary && tokenRows.length === 0 && bossLootGroups.length === 0) {
     return null;
@@ -81,9 +92,27 @@ function SpecGearHintSection({
 
   return (
     <Box sx={{ mb: 1, "&:last-child": { mb: 0 } }}>
-      <Typography variant="caption" component="p" sx={{ fontWeight: 600, mb: 0.5 }}>
-        {specLabel}
-      </Typography>
+      {characterClassName !== undefined ? (
+        <Box
+          sx={{
+            mb: 0.5,
+            "& .MuiTypography-root": { fontWeight: 600, color: "inherit" },
+          }}
+        >
+          <SpecOptionLabel
+            className={characterClassName}
+            spec={specName}
+            gearScore={specHint.specGear.gearScore}
+            iconSize={16}
+            variant="caption"
+            color="inherit"
+          />
+        </Box>
+      ) : (
+        <Typography variant="caption" component="p" sx={{ fontWeight: 600, mb: 0.5 }}>
+          {specName}
+        </Typography>
+      )}
       {gearSummary ? (
         <Typography
           variant="caption"
@@ -102,6 +131,11 @@ function SpecGearHintSection({
         groups={bossLootGroups}
         t={t}
         marginBottom={sectionMarginBelowBossLoot}
+        missingSlotCount={
+          specHint.gearHint.bis.level > 0
+            ? specHint.gearHint.bis.upgradeSlotCount
+            : undefined
+        }
       />
 
       {tokenRows.length > 0 ? (

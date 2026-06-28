@@ -387,7 +387,21 @@ function formatHintTrackTooltip(
   hint: GearUpgradeHint,
   locale: ItemTooltipLocale,
   t: TranslateFn,
+  listSlots: boolean,
 ): string {
+  const intro =
+    introKey === "gearHint.belowIlvl"
+      ? t(introKey, {
+          count: track.upgradeSlotCount,
+          total: hint.equippedCount,
+          ilvl: hint.peakDungeonItemLevel,
+        })
+      : t(introKey, { count: track.upgradeSlotCount });
+
+  if (!listSlots) {
+    return `${intro}\n${t("gearHint.ilvlEquipableOnly")}`;
+  }
+
   const slotLabels = track.upgradeSlots.map((slotHint) =>
     formatUpgradeSlotLabel(slotHint, locale, t),
   );
@@ -398,33 +412,28 @@ function formatHintTrackTooltip(
       ? `${visibleLabels.join(", ")} ${t("gearHint.moreSlots", { count: remainingCount })}`
       : visibleLabels.join(", ");
 
-  const intro =
-    introKey === "gearHint.belowIlvl"
-      ? t(introKey, {
-          count: track.upgradeSlotCount,
-          total: hint.equippedCount,
-          ilvl: hint.peakDungeonItemLevel,
-        })
-      : t(introKey, { count: track.upgradeSlotCount });
-
-  const body = `${intro}: ${slotSummary}`;
-  if (introKey === "gearHint.bisMissing") {
-    return body;
-  }
-
-  return `${body}\n${t("gearHint.ilvlEquipableOnly")}`;
+  return `${intro}: ${slotSummary}`;
 }
 
 export function formatGearUpgradeHintTooltip(
   hint: GearUpgradeHint,
   locale: ItemTooltipLocale = "en",
   t: TranslateFn,
+  options: { listBisMissingSlots?: boolean } = {},
 ): string {
   const parts: string[] = [];
+  const listBisMissingSlots = options.listBisMissingSlots !== false;
 
-  if (hint.bisListActive && hint.bis.level > 0) {
+  if (hint.bisListActive && hint.bis.level > 0 && listBisMissingSlots) {
     parts.push(
-      formatHintTrackTooltip(hint.bis, "gearHint.bisMissing", hint, locale, t),
+      formatHintTrackTooltip(
+        hint.bis,
+        "gearHint.bisMissing",
+        hint,
+        locale,
+        t,
+        true,
+      ),
     );
   }
 
@@ -432,7 +441,9 @@ export function formatGearUpgradeHintTooltip(
     const introKey = hint.slotAware
       ? "gearHint.raidLootUpgrades"
       : "gearHint.belowIlvl";
-    parts.push(formatHintTrackTooltip(hint.ilvl, introKey, hint, locale, t));
+    parts.push(
+      formatHintTrackTooltip(hint.ilvl, introKey, hint, locale, t, false),
+    );
   }
 
   return parts.join("\n");
