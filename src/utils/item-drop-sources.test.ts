@@ -47,6 +47,18 @@ describe("item-drop-sources", () => {
     ]);
   });
 
+  it("localizes boss names for RU locale", () => {
+    expect(formatItemDropSourceLine(
+      getFormattedItemDropSources(54581, "ru")[0]!.source,
+      "ru",
+    )).toBe("РС25хм · Халион");
+
+    expect(formatItemDropSourceLine(
+      getFormattedItemDropSources(50014, "ru")[0]!.source,
+      "ru",
+    )).toBe("ЦЛК25 · Саурфанг Смертоносный");
+  });
+
   it("returns empty groups when dungeon raid does not match item sources", () => {
     const groups = groupBisItemIdsByBossForDungeon(
       [54581],
