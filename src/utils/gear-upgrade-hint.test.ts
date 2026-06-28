@@ -10,9 +10,11 @@ import {
   evaluateGearUpgradeHint,
   formatGearUpgradeHintTooltip,
   getDungeonPeakItemLevel,
+  getGearHintCellBackgroundColor,
   getGearHintCellDisplay,
   type GearUpgradeHintTrack,
 } from "./gear-upgrade-hint.ts";
+import { createAppTheme } from "../theme/create-app-theme.ts";
 import { parseWowSimsExporterJson } from "./parse-wowsims-exporter.ts";
 
 const RHEE_EXPORT = JSON.stringify({
@@ -440,5 +442,23 @@ describe("formatGearUpgradeHintTooltip", () => {
     expect(tooltip).toContain("spec-relevant stats");
     expect(tooltip).toContain("Neck");
     expect(tooltip).toContain("→");
+  });
+
+  it("uses amber for BiS and blue for ilvl toggle cell tints with stronger levels", () => {
+    const theme = createAppTheme("light");
+
+    const bisLow = getGearHintCellBackgroundColor({ kind: "bis", level: 1 }, theme);
+    const bisHigh = getGearHintCellBackgroundColor({ kind: "bis", level: 3 }, theme);
+    const ilvlLow = getGearHintCellBackgroundColor({ kind: "ilvl", level: 1 }, theme);
+    const ilvlHigh = getGearHintCellBackgroundColor({ kind: "ilvl", level: 3 }, theme);
+
+    expect(bisLow).toMatch(/^rgba\(.*\)$/);
+    expect(bisHigh).toMatch(/^rgba\(.*\)$/);
+    expect(ilvlLow).toMatch(/^rgba\(.*\)$/);
+    expect(ilvlHigh).toMatch(/^rgba\(.*\)$/);
+    expect(bisLow).not.toEqual(ilvlLow);
+    expect(bisHigh).not.toEqual(ilvlHigh);
+    expect(bisLow).not.toEqual(bisHigh);
+    expect(ilvlLow).not.toEqual(ilvlHigh);
   });
 });
