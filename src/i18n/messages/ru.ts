@@ -105,6 +105,7 @@ export const ruMessages: Messages = {
     wseHelper:
       "Импортирует экипировку (id, зачарования, камни)",
     importButton: "Импорт экипировки",
+    clearGearButton: "Очистить экипировку",
     importedSummary: "Импортировано: {{summary}}.",
     importedSpec: "Спек: {{spec}}.",
   },
