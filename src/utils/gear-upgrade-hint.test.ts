@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ClassName } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
 import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
+import { retributionPaladinBis } from "../data/bis-presets/retribution-paladin.ts";
 import { createTestDungeon } from "../test/fixtures.ts";
 import { testTranslator } from "../test/i18n.ts";
 import { buildBisSlotMap } from "./bis-lists.ts";
@@ -281,6 +282,82 @@ describe("evaluateGearUpgradeHint", () => {
     const rangedHint = hint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 16);
     expect(rangedHint?.bestLootItemId).not.toBe(49981);
     expect(rangedHint?.bestLootItemId).not.toBe(50733);
+  });
+
+  it("flags BiS heroic belt on ICC25H when equipped belt is 264", () => {
+    const bisSlotMap = buildBisSlotMap(retributionPaladinBis.presets[0]);
+    const equipContext = { className: ClassName.Paladin, spec: "Retribution" };
+
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 7, id: 50995 }],
+      {
+        name: "ICC25H",
+        raidKey: "icecrownCitadel",
+        itemLevel: [277, 284],
+      },
+      bisSlotMap,
+      equipContext,
+    );
+
+    expect(hint.bis.upgradeSlotCount).toBe(1);
+    expect(hint.bis.upgradeSlots[0]?.bestLootItemId).toBe(50707);
+  });
+
+  it("flags BiS normal belt variant on ICC25N when equipped belt is below tier", () => {
+    const bisSlotMap = buildBisSlotMap(retributionPaladinBis.presets[0]);
+    const equipContext = { className: ClassName.Paladin, spec: "Retribution" };
+
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 7, id: 50778 }],
+      {
+        name: "ICC25N",
+        raidKey: "icecrownCitadel",
+        itemLevel: [264],
+      },
+      bisSlotMap,
+      equipContext,
+    );
+
+    expect(hint.bis.upgradeSlotCount).toBe(1);
+    expect(hint.bis.upgradeSlots[0]?.bestLootItemId).toBe(50067);
+    expect(hint.ilvl.upgradeSlots[0]?.bestLootItemId).toBe(50067);
+  });
+
+  it("does not flag belt when the normal BiS name variant is already equipped", () => {
+    const bisSlotMap = buildBisSlotMap(retributionPaladinBis.presets[0]);
+    const equipContext = { className: ClassName.Paladin, spec: "Retribution" };
+
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 7, id: 50067 }],
+      {
+        name: "ICC25N",
+        raidKey: "icecrownCitadel",
+        itemLevel: [264],
+      },
+      bisSlotMap,
+      equipContext,
+    );
+
+    expect(hint.bis.upgradeSlotCount).toBe(0);
+  });
+
+  it("flags same-ilvl BiS normal variant when heroic id is on the list", () => {
+    const bisSlotMap = buildBisSlotMap(retributionPaladinBis.presets[0]);
+    const equipContext = { className: ClassName.Paladin, spec: "Retribution" };
+
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 7, id: 50995 }],
+      {
+        name: "ICC25N",
+        raidKey: "icecrownCitadel",
+        itemLevel: [264],
+      },
+      bisSlotMap,
+      equipContext,
+    );
+
+    expect(hint.bis.upgradeSlotCount).toBe(1);
+    expect(hint.bis.upgradeSlots[0]?.bestLootItemId).toBe(50067);
   });
 });
 

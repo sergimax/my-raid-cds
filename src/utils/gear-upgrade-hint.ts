@@ -4,6 +4,10 @@ import { alpha } from "@mui/material/styles";
 import type { ItemTooltipLocale } from "../constants/item-tooltips.ts";
 import { getLocalizedGearSlotLabel } from "../i18n/localized-domain.ts";
 import type { TranslateFn } from "../i18n/translate.ts";
+import {
+  expandItemIdsWithNameVariantsAtSlot,
+  isItemIdOrNameVariantAtSlot,
+} from "../data/bis-item-variants.ts";
 import { getRaidLootItemIdsForTier } from "../data/raid-loot.ts";
 import { getWotlkItemLevel } from "../data/wotlk-item-levels.ts";
 import { getWotlkItemName } from "../data/wotlk-item-names.ts";
@@ -100,18 +104,37 @@ function isSlotUpgradeableNaive(
   return itemLevel === undefined || itemLevel < peakDungeonItemLevel;
 }
 
+type PickBestLootOptions = {
+  filterBySpecStats?: boolean;
+  /** Prefer these ids when item levels tie (e.g. BiS normal/heroic name variants). */
+  preferredItemIds?: readonly number[];
+};
+
 function pickBestLootItemId(
   itemIds: readonly number[],
   gearSlot: number,
   equipContext: CharacterEquipContext,
+  options?: PickBestLootOptions,
 ): number | undefined {
-  const usableItemIds = filterUsableLootItemIds(itemIds, gearSlot, equipContext);
+  const usableItemIds = filterUsableLootItemIds(itemIds, gearSlot, equipContext, options);
+  const preferredItemIds = options?.preferredItemIds;
   let bestItemId: number | undefined;
   let bestItemLevel = -1;
 
   for (const itemId of usableItemIds) {
     const itemLevel = getWotlkItemLevel(itemId);
-    if (itemLevel !== undefined && itemLevel > bestItemLevel) {
+    if (itemLevel === undefined) {
+      continue;
+    }
+
+    const isPreferred = preferredItemIds?.includes(itemId) ?? false;
+    const bestIsPreferred =
+      bestItemId !== undefined && (preferredItemIds?.includes(bestItemId) ?? false);
+
+    if (
+      itemLevel > bestItemLevel ||
+      (itemLevel === bestItemLevel && isPreferred && !bestIsPreferred)
+    ) {
       bestItemLevel = itemLevel;
       bestItemId = itemId;
     }
@@ -143,22 +166,34 @@ function isSlotUpgradeableWithLoot(
   dungeonItemLevels: readonly number[],
   equipContext: CharacterEquipContext,
   bisItemIdsForSlot?: readonly number[],
+  preferredLootItemIds?: readonly number[],
 ): GearUpgradeSlotHint | null {
+  const isBisTrack = bisItemIdsForSlot !== undefined;
+  const expandedBisItemIds =
+    isBisTrack && bisItemIdsForSlot
+      ? expandItemIdsWithNameVariantsAtSlot(bisItemIdsForSlot, item.slot)
+      : undefined;
+
   const raidLootIds = filterUsableLootItemIds(
     getRaidLootItemIdsForTier(raidKey, item.slot, dungeonItemLevels),
     item.slot,
     equipContext,
-    { filterBySpecStats: bisItemIdsForSlot === undefined },
+    { filterBySpecStats: !isBisTrack },
   );
 
   const relevantLootIds =
-    bisItemIdsForSlot !== undefined
-      ? raidLootIds.filter((itemId) => bisItemIdsForSlot.includes(itemId))
+    expandedBisItemIds !== undefined
+      ? raidLootIds.filter((itemId) => expandedBisItemIds.includes(itemId))
       : raidLootIds;
 
   if (relevantLootIds.length === 0) {
     return null;
   }
+
+  const pickOptions: PickBestLootOptions = {
+    filterBySpecStats: !isBisTrack,
+    preferredItemIds: preferredLootItemIds ?? expandedBisItemIds,
+  };
 
   const bestLootItemLevel = pickBestLootItemLevel(
     relevantLootIds,
@@ -169,14 +204,19 @@ function isSlotUpgradeableWithLoot(
     return null;
   }
 
-  if (bisItemIdsForSlot !== undefined) {
-    if (bisItemIdsForSlot.includes(item.id)) {
+  if (isBisTrack && bisItemIdsForSlot) {
+    if (isItemIdOrNameVariantAtSlot(item.id, bisItemIdsForSlot, item.slot)) {
       return null;
     }
 
     return {
       slot: item.slot,
-      bestLootItemId: pickBestLootItemId(relevantLootIds, item.slot, equipContext),
+      bestLootItemId: pickBestLootItemId(
+        relevantLootIds,
+        item.slot,
+        equipContext,
+        pickOptions,
+      ),
       bestLootItemLevel,
     };
   }
@@ -188,7 +228,12 @@ function isSlotUpgradeableWithLoot(
 
   return {
     slot: item.slot,
-    bestLootItemId: pickBestLootItemId(relevantLootIds, item.slot, equipContext),
+    bestLootItemId: pickBestLootItemId(
+      relevantLootIds,
+      item.slot,
+      equipContext,
+      pickOptions,
+    ),
     bestLootItemLevel,
   };
 }
@@ -260,15 +305,24 @@ function evaluateIlvlRaidLootTrack(
   dungeonItemLevels: readonly number[],
   raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
   equipContext: CharacterEquipContext,
+  bisSlotMap?: BisSlotMap,
 ): GearUpgradeHintTrack {
   const upgradeSlots: GearUpgradeSlotHint[] = [];
 
   for (const item of gearItems) {
+    const bisItemIdsForSlot = bisSlotMap?.get(item.slot);
+    const preferredLootItemIds =
+      bisItemIdsForSlot !== undefined
+        ? expandItemIdsWithNameVariantsAtSlot(bisItemIdsForSlot, item.slot)
+        : undefined;
+
     const slotHint = isSlotUpgradeableWithLoot(
       item,
       raidKey,
       dungeonItemLevels,
       equipContext,
+      undefined,
+      preferredLootItemIds,
     );
     if (slotHint) {
       upgradeSlots.push(slotHint);
@@ -332,6 +386,7 @@ export function evaluateGearUpgradeHint(
       dungeonItemLevels,
       raidKey,
       equipContext,
+      bisListActive ? bisSlotMap : undefined,
     );
 
     return {
