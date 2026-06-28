@@ -1,10 +1,5 @@
 import {
   Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Typography,
 } from "@mui/material";
 import type { ItemTooltipLocale } from "../../constants/item-tooltips.ts";
@@ -110,49 +105,29 @@ function SpecGearHintSection({
       />
 
       {tokenRows.length > 0 ? (
-        <>
+        <Box>
           <Typography variant="caption" component="p" sx={{ fontWeight: 600, mb: 0.5 }}>
             {t("tierSet.tokensFromRaid", { count: tokenRows.length })}
           </Typography>
-          <Table size="small" sx={{ "& td, & th": { border: 0, py: 0.25, px: 0.5 } }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <Typography variant="caption">{t("tierSet.tokenColumn")}</Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <Typography variant="caption">{t("tierSet.countColumn")}</Typography>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="caption">{t("tierSet.slotsColumn")}</Typography>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tokenRows.map((row) => (
-                <TableRow key={row.tokenItemId}>
-                  <TableCell>
-                    <Typography variant="caption" component="span">
-                      <WowItemLink itemId={row.tokenItemId}>
-                        {formatTierSetTokenLabel(row.tokenItemId, locale)}
-                      </WowItemLink>
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="caption">{row.count}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="caption">
-                      {row.slots
-                        .map((slot) => getLocalizedGearSlotLabel(slot, locale))
-                        .join(", ")}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </>
+          {tokenRows.map((row) => (
+            <Typography
+              key={row.tokenItemId}
+              variant="caption"
+              component="p"
+              sx={{ mb: 0.25, "&:last-child": { mb: 0 } }}
+            >
+              <WowItemLink itemId={row.tokenItemId}>
+                {formatTierSetTokenLabel(row.tokenItemId, locale)}
+              </WowItemLink>
+              {" ×"}
+              {row.count}
+              {" — "}
+              {row.slots
+                .map((slot) => getLocalizedGearSlotLabel(slot, locale))
+                .join(", ")}
+            </Typography>
+          ))}
+        </Box>
       ) : null}
     </Box>
   );
