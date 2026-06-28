@@ -13,7 +13,7 @@ export function BisItemDropSources({ itemIds, locale }: BisItemDropSourcesProps)
   }
 
   return (
-    <Box component="span" sx={{ display: "block" }}>
+    <Box component="span" sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
       {itemIds.map((itemId) => {
         const sources = getFormattedItemDropSources(itemId, locale);
         if (sources.length === 0) {
@@ -25,7 +25,7 @@ export function BisItemDropSources({ itemIds, locale }: BisItemDropSourcesProps)
             key={itemId}
             variant="caption"
             component="span"
-            sx={{ display: "block", color: "text.disabled", lineHeight: 1.35, mt: 0.25 }}
+            sx={{ display: "block", color: "text.disabled", lineHeight: 1.35 }}
           >
             {sources.map((source) => `${source.raidLabel} · ${source.bossName}`).join(" · ")}
           </Typography>
