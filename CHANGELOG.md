@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.28.0] - 2026-06-27
+
+### Added
+
+- **Character edit — clear gear:** **Clear gear** button per spec column removes imported gear for that spec (save persists the removal).
+
+### Changed
+
+- **Character edit dialog:** Main and off spec in side-by-side columns (spec, gear score, stored gear, WowSims import each); wider dialog; compact JSON paste field; gear lists scroll with the dialog instead of nested panes; off spec column always shown.
+
 ## [1.27.0] - 2026-06-27
 
 ### Added
