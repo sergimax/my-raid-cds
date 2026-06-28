@@ -310,7 +310,8 @@ describe("formatGearUpgradeHintTooltip", () => {
     );
 
     expect(tooltip).toContain("1 BiS slot(s) missing targets");
-    expect(tooltip).toContain("2 slot(s) with raid loot upgrades");
+    expect(tooltip).toContain("Up to 2 slot(s) may have higher-ilvl raid loot");
+    expect(tooltip).toContain("Equipable for your class/spec only");
     expect(tooltip).toContain("Trinket 1");
     expect(tooltip).toContain("→");
   });
