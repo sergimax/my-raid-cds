@@ -73,7 +73,6 @@ describe("DungeonForm", () => {
         onSizeChange={vi.fn()}
         onItemLevelTextChange={vi.fn()}
         onDifficultyChange={vi.fn()}
-        onCancel={vi.fn()}
         onSubmit={onSubmit}
       />,
     );
