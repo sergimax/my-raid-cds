@@ -233,7 +233,6 @@ function dropSourceKey(entry) {
 }
 
 function buildItemDropSources(dbItems, itemLevelIds) {
-  const bundledItemIds = new Set(itemLevelIds);
   const itemsById = new Map(dbItems.map((item) => [item.id, item]));
   const sourcesByItemId = {};
 
