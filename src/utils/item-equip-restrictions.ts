@@ -1,4 +1,5 @@
 import { getWotlkItemEquipProps } from "../data/wotlk-item-equip-props.ts";
+import { isItemStatUsableForSpec } from "./item-stat-fit.ts";
 import { ClassName, type ClassName as ClassNameType } from "../types/characters.ts";
 
 /** WowSims Class enum (proto/common.proto). */
@@ -302,16 +303,31 @@ export function canEquipItemForCharacter(
   return maxArmorType !== undefined && maxArmorType >= armorType;
 }
 
+export type FilterUsableLootOptions = {
+  /** Drop loot whose stats look wrong for the selected spec (ilvl hints only). */
+  filterBySpecStats?: boolean;
+};
+
 export function filterUsableLootItemIds(
   itemIds: readonly number[],
   gearSlot: number,
   context: CharacterEquipContext,
+  options?: FilterUsableLootOptions,
 ): number[] {
   if (!context.className) {
     return [...itemIds];
   }
 
-  return itemIds.filter((itemId) =>
-    canEquipItemForCharacter(itemId, gearSlot, context),
-  );
+  return itemIds.filter((itemId) => {
+    if (!canEquipItemForCharacter(itemId, gearSlot, context)) {
+      return false;
+    }
+    if (
+      options?.filterBySpecStats === true &&
+      !isItemStatUsableForSpec(itemId, context)
+    ) {
+      return false;
+    }
+    return true;
+  });
 }

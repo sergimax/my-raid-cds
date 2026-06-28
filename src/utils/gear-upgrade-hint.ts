@@ -148,6 +148,7 @@ function isSlotUpgradeableWithLoot(
     getRaidLootItemIdsForTier(raidKey, item.slot, dungeonItemLevels),
     item.slot,
     equipContext,
+    { filterBySpecStats: bisItemIdsForSlot === undefined },
   );
 
   const relevantLootIds =

@@ -167,7 +167,8 @@ export const enMessages = {
     bisMissing: "{{count}} BiS slot(s) missing targets",
     raidLootUpgrades: "Up to {{count}} slot(s) may have higher-ilvl raid loot",
     belowIlvl: "Up to {{count}} of {{total}} items may be below ilvl {{ilvl}}",
-    ilvlEquipableOnly: "Equipable for your class/spec only; stats not checked.",
+    ilvlEquipableOnly:
+      "Equipable for your class/spec; ilvl loot filtered by spec-relevant stats.",
     moreSlots: "+{{count}} more",
     slotArrow: "{{slot}} → {{item}}",
     bisBossLoot: "BiS loot in this raid",
