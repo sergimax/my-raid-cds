@@ -24,7 +24,11 @@ import { specsForClass } from "../../data/class-specs.ts";
 import { GearSlotNames } from "../../data/gear-slot-names.ts";
 import type { AppLocale } from "../../i18n/types.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
-import { getLocalizedGearSlotLabel } from "../../i18n/localized-domain.ts";
+import {
+  getLocalizedClassName,
+  getLocalizedGearSlotLabel,
+  getLocalizedSpecName,
+} from "../../i18n/localized-domain.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useScrollIntoViewOnMount } from "../../hooks/use-scroll-into-view-on-mount.ts";
 import { Classes, ClassName, type ClassName as ClassNameType } from "../../types/characters.ts";
