@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.27.0] - 2026-06-27
+
+### Added
+
+- **BiS drop sources:** Bundled boss/raid drop data (`wotlk-item-drop-sources.json`, emitted by `build:wow-data`); BiS panel shows an export-style source line under each item (e.g. `ICC25H · Lord Marrowgar`, `РС25хм · Халион`).
+- **Gear hint tooltip — boss-grouped BiS loot:** When a BiS list is active, the dungeon cell tooltip groups BiS items by boss for the matching raid row; spec sections use talent icons via `SpecOptionLabel`.
+- **Boss name localization (RU):** WowSims encounter labels map to in-game Russian boss names (`data/raid-boss-names.ts`).
+
+### Changed
+
+- **Gear hint tooltip:** Tier set tokens use compact lines instead of a table; ilvl upgrade copy omits per-slot item lists when boss-grouped BiS loot is shown; BiS missing count drives the section title when applicable.
+- **BiS panel layout:** Drop sources render on a separate line below item names; slots without raid drops stay vertically centered in the row.
+
 ## [1.26.0] - 2026-06-27
 
 ### Added
