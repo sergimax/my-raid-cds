@@ -85,10 +85,13 @@ export function evaluateCharacterGearHints(
 export function hasAnyGearHint(hints: CharacterGearHints): boolean {
   const mainActive =
     hints.main &&
-    (hints.main.gearHint.level > 0 ||
+    (hints.main.gearHint.bis.level > 0 ||
+      hints.main.gearHint.ilvl.level > 0 ||
       hints.main.tierSetHint.tokenNeeds.length > 0);
   const offActive =
     hints.off &&
-    (hints.off.gearHint.level > 0 || hints.off.tierSetHint.tokenNeeds.length > 0);
+    (hints.off.gearHint.bis.level > 0 ||
+      hints.off.gearHint.ilvl.level > 0 ||
+      hints.off.tierSetHint.tokenNeeds.length > 0);
   return Boolean(mainActive || offActive);
 }

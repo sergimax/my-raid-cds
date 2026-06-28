@@ -9,6 +9,7 @@ import {
   evaluateGearUpgradeHint,
   formatGearUpgradeHintTooltip,
   getDungeonPeakItemLevel,
+  getGearHintCellDisplay,
 } from "./gear-upgrade-hint.ts";
 import { parseWowSimsExporterJson } from "./parse-wowsims-exporter.ts";
 
@@ -37,9 +38,9 @@ const RHEE_EXPORT = JSON.stringify({
   },
 });
 
-const emptyHintExtras = {
-  slotAware: false,
-  bisFiltered: false,
+const emptyTrack = {
+  level: 0,
+  upgradeSlotCount: 0,
   upgradeSlots: [],
 } as const;
 
@@ -47,6 +48,34 @@ describe("getDungeonPeakItemLevel", () => {
   it("returns the highest ilvl in the dungeon row", () => {
     expect(getDungeonPeakItemLevel([264, 271])).toBe(271);
     expect(getDungeonPeakItemLevel([284])).toBe(284);
+  });
+});
+
+describe("getGearHintCellDisplay", () => {
+  it("prefers BiS tint when both BiS and ilvl tracks are active", () => {
+    expect(
+      getGearHintCellDisplay({
+        bis: { level: 2, upgradeSlotCount: 1, upgradeSlots: [{ slot: 1 }] },
+        ilvl: { level: 3, upgradeSlotCount: 5, upgradeSlots: [] },
+        equippedCount: 10,
+        peakDungeonItemLevel: 284,
+        slotAware: true,
+        bisListActive: true,
+      }),
+    ).toEqual({ kind: "bis", level: 2 });
+  });
+
+  it("falls back to ilvl tint when BiS list is inactive", () => {
+    expect(
+      getGearHintCellDisplay({
+        bis: emptyTrack,
+        ilvl: { level: 2, upgradeSlotCount: 3, upgradeSlots: [] },
+        equippedCount: 10,
+        peakDungeonItemLevel: 284,
+        slotAware: true,
+        bisListActive: false,
+      }),
+    ).toEqual({ kind: "ilvl", level: 2 });
   });
 });
 
@@ -59,11 +88,12 @@ describe("evaluateGearUpgradeHint", () => {
         itemLevel: [277, 284],
       }),
     ).toEqual({
-      level: 0,
-      upgradeSlotCount: 0,
+      bis: emptyTrack,
+      ilvl: emptyTrack,
       equippedCount: 0,
       peakDungeonItemLevel: 284,
-      ...emptyHintExtras,
+      slotAware: false,
+      bisListActive: false,
     });
   });
 
@@ -75,13 +105,12 @@ describe("evaluateGearUpgradeHint", () => {
         itemLevel: [264, 264],
       }),
     ).toEqual({
-      level: 0,
-      upgradeSlotCount: 0,
+      bis: emptyTrack,
+      ilvl: emptyTrack,
       equippedCount: 1,
       peakDungeonItemLevel: 264,
       slotAware: true,
-      bisFiltered: false,
-      upgradeSlots: [],
+      bisListActive: false,
     });
   });
 
@@ -98,15 +127,15 @@ describe("evaluateGearUpgradeHint", () => {
       itemLevel: [277, 284],
     });
     expect(iccHint.slotAware).toBe(true);
-    expect(iccHint.upgradeSlotCount).toBeGreaterThan(0);
-    expect(iccHint.level).toBeGreaterThanOrEqual(2);
+    expect(iccHint.ilvl.upgradeSlotCount).toBeGreaterThan(0);
+    expect(iccHint.ilvl.level).toBeGreaterThanOrEqual(2);
 
     const naxxHint = evaluateGearUpgradeHint(parsed.gearItems, {
       name: "Наксрамас",
       raidKey: "naxxramas",
       itemLevel: [213],
     });
-    expect(naxxHint.level).toBe(0);
+    expect(naxxHint.ilvl.level).toBe(0);
   });
 
   it("does not treat weapon slots as upgradeable in Ruby Sanctum", () => {
@@ -123,16 +152,16 @@ describe("evaluateGearUpgradeHint", () => {
     });
 
     expect(rsHint.slotAware).toBe(true);
-    expect(rsHint.upgradeSlots.some((slotHint) => slotHint.slot === 14)).toBe(
+    expect(rsHint.ilvl.upgradeSlots.some((slotHint) => slotHint.slot === 14)).toBe(
       false,
     );
-    expect(rsHint.upgradeSlots.some((slotHint) => slotHint.slot === 15)).toBe(
+    expect(rsHint.ilvl.upgradeSlots.some((slotHint) => slotHint.slot === 15)).toBe(
       false,
     );
-    expect(rsHint.upgradeSlotCount).toBeGreaterThan(0);
+    expect(rsHint.ilvl.upgradeSlotCount).toBeGreaterThan(0);
   });
 
-  it("filters upgrades to BiS items for the selected spec list", () => {
+  it("filters BiS track to BiS items while keeping ilvl track separate", () => {
     const priestNeckOnly = buildBisSlotMap({
       id: "local-priest",
       name: "Shadow priest",
@@ -149,8 +178,9 @@ describe("evaluateGearUpgradeHint", () => {
       priestNeckOnly,
     );
 
-    expect(rsHint.bisFiltered).toBe(true);
-    expect(rsHint.upgradeSlotCount).toBe(0);
+    expect(rsHint.bisListActive).toBe(true);
+    expect(rsHint.bis.upgradeSlotCount).toBe(0);
+    expect(rsHint.ilvl.upgradeSlotCount).toBeGreaterThan(0);
   });
 
   it("uses BiS targets for Unholy DK neck upgrades in Ruby Sanctum", () => {
@@ -165,9 +195,9 @@ describe("evaluateGearUpgradeHint", () => {
       unholyBis,
     );
 
-    expect(rsHint.bisFiltered).toBe(true);
-    expect(rsHint.upgradeSlotCount).toBe(1);
-    expect(rsHint.upgradeSlots[0]?.bestLootItemId).toBe(54581);
+    expect(rsHint.bisListActive).toBe(true);
+    expect(rsHint.bis.upgradeSlotCount).toBe(1);
+    expect(rsHint.bis.upgradeSlots[0]?.bestLootItemId).toBe(54581);
   });
 
   it("flags missing BiS targets even when equipped gear is higher ilvl", () => {
@@ -187,9 +217,9 @@ describe("evaluateGearUpgradeHint", () => {
       bryntrollBis,
     );
 
-    expect(iccHint.bisFiltered).toBe(true);
-    expect(iccHint.upgradeSlotCount).toBe(1);
-    expect(iccHint.upgradeSlots[0]?.bestLootItemId).toBe(50709);
+    expect(iccHint.bisListActive).toBe(true);
+    expect(iccHint.bis.upgradeSlotCount).toBe(1);
+    expect(iccHint.bis.upgradeSlots[0]?.bestLootItemId).toBe(50709);
   });
 
   it("does not flag a slot when equipped gear matches the active BiS list", () => {
@@ -209,8 +239,8 @@ describe("evaluateGearUpgradeHint", () => {
       shadowmourneBis,
     );
 
-    expect(iccHint.bisFiltered).toBe(true);
-    expect(iccHint.upgradeSlotCount).toBe(0);
+    expect(iccHint.bisListActive).toBe(true);
+    expect(iccHint.bis.upgradeSlotCount).toBe(0);
   });
 
   it("falls back to ilvl-only hints for custom dungeons without raid loot", () => {
@@ -220,7 +250,7 @@ describe("evaluateGearUpgradeHint", () => {
     });
 
     expect(hint.slotAware).toBe(false);
-    expect(hint.upgradeSlotCount).toBe(1);
+    expect(hint.ilvl.upgradeSlotCount).toBe(1);
   });
 
   it("resolves raid loot from the Russian dungeon name when raidKey is missing", () => {
@@ -232,7 +262,7 @@ describe("evaluateGearUpgradeHint", () => {
 
     const hint = evaluateGearUpgradeHint([{ slot: 14, id: 50426 }], dungeon);
     expect(hint.slotAware).toBe(true);
-    expect(hint.upgradeSlotCount).toBe(0);
+    expect(hint.ilvl.upgradeSlotCount).toBe(0);
   });
 
   it("does not suggest crossbow ranged upgrades for priests", () => {
@@ -247,32 +277,40 @@ describe("evaluateGearUpgradeHint", () => {
       { className: ClassName.Priest, spec: "Shadow" },
     );
 
-    const rangedHint = hint.upgradeSlots.find((slotHint) => slotHint.slot === 16);
+    const rangedHint = hint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 16);
     expect(rangedHint?.bestLootItemId).not.toBe(49981);
     expect(rangedHint?.bestLootItemId).not.toBe(50733);
   });
 });
 
 describe("formatGearUpgradeHintTooltip", () => {
-  it("lists upgrade slots with item names when loot data is available", () => {
+  it("lists BiS and ilvl upgrade sections when both apply", () => {
     const tooltip = formatGearUpgradeHintTooltip(
       {
-      level: 2,
-      upgradeSlotCount: 2,
-      equippedCount: 17,
-      peakDungeonItemLevel: 284,
-      slotAware: true,
-      bisFiltered: true,
-      upgradeSlots: [
-        { slot: 12, bestLootItemId: 54569, bestLootItemLevel: 284 },
-        { slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 },
-      ],
-    },
+        bis: {
+          level: 2,
+          upgradeSlotCount: 1,
+          upgradeSlots: [{ slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 }],
+        },
+        ilvl: {
+          level: 2,
+          upgradeSlotCount: 2,
+          upgradeSlots: [
+            { slot: 12, bestLootItemId: 54569, bestLootItemLevel: 284 },
+            { slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 },
+          ],
+        },
+        equippedCount: 17,
+        peakDungeonItemLevel: 284,
+        slotAware: true,
+        bisListActive: true,
+      },
       "en",
       testTranslator,
     );
 
-    expect(tooltip).toContain("2 BiS slot(s) missing targets");
+    expect(tooltip).toContain("1 BiS slot(s) missing targets");
+    expect(tooltip).toContain("2 slot(s) with raid loot upgrades");
     expect(tooltip).toContain("Trinket 1");
     expect(tooltip).toContain("→");
   });

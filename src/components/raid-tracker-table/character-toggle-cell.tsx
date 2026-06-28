@@ -13,6 +13,7 @@ import {
 import {
   gearUpgradeHintDualCellSx,
   gearUpgradeHintCellSx,
+  getGearHintCellDisplay,
 } from "../../utils/gear-upgrade-hint.ts";
 import { GearHintTooltipContent } from "../gear-hint-tooltip/index.tsx";
 import { CHARACTER_BODY_CELL_SX } from "./table-layout.ts";
@@ -46,13 +47,16 @@ export function CharacterToggleCell({
   const showTooltip = hasAnyGearHint(gearHints);
   const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
 
-  const mainLevel = gearHints.main?.gearHint.level ?? 0;
-  const offLevel = gearHints.off?.gearHint.level ?? 0;
-  const peakHintLevel = mainLevel >= offLevel ? mainLevel : offLevel;
-  const hasBothSpecHints = Boolean(gearHints.main && gearHints.off);
+  const mainDisplay = gearHints.main
+    ? getGearHintCellDisplay(gearHints.main.gearHint)
+    : null;
+  const offDisplay = gearHints.off
+    ? getGearHintCellDisplay(gearHints.off.gearHint)
+    : null;
+  const hasBothSpecHints = Boolean(mainDisplay && offDisplay);
   const cellHintSx = hasBothSpecHints
-    ? gearUpgradeHintDualCellSx(mainLevel, offLevel, dungeon.itemLevel)
-    : gearUpgradeHintCellSx(peakHintLevel, dungeon.itemLevel);
+    ? gearUpgradeHintDualCellSx(mainDisplay, offDisplay, dungeon.itemLevel)
+    : gearUpgradeHintCellSx(mainDisplay ?? offDisplay, dungeon.itemLevel);
 
   const toggleSwitch = (
     <Switch
