@@ -8,29 +8,30 @@ type BisItemDropSourcesProps = {
 };
 
 export function BisItemDropSources({ itemIds, locale }: BisItemDropSourcesProps) {
-  if (itemIds.length === 0) {
+  const sourceLines = itemIds.flatMap((itemId) => {
+    const sources = getFormattedItemDropSources(itemId, locale);
+    if (sources.length === 0) {
+      return [];
+    }
+    return [{ itemId, sources }];
+  });
+
+  if (sourceLines.length === 0) {
     return null;
   }
 
   return (
     <Box component="span" sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
-      {itemIds.map((itemId) => {
-        const sources = getFormattedItemDropSources(itemId, locale);
-        if (sources.length === 0) {
-          return null;
-        }
-
-        return (
-          <Typography
-            key={itemId}
-            variant="caption"
-            component="span"
-            sx={{ display: "block", color: "text.disabled", lineHeight: 1.35 }}
-          >
-            {sources.map((source) => `${source.raidLabel} · ${source.bossName}`).join(" · ")}
-          </Typography>
-        );
-      })}
+      {sourceLines.map(({ itemId, sources }) => (
+        <Typography
+          key={itemId}
+          variant="caption"
+          component="span"
+          sx={{ display: "block", color: "text.disabled", lineHeight: 1.35 }}
+        >
+          {sources.map((source) => `${source.raidLabel} · ${source.bossName}`).join(" · ")}
+        </Typography>
+      ))}
     </Box>
   );
 }
