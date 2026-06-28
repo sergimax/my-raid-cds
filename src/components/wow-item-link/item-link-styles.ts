@@ -26,6 +26,7 @@ export function wowItemLinkSx(
   itemId: number,
 ): (theme: Theme) => SystemStyleObject<Theme> {
   return (theme) => ({
+    display: "inline",
     color: wowItemLinkColor(itemId, theme.palette.mode),
     fontWeight: 600,
     textDecoration: "underline",

@@ -432,16 +432,44 @@ describe("formatGearUpgradeHintTooltip", () => {
         slotAware: true,
         bisListActive: true,
       },
-      "en",
       testTranslator,
     );
+    expect(tooltip).toContain("1 missing BiS slot(s)");
+    expect(tooltip).toContain("1 normal variant(s)");
+    expect(tooltip).toContain("Up to 2 ilvl upgrade(s)");
+    expect(tooltip).not.toContain("→");
+  });
 
-    expect(tooltip).toContain("1 BiS slot(s) missing targets");
-    expect(tooltip).toContain("normal-variant upgrades");
-    expect(tooltip).toContain("Up to 2 slot(s) may have higher-ilvl raid loot");
-    expect(tooltip).toContain("spec-relevant stats");
-    expect(tooltip).toContain("Neck");
-    expect(tooltip).toContain("→");
+  it("omits BiS count lines when boss loot lists are shown", () => {
+    const tooltip = formatGearUpgradeHintTooltip(
+      {
+        bis: {
+          level: 2,
+          upgradeSlotCount: 3,
+          upgradeSlots: [{ slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 }],
+        },
+        bisVariant: {
+          level: 1,
+          upgradeSlotCount: 1,
+          upgradeSlots: [{ slot: 7, bestLootItemId: 50067, bestLootItemLevel: 264 }],
+        },
+        ilvl: {
+          level: 2,
+          upgradeSlotCount: 11,
+          upgradeSlots: [],
+        },
+        equippedCount: 17,
+        peakDungeonItemLevel: 284,
+        slotAware: true,
+        bisListActive: true,
+      },
+      testTranslator,
+      { showBisBossLoot: true, showBisVariantBossLoot: true },
+    );
+
+    expect(tooltip).not.toContain("missing BiS");
+    expect(tooltip).not.toContain("normal variant");
+    expect(tooltip).toBe("Up to 11 ilvl upgrade(s)");
   });
 
   it("uses amber for BiS and blue for ilvl toggle cell tints with stronger levels", () => {

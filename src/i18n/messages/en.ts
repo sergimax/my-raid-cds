@@ -164,14 +164,10 @@ export const enMessages = {
     allHaveCd: "All selected characters have CD on matching dungeons.",
   },
   gearHint: {
-    bisMissing: "{{count}} BiS slot(s) missing targets",
-    bisVariantMissing: "{{count}} BiS slot(s) with normal-variant upgrades",
-    raidLootUpgrades: "Up to {{count}} slot(s) may have higher-ilvl raid loot",
-    belowIlvl: "Up to {{count}} of {{total}} items may be below ilvl {{ilvl}}",
-    ilvlEquipableOnly:
-      "Equipable for your class/spec; ilvl loot filtered by spec-relevant stats.",
-    moreSlots: "+{{count}} more",
-    slotArrow: "{{slot}} → {{item}}",
+    bisMissing: "{{count}} missing BiS slot(s)",
+    bisVariantMissing: "{{count}} normal variant(s)",
+    raidLootUpgrades: "Up to {{count}} ilvl upgrade(s)",
+    belowIlvl: "Up to {{count}} of {{total}} items below ilvl {{ilvl}}",
     bisBossLoot: "BiS loot in this raid",
     bisVariantBossLoot: "BiS normal variants in this raid",
   },

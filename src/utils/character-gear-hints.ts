@@ -1,11 +1,11 @@
 import type { AppLocale } from "../i18n/types.ts";
-import { getNonListNameVariantItemIdsAtSlot } from "../data/bis-item-variants.ts";
 import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { TierSetHint } from "../types/tier-sets.ts";
 import type { BisSlotMap } from "./bis-lists.ts";
 import {
   evaluateGearUpgradeHint,
+  collectMissingBisLootItemIds,
   type GearUpgradeHint,
 } from "./gear-upgrade-hint.ts";
 import { evaluateTierSetHint } from "./tier-set-hint.ts";
@@ -34,34 +34,6 @@ type GetBisSlotMapForSpec = (
   spec: string,
 ) => BisSlotMap;
 
-function collectExactBisItemIds(slotMap: BisSlotMap): number[] {
-  const itemIds: number[] = [];
-
-  for (const slotItemIds of slotMap.values()) {
-    for (const itemId of slotItemIds) {
-      if (!itemIds.includes(itemId)) {
-        itemIds.push(itemId);
-      }
-    }
-  }
-
-  return itemIds;
-}
-
-function collectBisVariantItemIds(slotMap: BisSlotMap): number[] {
-  const itemIds: number[] = [];
-
-  for (const [slot, slotItemIds] of slotMap.entries()) {
-    for (const itemId of getNonListNameVariantItemIdsAtSlot(slotItemIds, slot)) {
-      if (!itemIds.includes(itemId)) {
-        itemIds.push(itemId);
-      }
-    }
-  }
-
-  return itemIds;
-}
-
 function evaluateSpecGearHint(
   specGear: CharacterSpecGear,
   className: ClassName,
@@ -82,22 +54,17 @@ function evaluateSpecGearHint(
     equipContext,
   );
 
+  const { exact: missingExactBisItemIds, variant: missingVariantBisItemIds } =
+    collectMissingBisLootItemIds(gearHint);
+
   const bisBossLootGroups =
-    bisSlotMap !== undefined
-      ? groupBisItemIdsByBossForDungeon(
-          collectExactBisItemIds(slotMap),
-          dungeon,
-          locale,
-        )
+    missingExactBisItemIds.length > 0
+      ? groupBisItemIdsByBossForDungeon(missingExactBisItemIds, dungeon, locale)
       : [];
 
   const bisVariantBossLootGroups =
-    bisSlotMap !== undefined
-      ? groupBisItemIdsByBossForDungeon(
-          collectBisVariantItemIds(slotMap),
-          dungeon,
-          locale,
-        )
+    missingVariantBisItemIds.length > 0
+      ? groupBisItemIdsByBossForDungeon(missingVariantBisItemIds, dungeon, locale)
       : [];
 
   return {

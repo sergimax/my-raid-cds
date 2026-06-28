@@ -167,14 +167,10 @@ export const ruMessages: Messages = {
     allHaveCd: "У всех выбранных персонажей есть КД на подходящих подземельях.",
   },
   gearHint: {
-    bisMissing: "{{count}} BiS слот(ов) без целей",
-    bisVariantMissing: "{{count}} BiS слот(ов): улучшение обычной версией",
-    raidLootUpgrades: "До {{count}} предметов: возможен лут выше по ilvl",
-    belowIlvl: "До {{count}} из {{total}} предметов могут быть ниже ilvl {{ilvl}}",
-    ilvlEquipableOnly:
-      "Экипировка для класса/спека; ilvl-лут фильтруется по релевантным статам.",
-    moreSlots: "+ещё {{count}}",
-    slotArrow: "{{slot}} → {{item}}",
+    bisMissing: "{{count}} BiS без предмета",
+    bisVariantMissing: "{{count}} обычн. версий",
+    raidLootUpgrades: "До {{count}} улучшений по ilvl",
+    belowIlvl: "До {{count}} из {{total}} ниже ilvl {{ilvl}}",
     bisBossLoot: "BiS-лут в этом рейде",
     bisVariantBossLoot: "Обычные версии BiS в этом рейде",
   },
