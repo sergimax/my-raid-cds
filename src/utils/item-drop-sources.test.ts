@@ -47,6 +47,13 @@ describe("item-drop-sources", () => {
     ]);
   });
 
+  it("formats EN raid labels from English raid metadata", () => {
+    expect(formatItemDropSourceLine(
+      getFormattedItemDropSources(54581, "en")[0]!.source,
+      "en",
+    )).toBe("RS25H · Halion");
+  });
+
   it("localizes boss names for RU locale", () => {
     expect(formatItemDropSourceLine(
       getFormattedItemDropSources(54581, "ru")[0]!.source,

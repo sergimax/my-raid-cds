@@ -40,10 +40,17 @@ function formatRaidLabelForSource(
   locale: AppLocale,
 ): string {
   const raid = RaidNames[source.raidKey];
+  const shortName =
+    locale === "ru"
+      ? raid.shortRu
+      : "shortEn" in raid
+        ? raid.shortEn
+        : undefined;
+
   return formatDungeonExportLabel(
     {
-      name: raid.ru,
-      shortName: raid.shortRu,
+      name: locale === "ru" ? raid.ru : raid.en,
+      shortName,
       raidKey: source.raidKey,
       size: source.size,
       difficulty: source.difficulty,
