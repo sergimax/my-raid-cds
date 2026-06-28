@@ -8,14 +8,12 @@ import {
 
 describe("bis-item-variants", () => {
   it("links ICC normal and heroic Astrylian belt at waist slot", () => {
-    expect(getNameVariantItemIdsAtSlot(50707, 7).sort()).toEqual([50067, 50707].sort());
-    expect(getNameVariantItemIdsAtSlot(50067, 7).sort()).toEqual([50067, 50707].sort());
+    expect([...getNameVariantItemIdsAtSlot(50707, 7)].sort()).toEqual([50067, 50707]);
+    expect([...getNameVariantItemIdsAtSlot(50067, 7)].sort()).toEqual([50067, 50707]);
   });
 
   it("expands BiS heroic ids to include normal variants", () => {
-    expect(expandItemIdsWithNameVariantsAtSlot([50707], 7).sort()).toEqual(
-      [50067, 50707].sort(),
-    );
+    expect(expandItemIdsWithNameVariantsAtSlot([50707], 7).sort()).toEqual([50067, 50707]);
   });
 
   it("treats equipped normal variant as satisfying the heroic BiS target", () => {
