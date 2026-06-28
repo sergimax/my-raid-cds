@@ -10,6 +10,7 @@ import {
   formatGearUpgradeHintTooltip,
   getDungeonPeakItemLevel,
   getGearHintCellDisplay,
+  type GearUpgradeHintTrack,
 } from "./gear-upgrade-hint.ts";
 import { parseWowSimsExporterJson } from "./parse-wowsims-exporter.ts";
 
@@ -38,11 +39,11 @@ const RHEE_EXPORT = JSON.stringify({
   },
 });
 
-const emptyTrack = {
+const emptyTrack: GearUpgradeHintTrack = {
   level: 0,
   upgradeSlotCount: 0,
   upgradeSlots: [],
-} as const;
+};
 
 describe("getDungeonPeakItemLevel", () => {
   it("returns the highest ilvl in the dungeon row", () => {
