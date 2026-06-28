@@ -13,12 +13,31 @@ export function TrackerLayout() {
   const domain = useRaidTrackerContext();
   const exportPanel = useExportPanelState();
   const bisListsPanel = useBisListsPanelState();
+
   const forms = useTrackerForms({
     characters: domain.characters,
     onCharacterAdded: domain.addCharacter,
     onDungeonAdded: domain.addDungeon,
     closeExportPanel: exportPanel.closeExportPanel,
+    closeBisListsPanel: bisListsPanel.closeBisListsPanel,
   });
+
+  const closeOverlayPanels = useCallback(() => {
+    exportPanel.closeExportPanel();
+    bisListsPanel.closeBisListsPanel();
+    forms.closeCharacterForm();
+    forms.closeDungeonForm();
+  }, [bisListsPanel, exportPanel, forms]);
+
+  const handleAddFromTemplate = useCallback(() => {
+    closeOverlayPanels();
+    domain.handleAddFromTemplate();
+  }, [closeOverlayPanels, domain]);
+
+  const handleResetAllToggles = useCallback(() => {
+    closeOverlayPanels();
+    domain.handleResetAllToggles();
+  }, [closeOverlayPanels, domain]);
 
   const toggleExportPanel = useCallback(() => {
     if (exportPanel.showExportPanel) {
@@ -47,8 +66,8 @@ export function TrackerLayout() {
       charactersCount: domain.characters.length,
       dungeonsCount: domain.dungeons.length,
       canResetAllToggles: domain.canResetAllToggles,
-      handleAddFromTemplate: domain.handleAddFromTemplate,
-      handleResetAllToggles: domain.handleResetAllToggles,
+      handleAddFromTemplate,
+      handleResetAllToggles,
       showCharacterForm: forms.showCharacterForm,
       showDungeonForm: forms.showDungeonForm,
       showExportPanel: exportPanel.showExportPanel,
@@ -63,8 +82,8 @@ export function TrackerLayout() {
       domain.canResetAllToggles,
       domain.characters.length,
       domain.dungeons.length,
-      domain.handleAddFromTemplate,
-      domain.handleResetAllToggles,
+      handleAddFromTemplate,
+      handleResetAllToggles,
       exportPanel.showExportPanel,
       forms.showCharacterForm,
       forms.showDungeonForm,
