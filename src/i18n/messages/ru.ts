@@ -170,7 +170,8 @@ export const ruMessages: Messages = {
     bisMissing: "{{count}} BiS слот(ов) без целей",
     raidLootUpgrades: "До {{count}} предметов: возможен лут выше по ilvl",
     belowIlvl: "До {{count}} из {{total}} предметов могут быть ниже ilvl {{ilvl}}",
-    ilvlEquipableOnly: "Только экипировка для класса/спека; статы не проверяются.",
+    ilvlEquipableOnly:
+      "Экипировка для класса/спека; ilvl-лут фильтруется по релевантным статам.",
     moreSlots: "+ещё {{count}}",
     slotArrow: "{{slot}} → {{item}}",
     bisBossLoot: "BiS-лут в этом рейде",
