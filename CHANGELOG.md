@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.25.0] - 2026-06-27
+
+### Added
+
+- **Toolbar panels — shared shell:** Add character, add dungeon, BiS lists, and Export use a common outlined card (`TrackerToolbarPanel`) with title, optional hint, and close control.
+- **Toolbar panels — scroll:** Opening or switching a toolbar panel scrolls the page to the top (replaces per-panel `scrollIntoView`).
+
+### Changed
+
+- **Add character / add dungeon:** Close via the panel header ✕ instead of a Cancel button; only one toolbar panel open at a time.
+- **Export panel:** Title, instructions, and close moved to the shared shell (same layout as BiS).
+- **Toolbar actions:** Add from template, reset all toggles, and opening another panel close any open overlay (export, BiS, add forms).
+- **Narrow panels:** Character, dungeon, and export cards are width-constrained so the close button aligns with form content (BiS stays full width).
+
 ## [1.24.0] - 2026-06-27
 
 ### Added
