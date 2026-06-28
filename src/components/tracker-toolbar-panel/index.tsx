@@ -91,6 +91,3 @@ export function TrackerToolbarPanel({
     </Paper>
   );
 }
-
-export { resolveMainToolbarPanelId } from "./resolve-toolbar-panel-id.ts";
-export type { MainToolbarPanelId } from "./resolve-toolbar-panel-id.ts";
