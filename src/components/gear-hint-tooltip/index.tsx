@@ -16,6 +16,9 @@ import {
 import type { CharacterGearHints, SpecGearHint } from "../../utils/character-gear-hints.ts";
 import type { BossBisLootGroup } from "../../utils/item-drop-sources.ts";
 
+/** Scroll when boss-grouped BiS loot exceeds this height (tooltip stays scannable). */
+const BIS_LOOT_LIST_MAX_HEIGHT = 128;
+
 type GearHintTooltipContentProps = {
   gearHints: CharacterGearHints;
   characterClassName?: ClassName;
@@ -40,19 +43,40 @@ function BisBossLootSection({
 
   return (
     <Box sx={{ mb: marginBottom }}>
-      <Typography variant="caption" component="p" sx={{ fontWeight: 600, mb: 0.5 }}>
+      <Typography
+        variant="caption"
+        component="p"
+        sx={{ fontWeight: 600, mb: 0.25, lineHeight: 1.25 }}
+      >
         {t(titleKey)}
       </Typography>
-      {groups.map((group) => (
-        <Box key={group.bossName} sx={{ mb: 0.5, "&:last-child": { mb: 0 } }}>
-          <Typography variant="caption" component="p" sx={{ fontWeight: 600 }}>
-            {group.bossName}
-          </Typography>
-          <Typography variant="caption" component="p">
+      <Box
+        sx={{
+          maxHeight: BIS_LOOT_LIST_MAX_HEIGHT,
+          overflowY: "auto",
+          pr: 0.25,
+          scrollbarWidth: "thin",
+        }}
+      >
+        {groups.map((group) => (
+          <Typography
+            key={group.bossName}
+            variant="caption"
+            component="div"
+            sx={{
+              lineHeight: 1.25,
+              mb: 0.25,
+              "&:last-child": { mb: 0 },
+            }}
+          >
+            <Box component="span" sx={{ fontWeight: 600, color: "text.secondary" }}>
+              {group.bossName}
+              {": "}
+            </Box>
             <WowItemAlternatives itemIds={group.itemIds} />
           </Typography>
-        </Box>
-      ))}
+        ))}
+      </Box>
     </Box>
   );
 }
@@ -69,11 +93,14 @@ function SpecGearHintSection({
   t: TranslateFn;
 }) {
   const specName = specHint.specGear.spec;
-
-  const gearSummary = formatGearUpgradeHintTooltip(specHint.gearHint, locale, t);
-  const tokenRows = aggregateTierSetTokenNeeds(specHint.tierSetHint.tokenNeeds);
   const hasBisLootList = specHint.bisBossLootGroups.length > 0;
   const hasBisVariantList = specHint.bisVariantBossLootGroups.length > 0;
+
+  const gearSummary = formatGearUpgradeHintTooltip(specHint.gearHint, t, {
+    showBisBossLoot: hasBisLootList,
+    showBisVariantBossLoot: hasBisVariantList,
+  });
+  const tokenRows = aggregateTierSetTokenNeeds(specHint.tierSetHint.tokenNeeds);
 
   if (
     !gearSummary &&
@@ -181,7 +208,7 @@ export function GearHintTooltipContent({
   }
 
   return (
-    <Box sx={{ maxWidth: 360 }}>
+    <Box sx={{ maxWidth: 400 }}>
       {sections.map((specHint) => (
         <SpecGearHintSection
           key={specHint.specGear.spec}

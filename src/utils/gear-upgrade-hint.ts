@@ -1,8 +1,6 @@
 import type { SystemStyleObject } from "@mui/system";
 import type { Theme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
-import type { ItemTooltipLocale } from "../constants/item-tooltips.ts";
-import { getLocalizedGearSlotLabel } from "../i18n/localized-domain.ts";
 import type { TranslateFn } from "../i18n/translate.ts";
 import {
   expandItemIdsWithNameVariantsAtSlot,
@@ -11,7 +9,6 @@ import {
 } from "../data/bis-item-variants.ts";
 import { getRaidLootItemIdsForTier } from "../data/raid-loot.ts";
 import { getWotlkItemLevel } from "../data/wotlk-item-levels.ts";
-import { getWotlkItemName } from "../data/wotlk-item-names.ts";
 import type { CharacterGearItem } from "../types/character-gear.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { BisSlotMap } from "./bis-lists.ts";
@@ -67,8 +64,6 @@ const ILVL_HINT_ALPHAS: Record<GearUpgradeHintLevel, number> = {
   2: 0.28,
   3: 0.4,
 };
-
-const MAX_TOOLTIP_SLOT_LABELS = 4;
 
 const EMPTY_HINT_TRACK: GearUpgradeHintTrack = {
   level: 0,
@@ -478,82 +473,57 @@ export function getGearHintCellDisplay(
   return null;
 }
 
-function formatUpgradeSlotLabel(
-  slotHint: GearUpgradeSlotHint,
-  locale: ItemTooltipLocale,
-  t: TranslateFn,
-): string {
-  const slotLabel = getLocalizedGearSlotLabel(slotHint.slot, locale);
-  if (slotHint.bestLootItemId !== undefined) {
-    const itemName = getWotlkItemName(slotHint.bestLootItemId, locale);
-    if (itemName) {
-      return t("gearHint.slotArrow", { slot: slotLabel, item: itemName });
+export type GearUpgradeHintTooltipOptions = {
+  /** Boss-grouped BiS list is shown — omit redundant count line. */
+  showBisBossLoot?: boolean;
+  /** Boss-grouped variant list is shown — omit redundant count line. */
+  showBisVariantBossLoot?: boolean;
+};
+
+function collectMissingLootItemIds(track: GearUpgradeHintTrack): number[] {
+  const itemIds: number[] = [];
+
+  for (const slotHint of track.upgradeSlots) {
+    if (
+      slotHint.bestLootItemId !== undefined &&
+      !itemIds.includes(slotHint.bestLootItemId)
+    ) {
+      itemIds.push(slotHint.bestLootItemId);
     }
   }
-  return slotLabel;
+
+  return itemIds;
 }
 
-function formatHintTrackTooltip(
-  track: GearUpgradeHintTrack,
-  introKey:
-    | "gearHint.bisMissing"
-    | "gearHint.bisVariantMissing"
-    | "gearHint.raidLootUpgrades"
-    | "gearHint.belowIlvl",
-  hint: GearUpgradeHint,
-  locale: ItemTooltipLocale,
-  t: TranslateFn,
-  listSlots: boolean,
-): string {
-  const intro =
-    introKey === "gearHint.belowIlvl"
-      ? t(introKey, {
-          count: track.upgradeSlotCount,
-          total: hint.equippedCount,
-          ilvl: hint.peakDungeonItemLevel,
-        })
-      : t(introKey, { count: track.upgradeSlotCount });
-
-  if (!listSlots) {
-    return `${intro}\n${t("gearHint.ilvlEquipableOnly")}`;
-  }
-
-  const slotLabels = track.upgradeSlots.map((slotHint) =>
-    formatUpgradeSlotLabel(slotHint, locale, t),
-  );
-  const visibleLabels = slotLabels.slice(0, MAX_TOOLTIP_SLOT_LABELS);
-  const remainingCount = slotLabels.length - visibleLabels.length;
-  const slotSummary =
-    remainingCount > 0
-      ? `${visibleLabels.join(", ")} ${t("gearHint.moreSlots", { count: remainingCount })}`
-      : visibleLabels.join(", ");
-
-  return `${intro}: ${slotSummary}`;
+/** Item ids for boss-grouped BiS loot sections (missing upgrades only). */
+export function collectMissingBisLootItemIds(hint: GearUpgradeHint): {
+  exact: number[];
+  variant: number[];
+} {
+  return {
+    exact: collectMissingLootItemIds(hint.bis),
+    variant: collectMissingLootItemIds(hint.bisVariant),
+  };
 }
 
 export function formatGearUpgradeHintTooltip(
   hint: GearUpgradeHint,
-  locale: ItemTooltipLocale = "en",
   t: TranslateFn,
+  options?: GearUpgradeHintTooltipOptions,
 ): string {
   const parts: string[] = [];
 
-  if (hint.bisListActive && hint.bis.level > 0) {
-    parts.push(
-      formatHintTrackTooltip(hint.bis, "gearHint.bisMissing", hint, locale, t, true),
-    );
+  if (hint.bisListActive && hint.bis.level > 0 && !options?.showBisBossLoot) {
+    parts.push(t("gearHint.bisMissing", { count: hint.bis.upgradeSlotCount }));
   }
 
-  if (hint.bisListActive && hint.bisVariant.level > 0) {
+  if (
+    hint.bisListActive &&
+    hint.bisVariant.level > 0 &&
+    !options?.showBisVariantBossLoot
+  ) {
     parts.push(
-      formatHintTrackTooltip(
-        hint.bisVariant,
-        "gearHint.bisVariantMissing",
-        hint,
-        locale,
-        t,
-        true,
-      ),
+      t("gearHint.bisVariantMissing", { count: hint.bisVariant.upgradeSlotCount }),
     );
   }
 
@@ -561,7 +531,15 @@ export function formatGearUpgradeHintTooltip(
     const introKey = hint.slotAware
       ? "gearHint.raidLootUpgrades"
       : "gearHint.belowIlvl";
-    parts.push(formatHintTrackTooltip(hint.ilvl, introKey, hint, locale, t, false));
+    parts.push(
+      introKey === "gearHint.belowIlvl"
+        ? t(introKey, {
+            count: hint.ilvl.upgradeSlotCount,
+            total: hint.equippedCount,
+            ilvl: hint.peakDungeonItemLevel,
+          })
+        : t(introKey, { count: hint.ilvl.upgradeSlotCount }),
+    );
   }
 
   return parts.join("\n");
