@@ -260,7 +260,7 @@ export function CharacterEditDialog({
   onSave,
 }: CharacterEditDialogProps) {
   return (
-    <Dialog open={character !== null} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={character !== null} onClose={onClose} maxWidth="md" fullWidth>
       {character ? (
         <CharacterEditDialogContent
           key={character.id}
