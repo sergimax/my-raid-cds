@@ -1,0 +1,82 @@
+import { Stack, Typography } from "@mui/material";
+import { specsForClass } from "../../data/class-specs.ts";
+import type { ItemTooltipLocale } from "../../constants/item-tooltips.ts";
+import type { TranslateFn } from "../../i18n/translate.ts";
+import type { CharacterClass } from "../../types/characters.ts";
+import type { CharacterGearItem } from "../../types/character-gear.ts";
+import { CharacterSingleSpecGearFields } from "../character-spec-gear-fields/index.tsx";
+import { CharacterSpecGearImportSection } from "./character-spec-gear-import-section.tsx";
+
+type CharacterSpecGearColumnProps = {
+  roleLabel: string;
+  importSectionLabel: string;
+  spec: string;
+  gearScoreText: string;
+  specName: string;
+  gearScoreName: string;
+  specLabelId: string;
+  characterClass: CharacterClass;
+  gearItems: CharacterGearItem[] | undefined;
+  onSpecChange: (value: string) => void;
+  onGearScoreTextChange: (value: string) => void;
+  onGearItemsChange: (gearItems: CharacterGearItem[] | undefined) => void;
+  onError: (message: string) => void;
+  onClearError: () => void;
+  locale: ItemTooltipLocale;
+  t: TranslateFn;
+};
+
+export function CharacterSpecGearColumn({
+  roleLabel,
+  importSectionLabel,
+  spec,
+  gearScoreText,
+  specName,
+  gearScoreName,
+  specLabelId,
+  characterClass,
+  gearItems,
+  onSpecChange,
+  onGearScoreTextChange,
+  onGearItemsChange,
+  onError,
+  onClearError,
+  locale,
+  t,
+}: CharacterSpecGearColumnProps) {
+  const classSpecs = specsForClass(characterClass.name);
+
+  return (
+    <Stack spacing={1.5} sx={{ flex: 1, minWidth: 0 }}>
+      <CharacterSingleSpecGearFields
+        label={roleLabel}
+        spec={spec}
+        gearScoreText={gearScoreText}
+        specName={specName}
+        gearScoreName={gearScoreName}
+        specLabelId={specLabelId}
+        characterClass={characterClass}
+        classSpecs={classSpecs}
+        disabled={false}
+        layout="column"
+        onSpecChange={onSpecChange}
+        onGearScoreTextChange={onGearScoreTextChange}
+      />
+      <Typography variant="body2" color="text.secondary">
+        {t("characterEdit.importGear")}
+      </Typography>
+      <CharacterSpecGearImportSection
+        label={importSectionLabel}
+        spec={spec || undefined}
+        characterClass={characterClass}
+        gearItems={gearItems}
+        onGearItemsChange={onGearItemsChange}
+        onError={onError}
+        onClearError={onClearError}
+        locale={locale}
+        t={t}
+        hideHeader
+      />
+    </Stack>
+  );
+}

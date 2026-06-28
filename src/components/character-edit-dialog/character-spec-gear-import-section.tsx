@@ -23,6 +23,7 @@ type CharacterSpecGearImportSectionProps = {
   onClearError: () => void;
   locale: ItemTooltipLocale;
   t: TranslateFn;
+  hideHeader?: boolean;
 };
 
 export function CharacterSpecGearImportSection({
@@ -35,6 +36,7 @@ export function CharacterSpecGearImportSection({
   onClearError,
   locale,
   t,
+  hideHeader = false,
 }: CharacterSpecGearImportSectionProps) {
   const [wowsimsImportText, setWowsimsImportText] = useState("");
   const [importNotice, setImportNotice] = useState("");
@@ -94,16 +96,18 @@ export function CharacterSpecGearImportSection({
 
   return (
     <Stack spacing={1}>
-      {spec ? (
-        <SpecOptionLabel
-          className={characterClass.name}
-          spec={spec}
-          variant="body2"
-          iconSize={20}
-        />
-      ) : (
-        <Typography variant="subtitle2">{label}</Typography>
-      )}
+      {!hideHeader ? (
+        spec ? (
+          <SpecOptionLabel
+            className={characterClass.name}
+            spec={spec}
+            variant="body2"
+            iconSize={20}
+          />
+        ) : (
+          <Typography variant="subtitle2">{label}</Typography>
+        )
+      ) : null}
       {storedGearSummary ? (
         <Stack spacing={0.5}>
           <Typography variant="body2">
