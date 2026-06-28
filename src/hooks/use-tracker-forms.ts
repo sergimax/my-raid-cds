@@ -9,6 +9,7 @@ type UseTrackerFormsOptions = {
   onCharacterAdded: (character: CharacterRecord) => void;
   onDungeonAdded: (dungeon: DungeonRecord) => void;
   closeExportPanel: () => void;
+  closeBisListsPanel: () => void;
 };
 
 /** Character and dungeon add forms with mutual exclusivity when toggled open. */
@@ -17,6 +18,7 @@ export function useTrackerForms({
   onCharacterAdded,
   onDungeonAdded,
   closeExportPanel,
+  closeBisListsPanel,
 }: UseTrackerFormsOptions) {
   const characterForm = useCharacterFormState({ characters, onCharacterAdded });
   const dungeonForm = useDungeonFormState({ onDungeonAdded });
@@ -27,9 +29,10 @@ export function useTrackerForms({
       return;
     }
     closeExportPanel();
+    closeBisListsPanel();
     dungeonForm.close();
     characterForm.open();
-  }, [characterForm, closeExportPanel, dungeonForm]);
+  }, [characterForm, closeBisListsPanel, closeExportPanel, dungeonForm]);
 
   const toggleDungeonForm = useCallback(() => {
     if (dungeonForm.isOpen) {
@@ -37,9 +40,10 @@ export function useTrackerForms({
       return;
     }
     closeExportPanel();
+    closeBisListsPanel();
     characterForm.close();
     dungeonForm.open();
-  }, [characterForm, closeExportPanel, dungeonForm]);
+  }, [characterForm, closeBisListsPanel, closeExportPanel, dungeonForm]);
 
   return {
     showCharacterForm: characterForm.isOpen,
