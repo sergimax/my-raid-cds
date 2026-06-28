@@ -19,10 +19,6 @@ import {
   type CharacterEquipContext,
   filterUsableLootItemIds,
 } from "./item-equip-restrictions.ts";
-import {
-  getItemLevelTier,
-  getItemLevelTierColor,
-} from "./item-level-tier.ts";
 import { resolveDungeonRaidKey } from "./resolve-dungeon-raid-key.ts";
 
 export type GearUpgradeHintLevel = 0 | 1 | 2 | 3;
@@ -583,11 +579,7 @@ function hintDisplayBackgroundColor(
     return alpha(theme.palette.warning.main, BIS_HINT_ALPHAS[display.level]);
   }
 
-  const dungeonTier = getItemLevelTier([...dungeonItemLevels]);
-  return alpha(
-    getItemLevelTierColor(dungeonTier, theme.palette.mode),
-    ILVL_HINT_ALPHAS[display.level],
-  );
+  return alpha(theme.palette.text.secondary, ILVL_HINT_ALPHAS[display.level]);
 }
 
 export function gearUpgradeHintCellSx(
