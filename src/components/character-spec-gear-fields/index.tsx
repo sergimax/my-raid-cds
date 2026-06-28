@@ -54,7 +54,10 @@ export function CharacterSingleSpecGearFields({
   onGearScoreTextChange,
 }: CharacterSingleSpecGearFieldsProps) {
   const { t } = useTranslation();
-  const fieldsDirection = layout === "column" ? "column" : { xs: "column", sm: "row" };
+  const fieldsDirection =
+    layout === "column"
+      ? "column"
+      : ({ xs: "column", sm: "row" } as const);
 
   return (
     <Stack spacing={0.5}>
