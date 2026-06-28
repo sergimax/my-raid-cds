@@ -165,6 +165,7 @@ export const enMessages = {
   },
   gearHint: {
     bisMissing: "{{count}} BiS slot(s) missing targets",
+    bisVariantMissing: "{{count}} BiS slot(s) with normal-variant upgrades",
     raidLootUpgrades: "Up to {{count}} slot(s) may have higher-ilvl raid loot",
     belowIlvl: "Up to {{count}} of {{total}} items may be below ilvl {{ilvl}}",
     ilvlEquipableOnly:
@@ -172,6 +173,7 @@ export const enMessages = {
     moreSlots: "+{{count}} more",
     slotArrow: "{{slot}} → {{item}}",
     bisBossLoot: "BiS loot in this raid",
+    bisVariantBossLoot: "BiS normal variants in this raid",
   },
   tierSet: {
     tokensFromRaid: "{{count}} tier set token(s) from this raid",

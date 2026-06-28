@@ -58,9 +58,24 @@ describe("getGearHintCellDisplay", () => {
     expect(
       getGearHintCellDisplay({
         bis: { level: 2, upgradeSlotCount: 1, upgradeSlots: [{ slot: 1 }] },
+        bisVariant: emptyTrack,
         ilvl: { level: 3, upgradeSlotCount: 5, upgradeSlots: [] },
         equippedCount: 10,
         peakDungeonItemLevel: 284,
+        slotAware: true,
+        bisListActive: true,
+      }),
+    ).toEqual({ kind: "bis", level: 2 });
+  });
+
+  it("uses BiS variant track level for cell tint", () => {
+    expect(
+      getGearHintCellDisplay({
+        bis: emptyTrack,
+        bisVariant: { level: 2, upgradeSlotCount: 1, upgradeSlots: [{ slot: 7 }] },
+        ilvl: emptyTrack,
+        equippedCount: 10,
+        peakDungeonItemLevel: 264,
         slotAware: true,
         bisListActive: true,
       }),
@@ -71,6 +86,7 @@ describe("getGearHintCellDisplay", () => {
     expect(
       getGearHintCellDisplay({
         bis: emptyTrack,
+        bisVariant: emptyTrack,
         ilvl: { level: 2, upgradeSlotCount: 3, upgradeSlots: [] },
         equippedCount: 10,
         peakDungeonItemLevel: 284,
@@ -91,6 +107,7 @@ describe("evaluateGearUpgradeHint", () => {
       }),
     ).toEqual({
       bis: emptyTrack,
+      bisVariant: emptyTrack,
       ilvl: emptyTrack,
       equippedCount: 0,
       peakDungeonItemLevel: 284,
@@ -108,6 +125,7 @@ describe("evaluateGearUpgradeHint", () => {
       }),
     ).toEqual({
       bis: emptyTrack,
+      bisVariant: emptyTrack,
       ilvl: emptyTrack,
       equippedCount: 1,
       peakDungeonItemLevel: 264,
@@ -318,9 +336,12 @@ describe("evaluateGearUpgradeHint", () => {
       equipContext,
     );
 
-    expect(hint.bis.upgradeSlotCount).toBe(1);
-    expect(hint.bis.upgradeSlots[0]?.bestLootItemId).toBe(50067);
-    expect(hint.ilvl.upgradeSlots[0]?.bestLootItemId).toBe(50067);
+    expect(hint.bis.upgradeSlotCount).toBe(0);
+    expect(hint.bisVariant.upgradeSlotCount).toBe(1);
+    expect(hint.bisVariant.upgradeSlots[0]?.bestLootItemId).toBe(50067);
+    expect(
+      hint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 7)?.bestLootItemId,
+    ).not.toBe(50067);
   });
 
   it("does not flag belt when the normal BiS name variant is already equipped", () => {
@@ -339,6 +360,7 @@ describe("evaluateGearUpgradeHint", () => {
     );
 
     expect(hint.bis.upgradeSlotCount).toBe(0);
+    expect(hint.bisVariant.upgradeSlotCount).toBe(0);
   });
 
   it("flags same-ilvl BiS normal variant when heroic id is on the list", () => {
@@ -356,13 +378,34 @@ describe("evaluateGearUpgradeHint", () => {
       equipContext,
     );
 
-    expect(hint.bis.upgradeSlotCount).toBe(1);
-    expect(hint.bis.upgradeSlots[0]?.bestLootItemId).toBe(50067);
+    expect(hint.bis.upgradeSlotCount).toBe(0);
+    expect(hint.bisVariant.upgradeSlotCount).toBe(1);
+    expect(hint.bisVariant.upgradeSlots[0]?.bestLootItemId).toBe(50067);
+  });
+
+  it("excludes BiS loot from generic ilvl upgrade track", () => {
+    const bisSlotMap = buildBisSlotMap(retributionPaladinBis.presets[0]);
+    const equipContext = { className: ClassName.Paladin, spec: "Retribution" };
+
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 7, id: 50778 }],
+      {
+        name: "ICC25N",
+        raidKey: "icecrownCitadel",
+        itemLevel: [264],
+      },
+      bisSlotMap,
+      equipContext,
+    );
+
+    expect(
+      hint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 7)?.bestLootItemId,
+    ).not.toBe(50067);
   });
 });
 
 describe("formatGearUpgradeHintTooltip", () => {
-  it("lists BiS and ilvl upgrade sections when both apply", () => {
+  it("lists BiS, variant, and ilvl upgrade sections when all apply", () => {
     const tooltip = formatGearUpgradeHintTooltip(
       {
         bis: {
@@ -370,12 +413,16 @@ describe("formatGearUpgradeHintTooltip", () => {
           upgradeSlotCount: 1,
           upgradeSlots: [{ slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 }],
         },
+        bisVariant: {
+          level: 1,
+          upgradeSlotCount: 1,
+          upgradeSlots: [{ slot: 7, bestLootItemId: 50067, bestLootItemLevel: 264 }],
+        },
         ilvl: {
           level: 2,
           upgradeSlotCount: 2,
           upgradeSlots: [
             { slot: 12, bestLootItemId: 54569, bestLootItemLevel: 284 },
-            { slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 },
           ],
         },
         equippedCount: 17,
@@ -388,32 +435,10 @@ describe("formatGearUpgradeHintTooltip", () => {
     );
 
     expect(tooltip).toContain("1 BiS slot(s) missing targets");
+    expect(tooltip).toContain("normal-variant upgrades");
     expect(tooltip).toContain("Up to 2 slot(s) may have higher-ilvl raid loot");
     expect(tooltip).toContain("spec-relevant stats");
     expect(tooltip).toContain("Neck");
     expect(tooltip).toContain("→");
-    expect(tooltip).not.toContain("Trinket 1");
-  });
-
-  it("omits BiS slot list when boss-grouped loot covers missing targets", () => {
-    const tooltip = formatGearUpgradeHintTooltip(
-      {
-        bis: {
-          level: 2,
-          upgradeSlotCount: 1,
-          upgradeSlots: [{ slot: 1, bestLootItemId: 54581, bestLootItemLevel: 284 }],
-        },
-        ilvl: emptyTrack,
-        equippedCount: 17,
-        peakDungeonItemLevel: 284,
-        slotAware: true,
-        bisListActive: true,
-      },
-      "en",
-      testTranslator,
-      { listBisMissingSlots: false },
-    );
-
-    expect(tooltip).toBe("");
   });
 });

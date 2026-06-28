@@ -6,6 +6,7 @@ import { getLocalizedGearSlotLabel } from "../i18n/localized-domain.ts";
 import type { TranslateFn } from "../i18n/translate.ts";
 import {
   expandItemIdsWithNameVariantsAtSlot,
+  getNonListNameVariantItemIdsAtSlot,
   isItemIdOrNameVariantAtSlot,
 } from "../data/bis-item-variants.ts";
 import { getRaidLootItemIdsForTier } from "../data/raid-loot.ts";
@@ -39,9 +40,11 @@ export type GearUpgradeHintTrack = {
 };
 
 export type GearUpgradeHint = {
-  /** BiS-list targets available as upgrades in this dungeon (priority). */
+  /** Exact BiS-list item ids missing as upgrades in this dungeon (tier 1). */
   bis: GearUpgradeHintTrack;
-  /** Raid loot or ilvl-based upgrades when equipped gear is below dungeon tier. */
+  /** Normal name variants of BiS items missing as upgrades (tier 2). */
+  bisVariant: GearUpgradeHintTrack;
+  /** Spec-relevant ilvl raid loot excluding BiS targets (tier 3). */
   ilvl: GearUpgradeHintTrack;
   equippedCount: number;
   peakDungeonItemLevel: number;
@@ -160,39 +163,62 @@ function pickBestLootItemLevel(
   return Math.max(...itemLevels);
 }
 
+type LootFilterMode = "exact-bis" | "variant-bis" | "ilvl";
+
 function isSlotUpgradeableWithLoot(
   item: CharacterGearItem,
   raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
   dungeonItemLevels: readonly number[],
   equipContext: CharacterEquipContext,
+  mode: LootFilterMode,
   bisItemIdsForSlot?: readonly number[],
-  preferredLootItemIds?: readonly number[],
 ): GearUpgradeSlotHint | null {
-  const isBisTrack = bisItemIdsForSlot !== undefined;
+  if (mode !== "ilvl" && (!bisItemIdsForSlot || bisItemIdsForSlot.length === 0)) {
+    return null;
+  }
+
   const expandedBisItemIds =
-    isBisTrack && bisItemIdsForSlot
+    bisItemIdsForSlot !== undefined
       ? expandItemIdsWithNameVariantsAtSlot(bisItemIdsForSlot, item.slot)
-      : undefined;
+      : [];
+  const variantOnlyBisItemIds =
+    bisItemIdsForSlot !== undefined
+      ? getNonListNameVariantItemIdsAtSlot(bisItemIdsForSlot, item.slot)
+      : [];
 
   const raidLootIds = filterUsableLootItemIds(
     getRaidLootItemIdsForTier(raidKey, item.slot, dungeonItemLevels),
     item.slot,
     equipContext,
-    { filterBySpecStats: !isBisTrack },
+    { filterBySpecStats: mode === "ilvl" },
   );
 
-  const relevantLootIds =
-    expandedBisItemIds !== undefined
-      ? raidLootIds.filter((itemId) => expandedBisItemIds.includes(itemId))
-      : raidLootIds;
+  let relevantLootIds: number[];
+  switch (mode) {
+    case "exact-bis":
+      relevantLootIds = raidLootIds.filter((itemId) =>
+        bisItemIdsForSlot!.includes(itemId),
+      );
+      break;
+    case "variant-bis":
+      relevantLootIds = raidLootIds.filter((itemId) =>
+        variantOnlyBisItemIds.includes(itemId),
+      );
+      break;
+    case "ilvl":
+      relevantLootIds = raidLootIds.filter(
+        (itemId) => !expandedBisItemIds.includes(itemId),
+      );
+      break;
+  }
 
   if (relevantLootIds.length === 0) {
     return null;
   }
 
   const pickOptions: PickBestLootOptions = {
-    filterBySpecStats: !isBisTrack,
-    preferredItemIds: preferredLootItemIds ?? expandedBisItemIds,
+    filterBySpecStats: mode === "ilvl",
+    preferredItemIds: mode === "ilvl" ? undefined : relevantLootIds,
   };
 
   const bestLootItemLevel = pickBestLootItemLevel(
@@ -204,8 +230,25 @@ function isSlotUpgradeableWithLoot(
     return null;
   }
 
-  if (isBisTrack && bisItemIdsForSlot) {
-    if (isItemIdOrNameVariantAtSlot(item.id, bisItemIdsForSlot, item.slot)) {
+  if (mode === "exact-bis") {
+    if (bisItemIdsForSlot!.includes(item.id)) {
+      return null;
+    }
+
+    return {
+      slot: item.slot,
+      bestLootItemId: pickBestLootItemId(
+        relevantLootIds,
+        item.slot,
+        equipContext,
+        pickOptions,
+      ),
+      bestLootItemLevel,
+    };
+  }
+
+  if (mode === "variant-bis") {
+    if (isItemIdOrNameVariantAtSlot(item.id, bisItemIdsForSlot!, item.slot)) {
       return null;
     }
 
@@ -276,6 +319,7 @@ function evaluateBisTrack(
   raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
   equipContext: CharacterEquipContext,
   bisSlotMap: BisSlotMap,
+  mode: "exact-bis" | "variant-bis",
 ): GearUpgradeHintTrack {
   const upgradeSlots: GearUpgradeSlotHint[] = [];
 
@@ -290,6 +334,7 @@ function evaluateBisTrack(
       raidKey,
       dungeonItemLevels,
       equipContext,
+      mode,
       bisItemIdsForSlot,
     );
     if (slotHint) {
@@ -311,18 +356,14 @@ function evaluateIlvlRaidLootTrack(
 
   for (const item of gearItems) {
     const bisItemIdsForSlot = bisSlotMap?.get(item.slot);
-    const preferredLootItemIds =
-      bisItemIdsForSlot !== undefined
-        ? expandItemIdsWithNameVariantsAtSlot(bisItemIdsForSlot, item.slot)
-        : undefined;
 
     const slotHint = isSlotUpgradeableWithLoot(
       item,
       raidKey,
       dungeonItemLevels,
       equipContext,
-      undefined,
-      preferredLootItemIds,
+      "ilvl",
+      bisItemIdsForSlot,
     );
     if (slotHint) {
       upgradeSlots.push(slotHint);
@@ -340,6 +381,7 @@ function emptyGearUpgradeHint(
 ): GearUpgradeHint {
   return {
     bis: EMPTY_HINT_TRACK,
+    bisVariant: EMPTY_HINT_TRACK,
     ilvl: EMPTY_HINT_TRACK,
     equippedCount,
     peakDungeonItemLevel,
@@ -378,6 +420,19 @@ export function evaluateGearUpgradeHint(
             raidKey,
             equipContext,
             bisSlotMap,
+            "exact-bis",
+          )
+        : EMPTY_HINT_TRACK;
+
+    const bisVariant =
+      bisListActive && bisSlotMap
+        ? evaluateBisTrack(
+            gearItems,
+            dungeonItemLevels,
+            raidKey,
+            equipContext,
+            bisSlotMap,
+            "variant-bis",
           )
         : EMPTY_HINT_TRACK;
 
@@ -391,6 +446,7 @@ export function evaluateGearUpgradeHint(
 
     return {
       bis,
+      bisVariant,
       ilvl,
       equippedCount,
       peakDungeonItemLevel,
@@ -401,6 +457,7 @@ export function evaluateGearUpgradeHint(
 
   return {
     bis: EMPTY_HINT_TRACK,
+    bisVariant: EMPTY_HINT_TRACK,
     ilvl: evaluateNaiveIlvlTrack(gearItems, peakDungeonItemLevel),
     equippedCount,
     peakDungeonItemLevel,
@@ -409,12 +466,14 @@ export function evaluateGearUpgradeHint(
   };
 }
 
-/** Cell tint kind: BiS targets take priority over generic ilvl upgrades. */
+/** Cell tint kind: BiS targets (exact or normal variant) take priority over ilvl upgrades. */
 export function getGearHintCellDisplay(
   hint: GearUpgradeHint,
 ): GearHintCellDisplay | null {
-  if (hint.bisListActive && hint.bis.level > 0) {
-    return { kind: "bis", level: hint.bis.level };
+  const bisLevel = Math.max(hint.bis.level, hint.bisVariant.level) as GearUpgradeHintLevel;
+
+  if (hint.bisListActive && bisLevel > 0) {
+    return { kind: "bis", level: bisLevel };
   }
   if (hint.ilvl.level > 0) {
     return { kind: "ilvl", level: hint.ilvl.level };
@@ -439,7 +498,11 @@ function formatUpgradeSlotLabel(
 
 function formatHintTrackTooltip(
   track: GearUpgradeHintTrack,
-  introKey: "gearHint.bisMissing" | "gearHint.raidLootUpgrades" | "gearHint.belowIlvl",
+  introKey:
+    | "gearHint.bisMissing"
+    | "gearHint.bisVariantMissing"
+    | "gearHint.raidLootUpgrades"
+    | "gearHint.belowIlvl",
   hint: GearUpgradeHint,
   locale: ItemTooltipLocale,
   t: TranslateFn,
@@ -475,16 +538,20 @@ export function formatGearUpgradeHintTooltip(
   hint: GearUpgradeHint,
   locale: ItemTooltipLocale = "en",
   t: TranslateFn,
-  options: { listBisMissingSlots?: boolean } = {},
 ): string {
   const parts: string[] = [];
-  const listBisMissingSlots = options.listBisMissingSlots !== false;
 
-  if (hint.bisListActive && hint.bis.level > 0 && listBisMissingSlots) {
+  if (hint.bisListActive && hint.bis.level > 0) {
+    parts.push(
+      formatHintTrackTooltip(hint.bis, "gearHint.bisMissing", hint, locale, t, true),
+    );
+  }
+
+  if (hint.bisListActive && hint.bisVariant.level > 0) {
     parts.push(
       formatHintTrackTooltip(
-        hint.bis,
-        "gearHint.bisMissing",
+        hint.bisVariant,
+        "gearHint.bisVariantMissing",
         hint,
         locale,
         t,
@@ -497,9 +564,7 @@ export function formatGearUpgradeHintTooltip(
     const introKey = hint.slotAware
       ? "gearHint.raidLootUpgrades"
       : "gearHint.belowIlvl";
-    parts.push(
-      formatHintTrackTooltip(hint.ilvl, introKey, hint, locale, t, false),
-    );
+    parts.push(formatHintTrackTooltip(hint.ilvl, introKey, hint, locale, t, false));
   }
 
   return parts.join("\n");
