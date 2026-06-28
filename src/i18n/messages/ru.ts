@@ -168,6 +168,7 @@ export const ruMessages: Messages = {
   },
   gearHint: {
     bisMissing: "{{count}} BiS слот(ов) без целей",
+    bisVariantMissing: "{{count}} BiS слот(ов): улучшение обычной версией",
     raidLootUpgrades: "До {{count}} предметов: возможен лут выше по ilvl",
     belowIlvl: "До {{count}} из {{total}} предметов могут быть ниже ilvl {{ilvl}}",
     ilvlEquipableOnly:
@@ -175,6 +176,7 @@ export const ruMessages: Messages = {
     moreSlots: "+ещё {{count}}",
     slotArrow: "{{slot}} → {{item}}",
     bisBossLoot: "BiS-лут в этом рейде",
+    bisVariantBossLoot: "Обычные версии BiS в этом рейде",
   },
   tierSet: {
     tokensFromRaid: "{{count}} жетон(ов) сета из этого рейда",

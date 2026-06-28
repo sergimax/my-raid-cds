@@ -68,6 +68,17 @@ export function expandItemIdsWithNameVariantsAtSlot(
   return [...expandedIds];
 }
 
+/** Name variants for a slot that are not on the BiS list (e.g. ICC normal vs heroic id). */
+export function getNonListNameVariantItemIdsAtSlot(
+  bisItemIds: readonly number[],
+  gearSlot: number,
+): number[] {
+  const bisItemIdSet = new Set(bisItemIds);
+  return expandItemIdsWithNameVariantsAtSlot(bisItemIds, gearSlot).filter(
+    (itemId) => !bisItemIdSet.has(itemId),
+  );
+}
+
 export function isItemIdOrNameVariantAtSlot(
   itemId: number,
   targetItemIds: readonly number[],

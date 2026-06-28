@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   expandItemIdsWithNameVariantsAtSlot,
   getNameVariantItemIdsAtSlot,
+  getNonListNameVariantItemIdsAtSlot,
   isItemIdOrNameVariantAtSlot,
 } from "./bis-item-variants.ts";
 
@@ -20,5 +21,10 @@ describe("bis-item-variants", () => {
   it("treats equipped normal variant as satisfying the heroic BiS target", () => {
     expect(isItemIdOrNameVariantAtSlot(50067, [50707], 7)).toBe(true);
     expect(isItemIdOrNameVariantAtSlot(50778, [50707], 7)).toBe(false);
+  });
+
+  it("returns only non-list name variants for a BiS slot", () => {
+    expect(getNonListNameVariantItemIdsAtSlot([50707], 7)).toEqual([50067]);
+    expect(getNonListNameVariantItemIdsAtSlot([50067, 50707], 7)).toEqual([]);
   });
 });

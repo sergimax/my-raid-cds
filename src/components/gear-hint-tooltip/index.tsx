@@ -24,29 +24,24 @@ type GearHintTooltipContentProps = {
 };
 
 function BisBossLootSection({
+  titleKey,
   groups,
-  t,
   marginBottom,
-  missingSlotCount,
+  t,
 }: {
+  titleKey: "gearHint.bisBossLoot" | "gearHint.bisVariantBossLoot";
   groups: readonly BossBisLootGroup[];
-  t: TranslateFn;
   marginBottom: number;
-  missingSlotCount?: number;
+  t: TranslateFn;
 }) {
   if (groups.length === 0) {
     return null;
   }
 
-  const sectionTitle =
-    missingSlotCount !== undefined && missingSlotCount > 0
-      ? t("gearHint.bisMissing", { count: missingSlotCount })
-      : t("gearHint.bisBossLoot");
-
   return (
     <Box sx={{ mb: marginBottom }}>
       <Typography variant="caption" component="p" sx={{ fontWeight: 600, mb: 0.5 }}>
-        {sectionTitle}
+        {t(titleKey)}
       </Typography>
       {groups.map((group) => (
         <Box key={group.bossName} sx={{ mb: 0.5, "&:last-child": { mb: 0 } }}>
@@ -73,22 +68,23 @@ function SpecGearHintSection({
   locale: ItemTooltipLocale;
   t: TranslateFn;
 }) {
-  const bossLootGroups = specHint.bisBossLootGroups;
   const specName = specHint.specGear.spec;
 
-  const gearSummary = formatGearUpgradeHintTooltip(
-    specHint.gearHint,
-    locale,
-    t,
-    { listBisMissingSlots: bossLootGroups.length === 0 },
-  );
+  const gearSummary = formatGearUpgradeHintTooltip(specHint.gearHint, locale, t);
   const tokenRows = aggregateTierSetTokenNeeds(specHint.tierSetHint.tokenNeeds);
+  const hasBisLootList = specHint.bisBossLootGroups.length > 0;
+  const hasBisVariantList = specHint.bisVariantBossLootGroups.length > 0;
 
-  if (!gearSummary && tokenRows.length === 0 && bossLootGroups.length === 0) {
+  if (
+    !gearSummary &&
+    tokenRows.length === 0 &&
+    !hasBisLootList &&
+    !hasBisVariantList
+  ) {
     return null;
   }
 
-  const sectionMarginBelowBossLoot = tokenRows.length > 0 ? 1 : 0;
+  const sectionMarginBelowLootLists = tokenRows.length > 0 ? 1 : 0;
 
   return (
     <Box sx={{ mb: 1, "&:last-child": { mb: 0 } }}>
@@ -119,7 +115,7 @@ function SpecGearHintSection({
           component="p"
           sx={{
             mb:
-              bossLootGroups.length > 0 || tokenRows.length > 0 ? 1 : 0,
+              hasBisLootList || hasBisVariantList || tokenRows.length > 0 ? 1 : 0,
             whiteSpace: "pre-line",
           }}
         >
@@ -128,14 +124,17 @@ function SpecGearHintSection({
       ) : null}
 
       <BisBossLootSection
-        groups={bossLootGroups}
+        titleKey="gearHint.bisBossLoot"
+        groups={specHint.bisBossLootGroups}
+        marginBottom={hasBisVariantList ? 1 : sectionMarginBelowLootLists}
         t={t}
-        marginBottom={sectionMarginBelowBossLoot}
-        missingSlotCount={
-          specHint.gearHint.bis.level > 0
-            ? specHint.gearHint.bis.upgradeSlotCount
-            : undefined
-        }
+      />
+
+      <BisBossLootSection
+        titleKey="gearHint.bisVariantBossLoot"
+        groups={specHint.bisVariantBossLootGroups}
+        marginBottom={sectionMarginBelowLootLists}
+        t={t}
       />
 
       {tokenRows.length > 0 ? (

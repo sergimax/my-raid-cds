@@ -1,5 +1,5 @@
 import type { AppLocale } from "../i18n/types.ts";
-import { expandItemIdsWithNameVariantsAtSlot } from "../data/bis-item-variants.ts";
+import { getNonListNameVariantItemIdsAtSlot } from "../data/bis-item-variants.ts";
 import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { TierSetHint } from "../types/tier-sets.ts";
@@ -18,7 +18,10 @@ export type SpecGearHint = {
   specGear: CharacterSpecGear;
   gearHint: GearUpgradeHint;
   tierSetHint: TierSetHint;
+  /** Tier 1: exact BiS list items that drop in this raid row. */
   bisBossLootGroups: BossBisLootGroup[];
+  /** Tier 2: normal (non-list) name variants of BiS items that drop here. */
+  bisVariantBossLootGroups: BossBisLootGroup[];
 };
 
 export type CharacterGearHints = {
@@ -31,11 +34,25 @@ type GetBisSlotMapForSpec = (
   spec: string,
 ) => BisSlotMap;
 
-function expandBisItemIds(slotMap: BisSlotMap): number[] {
+function collectExactBisItemIds(slotMap: BisSlotMap): number[] {
+  const itemIds: number[] = [];
+
+  for (const slotItemIds of slotMap.values()) {
+    for (const itemId of slotItemIds) {
+      if (!itemIds.includes(itemId)) {
+        itemIds.push(itemId);
+      }
+    }
+  }
+
+  return itemIds;
+}
+
+function collectBisVariantItemIds(slotMap: BisSlotMap): number[] {
   const itemIds: number[] = [];
 
   for (const [slot, slotItemIds] of slotMap.entries()) {
-    for (const itemId of expandItemIdsWithNameVariantsAtSlot(slotItemIds, slot)) {
+    for (const itemId of getNonListNameVariantItemIdsAtSlot(slotItemIds, slot)) {
       if (!itemIds.includes(itemId)) {
         itemIds.push(itemId);
       }
@@ -59,30 +76,28 @@ function evaluateSpecGearHint(
   const bisSlotMap = slotMap.size > 0 ? slotMap : undefined;
   const equipContext = { className, spec: specGear.spec };
   const gearHint = evaluateGearUpgradeHint(
-      specGear.gearItems,
-      dungeon,
-      bisSlotMap,
-      equipContext,
-    );
-
-  const missingBisItemIds = [
-    ...new Set(
-      gearHint.bis.upgradeSlots.flatMap((slotHint) => {
-        const bisItemIdsForSlot = slotMap.get(slotHint.slot);
-        if (!bisItemIdsForSlot) {
-          return slotHint.bestLootItemId !== undefined ? [slotHint.bestLootItemId] : [];
-        }
-        return expandItemIdsWithNameVariantsAtSlot(bisItemIdsForSlot, slotHint.slot);
-      }),
-    ),
-  ];
-
-  const bisItemIdsForBossGroups =
-    missingBisItemIds.length > 0 ? missingBisItemIds : expandBisItemIds(slotMap);
+    specGear.gearItems,
+    dungeon,
+    bisSlotMap,
+    equipContext,
+  );
 
   const bisBossLootGroups =
     bisSlotMap !== undefined
-      ? groupBisItemIdsByBossForDungeon(bisItemIdsForBossGroups, dungeon, locale)
+      ? groupBisItemIdsByBossForDungeon(
+          collectExactBisItemIds(slotMap),
+          dungeon,
+          locale,
+        )
+      : [];
+
+  const bisVariantBossLootGroups =
+    bisSlotMap !== undefined
+      ? groupBisItemIdsByBossForDungeon(
+          collectBisVariantItemIds(slotMap),
+          dungeon,
+          locale,
+        )
       : [];
 
   return {
@@ -90,6 +105,7 @@ function evaluateSpecGearHint(
     gearHint,
     tierSetHint: evaluateTierSetHint(specGear.gearItems, dungeon, bisSlotMap),
     bisBossLootGroups,
+    bisVariantBossLootGroups,
   };
 }
 
@@ -136,14 +152,18 @@ export function hasAnyGearHint(hints: CharacterGearHints): boolean {
   const mainActive =
     hints.main &&
     (hints.main.gearHint.bis.level > 0 ||
+      hints.main.gearHint.bisVariant.level > 0 ||
       hints.main.gearHint.ilvl.level > 0 ||
       hints.main.tierSetHint.tokenNeeds.length > 0 ||
-      hints.main.bisBossLootGroups.length > 0);
+      hints.main.bisBossLootGroups.length > 0 ||
+      hints.main.bisVariantBossLootGroups.length > 0);
   const offActive =
     hints.off &&
     (hints.off.gearHint.bis.level > 0 ||
+      hints.off.gearHint.bisVariant.level > 0 ||
       hints.off.gearHint.ilvl.level > 0 ||
       hints.off.tierSetHint.tokenNeeds.length > 0 ||
-      hints.off.bisBossLootGroups.length > 0);
+      hints.off.bisBossLootGroups.length > 0 ||
+      hints.off.bisVariantBossLootGroups.length > 0);
   return Boolean(mainActive || offActive);
 }
