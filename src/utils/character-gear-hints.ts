@@ -1,4 +1,5 @@
 import type { AppLocale } from "../i18n/types.ts";
+import { expandItemIdsWithNameVariantsAtSlot } from "../data/bis-item-variants.ts";
 import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { TierSetHint } from "../types/tier-sets.ts";
@@ -30,15 +31,17 @@ type GetBisSlotMapForSpec = (
   spec: string,
 ) => BisSlotMap;
 
-function collectBisItemIds(slotMap: BisSlotMap): number[] {
+function expandBisItemIds(slotMap: BisSlotMap): number[] {
   const itemIds: number[] = [];
-  for (const slotItemIds of slotMap.values()) {
-    for (const itemId of slotItemIds) {
+
+  for (const [slot, slotItemIds] of slotMap.entries()) {
+    for (const itemId of expandItemIdsWithNameVariantsAtSlot(slotItemIds, slot)) {
       if (!itemIds.includes(itemId)) {
         itemIds.push(itemId);
       }
     }
   }
+
   return itemIds;
 }
 
@@ -64,14 +67,18 @@ function evaluateSpecGearHint(
 
   const missingBisItemIds = [
     ...new Set(
-      gearHint.bis.upgradeSlots
-        .map((slotHint) => slotHint.bestLootItemId)
-        .filter((itemId): itemId is number => itemId !== undefined),
+      gearHint.bis.upgradeSlots.flatMap((slotHint) => {
+        const bisItemIdsForSlot = slotMap.get(slotHint.slot);
+        if (!bisItemIdsForSlot) {
+          return slotHint.bestLootItemId !== undefined ? [slotHint.bestLootItemId] : [];
+        }
+        return expandItemIdsWithNameVariantsAtSlot(bisItemIdsForSlot, slotHint.slot);
+      }),
     ),
   ];
 
   const bisItemIdsForBossGroups =
-    missingBisItemIds.length > 0 ? missingBisItemIds : collectBisItemIds(slotMap);
+    missingBisItemIds.length > 0 ? missingBisItemIds : expandBisItemIds(slotMap);
 
   const bisBossLootGroups =
     bisSlotMap !== undefined
