@@ -11,10 +11,8 @@ import { BisListsPanel } from "../bis-lists-panel/index.tsx";
 import { CharacterForm } from "../character-form/index.tsx";
 import { DungeonForm } from "../dungeon-form/index.tsx";
 import { RaidTrackerTable } from "../raid-tracker-table/index.tsx";
-import {
-  resolveMainToolbarPanelId,
-  TrackerToolbarPanel,
-} from "../tracker-toolbar-panel/index.tsx";
+import { TrackerToolbarPanel } from "../tracker-toolbar-panel/index.tsx";
+import { resolveMainToolbarPanelId } from "../tracker-toolbar-panel/resolve-toolbar-panel-id.ts";
 import { getMainToolbarPanelMeta } from "../tracker-toolbar-panel/toolbar-panel-meta.ts";
 
 type RaidTrackerMainProps = {
