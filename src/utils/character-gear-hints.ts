@@ -55,23 +55,32 @@ function evaluateSpecGearHint(
   const slotMap = getBisSlotMapForSpec(className, specGear.spec);
   const bisSlotMap = slotMap.size > 0 ? slotMap : undefined;
   const equipContext = { className, spec: specGear.spec };
-  const bisBossLootGroups =
-    bisSlotMap !== undefined
-      ? groupBisItemIdsByBossForDungeon(
-          collectBisItemIds(bisSlotMap),
-          dungeon,
-          locale,
-        )
-      : [];
-
-  return {
-    specGear,
-    gearHint: evaluateGearUpgradeHint(
+  const gearHint = evaluateGearUpgradeHint(
       specGear.gearItems,
       dungeon,
       bisSlotMap,
       equipContext,
+    );
+
+  const missingBisItemIds = [
+    ...new Set(
+      gearHint.bis.upgradeSlots
+        .map((slotHint) => slotHint.bestLootItemId)
+        .filter((itemId): itemId is number => itemId !== undefined),
     ),
+  ];
+
+  const bisItemIdsForBossGroups =
+    missingBisItemIds.length > 0 ? missingBisItemIds : collectBisItemIds(slotMap);
+
+  const bisBossLootGroups =
+    bisSlotMap !== undefined
+      ? groupBisItemIdsByBossForDungeon(bisItemIdsForBossGroups, dungeon, locale)
+      : [];
+
+  return {
+    specGear,
+    gearHint,
     tierSetHint: evaluateTierSetHint(specGear.gearItems, dungeon, bisSlotMap),
     bisBossLootGroups,
   };
