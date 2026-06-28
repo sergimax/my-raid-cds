@@ -55,16 +55,17 @@ export type GearHintCellDisplay = {
 
 const BIS_HINT_ALPHAS: Record<GearUpgradeHintLevel, number> = {
   0: 0,
-  1: 0.16,
-  2: 0.26,
-  3: 0.36,
+  1: 0.2,
+  2: 0.32,
+  3: 0.44,
 };
 
+/** Blue intensity for generic ilvl upgrades (not dungeon ilvl-tier rainbow). */
 const ILVL_HINT_ALPHAS: Record<GearUpgradeHintLevel, number> = {
   0: 0,
-  1: 0.12,
-  2: 0.2,
-  3: 0.28,
+  1: 0.16,
+  2: 0.28,
+  3: 0.4,
 };
 
 const MAX_TOOLTIP_SLOT_LABELS = 4;
@@ -579,7 +580,16 @@ function hintDisplayBackgroundColor(
     return alpha(theme.palette.warning.main, BIS_HINT_ALPHAS[display.level]);
   }
 
-  return alpha(theme.palette.text.secondary, ILVL_HINT_ALPHAS[display.level]);
+  const infoMain = theme.palette.info?.main ?? theme.palette.primary.main;
+  return alpha(infoMain, ILVL_HINT_ALPHAS[display.level]);
+}
+
+/** Exported for tests — toggle cell tint (amber BiS or blue ilvl by hint level). */
+export function getGearHintCellBackgroundColor(
+  display: GearHintCellDisplay,
+  theme: Theme,
+): string | undefined {
+  return hintDisplayBackgroundColor(display, [1], theme);
 }
 
 export function gearUpgradeHintCellSx(
