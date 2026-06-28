@@ -1,6 +1,7 @@
 import { Stack, Table, TableBody, TableContainer } from "@mui/material";
 import { memo, useCallback, useMemo, useState } from "react";
 import { ExportPanel } from "../export-panel/index.tsx";
+import { getExportToolbarPanelMeta } from "../tracker-toolbar-panel/toolbar-panel-meta.ts";
 import { TrackerToolbarPanel } from "../tracker-toolbar-panel/index.tsx";
 import { CharacterEditDialog } from "../character-edit-dialog/index.tsx";
 import { DungeonEditDialog } from "../dungeon-edit-dialog/index.tsx";
@@ -98,15 +99,19 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
     handleConfirmDelete,
   } = tableState;
 
+  const exportToolbarPanelMeta = useMemo(
+    () => getExportToolbarPanelMeta(t, closeExportPanel),
+    [closeExportPanel, t],
+  );
+
   return (
     <Stack spacing={2}>
       {showExportPanel ? (
-        <TrackerToolbarPanel panelId="export">
+        <TrackerToolbarPanel panelId="export" {...exportToolbarPanelMeta}>
           <ExportPanel
             characters={characters}
             visibleDungeons={sortedDungeons}
             dungeonToggles={dungeonToggles}
-            onClose={closeExportPanel}
           />
         </TrackerToolbarPanel>
       ) : null}

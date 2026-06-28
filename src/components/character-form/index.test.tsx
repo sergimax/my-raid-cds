@@ -18,7 +18,6 @@ describe("CharacterForm", () => {
     onMainGearScoreTextChange: vi.fn(),
     onOffSpecChange: vi.fn(),
     onOffGearScoreTextChange: vi.fn(),
-    onCancel: vi.fn(),
     onSubmit: vi.fn(),
   };
 

@@ -15,6 +15,5 @@ export type CharacterFormProps = {
   onMainGearScoreTextChange: (value: string) => void;
   onOffSpecChange: (value: string) => void;
   onOffGearScoreTextChange: (value: string) => void;
-  onCancel: () => void;
   onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
 };

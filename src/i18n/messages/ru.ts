@@ -69,6 +69,7 @@ export const ruMessages: Messages = {
   characterForm: {
     title: "Новый персонаж",
     addCharacter: "Добавить персонажа",
+    closeAria: "Закрыть форму добавления персонажа",
     main: "Основной",
     off: "Второй",
     gearScore: "GearScore",
@@ -77,6 +78,7 @@ export const ruMessages: Messages = {
   dungeonForm: {
     title: "Новое подземелье",
     addDungeon: "Добавить подземелье",
+    closeAria: "Закрыть форму добавления подземелья",
     shortName: "Короткое имя",
     shortNameHelper:
       "Сокращение для компактного вида. Оставьте пустым для известных рейдов.",
@@ -151,6 +153,7 @@ export const ruMessages: Messages = {
   },
   exportPanel: {
     title: "Экспорт",
+    closeAria: "Закрыть панель экспорта",
     instructions:
       "Отфильтруйте подземелья поиском в таблице, скопируйте строки ниже — по одной на рейд с персонажами без КД (переключатель выкл.). Отметьте спеки для каждого персонажа.",
     noCharacters: "Добавьте персонажа для формирования сводки.",
