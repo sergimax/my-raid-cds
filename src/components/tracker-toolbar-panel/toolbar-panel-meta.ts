@@ -1,4 +1,8 @@
 import type { TranslateFn } from "../../i18n/translate.ts";
+import {
+  TRACKER_EXPORT_PANEL_MAX_WIDTH,
+  TRACKER_NARROW_PANEL_MAX_WIDTH,
+} from "./constants.ts";
 import type { MainToolbarPanelId } from "./resolve-toolbar-panel-id.ts";
 
 export type ToolbarPanelMeta = {
@@ -7,6 +11,7 @@ export type ToolbarPanelMeta = {
   descriptionTooltip?: string;
   closeAriaLabel: string;
   onClose: () => void;
+  maxWidth?: number;
 };
 
 type MainToolbarPanelHandlers = {
@@ -26,12 +31,14 @@ export function getMainToolbarPanelMeta(
         title: t("characterForm.title"),
         closeAriaLabel: t("characterForm.closeAria"),
         onClose: handlers.closeCharacterForm,
+        maxWidth: TRACKER_NARROW_PANEL_MAX_WIDTH,
       };
     case "dungeon":
       return {
         title: t("dungeonForm.title"),
         closeAriaLabel: t("dungeonForm.closeAria"),
         onClose: handlers.closeDungeonForm,
+        maxWidth: TRACKER_NARROW_PANEL_MAX_WIDTH,
       };
     case "bis":
       return {
@@ -53,5 +60,6 @@ export function getExportToolbarPanelMeta(
     description: t("exportPanel.instructions"),
     closeAriaLabel: t("exportPanel.closeAria"),
     onClose,
+    maxWidth: TRACKER_EXPORT_PANEL_MAX_WIDTH,
   };
 }

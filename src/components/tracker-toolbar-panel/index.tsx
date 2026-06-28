@@ -17,6 +17,8 @@ export type TrackerToolbarPanelProps = {
   descriptionTooltip?: string;
   closeAriaLabel: string;
   onClose: () => void;
+  /** When set, the outlined card hugs narrow content instead of stretching full width. */
+  maxWidth?: number;
   children: ReactNode;
 };
 
@@ -28,6 +30,7 @@ export function TrackerToolbarPanel({
   descriptionTooltip,
   closeAriaLabel,
   onClose,
+  maxWidth,
   children,
 }: TrackerToolbarPanelProps) {
   useScrollToTopOnPanelOpen(panelId);
@@ -50,7 +53,11 @@ export function TrackerToolbarPanel({
     <Paper
       variant="outlined"
       data-toolbar-panel={panelId}
-      sx={{ p: { xs: 1.25, sm: 1.5 } }}
+      sx={{
+        p: { xs: 1.25, sm: 1.5 },
+        width: maxWidth ? "100%" : undefined,
+        maxWidth,
+      }}
     >
       <Stack spacing={1.25}>
         <Stack
