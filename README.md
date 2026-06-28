@@ -120,6 +120,8 @@ src/
 └── vite-env.d.ts     # __APP_VERSION__ declaration
 
 scripts/              # build-wow-data.mjs, bis-preset-format.mjs, comment-bis-presets.mjs, resolve-bis-sources.mjs, bis-list-sources.md, titans-bis/ (generate + parse + source.md), wow-item-gear-slots.mjs, wowsims-db.json (WowSims item DB for data build)
+
+docs/                 # roadmap.md (future feature ideas)
 ```
 
 Tests live next to source as `*.test.ts` / `*.test.tsx` (e.g. `utils/dungeon-toggles.test.ts`, `storage/parse.test.ts`).
