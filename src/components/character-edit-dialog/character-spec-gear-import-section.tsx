@@ -114,10 +114,7 @@ export function CharacterSpecGearImportSection({
                 })
               : ""}
           </Typography>
-          <Box
-            component="ul"
-            sx={{ m: 0, pl: 2.5, maxHeight: 160, overflowY: "auto" }}
-          >
+          <Box component="ul" sx={{ m: 0, pl: 2.5 }}>
             {sortedGearItems.map((item) => (
               <Typography
                 key={`${item.slot}-${item.id}`}
@@ -146,11 +143,16 @@ export function CharacterSpecGearImportSection({
           setImportNotice("");
         }}
         multiline
-        minRows={3}
-        maxRows={8}
+        minRows={2}
+        maxRows={4}
         placeholder={t("characterEdit.wsePlaceholder")}
         helperText={t("characterEdit.wseHelper")}
         fullWidth
+        slotProps={{
+          input: {
+            sx: { py: 1 },
+          },
+        }}
       />
       <Box>
         <Button
