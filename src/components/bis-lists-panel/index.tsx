@@ -92,7 +92,9 @@ function isSlotEditing(
 
 const slotViewContentSx = {
   display: "flex",
-  alignItems: "center",
+  flexDirection: "column",
+  alignItems: "flex-start",
+  gap: 0.5,
   minHeight: 40,
   py: 0.5,
   fontSize: "0.8125rem",
