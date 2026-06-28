@@ -64,7 +64,7 @@ export const ClassSpecNames: Record<ClassNameType, Record<string, SpecNameEntry>
     },
     Feral: {
       en: "Feral",
-      ru: "Звериный",
+      ru: "Сила зверя",
       shortEn: "Feral",
       shortRu: "Ферал",
     },

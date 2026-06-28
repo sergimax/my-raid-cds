@@ -69,7 +69,7 @@ export const enMessages = {
     main: "Main",
     off: "Off",
     gearScore: "Gear score",
-    gearScoreHelper: "Optional — from GearScore addon",
+    gearScoreHelper: "Character GearScore",
   },
   dungeonForm: {
     title: "New dungeon",
@@ -89,7 +89,7 @@ export const enMessages = {
   },
   characterEdit: {
     title: "Edit character details",
-    importGear: "Import gear from WowSimsExporter",
+    importGear: "Import gear from addon WowSimsExporter (export /wse export)",
     mainSpecGear: "Main spec gear",
     offSpecGear: "Off spec gear",
     storedGear: "Stored gear",
@@ -98,7 +98,7 @@ export const enMessages = {
     wseJson: "WowSimsExporter JSON",
     wsePlaceholder: "Paste output from /wse export",
     wseHelper:
-      "Imports equipped items (item ids, enchants, gems). Gear score stays manual.",
+      "Imports equipped items (item ids, enchants, gems)",
     importButton: "Import gear",
     importedSummary: "Imported {{summary}}.",
     importedSpec: "Spec: {{spec}}.",
