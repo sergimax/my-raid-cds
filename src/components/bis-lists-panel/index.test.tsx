@@ -5,7 +5,6 @@ import { renderWithTheme, screen } from "../../test/render-with-theme.tsx";
 
 describe("BisListsPanel", () => {
   it("shows custom list UI for specs without a built-in preset", async () => {
-    Element.prototype.scrollIntoView = vi.fn();
     const user = userEvent.setup();
     renderWithTheme(<BisListsPanel onClose={vi.fn()} />);
 
