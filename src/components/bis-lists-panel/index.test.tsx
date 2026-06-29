@@ -12,16 +12,16 @@ describe("BisListsPanel", () => {
     expect(screen.getByRole("link", { name: /Sanctified Scourgelord Helmet/i })).toBeInTheDocument();
   });
 
-  it("shows custom list UI for specs without a built-in preset", async () => {
+  it("shows built-in preset items for Warrior Arms", async () => {
     const user = userEvent.setup();
     renderWithTheme(<BisListsPanel />);
 
     await user.click(screen.getByRole("combobox", { name: /^Class/ }));
     await user.click(screen.getByRole("option", { name: /Warrior/ }));
+    await user.click(screen.getByRole("combobox", { name: /^Spec/ }));
+    await user.click(screen.getByRole("option", { name: /Arms/ }));
 
-    expect(
-      screen.getByText(/No built-in BiS list for Warrior Arms/i),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Save list/i })).toBeInTheDocument();
+    expect(screen.getByText(/Arms \(icy-veins/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Shadowmourne/i })).toBeInTheDocument();
   });
 });
