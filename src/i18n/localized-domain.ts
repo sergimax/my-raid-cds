@@ -6,6 +6,7 @@ import { DungeonDifficulty, type Dungeon } from "../types/dungeons.ts";
 import { EmblemKey, emblemLabels } from "../assets/emblems/emblem-icons.ts";
 import type { AppLocale } from "./types.ts";
 import { resolveDungeonRaidKey } from "../utils/resolve-dungeon-raid-key.ts";
+import { formatDungeonTypeLabel } from "../utils/dungeon-type.ts";
 
 const classNamesRu: Record<ClassNameType, string> = {
   [ClassName.DeathKnight]: "Рыцарь смерти",
@@ -155,4 +156,20 @@ export function getLocalizedDungeonDisplayName(
     return dungeon.shortName;
   }
   return dungeon.name;
+}
+
+/** Compact table: short raid name + size (+ skull for Heroic), e.g. `ICC 25 ☠️`. */
+export function getLocalizedDungeonCompactLabel(
+  dungeon: Pick<Dungeon, "name" | "shortName" | "raidKey" | "size" | "difficulty">,
+  locale: AppLocale,
+  heroicSkullIcon = "☠️",
+): string {
+  const shortName = getLocalizedDungeonDisplayName(dungeon, locale, true);
+  const typeLabel = formatDungeonTypeLabel(
+    dungeon,
+    locale,
+    dungeon.difficulty === DungeonDifficulty.HEROIC ? "skull" : "suffix",
+    heroicSkullIcon,
+  );
+  return `${shortName} ${typeLabel}`;
 }
