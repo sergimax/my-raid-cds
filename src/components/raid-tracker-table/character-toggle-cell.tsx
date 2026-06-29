@@ -1,5 +1,5 @@
 import { Switch, TableCell, Tooltip } from "@mui/material";
-import { useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
@@ -25,7 +25,28 @@ type CharacterToggleCellProps = {
   onDungeonToggle: (characterId: string, dungeonId: string) => void;
 };
 
-export function CharacterToggleCell({
+function areCharacterToggleCellPropsEqual(
+  previous: CharacterToggleCellProps,
+  next: CharacterToggleCellProps,
+): boolean {
+  if (previous.character !== next.character) {
+    return false;
+  }
+  if (previous.dungeon !== next.dungeon) {
+    return false;
+  }
+  if (previous.onDungeonToggle !== next.onDungeonToggle) {
+    return false;
+  }
+  const characterId = previous.character.id;
+  const dungeonId = previous.dungeon.id;
+  return (
+    isCooldownOn(previous.dungeonToggles, characterId, dungeonId) ===
+    isCooldownOn(next.dungeonToggles, characterId, dungeonId)
+  );
+}
+
+export const CharacterToggleCell = memo(function CharacterToggleCell({
   character,
   dungeon,
   dungeonToggles,
@@ -51,7 +72,7 @@ export function CharacterToggleCell({
     dungeon.id,
   );
 
-  const showTooltip = !isDungeonMarkedComplete && hasAnyGearHint(gearHints);
+  const hasGearHints = hasAnyGearHint(gearHints);
   const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
 
   const mainDisplay = gearHints.main
@@ -61,19 +82,44 @@ export function CharacterToggleCell({
     ? getGearHintCellDisplay(gearHints.off.gearHint)
     : null;
   const hasBothSpecHints = Boolean(mainDisplay && offDisplay);
-  const cellHintSx = isDungeonMarkedComplete
-    ? {}
-    : hasBothSpecHints
-      ? gearUpgradeHintDualCellSx(mainDisplay, offDisplay, dungeon.itemLevel)
-      : gearUpgradeHintCellSx(mainDisplay ?? offDisplay, dungeon.itemLevel);
+
+  const cellHintSx = useMemo(() => {
+    if (isDungeonMarkedComplete) {
+      return {};
+    }
+    if (hasBothSpecHints) {
+      return gearUpgradeHintDualCellSx(mainDisplay, offDisplay, dungeon.itemLevel);
+    }
+    return gearUpgradeHintCellSx(mainDisplay ?? offDisplay, dungeon.itemLevel);
+  }, [
+    dungeon.itemLevel,
+    hasBothSpecHints,
+    isDungeonMarkedComplete,
+    mainDisplay,
+    offDisplay,
+  ]);
+
+  const handleToggle = useCallback(() => {
+    onDungeonToggle(character.id, dungeon.id);
+  }, [character.id, dungeon.id, onDungeonToggle]);
+
+  const tooltipTitle = useMemo(
+    () => (
+      <GearHintTooltipContent
+        gearHints={gearHints}
+        characterClassName={character.class?.name}
+        locale={locale}
+        t={t}
+      />
+    ),
+    [character.class?.name, gearHints, locale, t],
+  );
 
   const toggleSwitch = (
     <Switch
       size="small"
       checked={isDungeonMarkedComplete}
-      onChange={() => {
-        onDungeonToggle(character.id, dungeon.id);
-      }}
+      onChange={handleToggle}
       slotProps={{
         input: {
           "aria-label": t("table.toggleAria", {
@@ -88,24 +134,29 @@ export function CharacterToggleCell({
   return (
     <TableCell
       align="center"
-      sx={[CHARACTER_BODY_CELL_SX, cellHintSx]}
+      sx={[
+        CHARACTER_BODY_CELL_SX,
+        hasGearHints && {
+          transition: (theme) =>
+            theme.transitions.create(["background", "background-color"], {
+              duration: theme.transitions.duration.shortest,
+            }),
+        },
+        cellHintSx,
+      ]}
     >
-      {showTooltip ? (
+      {hasGearHints ? (
         <Tooltip
+          disableHoverListener={isDungeonMarkedComplete}
+          disableFocusListener={isDungeonMarkedComplete}
+          disableTouchListener={isDungeonMarkedComplete}
           disableInteractive={false}
           slotProps={{
             tooltip: {
               sx: { maxWidth: "none", p: 1 },
             },
           }}
-          title={
-            <GearHintTooltipContent
-              gearHints={gearHints}
-              characterClassName={character.class?.name}
-              locale={locale}
-              t={t}
-            />
-          }
+          title={tooltipTitle}
         >
           <span>{toggleSwitch}</span>
         </Tooltip>
@@ -114,4 +165,4 @@ export function CharacterToggleCell({
       )}
     </TableCell>
   );
-}
+}, areCharacterToggleCellPropsEqual);
