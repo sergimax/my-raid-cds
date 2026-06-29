@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { IconButton, Stack, TableCell, TableRow, Tooltip } from "@mui/material";
 import { useTranslation } from "../../i18n/use-translation.ts";
+import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
@@ -46,6 +47,7 @@ export function DungeonTableRow({
   onRequestDeleteDungeon,
 }: DungeonTableRowProps) {
   const { t, locale } = useTranslation();
+  const { localState: bisListsLocalState } = useBisListsContext();
   const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
 
   return (
@@ -100,6 +102,8 @@ export function DungeonTableRow({
           dungeon={dungeon}
           dungeonToggles={dungeonToggles}
           onDungeonToggle={onDungeonToggle}
+          locale={locale}
+          bisListsLocalState={bisListsLocalState}
         />
       ))}
     </TableRow>

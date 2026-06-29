@@ -1,9 +1,10 @@
 import { Switch, TableCell, Tooltip } from "@mui/material";
 import { memo, useCallback, useMemo, useState } from "react";
-import type { CharacterRecord } from "../../types/characters.ts";
+import type { AppLocale } from "../../i18n/types.ts";
+import type { CharacterRecord, ClassName } from "../../types/characters.ts";
+import type { LocalBisListsState } from "../../types/bis-lists.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
-import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
 import {
@@ -15,6 +16,7 @@ import {
   gearUpgradeHintCellSx,
   getGearHintCellDisplay,
 } from "../../utils/gear-upgrade-hint.ts";
+import { resolveBisSlotMap } from "../../utils/bis-lists.ts";
 import { GearHintTooltipContent } from "../gear-hint-tooltip/index.tsx";
 import { CHARACTER_BODY_CELL_SX } from "./table-layout.ts";
 
@@ -23,6 +25,8 @@ type CharacterToggleCellProps = {
   dungeon: DungeonRecord;
   dungeonToggles: DungeonToggles;
   onDungeonToggle: (characterId: string, dungeonId: string) => void;
+  locale: AppLocale;
+  bisListsLocalState: LocalBisListsState;
 };
 
 function areCharacterToggleCellPropsEqual(
@@ -38,6 +42,12 @@ function areCharacterToggleCellPropsEqual(
   if (previous.onDungeonToggle !== next.onDungeonToggle) {
     return false;
   }
+  if (previous.locale !== next.locale) {
+    return false;
+  }
+  if (previous.bisListsLocalState !== next.bisListsLocalState) {
+    return false;
+  }
   const characterId = previous.character.id;
   const dungeonId = previous.dungeon.id;
   return (
@@ -51,19 +61,26 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
   dungeon,
   dungeonToggles,
   onDungeonToggle,
+  locale,
+  bisListsLocalState,
 }: CharacterToggleCellProps) {
-  const bisLists = useBisListsContext();
-  const { locale, t } = useTranslation();
+  const { t } = useTranslation();
+
+  const getBisSlotMapForSpec = useCallback(
+    (className: ClassName, spec: string) =>
+      resolveBisSlotMap(className, spec, bisListsLocalState),
+    [bisListsLocalState],
+  );
 
   const gearHints = useMemo(
     () =>
       evaluateCharacterGearHints(
         character,
         dungeon,
-        bisLists.getBisSlotMapForSpec,
+        getBisSlotMapForSpec,
         locale,
       ),
-    [bisLists.getBisSlotMapForSpec, character, dungeon, locale],
+    [character, dungeon, getBisSlotMapForSpec, locale],
   );
 
   const isDungeonMarkedComplete = isCooldownOn(
