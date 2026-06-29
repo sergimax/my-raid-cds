@@ -363,8 +363,7 @@ export function BisListsPanel() {
     selectedPreset && !isLocalBisPreset(selectedPreset),
   );
   const editorSessionKey = `${className}:${activeSpec}:${selectedPresetId ?? "none"}`;
-  const [trackedEditorSessionKey, setTrackedEditorSessionKey] =
-    useState(editorSessionKey);
+  const [trackedEditorSessionKey, setTrackedEditorSessionKey] = useState("");
 
   const equipContext = useMemo<CharacterEquipContext>(
     () => ({ className, spec: activeSpec }),
