@@ -107,6 +107,8 @@ function renderPinnedBody(
           name={dungeon.name}
           shortName={dungeon.shortName}
           raidKey={dungeon.raidKey}
+          size={dungeon.size}
+          difficulty={dungeon.difficulty}
           compact={compactTable}
           emblem={dungeon.emblem ?? null}
         />

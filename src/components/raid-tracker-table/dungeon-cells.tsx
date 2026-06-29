@@ -1,6 +1,6 @@
 import { Box, Chip, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import { useTranslation } from "../../i18n/use-translation.ts";
-import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
+import { getLocalizedDungeonCompactLabel, getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
 import {
   DungeonDifficulty,
   type Dungeon,
@@ -25,19 +25,29 @@ export function DungeonNameCell({
   name,
   shortName,
   raidKey,
+  size,
+  difficulty,
   compact,
   emblem,
 }: {
   name: string;
   shortName?: string;
   raidKey?: Dungeon["raidKey"];
+  size: DungeonSize;
+  difficulty: DungeonDifficultyType;
   compact: boolean;
   emblem: EmblemKey | null;
 }) {
-  const { locale } = useTranslation();
-  const dungeon = { name, shortName, raidKey };
-  const displayName = getLocalizedDungeonDisplayName(dungeon, locale, compact);
-  const fullName = getLocalizedDungeonDisplayName(dungeon, locale, false);
+  const { locale, t } = useTranslation();
+  const dungeon = { name, shortName, raidKey, size, difficulty };
+  const displayName = compact
+    ? getLocalizedDungeonCompactLabel(dungeon, locale, t("table.heroicSkullIcon"))
+    : getLocalizedDungeonDisplayName(dungeon, locale, false);
+  const fullName = getLocalizedDungeonDisplayName(
+    { name, shortName, raidKey },
+    locale,
+    false,
+  );
   const showFullNameTooltip = compact && displayName !== fullName;
 
   const nameLabel = (
