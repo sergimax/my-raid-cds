@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.30.0] - 2026-06-29
+
+### Added
+
+- **Community BiS presets:** Holy Priest, Subtlety/Assassination Rogue, Destruction Warlock, Arms/Protection Warrior, Beast Mastery/Survival Hunter, and Frost Mage (Warmane, Circle, Icy Veins sources in `scripts/bis-list-sources.md`). Every WotLK spec now has at least one built-in BiS list.
+
+### Changed
+
+- **`generate:bis-sources`:** Parses `# Class - Spec` sections with `## Server - Author - List - URL` sub-blocks (legacy flat blocks still supported); expanded slot labels (Russian, wand/shield/two-hand, ring/trinket variants).
+- **Gear upgrade hints:** Tint and tooltip hidden when the character–dungeon toggle is on (marked complete); hint tooltip closes when toggling the switch while it is open.
+
+### Fixed
+
+- **BiS panel:** Slot items no longer missing on first open when a default preset is already selected.
+- **Toggle cells with gear hints:** Switch thumb animation stays smooth (per-cell memoization; stable tooltip wrapper).
+
 ## [1.29.0] - 2026-06-27
 
 ### Added
