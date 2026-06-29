@@ -1,5 +1,5 @@
 import { Switch, TableCell, Tooltip } from "@mui/material";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
 import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
@@ -99,9 +99,22 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
     offDisplay,
   ]);
 
+  const [gearHintTooltipOpen, setGearHintTooltipOpen] = useState(false);
+
   const handleToggle = useCallback(() => {
+    setGearHintTooltipOpen(false);
     onDungeonToggle(character.id, dungeon.id);
   }, [character.id, dungeon.id, onDungeonToggle]);
+
+  const handleGearHintTooltipOpen = useCallback(() => {
+    if (!isDungeonMarkedComplete) {
+      setGearHintTooltipOpen(true);
+    }
+  }, [isDungeonMarkedComplete]);
+
+  const handleGearHintTooltipClose = useCallback(() => {
+    setGearHintTooltipOpen(false);
+  }, []);
 
   const tooltipTitle = useMemo(
     () => (
@@ -147,9 +160,9 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
     >
       {hasGearHints ? (
         <Tooltip
-          disableHoverListener={isDungeonMarkedComplete}
-          disableFocusListener={isDungeonMarkedComplete}
-          disableTouchListener={isDungeonMarkedComplete}
+          open={!isDungeonMarkedComplete && gearHintTooltipOpen}
+          onOpen={handleGearHintTooltipOpen}
+          onClose={handleGearHintTooltipClose}
           disableInteractive={false}
           slotProps={{
             tooltip: {
