@@ -45,7 +45,13 @@ export function CharacterToggleCell({
     [bisLists.getBisSlotMapForSpec, character, dungeon, locale],
   );
 
-  const showTooltip = hasAnyGearHint(gearHints);
+  const isDungeonMarkedComplete = isCooldownOn(
+    dungeonToggles,
+    character.id,
+    dungeon.id,
+  );
+
+  const showTooltip = !isDungeonMarkedComplete && hasAnyGearHint(gearHints);
   const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
 
   const mainDisplay = gearHints.main
@@ -55,14 +61,16 @@ export function CharacterToggleCell({
     ? getGearHintCellDisplay(gearHints.off.gearHint)
     : null;
   const hasBothSpecHints = Boolean(mainDisplay && offDisplay);
-  const cellHintSx = hasBothSpecHints
-    ? gearUpgradeHintDualCellSx(mainDisplay, offDisplay, dungeon.itemLevel)
-    : gearUpgradeHintCellSx(mainDisplay ?? offDisplay, dungeon.itemLevel);
+  const cellHintSx = isDungeonMarkedComplete
+    ? {}
+    : hasBothSpecHints
+      ? gearUpgradeHintDualCellSx(mainDisplay, offDisplay, dungeon.itemLevel)
+      : gearUpgradeHintCellSx(mainDisplay ?? offDisplay, dungeon.itemLevel);
 
   const toggleSwitch = (
     <Switch
       size="small"
-      checked={isCooldownOn(dungeonToggles, character.id, dungeon.id)}
+      checked={isDungeonMarkedComplete}
       onChange={() => {
         onDungeonToggle(character.id, dungeon.id);
       }}
