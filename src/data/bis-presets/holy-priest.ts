@@ -29,6 +29,8 @@ export const holyPriestBis: BuiltInSpecBis = {
         { slot: 9, itemIds: [50699] },
         { slot: 10, itemIds: [54585] },
         { slot: 11, itemIds: [50636] },
+        { slot: 12, itemIds: [54590] },
+        { slot: 13, itemIds: [47432] },
         { slot: 14, itemIds: [50731] },
         { slot: 16, itemIds: [50631] },
       ],

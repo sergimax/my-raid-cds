@@ -80,6 +80,17 @@ const NAME_ALIASES = {
   "память малигоса": "Memory of Malygos",
   "избавление от кошмаров": "Nightmare Ender",
   "аркус, большой посох антонидаса": "Archus, Greatstaff of Antonidas",
+  "сумеречная чешуя": "Sharpened Twilight Scale",
+  "утешение павших": "Solace of the Fallen",
+  "прогнивший ошейник прелести": "Precious's Putrid Collar",
+  "плащ убийцы мрачного свода": "Shadowvault Slayer's Cloak",
+  "поручи полной тени": "Umbrage Armbands",
+  "пепельное кольцо бесконечного отмщения": "Ashen Band of Endless Vengeance",
+  "кольцо костяного колосса": "Band of the Bone Colossus",
+  "заостренная сумеречная чешуя": "Sharpened Twilight Scale",
+  "геркумлийский боевой знак": "Herkuml War Token",
+  "тотем расколотого льда бизури": "Bizuri's Totem of Shattered Ice",
+  "зов хаоса, топор королей лордерона": "Havoc's Call, Blade of Lordaeron Kings",
 };
 
 function normalizeName(name) {
@@ -410,6 +421,9 @@ function splitLabelValue(line) {
 function resolveSlotLabel(label, usedSlots) {
   let normalized = label.replace(/[_-]/g, " ").replace(/\s+/g, " ").trim();
   if (normalized.startsWith("тринкет") || normalized.startsWith("трынкет")) {
+    normalized = normalized.includes("2") ? "trinket 2" : "trinket 1";
+  }
+  if (normalized.startsWith("аксессуар")) {
     normalized = normalized.includes("2") ? "trinket 2" : "trinket 1";
   }
 
