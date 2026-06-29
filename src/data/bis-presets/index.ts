@@ -21,26 +21,44 @@ import { restorationDruidBis } from "./restoration-druid.ts";
 import { balanceDruidBis } from "./balance-druid.ts";
 import { feralDruidBis } from "./feral-druid.ts";
 import { furyWarriorBis } from "./fury-warrior.ts";
+import { armsWarriorBis } from "./arms-warrior.ts";
+import { protectionWarriorBis } from "./protection-warrior.ts";
+import { holyPriestBis } from "./holy-priest.ts";
+import { subtletyRogueBis } from "./subtlety-rogue.ts";
+import { assassinationRogueBis } from "./assassination-rogue.ts";
+import { destructionWarlockBis } from "./destruction-warlock.ts";
+import { beastMasteryHunterBis } from "./beast-mastery-hunter.ts";
+import { survivalHunterBis } from "./survival-hunter.ts";
+import { frostMageBis } from "./frost-mage.ts";
 
 export const BuiltInBisPresets: readonly BuiltInSpecBis[] = [
   bloodDeathKnightBis,
   unholyDeathKnightBis,
   furyWarriorBis,
+  armsWarriorBis,
+  protectionWarriorBis,
   feralDruidBis,
   balanceDruidBis,
   restorationDruidBis,
+  holyPriestBis,
   shadowPriestBis,
   disciplinePriestBis,
   arcaneMageBis,
   fireMageBis,
+  frostMageBis,
   marksmanshipHunterBis,
+  beastMasteryHunterBis,
+  survivalHunterBis,
   retributionPaladinBis,
   protectionPaladinBis,
   holyPaladinBis,
   combatRogueBis,
+  subtletyRogueBis,
+  assassinationRogueBis,
   frostDeathKnightBis,
   demonologyWarlockBis,
   afflictionWarlockBis,
+  destructionWarlockBis,
   elementalShamanBis,
   restorationShamanBis,
   enhancementShamanBis,
