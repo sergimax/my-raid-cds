@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.31.0] - 2026-06-29
+
+### Changed
+
+- **Compact table:** Dungeon name column shows short raid name + size (+ skull for Heroic), e.g. `ICC 25 ☠️` / `ЦЛК 25`, with full name in tooltip (`getLocalizedDungeonCompactLabel`).
+
+### Fixed
+
+- **Toggle cells with gear hints:** Per-cell memo equality includes `locale` and BiS list state so upgrade hints and toggle labels stay current after language or preset changes.
+
 ## [1.30.0] - 2026-06-29
 
 ### Added

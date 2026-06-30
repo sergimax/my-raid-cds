@@ -37,7 +37,7 @@ Open [http://localhost:5173](http://localhost:5173).
 ## Usage
 
 1. **Add a character** — Click **Add character** to open an outlined panel with title and close control. Enter name (max 12 characters), class, and optional main/off spec with gear score (from GearScore addon), then **Add character**. Close with ✕ in the panel header. Only one toolbar panel is open at a time; closing or switching panels clears entered values.
-2. **Add a dungeon** — Click **Add dungeon** (same panel shell as add character). Enter name, optional short name (max 12 characters; shown in compact table view), size (5/10/20/25/40), item level(s) (e.g. `200` or `200 / 213`), and difficulty (Normal/Heroic), then **Add dungeon**. Close with ✕ in the panel header. When short name is left blank, a default abbreviation is applied for known WotLK raid names. Same single-panel and reset rules as the character form.
+2. **Add a dungeon** — Click **Add dungeon** (same panel shell as add character). Enter name, optional short name (max 12 characters; combined with size and difficulty in compact table view), size (5/10/20/25/40), item level(s) (e.g. `200` or `200 / 213`), and difficulty (Normal/Heroic), then **Add dungeon**. Close with ✕ in the panel header. When short name is left blank, a default abbreviation is applied for known WotLK raid names. Same single-panel and reset rules as the character form.
 3. **Add from template** — When the dungeon list is empty, click **Add from template** to load WoW WotLK raids (one-shot; the action is hidden once any dungeon exists). Closes any open toolbar panel first.
 4. **Toggle cooldowns** — Use the switch in each character column for a dungeon row.
 5. **Sort** — Click a column header (name, type, item level, completions) or a character header to sort rows. **Type** combines size and difficulty: Normal shows size only (`25`, `10`); Heroic shows size with a skull icon (`25 ☠️`). Descending type sort prioritizes current-tier raids (`25H` → `25` → `10H` → `10` → `5` → `40` → `20`). On narrow screens (below `md`), the table shows only the actions column, dungeon name, and character toggles; type, item level, and completion columns are hidden. In that compact layout, the name column shows short raid name + size (+ skull for Heroic), e.g. `ICC 25 ☠️` or `ЦЛК 25` (full name in tooltip).
@@ -78,7 +78,7 @@ When there are no dungeons, the table body shows a hint to add a dungeon or use 
 |-------|------|-------------|
 | `id` | `string` | UUID |
 | `name` | `string` | Dungeon name |
-| `shortName` | optional string | Abbreviation for compact table display; template rows and known raid names get defaults from `RaidNames` (`shortRu` / `shortEn`); user override via add form, edit dialog, or saved field |
+| `shortName` | optional string | Abbreviation for compact table display (shown with size and Heroic skull when applicable); template rows and known raid names get defaults from `RaidNames` (`shortRu` / `shortEn`); user override via add form, edit dialog, or saved field |
 | `size` | `5 \| 10 \| 20 \| 25 \| 40` | Raid size |
 | `itemLevel` | `number[]` | Item level(s), e.g. `[200, 213]` |
 | `difficulty` | `"Normal" \| "Heroic"` | Raid mode; **Type** column shows size, or size + skull for Heroic |
