@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.32.0] - 2026-06-30
+
+### Added
+
+- **Gear hint tooltip — ilvl boss loot:** Boss-grouped scrollable list for stat-filtered ilvl upgrades (separate from BiS exact and normal-variant sections).
+- **Spec-aware ilvl filtering:** Reject +spirit for shamans, +hit for healers, off-hand shields only for Restoration shaman, two-handed main hand only for Feral, and plate armor only for plate tanks (`spec-stat-priorities.ts`, `item-stat-fit.ts`, `item-equip-restrictions.ts`).
+- **Tier set tokens:** Correct T8/T9/T10 token item IDs and set→category mappings; class-filtered token hints (`canClassUseTierSetToken`); EN/RU item names for upgrade tokens via `scripts/tier-set-token-names.mjs` in `build:wow-data`.
+- **Normal-only raids:** Flat item list fallback when boss metadata is missing (e.g. Onyxia) via `groupBisItemIdsByBossForDungeonWithFallback`.
+
+### Changed
+
+- **Gear hint tooltip:** Tier set lines show item links only (quantity when &gt; 1); ilvl summary hidden when the ilvl boss list is shown; BiS missing-count summary lines removed when boss-grouped lists are present.
+- **`build:wow-data`:** Merges tier set token EN names and includes token item IDs in the WoWRoad Russian name fetch.
+
+### Fixed
+
+- **i18n:** Tier set token and ilvl boss loot labels in EN/RU.
+
 ## [1.31.0] - 2026-06-29
 
 ### Changed
