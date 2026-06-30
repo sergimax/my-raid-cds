@@ -22,6 +22,8 @@ Open [http://localhost:5173](http://localhost:5173).
 | `npm run generate:bis-presets` | Regenerate built-in BiS presets from `scripts/bis-list-sources.md` |
 | `npm run comment:bis-presets` | Add slot comments to BiS preset files |
 
+Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spec` sections with `## Server - Author - List - URL` blocks; Titans guild lists use `## Titans - Guild - Titans` with Russian slot labels). Regenerate TypeScript presets after editing the markdown.
+
 ## Features
 
 - **Characters & dungeons** — Add manually or load a WotLK raid template when the list is empty. Edit name, specs, gear (WowSims import), dungeon metadata, and emblem badges.
