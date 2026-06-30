@@ -1,9 +1,10 @@
 import { Container } from "@mui/material";
 import { useCallback, useMemo } from "react";
-import { useExportPanelState } from "../../hooks/use-export-panel-state.ts";
-import { useBisListsPanelState } from "../../hooks/use-bis-lists-panel-state.ts";
+import {
+  pickTrackerFormsState,
+  useOverlayPanels,
+} from "../../hooks/use-overlay-panels.ts";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
-import { useTrackerForms } from "../../hooks/use-tracker-forms.ts";
 import { AppHeader } from "../app-header/index.tsx";
 import { RaidTrackerMain } from "../raid-tracker-main/index.tsx";
 import { TrackerControls } from "../tracker-controls/index.tsx";
@@ -11,55 +12,22 @@ import type { TrackerControlsSource } from "../tracker-controls/types.ts";
 
 export function TrackerLayout() {
   const domain = useRaidTrackerContext();
-  const exportPanel = useExportPanelState();
-  const bisListsPanel = useBisListsPanelState();
-
-  const forms = useTrackerForms({
+  const overlayPanels = useOverlayPanels({
     characters: domain.characters,
     onCharacterAdded: domain.addCharacter,
     onDungeonAdded: domain.addDungeon,
-    closeExportPanel: exportPanel.closeExportPanel,
-    closeBisListsPanel: bisListsPanel.closeBisListsPanel,
   });
-
-  const closeOverlayPanels = useCallback(() => {
-    exportPanel.closeExportPanel();
-    bisListsPanel.closeBisListsPanel();
-    forms.closeCharacterForm();
-    forms.closeDungeonForm();
-  }, [bisListsPanel, exportPanel, forms]);
+  const forms = pickTrackerFormsState(overlayPanels);
 
   const handleAddFromTemplate = useCallback(() => {
-    closeOverlayPanels();
+    overlayPanels.closeAllOverlayPanels();
     domain.handleAddFromTemplate();
-  }, [closeOverlayPanels, domain]);
+  }, [domain, overlayPanels]);
 
   const handleResetAllToggles = useCallback(() => {
-    closeOverlayPanels();
+    overlayPanels.closeAllOverlayPanels();
     domain.handleResetAllToggles();
-  }, [closeOverlayPanels, domain]);
-
-  const toggleExportPanel = useCallback(() => {
-    if (exportPanel.showExportPanel) {
-      exportPanel.closeExportPanel();
-      return;
-    }
-    forms.closeCharacterForm();
-    forms.closeDungeonForm();
-    bisListsPanel.closeBisListsPanel();
-    exportPanel.openExportPanel();
-  }, [bisListsPanel, exportPanel, forms]);
-
-  const toggleBisListsPanel = useCallback(() => {
-    if (bisListsPanel.showBisListsPanel) {
-      bisListsPanel.closeBisListsPanel();
-      return;
-    }
-    forms.closeCharacterForm();
-    forms.closeDungeonForm();
-    exportPanel.closeExportPanel();
-    bisListsPanel.openBisListsPanel();
-  }, [bisListsPanel, exportPanel, forms]);
+  }, [domain, overlayPanels]);
 
   const controlsSource = useMemo(
     (): TrackerControlsSource => ({
@@ -68,29 +36,29 @@ export function TrackerLayout() {
       canResetAllToggles: domain.canResetAllToggles,
       handleAddFromTemplate,
       handleResetAllToggles,
-      showCharacterForm: forms.showCharacterForm,
-      showDungeonForm: forms.showDungeonForm,
-      showExportPanel: exportPanel.showExportPanel,
-      showBisListsPanel: bisListsPanel.showBisListsPanel,
-      toggleCharacterForm: forms.toggleCharacterForm,
-      toggleDungeonForm: forms.toggleDungeonForm,
-      toggleExportPanel,
-      toggleBisListsPanel,
+      showCharacterForm: overlayPanels.showCharacterForm,
+      showDungeonForm: overlayPanels.showDungeonForm,
+      showExportPanel: overlayPanels.showExportPanel,
+      showBisListsPanel: overlayPanels.showBisListsPanel,
+      toggleCharacterForm: overlayPanels.toggleCharacterForm,
+      toggleDungeonForm: overlayPanels.toggleDungeonForm,
+      toggleExportPanel: overlayPanels.toggleExportPanel,
+      toggleBisListsPanel: overlayPanels.toggleBisListsPanel,
     }),
     [
-      bisListsPanel.showBisListsPanel,
       domain.canResetAllToggles,
       domain.characters.length,
       domain.dungeons.length,
       handleAddFromTemplate,
       handleResetAllToggles,
-      exportPanel.showExportPanel,
-      forms.showCharacterForm,
-      forms.showDungeonForm,
-      forms.toggleCharacterForm,
-      forms.toggleDungeonForm,
-      toggleBisListsPanel,
-      toggleExportPanel,
+      overlayPanels.showBisListsPanel,
+      overlayPanels.showCharacterForm,
+      overlayPanels.showDungeonForm,
+      overlayPanels.showExportPanel,
+      overlayPanels.toggleBisListsPanel,
+      overlayPanels.toggleCharacterForm,
+      overlayPanels.toggleDungeonForm,
+      overlayPanels.toggleExportPanel,
     ],
   );
 
@@ -105,10 +73,10 @@ export function TrackerLayout() {
       >
         <RaidTrackerMain
           forms={forms}
-          showExportPanel={exportPanel.showExportPanel}
-          closeExportPanel={exportPanel.closeExportPanel}
-          showBisListsPanel={bisListsPanel.showBisListsPanel}
-          closeBisListsPanel={bisListsPanel.closeBisListsPanel}
+          showExportPanel={overlayPanels.showExportPanel}
+          closeExportPanel={overlayPanels.closeExportPanel}
+          showBisListsPanel={overlayPanels.showBisListsPanel}
+          closeBisListsPanel={overlayPanels.closeBisListsPanel}
         />
       </Container>
     </div>
