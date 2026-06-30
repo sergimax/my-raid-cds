@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.33.2] - 2026-06-30
+
+### Changed
+
+- **CI:** GitHub Actions runs **Lint**, **Test**, and **Build** as parallel jobs (shared `.github/actions/setup-project` setup); stale workflow runs cancel on new pushes.
+
 ## [1.33.1] - 2026-06-30
 
 ### Fixed
