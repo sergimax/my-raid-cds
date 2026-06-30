@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Paladin / Holy). */
+/**
+ * WotLK BiS presets for Holy Paladin.
+ */
 export const holyPaladinBis: BuiltInSpecBis = {
   className: ClassName.Paladin,
   spec: "Holy",

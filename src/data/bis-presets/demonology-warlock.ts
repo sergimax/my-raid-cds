@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Warlock / Demonology). */
+/**
+ * WotLK BiS presets for Demonology Warlock.
+ */
 export const demonologyWarlockBis: BuiltInSpecBis = {
   className: ClassName.Warlock,
   spec: "Demonology",

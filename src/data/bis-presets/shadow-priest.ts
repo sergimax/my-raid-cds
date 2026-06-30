@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Priest / Shadow). */
+/**
+ * WotLK BiS presets for Shadow Priest.
+ */
 export const shadowPriestBis: BuiltInSpecBis = {
   className: ClassName.Priest,
   spec: "Shadow",

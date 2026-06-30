@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Priest / Discipline). */
+/**
+ * WotLK BiS presets for Discipline Priest.
+ */
 export const disciplinePriestBis: BuiltInSpecBis = {
   className: ClassName.Priest,
   spec: "Discipline",

@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Shaman / Restoration). */
+/**
+ * WotLK BiS presets for Restoration Shaman.
+ */
 export const restorationShamanBis: BuiltInSpecBis = {
   className: ClassName.Shaman,
   spec: "Restoration",

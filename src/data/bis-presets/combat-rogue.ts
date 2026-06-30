@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Rogue / Combat). */
+/**
+ * WotLK BiS presets for Combat Rogue.
+ */
 export const combatRogueBis: BuiltInSpecBis = {
   className: ClassName.Rogue,
   spec: "Combat",

@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Hunter / Marksmanship). */
+/**
+ * WotLK BiS presets for Marksmanship Hunter.
+ */
 export const marksmanshipHunterBis: BuiltInSpecBis = {
   className: ClassName.Hunter,
   spec: "Marksmanship",

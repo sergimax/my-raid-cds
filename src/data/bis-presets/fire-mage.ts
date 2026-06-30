@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Mage / Fire). */
+/**
+ * WotLK BiS presets for Fire Mage.
+ */
 export const fireMageBis: BuiltInSpecBis = {
   className: ClassName.Mage,
   spec: "Fire",

@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Mage / Arcane). */
+/**
+ * WotLK BiS presets for Arcane Mage.
+ */
 export const arcaneMageBis: BuiltInSpecBis = {
   className: ClassName.Mage,
   spec: "Arcane",

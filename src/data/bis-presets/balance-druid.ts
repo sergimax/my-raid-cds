@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Druid / Balance). */
+/**
+ * WotLK BiS presets for Balance Druid.
+ */
 export const balanceDruidBis: BuiltInSpecBis = {
   className: ClassName.Druid,
   spec: "Balance",

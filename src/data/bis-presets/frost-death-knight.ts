@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Death Knight / Frost). */
+/**
+ * WotLK BiS presets for Frost Death Knight.
+ */
 export const frostDeathKnightBis: BuiltInSpecBis = {
   className: ClassName.DeathKnight,
   spec: "Frost",

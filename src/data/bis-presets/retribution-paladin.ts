@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Paladin / Retribution). */
+/**
+ * WotLK BiS presets for Retribution Paladin.
+ */
 export const retributionPaladinBis: BuiltInSpecBis = {
   className: ClassName.Paladin,
   spec: "Retribution",
