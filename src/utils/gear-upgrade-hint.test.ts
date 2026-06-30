@@ -12,10 +12,10 @@ import {
   collectMissingIlvlLootItemIds,
   formatGearUpgradeHintTooltip,
   getDungeonPeakItemLevel,
-  getGearHintCellBackgroundColor,
   getGearHintCellDisplay,
   type GearUpgradeHintTrack,
 } from "./gear-upgrade-hint.ts";
+import { getGearHintCellBackgroundColor } from "./gear-hint-display.ts";
 import { createAppTheme } from "../theme/create-app-theme.ts";
 import { parseWowSimsExporterJson } from "./parse-wowsims-exporter.ts";
 
