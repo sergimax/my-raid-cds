@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.33.0] - 2026-06-30
+
+### Added
+
+- **Unified BiS preset source:** Titans guild and community guides in one `scripts/bis-list-sources.md`; single generator `npm run generate:bis-presets` (`scripts/generate-bis-presets.mjs`, `scripts/bis-resolve-titans.mjs`).
+- **BiS editor split:** `bis-slot-row/`, `utils/bis-list-editor.ts`, and `use-bis-lists-editor-state.ts` for panel draft/validation.
+- **Overlay panels hook:** `useOverlayPanels` — mutually exclusive character, dungeon, export, and BiS toolbar panels plus form field state.
+- **Gear hint display:** MUI cell styles extracted to `utils/gear-hint-display.ts`.
+- **Tests:** Overlay panels, BiS domain/storage, BiS panel flows, `character-gear-hints`, and `bis-list-editor`.
+
+### Changed
+
+- **Toolbar layout:** Export panel renders in `RaidTrackerMain` inside the shared `TrackerToolbarPanel`; `RaidTrackerMain` owns `useRaidTrackerTableState`.
+- **BiS context:** `getBisSlotMapForSpec` exposed from `BisListsContext` for stable gear-hint lookups in toggle cells.
+- **BiS domain:** Public API trimmed to presets, selection, slot maps, and local save/delete.
+- **README** slimmed; **project rules** updated for current layout and scripts.
+
+### Removed
+
+- **`generate:titans-bis`** and **`generate:bis-sources`** (replaced by `generate:bis-presets`); deleted `scripts/titans-bis/` and `scripts/resolve-bis-sources.mjs`.
+
 ## [1.32.0] - 2026-06-30
 
 ### Added
