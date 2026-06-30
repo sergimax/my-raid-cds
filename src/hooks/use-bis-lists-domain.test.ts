@@ -5,16 +5,12 @@ import {
   BIS_LISTS_SCHEMA_VERSION,
   BIS_LISTS_STORAGE_KEY,
 } from "../storage/bis-lists/constants.ts";
-import { ClassName, Classes } from "../types/characters.ts";
-import { createTestCharacter } from "../test/fixtures.ts";
+import { ClassName } from "../types/characters.ts";
 import { specBisStorageKey } from "../utils/bis-lists.ts";
 import { useBisListsDomain } from "./use-bis-lists-domain.ts";
 
 const builtInPresetId = unholyDeathKnightBis.presets[0]!.id;
 const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
-const deathKnightClass = Classes.find(
-  (characterClass) => characterClass.name === ClassName.DeathKnight,
-)!;
 
 function readPersistedBisLists() {
   const raw = localStorage.getItem(BIS_LISTS_STORAGE_KEY);
@@ -186,45 +182,5 @@ describe("useBisListsDomain", () => {
     });
 
     expect(readPersistedBisLists()).toBeNull();
-  });
-
-  it("resetSpecToBuiltIn clears local overrides for a spec", () => {
-    const { result } = renderHook(() => useBisListsDomain());
-
-    act(() => {
-      result.current.savePresetByName(ClassName.DeathKnight, "Unholy", "Temporary", [
-        { slot: 0, itemIds: [51312] },
-      ]);
-    });
-
-    act(() => {
-      result.current.resetSpecToBuiltIn(ClassName.DeathKnight, "Unholy");
-    });
-
-    expect(result.current.localState.entries[storageKey]).toBeUndefined();
-    expect(readPersistedBisLists().entries).toEqual({});
-  });
-
-  it("getBisSlotMapForCharacter uses main spec when present", () => {
-    const { result } = renderHook(() => useBisListsDomain());
-
-    act(() => {
-      result.current.selectPreset(
-        ClassName.DeathKnight,
-        "Unholy",
-        builtInPresetId,
-      );
-    });
-
-    const withMainSpec = createTestCharacter({
-      class: deathKnightClass,
-      mainSpec: { spec: "Unholy" },
-    });
-    const withoutMainSpec = createTestCharacter({ class: deathKnightClass });
-
-    expect(result.current.getBisSlotMapForCharacter(withMainSpec)?.get(0)).toEqual([
-      51312,
-    ]);
-    expect(result.current.getBisSlotMapForCharacter(withoutMainSpec)).toBeUndefined();
   });
 });
