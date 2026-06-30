@@ -4,6 +4,7 @@ import { getLocalizedClassName } from "../i18n/localized-domain.ts";
 import { specsForClass } from "../data/class-specs.ts";
 import { Classes, ClassName, type ClassName as ClassNameType } from "../types/characters.ts";
 import type { CharacterGearItem } from "../types/character-gear.ts";
+import { isRecord } from "../storage/guards.ts";
 
 type WowSimsExportGearItemRaw = {
   id?: unknown;
@@ -22,10 +23,6 @@ export type ParsedWowSimsExport = {
 export type ParseWowSimsExportResult =
   | ({ ok: true } & ParsedWowSimsExport)
   | { ok: false; error: string };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function normalizeToken(value: string): string {
   return value.toLowerCase().replace(/[\s_-]+/g, "");

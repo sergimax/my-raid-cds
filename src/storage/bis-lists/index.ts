@@ -3,15 +3,12 @@ import {
   BIS_LISTS_SCHEMA_VERSION,
   BIS_LISTS_STORAGE_KEY,
 } from "./constants.ts";
+import { isRecord } from "../guards.ts";
 
 const EMPTY_STATE: LocalBisListsState = {
   schemaVersion: BIS_LISTS_SCHEMA_VERSION,
   entries: {},
 };
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 export function loadLocalBisListsState(): LocalBisListsState {
   try {
