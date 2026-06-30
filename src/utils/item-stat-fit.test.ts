@@ -69,4 +69,51 @@ describe("isItemStatUsableForSpec", () => {
   it("passes through when class or spec is missing", () => {
     expect(isItemStatUsableForSpec(40995, {})).toBe(true);
   });
+
+  it("rejects +spirit loot for Elemental Shaman", () => {
+    expect(
+      isItemStatUsableForSpec(46976, {
+        className: ClassName.Shaman,
+        spec: "Elemental",
+      }),
+    ).toBe(false);
+  });
+
+  it("rejects +spirit loot for Restoration Shaman", () => {
+    expect(
+      isItemStatUsableForSpec(46976, {
+        className: ClassName.Shaman,
+        spec: "Restoration",
+      }),
+    ).toBe(false);
+  });
+
+  it("allows spirit-free resto shaman BiS cloak", () => {
+    expect(
+      isItemStatUsableForSpec(54583, {
+        className: ClassName.Shaman,
+        spec: "Restoration",
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects off-hand weapons for Restoration Shaman ilvl filtering", () => {
+    expect(
+      isItemStatUsableForSpec(
+        47053,
+        { className: ClassName.Shaman, spec: "Restoration" },
+        15,
+      ),
+    ).toBe(false);
+  });
+
+  it("allows resto shaman shield off-hand", () => {
+    expect(
+      isItemStatUsableForSpec(
+        50616,
+        { className: ClassName.Shaman, spec: "Restoration" },
+        15,
+      ),
+    ).toBe(true);
+  });
 });

@@ -31,6 +31,10 @@ export type SpecStatProfile = {
   role: SpecRole;
   /** Spellhance-style caster loot (Enhancement only in GearScore2). */
   hybridCasterItems?: boolean;
+  /** Drop loot with +spirit (WotLK shamans do not use spirit on any spec). */
+  rejectSpiritStats?: boolean;
+  /** Ilvl hints: off-hand slot must be a shield (Restoration shaman). */
+  offHandShieldOnly?: boolean;
   /** Primary PvE stat weights (GearScore2 `Tables.SpecProfiles` pve). */
   pve: GsStatWeights;
   /** Optional secondary weights when `hybridCasterItems` (Enhancement spellhance). */
@@ -165,17 +169,21 @@ const SPEC_PROFILES: Record<SpecProfileKey, SpecStatProfile> = {
   },
   SHAMAN_ELEMENTAL: {
     role: "CASTER",
+    rejectSpiritStats: true,
     pve: { INT: 1.0, SP: 1.55, HIT: 0.95, HASTE: 0.65, CRIT: 0.55, MP5: 0.45 },
   },
   SHAMAN_ENHANCEMENT: {
     role: "MELEE",
     hybridCasterItems: true,
+    rejectSpiritStats: true,
     pve: { AGI: 2.45, AP: 1.5, HIT: 2.2, HASTE: 1.7, CRIT: 1.45, EXPERTISE: 1.8 },
     hybridPve: { INT: 1.0, SP: 1.55, HIT: 0.95, HASTE: 0.65, CRIT: 0.55, MP5: 0.45 },
   },
   SHAMAN_RESTORATION: {
     role: "HEALER",
-    pve: { INT: 2.0, SP: 2.25, HASTE: 1.3, CRIT: 0.95, MP5: 1.15, SPI: 0.2 },
+    rejectSpiritStats: true,
+    offHandShieldOnly: true,
+    pve: { INT: 2.0, SP: 2.25, HASTE: 1.3, CRIT: 0.95, MP5: 1.15 },
   },
   MAGE_ARCANE: {
     role: "CASTER",

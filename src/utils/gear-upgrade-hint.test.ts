@@ -406,6 +406,42 @@ describe("evaluateGearUpgradeHint", () => {
     ).not.toBe(50067);
   });
 
+  it("does not suggest spirit priest cloak for Restoration Shaman", () => {
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 3, id: 54583 }],
+      {
+        name: "ICC25H",
+        raidKey: "icecrownCitadel",
+        itemLevel: [277, 284],
+      },
+      undefined,
+      { className: ClassName.Shaman, spec: "Restoration" },
+    );
+
+    const cloakUpgrade = hint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 3);
+    expect(cloakUpgrade?.bestLootItemId).not.toBe(46976);
+    expect(cloakUpgrade?.bestLootItemId).not.toBe(46977);
+  });
+
+  it("does not suggest priest off-hand for Restoration Shaman", () => {
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 15, id: 50616 }],
+      {
+        name: "ICC25H",
+        raidKey: "icecrownCitadel",
+        itemLevel: [277, 284],
+      },
+      undefined,
+      { className: ClassName.Shaman, spec: "Restoration" },
+    );
+
+    const offHandUpgrade = hint.ilvl.upgradeSlots.find(
+      (slotHint) => slotHint.slot === 15,
+    );
+    expect(offHandUpgrade?.bestLootItemId).not.toBe(47053);
+    expect(offHandUpgrade?.bestLootItemId).not.toBe(47064);
+  });
+
   it("collects best ilvl loot item ids for boss-grouped tooltip sections", () => {
     const parsed = parseWowSimsExporterJson(RHEE_EXPORT, ClassName.Shaman);
     expect(parsed.ok).toBe(true);
