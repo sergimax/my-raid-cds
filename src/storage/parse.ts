@@ -23,12 +23,9 @@ import {
   type StoredDungeon,
   type StoredPayload,
 } from "./types.ts";
+import { isRecord } from "./guards.ts";
 
 const VALID_EMBLEM_KEYS = new Set<string>(Object.values(EmblemKey));
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function parseStoredEmblem(stored: StoredDungeon): EmblemKeyType | undefined {
   if (typeof stored.emblem === "string" && VALID_EMBLEM_KEYS.has(stored.emblem)) {
