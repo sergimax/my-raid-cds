@@ -1,7 +1,9 @@
 import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
-/** WotLK BiS (ICC / RS tier) — Titans guild (Warrior / Fury). */
+/**
+ * WotLK BiS presets for Fury Warrior.
+ */
 export const furyWarriorBis: BuiltInSpecBis = {
   className: ClassName.Warrior,
   spec: "Fury",

@@ -35,7 +35,13 @@ describe("evaluateTierSetHint", () => {
     difficulty: DungeonDifficulty.HEROIC,
   };
 
-  const unholyBis = buildBisSlotMap(unholyDeathKnightBis.presets[0]);
+  const unholyCommunityPreset = unholyDeathKnightBis.presets.find(
+    (preset) => preset.id === "warmane-drakantas-udk-str",
+  );
+  if (!unholyCommunityPreset) {
+    throw new Error("Expected Warmane Unholy preset in test fixtures");
+  }
+  const unholyBis = buildBisSlotMap(unholyCommunityPreset);
   const restoShamanBis = buildBisSlotMap(restorationShamanBis.presets[0]);
   const holyPriestBisSlotMap = buildBisSlotMap(holyPriestBis.presets[0]);
 
