@@ -8,6 +8,15 @@ export function getLocalizedRaidNameSuggestions(locale: AppLocale): string[] {
     .sort((left, right) => left.localeCompare(right, locale));
 }
 
+export function isKnownRaidName(name: string): boolean {
+  for (const raid of Object.values(RaidNames)) {
+    if (raid.ru === name || raid.en === name) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function defaultShortNameForDungeonName(name: string): string | undefined {
   for (const raid of Object.values(RaidNames)) {
     if (raid.ru === name) {
