@@ -35,7 +35,7 @@ export function getToolbarPanelMeta(
   return getMainToolbarPanelMeta(panelId, t, handlers);
 }
 
-export function getMainToolbarPanelMeta(
+function getMainToolbarPanelMeta(
   panelId: MainToolbarPanelId,
   t: TranslateFn,
   handlers: MainToolbarPanelHandlers,
@@ -66,7 +66,7 @@ export function getMainToolbarPanelMeta(
   }
 }
 
-export function getExportToolbarPanelMeta(
+function getExportToolbarPanelMeta(
   t: TranslateFn,
   onClose: () => void,
 ): ToolbarPanelMeta {
