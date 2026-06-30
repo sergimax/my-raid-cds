@@ -26,7 +26,7 @@ Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spe
 
 ## Features
 
-- **Characters & dungeons** — Add manually or load a WotLK raid template when the list is empty. Edit name, specs, gear (WowSims import), dungeon metadata, and emblem badges.
+- **Characters & dungeons** — Add manually or load a WotLK raid template when the list is empty. The new-dungeon form suggests known raid names and auto-fills short abbreviations. Edit name, specs, gear (WowSims import), dungeon metadata, and emblem badges.
 - **Cooldown toggles** — Per character–dungeon switches; reset per character or all at once.
 - **Table** — Sort by name, type (size + Heroic), ilvl, or completions; search dungeons; compact layout on narrow screens.
 - **Export** — Copy a raid roster of characters still missing CD for visible (filtered) rows.
