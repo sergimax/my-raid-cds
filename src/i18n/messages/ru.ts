@@ -173,7 +173,7 @@ export const ruMessages: Messages = {
     belowIlvl: "До {{count}} из {{total}} ниже ilvl {{ilvl}}",
     bisBossLoot: "BiS-лут в этом рейде",
     bisVariantBossLoot: "Обычные версии BiS в этом рейде",
-    ilvlBossLoot: "Другие улучшения в этом рейде",
+    ilvlBossLoot: "Другие возможные улучшения в этом рейде",
   },
   tierSet: {
     tokensFromRaid: "{{count}} жетон(ов) сета из этого рейда",
