@@ -143,4 +143,31 @@ describe("isItemStatUsableForSpec", () => {
       ),
     ).toBe(true);
   });
+
+  it("rejects +hit loot for Restoration Druid", () => {
+    expect(
+      isItemStatUsableForSpec(46979, {
+        className: ClassName.Druid,
+        spec: "Restoration",
+      }),
+    ).toBe(false);
+  });
+
+  it("rejects +hit loot for Holy Priest", () => {
+    expect(
+      isItemStatUsableForSpec(46979, {
+        className: ClassName.Priest,
+        spec: "Holy",
+      }),
+    ).toBe(false);
+  });
+
+  it("still allows +hit loot for DPS specs", () => {
+    expect(
+      isItemStatUsableForSpec(50736, {
+        className: ClassName.Rogue,
+        spec: "Assassination",
+      }),
+    ).toBe(true);
+  });
 });
