@@ -1,5 +1,5 @@
 import { Alert, Stack } from "@mui/material";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { TrackerFormsState } from "../../hooks/use-overlay-panels.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
@@ -10,10 +10,12 @@ import { AppIntro } from "../app-intro/index.tsx";
 import { BisListsPanel } from "../bis-lists-panel/index.tsx";
 import { CharacterForm } from "../character-form/index.tsx";
 import { DungeonForm } from "../dungeon-form/index.tsx";
+import { ExportPanel } from "../export-panel/index.tsx";
 import { RaidTrackerTable } from "../raid-tracker-table/index.tsx";
+import { useRaidTrackerTableState } from "../raid-tracker-table/use-raid-tracker-table-state.ts";
 import { TrackerToolbarPanel } from "../tracker-toolbar-panel/index.tsx";
-import { resolveMainToolbarPanelId } from "../tracker-toolbar-panel/resolve-toolbar-panel-id.ts";
-import { getMainToolbarPanelMeta } from "../tracker-toolbar-panel/toolbar-panel-meta.ts";
+import { resolveToolbarPanelId } from "../tracker-toolbar-panel/resolve-toolbar-panel-id.ts";
+import { getToolbarPanelMeta } from "../tracker-toolbar-panel/toolbar-panel-meta.ts";
 
 type RaidTrackerMainProps = {
   forms: TrackerFormsState;
@@ -50,30 +52,45 @@ export function RaidTrackerMain({
   const domain = useRaidTrackerContext();
   const showIntro =
     domain.characters.length === 0 && domain.dungeons.length === 0;
-  const mainToolbarPanelId = resolveMainToolbarPanelId({
+
+  const tableState = useRaidTrackerTableState({
+    characters: domain.characters,
+    dungeons: domain.dungeons,
+    dungeonToggles: domain.dungeonToggles,
+    onDeleteCharacter: domain.handleDeleteCharacter,
+    onDeleteDungeon: domain.handleDeleteDungeon,
+  });
+
+  const toolbarPanelId = resolveToolbarPanelId({
     showCharacterForm: forms.showCharacterForm,
     showDungeonForm: forms.showDungeonForm,
     showBisListsPanel,
+    showExportPanel,
   });
-  const mainToolbarPanelMeta = useMemo(() => {
-    if (!mainToolbarPanelId) {
+
+  const closeBisListsPanelWithTooltips = useCallback(() => {
+    hideExternalWowTooltips();
+    closeBisListsPanel();
+  }, [closeBisListsPanel]);
+
+  const toolbarPanelMeta = useMemo(() => {
+    if (!toolbarPanelId) {
       return null;
     }
 
-    return getMainToolbarPanelMeta(mainToolbarPanelId, t, {
+    return getToolbarPanelMeta(toolbarPanelId, t, {
       closeCharacterForm: forms.closeCharacterForm,
       closeDungeonForm: forms.closeDungeonForm,
-      closeBisListsPanel: () => {
-        hideExternalWowTooltips();
-        closeBisListsPanel();
-      },
+      closeBisListsPanel: closeBisListsPanelWithTooltips,
+      closeExportPanel,
     });
   }, [
-    closeBisListsPanel,
+    closeBisListsPanelWithTooltips,
+    closeExportPanel,
     forms.closeCharacterForm,
     forms.closeDungeonForm,
-    mainToolbarPanelId,
     t,
+    toolbarPanelId,
   ]);
 
   return (
@@ -86,8 +103,8 @@ export function RaidTrackerMain({
         </Alert>
       ) : null}
 
-      {mainToolbarPanelId && mainToolbarPanelMeta ? (
-        <TrackerToolbarPanel panelId={mainToolbarPanelId} {...mainToolbarPanelMeta}>
+      {toolbarPanelId && toolbarPanelMeta ? (
+        <TrackerToolbarPanel panelId={toolbarPanelId} {...toolbarPanelMeta}>
           {forms.showCharacterForm ? (
             <CharacterForm
               name={forms.characterForm.name}
@@ -124,14 +141,19 @@ export function RaidTrackerMain({
             />
           ) : null}
 
+          {showExportPanel ? (
+            <ExportPanel
+              characters={domain.characters}
+              visibleDungeons={tableState.sortedDungeons}
+              dungeonToggles={domain.dungeonToggles}
+            />
+          ) : null}
+
           {showBisListsPanel ? <BisListsPanel /> : null}
         </TrackerToolbarPanel>
       ) : null}
 
-      <RaidTrackerTable
-        showExportPanel={showExportPanel}
-        closeExportPanel={closeExportPanel}
-      />
+      <RaidTrackerTable tableState={tableState} />
     </Stack>
   );
 }

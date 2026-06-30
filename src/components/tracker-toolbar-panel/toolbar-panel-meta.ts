@@ -3,7 +3,7 @@ import {
   TRACKER_EXPORT_PANEL_MAX_WIDTH,
   TRACKER_NARROW_PANEL_MAX_WIDTH,
 } from "./constants.ts";
-import type { MainToolbarPanelId } from "./resolve-toolbar-panel-id.ts";
+import type { MainToolbarPanelId, ToolbarPanelId } from "./resolve-toolbar-panel-id.ts";
 
 export type ToolbarPanelMeta = {
   title: string;
@@ -19,6 +19,21 @@ type MainToolbarPanelHandlers = {
   closeDungeonForm: () => void;
   closeBisListsPanel: () => void;
 };
+
+type ToolbarPanelHandlers = MainToolbarPanelHandlers & {
+  closeExportPanel: () => void;
+};
+
+export function getToolbarPanelMeta(
+  panelId: ToolbarPanelId,
+  t: TranslateFn,
+  handlers: ToolbarPanelHandlers,
+): ToolbarPanelMeta {
+  if (panelId === "export") {
+    return getExportToolbarPanelMeta(t, handlers.closeExportPanel);
+  }
+  return getMainToolbarPanelMeta(panelId, t, handlers);
+}
 
 export function getMainToolbarPanelMeta(
   panelId: MainToolbarPanelId,

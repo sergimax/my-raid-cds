@@ -47,7 +47,7 @@ export function DungeonTableRow({
   onRequestDeleteDungeon,
 }: DungeonTableRowProps) {
   const { t, locale } = useTranslation();
-  const { localState: bisListsLocalState } = useBisListsContext();
+  const { getBisSlotMapForSpec } = useBisListsContext();
   const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
 
   return (
@@ -103,7 +103,7 @@ export function DungeonTableRow({
           dungeonToggles={dungeonToggles}
           onDungeonToggle={onDungeonToggle}
           locale={locale}
-          bisListsLocalState={bisListsLocalState}
+          getBisSlotMapForSpec={getBisSlotMapForSpec}
         />
       ))}
     </TableRow>
