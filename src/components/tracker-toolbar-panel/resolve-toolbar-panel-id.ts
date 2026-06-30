@@ -22,12 +22,3 @@ export function resolveToolbarPanelId(options: {
   }
   return null;
 }
-
-/** @deprecated Use resolveToolbarPanelId */
-export function resolveMainToolbarPanelId(options: {
-  showCharacterForm: boolean;
-  showDungeonForm: boolean;
-  showBisListsPanel: boolean;
-}): MainToolbarPanelId | null {
-  return resolveToolbarPanelId({ ...options, showExportPanel: false });
-}
