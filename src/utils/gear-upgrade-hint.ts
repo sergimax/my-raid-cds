@@ -474,10 +474,6 @@ export function getGearHintCellDisplay(
 }
 
 export type GearUpgradeHintTooltipOptions = {
-  /** Boss-grouped BiS list is shown — omit redundant count line. */
-  showBisBossLoot?: boolean;
-  /** Boss-grouped variant list is shown — omit redundant count line. */
-  showBisVariantBossLoot?: boolean;
   /** Boss-grouped non-BiS ilvl list is shown — omit redundant count line. */
   showIlvlBossLoot?: boolean;
 };
@@ -518,38 +514,20 @@ export function formatGearUpgradeHintTooltip(
   t: TranslateFn,
   options?: GearUpgradeHintTooltipOptions,
 ): string {
-  const parts: string[] = [];
-
-  if (hint.bisListActive && hint.bis.level > 0 && !options?.showBisBossLoot) {
-    parts.push(t("gearHint.bisMissing", { count: hint.bis.upgradeSlotCount }));
-  }
-
-  if (
-    hint.bisListActive &&
-    hint.bisVariant.level > 0 &&
-    !options?.showBisVariantBossLoot
-  ) {
-    parts.push(
-      t("gearHint.bisVariantMissing", { count: hint.bisVariant.upgradeSlotCount }),
-    );
-  }
-
   if (hint.ilvl.level > 0 && !options?.showIlvlBossLoot) {
     const introKey = hint.slotAware
       ? "gearHint.raidLootUpgrades"
       : "gearHint.belowIlvl";
-    parts.push(
-      introKey === "gearHint.belowIlvl"
-        ? t(introKey, {
-            count: hint.ilvl.upgradeSlotCount,
-            total: hint.equippedCount,
-            ilvl: hint.peakDungeonItemLevel,
-          })
-        : t(introKey, { count: hint.ilvl.upgradeSlotCount }),
-    );
+    return introKey === "gearHint.belowIlvl"
+      ? t(introKey, {
+          count: hint.ilvl.upgradeSlotCount,
+          total: hint.equippedCount,
+          ilvl: hint.peakDungeonItemLevel,
+        })
+      : t(introKey, { count: hint.ilvl.upgradeSlotCount });
   }
 
-  return parts.join("\n");
+  return "";
 }
 
 function hintDisplayBackgroundColor(
