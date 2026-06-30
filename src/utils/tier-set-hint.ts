@@ -3,8 +3,10 @@ import tierSetsByItemIdJson from "../data/tier-sets-by-item-id.json";
 import {
   dungeonDropsTierSetToken,
   getTierSetTokenName,
+  canClassUseTierSetToken,
 } from "../data/tier-set-tokens.ts";
 import { getTierSetItemEntry, isTierSetGearSlot } from "../data/tier-sets.ts";
+import type { ClassName } from "../types/characters.ts";
 import type { CharacterGearItem } from "../types/character-gear.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { TierSetHint, TierSetItemEntry, TierSetTokenNeed } from "../types/tier-sets.ts";
@@ -89,6 +91,7 @@ function collectNextTokenNeedForSlot(
   targetItemId: number,
   bisItemIds: readonly number[],
   dungeon: Pick<DungeonRecord, "raidKey" | "name" | "size" | "difficulty">,
+  className: ClassName,
 ): TierSetTokenNeed | null {
   if (isEquippedBisTarget(equippedItemId, bisItemIds)) {
     return null;
@@ -116,7 +119,8 @@ function collectNextTokenNeedForSlot(
     if (
       stepTokenId === undefined ||
       !raidKey ||
-      !dungeonDropsTierSetToken({ ...dungeon, raidKey }, stepTokenId)
+      !dungeonDropsTierSetToken({ ...dungeon, raidKey }, stepTokenId) ||
+      !canClassUseTierSetToken(className, stepTokenId)
     ) {
       continue;
     }
@@ -134,7 +138,8 @@ function collectNextTokenNeedForSlot(
 export function evaluateTierSetHint(
   gearItems: readonly CharacterGearItem[] | undefined,
   dungeon: Pick<DungeonRecord, "raidKey" | "name" | "size" | "difficulty">,
-  bisSlotMap?: BisSlotMap,
+  bisSlotMap: BisSlotMap | undefined,
+  className: ClassName,
 ): TierSetHint {
   if (!bisSlotMap || bisSlotMap.size === 0 || !resolveDungeonRaidKey(dungeon)) {
     return { tokenNeeds: [] };
@@ -159,6 +164,7 @@ export function evaluateTierSetHint(
       targetItemId,
       bisItemIds,
       dungeon,
+      className,
     );
     if (nextTokenNeed) {
       tokenNeeds.push(nextTokenNeed);

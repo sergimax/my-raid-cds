@@ -1,4 +1,5 @@
 import type { RaidKey } from "./raid-names.ts";
+import { ClassName, type ClassName as ClassNameType } from "../types/characters.ts";
 import type {
   TierSetTokenDefinition,
   TierSetTokenDropSource,
@@ -6,6 +7,38 @@ import type {
   TierSetTier,
 } from "../types/tier-sets.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
+
+/** ICC / ToC vendor mark groups (which classes can turn in each token). */
+export const TIER_SET_TOKEN_TYPE_CLASSES: Record<
+  TierSetTokenType,
+  readonly ClassNameType[]
+> = {
+  vanquisher: [
+    ClassName.DeathKnight,
+    ClassName.Paladin,
+    ClassName.Priest,
+    ClassName.Warlock,
+  ],
+  protector: [
+    ClassName.Hunter,
+    ClassName.Shaman,
+    ClassName.Warrior,
+    ClassName.DeathKnight,
+  ],
+  conqueror: [ClassName.Druid, ClassName.Mage, ClassName.Rogue],
+};
+
+export function canClassUseTierSetToken(
+  className: ClassNameType,
+  tokenItemId: number,
+): boolean {
+  const token = getTierSetToken(tokenItemId);
+  if (!token) {
+    return true;
+  }
+
+  return TIER_SET_TOKEN_TYPE_CLASSES[token.tokenType].includes(className);
+}
 
 type TokenNameSeed = {
   itemId: number;
