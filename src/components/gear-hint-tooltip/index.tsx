@@ -32,7 +32,10 @@ function BisBossLootSection({
   marginBottom,
   t,
 }: {
-  titleKey: "gearHint.bisBossLoot" | "gearHint.bisVariantBossLoot";
+  titleKey:
+    | "gearHint.bisBossLoot"
+    | "gearHint.bisVariantBossLoot"
+    | "gearHint.ilvlBossLoot";
   groups: readonly BossBisLootGroup[];
   marginBottom: number;
   t: TranslateFn;
@@ -95,10 +98,12 @@ function SpecGearHintSection({
   const specName = specHint.specGear.spec;
   const hasBisLootList = specHint.bisBossLootGroups.length > 0;
   const hasBisVariantList = specHint.bisVariantBossLootGroups.length > 0;
+  const hasIlvlLootList = specHint.ilvlBossLootGroups.length > 0;
 
   const gearSummary = formatGearUpgradeHintTooltip(specHint.gearHint, t, {
     showBisBossLoot: hasBisLootList,
     showBisVariantBossLoot: hasBisVariantList,
+    showIlvlBossLoot: hasIlvlLootList,
   });
   const tokenRows = aggregateTierSetTokenNeeds(specHint.tierSetHint.tokenNeeds);
 
@@ -106,7 +111,8 @@ function SpecGearHintSection({
     !gearSummary &&
     tokenRows.length === 0 &&
     !hasBisLootList &&
-    !hasBisVariantList
+    !hasBisVariantList &&
+    !hasIlvlLootList
   ) {
     return null;
   }
@@ -142,7 +148,12 @@ function SpecGearHintSection({
           component="p"
           sx={{
             mb:
-              hasBisLootList || hasBisVariantList || tokenRows.length > 0 ? 1 : 0,
+              hasBisLootList ||
+              hasBisVariantList ||
+              hasIlvlLootList ||
+              tokenRows.length > 0
+                ? 1
+                : 0,
             whiteSpace: "pre-line",
           }}
         >
@@ -160,6 +171,13 @@ function SpecGearHintSection({
       <BisBossLootSection
         titleKey="gearHint.bisVariantBossLoot"
         groups={specHint.bisVariantBossLootGroups}
+        marginBottom={hasIlvlLootList ? 1 : sectionMarginBelowLootLists}
+        t={t}
+      />
+
+      <BisBossLootSection
+        titleKey="gearHint.ilvlBossLoot"
+        groups={specHint.ilvlBossLootGroups}
         marginBottom={sectionMarginBelowLootLists}
         t={t}
       />

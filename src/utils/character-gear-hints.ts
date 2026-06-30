@@ -6,6 +6,7 @@ import type { BisSlotMap } from "./bis-lists.ts";
 import {
   evaluateGearUpgradeHint,
   collectMissingBisLootItemIds,
+  collectMissingIlvlLootItemIds,
   type GearUpgradeHint,
 } from "./gear-upgrade-hint.ts";
 import { evaluateTierSetHint } from "./tier-set-hint.ts";
@@ -22,6 +23,8 @@ export type SpecGearHint = {
   bisBossLootGroups: BossBisLootGroup[];
   /** Tier 2: normal (non-list) name variants of BiS items that drop here. */
   bisVariantBossLootGroups: BossBisLootGroup[];
+  /** Tier 3: spec-relevant raid loot upgrades excluding BiS targets. */
+  ilvlBossLootGroups: BossBisLootGroup[];
 };
 
 export type CharacterGearHints = {
@@ -67,12 +70,19 @@ function evaluateSpecGearHint(
       ? groupBisItemIdsByBossForDungeon(missingVariantBisItemIds, dungeon, locale)
       : [];
 
+  const missingIlvlLootItemIds = collectMissingIlvlLootItemIds(gearHint);
+  const ilvlBossLootGroups =
+    missingIlvlLootItemIds.length > 0
+      ? groupBisItemIdsByBossForDungeon(missingIlvlLootItemIds, dungeon, locale)
+      : [];
+
   return {
     specGear,
     gearHint,
     tierSetHint: evaluateTierSetHint(specGear.gearItems, dungeon, bisSlotMap),
     bisBossLootGroups,
     bisVariantBossLootGroups,
+    ilvlBossLootGroups,
   };
 }
 
@@ -123,7 +133,8 @@ export function hasAnyGearHint(hints: CharacterGearHints): boolean {
       hints.main.gearHint.ilvl.level > 0 ||
       hints.main.tierSetHint.tokenNeeds.length > 0 ||
       hints.main.bisBossLootGroups.length > 0 ||
-      hints.main.bisVariantBossLootGroups.length > 0);
+      hints.main.bisVariantBossLootGroups.length > 0 ||
+      hints.main.ilvlBossLootGroups.length > 0);
   const offActive =
     hints.off &&
     (hints.off.gearHint.bis.level > 0 ||
@@ -131,6 +142,7 @@ export function hasAnyGearHint(hints: CharacterGearHints): boolean {
       hints.off.gearHint.ilvl.level > 0 ||
       hints.off.tierSetHint.tokenNeeds.length > 0 ||
       hints.off.bisBossLootGroups.length > 0 ||
-      hints.off.bisVariantBossLootGroups.length > 0);
+      hints.off.bisVariantBossLootGroups.length > 0 ||
+      hints.off.ilvlBossLootGroups.length > 0);
   return Boolean(mainActive || offActive);
 }

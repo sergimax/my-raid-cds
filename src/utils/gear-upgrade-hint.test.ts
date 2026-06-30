@@ -8,6 +8,7 @@ import { testTranslator } from "../test/i18n.ts";
 import { buildBisSlotMap } from "./bis-lists.ts";
 import {
   evaluateGearUpgradeHint,
+  collectMissingIlvlLootItemIds,
   formatGearUpgradeHintTooltip,
   getDungeonPeakItemLevel,
   getGearHintCellBackgroundColor,
@@ -404,6 +405,30 @@ describe("evaluateGearUpgradeHint", () => {
       hint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 7)?.bestLootItemId,
     ).not.toBe(50067);
   });
+
+  it("collects best ilvl loot item ids for boss-grouped tooltip sections", () => {
+    const parsed = parseWowSimsExporterJson(RHEE_EXPORT, ClassName.Shaman);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) {
+      return;
+    }
+
+    const hint = evaluateGearUpgradeHint(parsed.gearItems, {
+      name: "Цитадель Ледяной Короны",
+      raidKey: "icecrownCitadel",
+      itemLevel: [277, 284],
+    });
+
+    const ilvlItemIds = collectMissingIlvlLootItemIds(hint);
+    expect(ilvlItemIds.length).toBeGreaterThan(0);
+    expect(ilvlItemIds).toEqual(
+      expect.arrayContaining(
+        hint.ilvl.upgradeSlots
+          .map((slotHint) => slotHint.bestLootItemId)
+          .filter((itemId): itemId is number => itemId !== undefined),
+      ),
+    );
+  });
 });
 
 describe("formatGearUpgradeHintTooltip", () => {
@@ -470,6 +495,30 @@ describe("formatGearUpgradeHintTooltip", () => {
     expect(tooltip).not.toContain("missing BiS");
     expect(tooltip).not.toContain("normal variant");
     expect(tooltip).toBe("Up to 11 ilvl upgrade(s)");
+  });
+
+  it("omits ilvl count line when boss loot list is shown", () => {
+    const tooltip = formatGearUpgradeHintTooltip(
+      {
+        bis: emptyTrack,
+        bisVariant: emptyTrack,
+        ilvl: {
+          level: 2,
+          upgradeSlotCount: 3,
+          upgradeSlots: [
+            { slot: 12, bestLootItemId: 54569, bestLootItemLevel: 284 },
+          ],
+        },
+        equippedCount: 17,
+        peakDungeonItemLevel: 284,
+        slotAware: true,
+        bisListActive: false,
+      },
+      testTranslator,
+      { showIlvlBossLoot: true },
+    );
+
+    expect(tooltip).toBe("");
   });
 
   it("uses amber for BiS and blue for ilvl toggle cell tints with stronger levels", () => {
