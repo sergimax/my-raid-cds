@@ -52,6 +52,8 @@ Corrupted tracker data resets with an error alert. Legacy saves migrate on load.
 
 **Stack:** React 19, TypeScript, Vite, MUI, Vitest + Testing Library.
 
+**CI:** On push/PR to `main`, GitHub Actions runs **Lint**, **Test**, and **Build** in parallel (`.github/workflows/ci.yml`); pushes to `main` also upload a `dist` artifact (`.github/workflows/build-artifacts.yml`).
+
 **Layout:** `src/components/` (UI), `src/hooks/` (domain + overlay panels), `src/utils/`, `src/data/` (WoW bundles + BiS presets), `src/storage/`. Tests are colocated as `*.test.ts(x)`.
 
 Contributor/agent conventions: [`.cursor/rules/project-rules.mdc`](.cursor/rules/project-rules.mdc).
