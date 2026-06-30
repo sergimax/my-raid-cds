@@ -480,6 +480,91 @@ function tokenItemIdForStep(tokenType, tier, step) {
   return undefined;
 }
 
+/** WowSims has no zone 4603 drops — derive VoA tier PvE loot from tier set metadata. */
+const VOA_RAID_KEY = "vaultOfArchavon";
+
+/** Koralon / Toravon drop hands and legs only (Vault of Archavon wiki). */
+const VOA_DROP_SLOTS = new Set([6, 8]);
+
+const VOA_BOSS_BY_TIER = {
+  t9: "Koralon the Flame Watcher",
+  t10: "Toravon the Ice Watcher",
+};
+
+/** VoA template ilvl → raid size (mirrors dungeon-list.ts). */
+const VOA_ILVL_RAID_SIZE = {
+  232: 10,
+  245: 25,
+  251: 10,
+  264: 25,
+};
+
+function supplementVaultOfArchavonData(
+  tierSetsByItemId,
+  bundledItemIds,
+  lootByKey,
+  dropSourcesByItemId,
+) {
+  const bundledIdSet = new Set(bundledItemIds);
+  const slotItems = {};
+
+  for (const [itemIdText, entry] of Object.entries(tierSetsByItemId)) {
+    if (!VOA_DROP_SLOTS.has(entry.slot)) {
+      continue;
+    }
+
+    const bossName = VOA_BOSS_BY_TIER[entry.tier];
+    if (!bossName) {
+      continue;
+    }
+
+    const size = VOA_ILVL_RAID_SIZE[entry.itemLevel];
+    if (size === undefined) {
+      continue;
+    }
+
+    if (!bundledIdSet.has(itemIdText)) {
+      continue;
+    }
+
+    const itemId = Number(itemIdText);
+    const slotKey = String(entry.slot);
+    if (!slotItems[slotKey]) {
+      slotItems[slotKey] = new Set();
+    }
+    slotItems[slotKey].add(itemId);
+
+    const dropEntry = {
+      b: bossName,
+      k: VOA_RAID_KEY,
+      s: size,
+      d: "N",
+    };
+    const dropKey = dropSourceKey(dropEntry);
+
+    if (!dropSourcesByItemId[itemIdText]) {
+      dropSourcesByItemId[itemIdText] = [];
+    }
+
+    const existingSources = dropSourcesByItemId[itemIdText];
+    if (!existingSources.some((row) => dropSourceKey(row) === dropKey)) {
+      existingSources.push(dropEntry);
+    }
+  }
+
+  const existingVoALoot = lootByKey[VOA_RAID_KEY]?.slots ?? {};
+  const slots = { ...existingVoALoot };
+
+  for (const [slotKey, itemIds] of Object.entries(slotItems)) {
+    const merged = new Set([...(slots[slotKey]?.items ?? []), ...itemIds]);
+    slots[slotKey] = {
+      items: [...merged].sort((leftId, rightId) => leftId - rightId),
+    };
+  }
+
+  lootByKey[VOA_RAID_KEY] = { slots };
+}
+
 function buildTierSetsByItemId(dbItems) {
   const piecesBySet = {};
 
@@ -704,6 +789,12 @@ async function main() {
   const lootByKey = buildRaidLoot(db.items, itemLevelIds);
   const dropSourcesByItemId = buildItemDropSources(db.items, itemLevelIds);
   const tierSetsByItemId = buildTierSetsByItemId(db.items);
+  supplementVaultOfArchavonData(
+    tierSetsByItemId,
+    itemLevelIds,
+    lootByKey,
+    dropSourcesByItemId,
+  );
 
   fs.writeFileSync(namesOutPath, `${JSON.stringify(names)}\n`);
   fs.writeFileSync(gearSlotsOutPath, `${JSON.stringify(gearSlotsByItemId)}\n`);
