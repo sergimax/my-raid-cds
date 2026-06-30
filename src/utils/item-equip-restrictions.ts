@@ -324,7 +324,7 @@ export function filterUsableLootItemIds(
     }
     if (
       options?.filterBySpecStats === true &&
-      !isItemStatUsableForSpec(itemId, context)
+      !isItemStatUsableForSpec(itemId, context, gearSlot)
     ) {
       return false;
     }

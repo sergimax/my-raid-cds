@@ -4,12 +4,18 @@ import {
   type GsStatWeights,
   type SpecStatProfile,
 } from "../data/spec-stat-priorities.ts";
+import { getWotlkItemEquipProps } from "../data/wotlk-item-equip-props.ts";
 import { WowSimsItemStat } from "../data/wowsims-item-stat.ts";
 import {
   getWotlkItemStats,
   type ItemStatFitContext,
   type WotlkItemStatsSparse,
 } from "../data/wotlk-item-stats.ts";
+
+/** WowSims gear slot / item type (mirrors item-equip-restrictions.ts). */
+const GearSlotOffHand = 15;
+const ItemTypeWeapon = 13;
+const WeaponTypeShield = 7;
 
 type NormalizedGsStats = Partial<Record<GsStatKey, number>>;
 
@@ -179,6 +185,7 @@ function isRoleNeutralItem(stats: NormalizedGsStats): boolean {
 export function isItemStatUsableForSpec(
   itemId: number,
   context: ItemStatFitContext,
+  gearSlot?: number,
 ): boolean {
   const { className, spec } = context;
   if (!className || !spec) {
@@ -190,12 +197,26 @@ export function isItemStatUsableForSpec(
     return true;
   }
 
+  if (
+    profile.offHandShieldOnly === true &&
+    gearSlot === GearSlotOffHand
+  ) {
+    const item = getWotlkItemEquipProps(itemId);
+    if (item?.t === ItemTypeWeapon && item.w !== WeaponTypeShield) {
+      return false;
+    }
+  }
+
   const sparseStats = getWotlkItemStats(itemId);
   if (!sparseStats) {
     return true;
   }
 
   const stats = normalizeItemStatsToGs(sparseStats);
+
+  if (profile.rejectSpiritStats === true && statValue(stats, "SPI") > 0) {
+    return false;
+  }
 
   if (!isItemStatCompatible(stats, profile)) {
     return false;
