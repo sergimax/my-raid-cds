@@ -478,6 +478,8 @@ export type GearUpgradeHintTooltipOptions = {
   showBisBossLoot?: boolean;
   /** Boss-grouped variant list is shown — omit redundant count line. */
   showBisVariantBossLoot?: boolean;
+  /** Boss-grouped non-BiS ilvl list is shown — omit redundant count line. */
+  showIlvlBossLoot?: boolean;
 };
 
 function collectMissingLootItemIds(track: GearUpgradeHintTrack): number[] {
@@ -506,6 +508,11 @@ export function collectMissingBisLootItemIds(hint: GearUpgradeHint): {
   };
 }
 
+/** Item ids for boss-grouped non-BiS ilvl upgrade sections (missing upgrades only). */
+export function collectMissingIlvlLootItemIds(hint: GearUpgradeHint): number[] {
+  return collectMissingLootItemIds(hint.ilvl);
+}
+
 export function formatGearUpgradeHintTooltip(
   hint: GearUpgradeHint,
   t: TranslateFn,
@@ -527,7 +534,7 @@ export function formatGearUpgradeHintTooltip(
     );
   }
 
-  if (hint.ilvl.level > 0) {
+  if (hint.ilvl.level > 0 && !options?.showIlvlBossLoot) {
     const introKey = hint.slotAware
       ? "gearHint.raidLootUpgrades"
       : "gearHint.belowIlvl";
