@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.34.0] - 2026-06-30
+
+### Added
+
+- **Dungeon name suggestions:** The new-dungeon form suggests WotLK raid names via locale-aware autocomplete; selecting a known raid fills or updates the short name abbreviation.
+
 ## [1.33.2] - 2026-06-30
 
 ### Changed
