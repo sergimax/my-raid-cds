@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { ClassName } from "../types/characters.ts";
+import { ClassName, Classes } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
 import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
 import { retributionPaladinBis } from "../data/bis-presets/retribution-paladin.ts";
-import { createTestDungeon } from "../test/fixtures.ts";
+import { createTestCharacter, createTestDungeon } from "../test/fixtures.ts";
 import { testTranslator } from "../test/i18n.ts";
 import { evaluateCharacterGearHints } from "./character-gear-hints.ts";
 import { buildBisSlotMap } from "./bis-lists.ts";
@@ -601,10 +601,10 @@ describe("formatGearUpgradeHintTooltip", () => {
     });
 
     const hints = evaluateCharacterGearHints(
-      {
+      createTestCharacter({
         id: "emst",
         name: "emst",
-        class: { name: ClassName.Warrior },
+        class: Classes.find((characterClass) => characterClass.name === ClassName.Warrior),
         mainSpec: {
           spec: "Protection",
           gearItems: [
@@ -612,7 +612,7 @@ describe("formatGearUpgradeHintTooltip", () => {
             { slot: 12, id: 37657 },
           ],
         },
-      },
+      }),
       dungeon,
       () => new Map(),
       "ru",
