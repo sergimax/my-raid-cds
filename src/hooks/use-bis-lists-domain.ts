@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import type { ClassName, CharacterRecord } from "../types/characters.ts";
+import type { ClassName } from "../types/characters.ts";
 import type { BisListSlot, LocalBisListsState } from "../types/bis-lists.ts";
 import {
   loadLocalBisListsState,
@@ -10,7 +10,6 @@ import {
   getMergedPresetsForSpec,
   getSelectedPresetForSpec,
   isLocalBisPreset,
-  removeLocalSpecEntry,
   resolveBisSlotMap,
   resolveSaveLocalPresetByName,
   specBisStorageKey,
@@ -44,19 +43,6 @@ export function useBisListsDomain() {
     (className: ClassName, spec: string): BisSlotMap =>
       resolveBisSlotMap(className, spec, localState),
     [localState],
-  );
-
-  const getBisSlotMapForCharacter = useCallback(
-    (character: CharacterRecord): BisSlotMap | undefined => {
-      const className = character.class?.name;
-      const spec = character.mainSpec?.spec;
-      if (!className || !spec) {
-        return undefined;
-      }
-      const slotMap = getBisSlotMapForSpec(className, spec);
-      return slotMap.size > 0 ? slotMap : undefined;
-    },
-    [getBisSlotMapForSpec],
   );
 
   const selectPreset = useCallback(
@@ -142,13 +128,6 @@ export function useBisListsDomain() {
     [localState, persistState],
   );
 
-  const resetSpecToBuiltIn = useCallback(
-    (className: ClassName, spec: string) => {
-      persistState(removeLocalSpecEntry(localState, className, spec));
-    },
-    [localState, persistState],
-  );
-
   const updateSelectedLocalPresetSlots = useCallback(
     (className: ClassName, spec: string, slots: BisListSlot[]) => {
       const storageKey = specBisStorageKey(className, spec);
@@ -178,25 +157,19 @@ export function useBisListsDomain() {
 
   return useMemo(
     () => ({
-      localState,
       getPresetsForSpec,
       getSelectedPreset,
       getBisSlotMapForSpec,
-      getBisSlotMapForCharacter,
       selectPreset,
       savePresetByName,
       deleteLocalPreset,
-      resetSpecToBuiltIn,
       updateSelectedLocalPresetSlots,
     }),
     [
       deleteLocalPreset,
-      getBisSlotMapForCharacter,
       getBisSlotMapForSpec,
       getPresetsForSpec,
       getSelectedPreset,
-      localState,
-      resetSpecToBuiltIn,
       savePresetByName,
       selectPreset,
       updateSelectedLocalPresetSlots,

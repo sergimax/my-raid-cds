@@ -347,17 +347,3 @@ export function upsertLocalSpecEntry(
     },
   };
 }
-
-export function removeLocalSpecEntry(
-  localState: LocalBisListsState,
-  className: ClassName,
-  spec: string,
-): LocalBisListsState {
-  const storageKey = specBisStorageKey(className, spec);
-  const nextEntries = { ...localState.entries };
-  delete nextEntries[storageKey];
-  return {
-    ...localState,
-    entries: nextEntries,
-  };
-}
