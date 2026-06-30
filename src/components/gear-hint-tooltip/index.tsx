@@ -123,12 +123,10 @@ function TierSetTokenSection({
 function SpecGearHintSection({
   specHint,
   characterClassName,
-  locale,
   t,
 }: {
   specHint: SpecGearHint;
   characterClassName?: ClassName;
-  locale: ItemTooltipLocale;
   t: TranslateFn;
 }) {
   const specName = specHint.specGear.spec;
@@ -137,8 +135,6 @@ function SpecGearHintSection({
   const hasIlvlLootList = specHint.ilvlBossLootGroups.length > 0;
 
   const gearSummary = formatGearUpgradeHintTooltip(specHint.gearHint, t, {
-    showBisBossLoot: hasBisLootList,
-    showBisVariantBossLoot: hasBisVariantList,
     showIlvlBossLoot: hasIlvlLootList,
   });
   const tokenRows = aggregateTierSetTokenNeeds(specHint.tierSetHint.tokenNeeds);
@@ -242,13 +238,12 @@ export function GearHintTooltipContent({
   }
 
   return (
-    <Box sx={{ maxWidth: 400 }}>
+    <Box key={locale} sx={{ maxWidth: 400 }}>
       {sections.map((specHint) => (
         <SpecGearHintSection
           key={specHint.specGear.spec}
           specHint={specHint}
           characterClassName={characterClassName}
-          locale={locale}
           t={t}
         />
       ))}
