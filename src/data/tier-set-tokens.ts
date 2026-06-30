@@ -8,24 +8,49 @@ import type {
 } from "../types/tier-sets.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
 
-/** ICC / ToC vendor mark groups (which classes can turn in each token). */
-export const TIER_SET_TOKEN_TYPE_CLASSES: Record<
-  TierSetTokenType,
-  readonly ClassNameType[]
-> = {
+/** Classes that can turn in each token category (Ulduar Lost / ToC Regalia / ICC Mark). */
+const T8_TOKEN_TYPE_CLASSES: Record<TierSetTokenType, readonly ClassNameType[]> = {
   vanquisher: [
     ClassName.DeathKnight,
-    ClassName.Paladin,
-    ClassName.Priest,
-    ClassName.Warlock,
+    ClassName.Druid,
+    ClassName.Mage,
+    ClassName.Rogue,
   ],
-  protector: [
-    ClassName.Hunter,
-    ClassName.Shaman,
-    ClassName.Warrior,
+  protector: [ClassName.Hunter, ClassName.Shaman, ClassName.Warrior],
+  conqueror: [ClassName.Paladin, ClassName.Priest, ClassName.Warlock],
+};
+
+/** ToC Regalia / Triumph of the Grand * tokens. */
+const T9_TOKEN_TYPE_CLASSES: Record<TierSetTokenType, readonly ClassNameType[]> = {
+  vanquisher: [
     ClassName.DeathKnight,
+    ClassName.Druid,
+    ClassName.Mage,
+    ClassName.Rogue,
   ],
-  conqueror: [ClassName.Druid, ClassName.Mage, ClassName.Rogue],
+  protector: [ClassName.Hunter, ClassName.Shaman, ClassName.Warrior],
+  conqueror: [ClassName.Paladin, ClassName.Priest, ClassName.Warlock],
+};
+
+/** ICC Mark of Sanctification tokens. */
+const T10_TOKEN_TYPE_CLASSES: Record<TierSetTokenType, readonly ClassNameType[]> = {
+  vanquisher: [
+    ClassName.DeathKnight,
+    ClassName.Druid,
+    ClassName.Mage,
+    ClassName.Rogue,
+  ],
+  protector: [ClassName.Hunter, ClassName.Shaman, ClassName.Warrior],
+  conqueror: [ClassName.Paladin, ClassName.Priest, ClassName.Warlock],
+};
+
+export const TIER_SET_TOKEN_TYPE_CLASSES_BY_TIER: Record<
+  TierSetTier,
+  Record<TierSetTokenType, readonly ClassNameType[]>
+> = {
+  t8: T8_TOKEN_TYPE_CLASSES,
+  t9: T9_TOKEN_TYPE_CLASSES,
+  t10: T10_TOKEN_TYPE_CLASSES,
 };
 
 export function canClassUseTierSetToken(
@@ -37,7 +62,9 @@ export function canClassUseTierSetToken(
     return true;
   }
 
-  return TIER_SET_TOKEN_TYPE_CLASSES[token.tokenType].includes(className);
+  return TIER_SET_TOKEN_TYPE_CLASSES_BY_TIER[token.tier][token.tokenType].includes(
+    className,
+  );
 }
 
 type TokenNameSeed = {
@@ -102,7 +129,7 @@ const tocHeroicTokenDrops: TierSetTokenDropSource[] = [
 
 const tokenSeeds: TokenNameSeed[] = [
   {
-    itemId: 52005,
+    itemId: 52025,
     tokenType: "vanquisher",
     tier: "t10",
     heroic: false,
@@ -112,7 +139,7 @@ const tokenSeeds: TokenNameSeed[] = [
     },
   },
   {
-    itemId: 52006,
+    itemId: 52026,
     tokenType: "protector",
     tier: "t10",
     heroic: false,
@@ -122,7 +149,7 @@ const tokenSeeds: TokenNameSeed[] = [
     },
   },
   {
-    itemId: 52007,
+    itemId: 52027,
     tokenType: "conqueror",
     tier: "t10",
     heroic: false,
@@ -132,7 +159,7 @@ const tokenSeeds: TokenNameSeed[] = [
     },
   },
   {
-    itemId: 52030,
+    itemId: 52028,
     tokenType: "vanquisher",
     tier: "t10",
     heroic: true,
@@ -142,7 +169,7 @@ const tokenSeeds: TokenNameSeed[] = [
     },
   },
   {
-    itemId: 52031,
+    itemId: 52029,
     tokenType: "protector",
     tier: "t10",
     heroic: true,
@@ -152,7 +179,7 @@ const tokenSeeds: TokenNameSeed[] = [
     },
   },
   {
-    itemId: 52032,
+    itemId: 52030,
     tokenType: "conqueror",
     tier: "t10",
     heroic: true,

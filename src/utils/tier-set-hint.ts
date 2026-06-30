@@ -1,4 +1,5 @@
 import type { ItemTooltipLocale } from "../constants/item-tooltips.ts";
+import { getWotlkItemName } from "../data/wotlk-item-names.ts";
 import tierSetsByItemIdJson from "../data/tier-sets-by-item-id.json";
 import {
   dungeonDropsTierSetToken,
@@ -215,5 +216,9 @@ export function formatTierSetTokenLabel(
   tokenItemId: number,
   locale: ItemTooltipLocale,
 ): string {
-  return getTierSetTokenName(tokenItemId, locale) ?? `#${tokenItemId}`;
+  return (
+    getWotlkItemName(tokenItemId, locale) ??
+    getTierSetTokenName(tokenItemId, locale) ??
+    `#${tokenItemId}`
+  );
 }
