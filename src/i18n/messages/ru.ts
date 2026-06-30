@@ -176,7 +176,7 @@ export const ruMessages: Messages = {
     ilvlBossLoot: "Другие возможные улучшения в этом рейде",
   },
   tierSet: {
-    tokensFromRaid: "{{count}} токен(ов) сета из этого рейда",
+    tokensFromRaid: "Токены сета в этом рейде",
     tokenColumn: "Токен",
     countColumn: "Кол-во",
     slotsColumn: "Слоты",

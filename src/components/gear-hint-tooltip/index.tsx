@@ -4,7 +4,6 @@ import {
 } from "@mui/material";
 import type { ItemTooltipLocale } from "../../constants/item-tooltips.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
-import { getLocalizedGearSlotLabel } from "../../i18n/localized-domain.ts";
 import type { ClassName } from "../../types/characters.ts";
 import { SpecOptionLabel } from "../spec-option-label/index.tsx";
 import { WowItemAlternatives, WowItemLink } from "../wow-item-link/index.tsx";
@@ -12,6 +11,7 @@ import { formatGearUpgradeHintTooltip } from "../../utils/gear-upgrade-hint.ts";
 import {
   aggregateTierSetTokenNeeds,
   formatTierSetTokenLabel,
+  type AggregatedTierSetTokenNeed,
 } from "../../utils/tier-set-hint.ts";
 import type { CharacterGearHints, SpecGearHint } from "../../utils/character-gear-hints.ts";
 import type { BossBisLootGroup } from "../../utils/item-drop-sources.ts";
@@ -80,6 +80,47 @@ function BisBossLootSection({
           </Typography>
         ))}
       </Box>
+    </Box>
+  );
+}
+
+function TierSetTokenSection({
+  tokenRows,
+  locale,
+  marginBottom,
+  t,
+}: {
+  tokenRows: readonly AggregatedTierSetTokenNeed[];
+  locale: ItemTooltipLocale;
+  marginBottom: number;
+  t: TranslateFn;
+}) {
+  if (tokenRows.length === 0) {
+    return null;
+  }
+
+  return (
+    <Box sx={{ mb: marginBottom }}>
+      <Typography
+        variant="caption"
+        component="p"
+        sx={{ fontWeight: 600, mb: 0.25, lineHeight: 1.25 }}
+      >
+        {t("tierSet.tokensFromRaid")}
+      </Typography>
+      {tokenRows.map((row) => (
+        <Typography
+          key={row.tokenItemId}
+          variant="caption"
+          component="p"
+          sx={{ lineHeight: 1.25, mb: 0.25, "&:last-child": { mb: 0 } }}
+        >
+          <WowItemLink itemId={row.tokenItemId}>
+            {formatTierSetTokenLabel(row.tokenItemId, locale)}
+          </WowItemLink>
+          {row.count > 1 ? ` ×${row.count}` : null}
+        </Typography>
+      ))}
     </Box>
   );
 }
@@ -182,31 +223,12 @@ function SpecGearHintSection({
         t={t}
       />
 
-      {tokenRows.length > 0 ? (
-        <Box>
-          <Typography variant="caption" component="p" sx={{ fontWeight: 600, mb: 0.5 }}>
-            {t("tierSet.tokensFromRaid", { count: tokenRows.length })}
-          </Typography>
-          {tokenRows.map((row) => (
-            <Typography
-              key={row.tokenItemId}
-              variant="caption"
-              component="p"
-              sx={{ mb: 0.25, "&:last-child": { mb: 0 } }}
-            >
-              <WowItemLink itemId={row.tokenItemId}>
-                {formatTierSetTokenLabel(row.tokenItemId, locale)}
-              </WowItemLink>
-              {" ×"}
-              {row.count}
-              {" — "}
-              {row.slots
-                .map((slot) => getLocalizedGearSlotLabel(slot, locale))
-                .join(", ")}
-            </Typography>
-          ))}
-        </Box>
-      ) : null}
+      <TierSetTokenSection
+        tokenRows={tokenRows}
+        locale={locale}
+        marginBottom={0}
+        t={t}
+      />
     </Box>
   );
 }
