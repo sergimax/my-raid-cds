@@ -17,6 +17,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildItemGearSlotsMap, itemToGearSlots } from "./wow-item-gear-slots.mjs";
+import {
+  TIER_SET_TOKEN_EN_NAMES,
+  TIER_SET_TOKEN_ITEM_IDS,
+} from "./tier-set-token-names.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, "..");
@@ -322,79 +326,79 @@ function buildItemDropSources(dbItems, itemLevelIds) {
 
 const TIER_SET_GEAR_SLOTS = new Set([0, 2, 4, 6, 8, 10]);
 
-/** ICC / ToC token category per tier 10 set name (from in-game vendor groups). */
+/** ICC tier 10 set → Mark of Sanctification category. */
 const T10_TOKEN_TYPE_BY_SET = {
   "Ahn'Kahar Blood Hunter's Battlegear": "protector",
-  "Bloodmage's Regalia": "conqueror",
-  "Crimson Acolyte's Raiment": "vanquisher",
-  "Crimson Acolyte's Regalia": "vanquisher",
-  "Dark Coven's Regalia": "vanquisher",
+  "Bloodmage's Regalia": "vanquisher",
+  "Crimson Acolyte's Raiment": "conqueror",
+  "Crimson Acolyte's Regalia": "conqueror",
+  "Dark Coven's Regalia": "conqueror",
   "Frost Witch's Battlegear": "protector",
   "Frost Witch's Garb": "protector",
   "Frost Witch's Regalia": "protector",
-  "Lasherweave Battlegear": "conqueror",
-  "Lasherweave Garb": "conqueror",
-  "Lasherweave Regalia": "conqueror",
-  "Lightsworn Battlegear": "vanquisher",
-  "Lightsworn Garb": "vanquisher",
-  "Lightsworn Plate": "vanquisher",
+  "Lasherweave Battlegear": "vanquisher",
+  "Lasherweave Garb": "vanquisher",
+  "Lasherweave Regalia": "vanquisher",
+  "Lightsworn Battlegear": "conqueror",
+  "Lightsworn Garb": "conqueror",
+  "Lightsworn Plate": "conqueror",
   "Scourgelord's Battlegear": "vanquisher",
   "Scourgelord's Plate": "protector",
-  "Shadowblade's Battlegear": "conqueror",
+  "Shadowblade's Battlegear": "vanquisher",
   "Ymirjar Lord's Battlegear": "protector",
   "Ymirjar Lord's Plate": "protector",
 };
 
-/** ToC tier 9 sets share the same token groups as ICC tier 10. */
+/** ToC tier 9 set → Regalia / Triumph of the Grand * category. */
 const T9_TOKEN_TYPE_BY_SET = {
-  "Garona's Battlegear": "conqueror",
-  "Gul'dan's Regalia": "vanquisher",
+  "Garona's Battlegear": "vanquisher",
+  "Gul'dan's Regalia": "conqueror",
   "Hellscream's Battlegear": "protector",
   "Hellscream's Plate": "protector",
   "Kel'Thuzad's Regalia": "conqueror",
-  "Khadgar's Regalia": "conqueror",
+  "Khadgar's Regalia": "vanquisher",
   "Koltira's Battlegear": "vanquisher",
   "Koltira's Plate": "protector",
-  "Liadrin's Battlegear": "vanquisher",
-  "Liadrin's Garb": "vanquisher",
-  "Liadrin's Plate": "vanquisher",
-  "Malfurion's Battlegear": "conqueror",
-  "Malfurion's Garb": "conqueror",
-  "Malfurion's Regalia": "conqueror",
+  "Liadrin's Battlegear": "conqueror",
+  "Liadrin's Garb": "conqueror",
+  "Liadrin's Plate": "conqueror",
+  "Malfurion's Battlegear": "vanquisher",
+  "Malfurion's Garb": "vanquisher",
+  "Malfurion's Regalia": "vanquisher",
   "Nobundo's Battlegear": "protector",
   "Nobundo's Garb": "protector",
   "Nobundo's Regalia": "protector",
-  "Runetotem's Battlegear": "conqueror",
-  "Runetotem's Garb": "conqueror",
-  "Runetotem's Regalia": "conqueror",
-  "Sunstrider's Regalia": "conqueror",
+  "Runetotem's Battlegear": "vanquisher",
+  "Runetotem's Garb": "vanquisher",
+  "Runetotem's Regalia": "vanquisher",
+  "Sunstrider's Regalia": "vanquisher",
   "Thassarian's Battlegear": "vanquisher",
   "Thassarian's Plate": "protector",
   "Thrall's Battlegear": "protector",
   "Thrall's Garb": "protector",
   "Thrall's Regalia": "protector",
-  "Turalyon's Battlegear": "vanquisher",
-  "Turalyon's Garb": "vanquisher",
-  "Turalyon's Plate": "vanquisher",
-  "VanCleef's Battlegear": "conqueror",
-  "Velen's Raiment": "vanquisher",
-  "Velen's Regalia": "vanquisher",
+  "Turalyon's Battlegear": "conqueror",
+  "Turalyon's Garb": "conqueror",
+  "Turalyon's Plate": "conqueror",
+  "VanCleef's Battlegear": "vanquisher",
+  "Velen's Raiment": "conqueror",
+  "Velen's Regalia": "conqueror",
   "Windrunner's Battlegear": "protector",
   "Windrunner's Pursuit": "protector",
   "Wrynn's Battlegear": "protector",
   "Wrynn's Plate": "protector",
-  "Zabra's Raiment": "vanquisher",
-  "Zabra's Regalia": "vanquisher",
+  "Zabra's Raiment": "conqueror",
+  "Zabra's Regalia": "conqueror",
 };
 
-/** Ulduar tier 8 token groups (Runed Orb upgrades use the same categories). */
+/** Ulduar tier 8 set → Lost * / Runed Orb category. */
 const T8_TOKEN_TYPE_BY_SET = {
   "Aegis Battlegear": "conqueror",
   "Aegis Plate": "conqueror",
   "Aegis Regalia": "conqueror",
   "Darkruned Battlegear": "vanquisher",
   "Darkruned Plate": "protector",
-  "Deathbringer Garb": "vanquisher",
+  "Deathbringer Garb": "conqueror",
   "Nightsong Battlegear": "vanquisher",
   "Nightsong Garb": "vanquisher",
   "Nightsong Regalia": "vanquisher",
@@ -410,15 +414,15 @@ const T8_TOKEN_TYPE_BY_SET = {
 };
 
 const T10_NORMAL_TOKEN_BY_TYPE = {
-  vanquisher: 52005,
-  protector: 52006,
-  conqueror: 52007,
+  vanquisher: 52025,
+  protector: 52026,
+  conqueror: 52027,
 };
 
 const T10_HEROIC_TOKEN_BY_TYPE = {
-  vanquisher: 52030,
-  protector: 52031,
-  conqueror: 52032,
+  vanquisher: 52028,
+  protector: 52029,
+  conqueror: 52030,
 };
 
 const T9_NORMAL_TOKEN_BY_TYPE = {
@@ -690,7 +694,10 @@ async function main() {
   const itemLevels = JSON.parse(fs.readFileSync(itemLevelsPath, "utf8"));
   const itemLevelIds = Object.keys(itemLevels);
 
-  const names = buildItemNames(db.items, itemLevelIds);
+  const names = {
+    ...buildItemNames(db.items, itemLevelIds),
+    ...TIER_SET_TOKEN_EN_NAMES,
+  };
   const gearSlotsByItemId = buildItemGearSlotsMap(db.items, itemLevelIds);
   const equipPropsByItemId = buildItemEquipProps(db.items, itemLevelIds);
   const itemStatsByItemId = buildItemStats(db.items, itemLevelIds);
@@ -737,17 +744,20 @@ async function main() {
     return;
   }
 
+  const russianNameIds = [
+    ...new Set([...itemLevelIds.map(Number), ...TIER_SET_TOKEN_ITEM_IDS]),
+  ];
   console.log(
-    `Fetching ${itemLevelIds.length} Russian item names from WoWRoad (concurrency ${WOWROAD_FETCH_CONCURRENCY})…`,
+    `Fetching ${russianNameIds.length} Russian item names from WoWRoad (concurrency ${WOWROAD_FETCH_CONCURRENCY})…`,
   );
   const { names: russianNames, resolvedCount, failedCount } =
-    await buildRussianItemNames(itemLevelIds);
+    await buildRussianItemNames(russianNameIds);
 
   fs.writeFileSync(namesRuOutPath, `${JSON.stringify(russianNames)}\n`);
   console.log(
     `Wrote ${Object.keys(russianNames).length} Russian item names (${failedCount} missing) → ${namesRuOutPath}`,
   );
-  console.log(`Resolved ${resolvedCount}/${itemLevelIds.length} WoWRoad names.`);
+  console.log(`Resolved ${resolvedCount}/${russianNameIds.length} WoWRoad names.`);
 }
 
 main().catch((error) => {

@@ -10,7 +10,6 @@ import { WowItemAlternatives, WowItemLink } from "../wow-item-link/index.tsx";
 import { formatGearUpgradeHintTooltip } from "../../utils/gear-upgrade-hint.ts";
 import {
   aggregateTierSetTokenNeeds,
-  formatTierSetTokenLabel,
   type AggregatedTierSetTokenNeed,
 } from "../../utils/tier-set-hint.ts";
 import type { CharacterGearHints, SpecGearHint } from "../../utils/character-gear-hints.ts";
@@ -86,12 +85,10 @@ function BisBossLootSection({
 
 function TierSetTokenSection({
   tokenRows,
-  locale,
   marginBottom,
   t,
 }: {
   tokenRows: readonly AggregatedTierSetTokenNeed[];
-  locale: ItemTooltipLocale;
   marginBottom: number;
   t: TranslateFn;
 }) {
@@ -115,9 +112,7 @@ function TierSetTokenSection({
           component="p"
           sx={{ lineHeight: 1.25, mb: 0.25, "&:last-child": { mb: 0 } }}
         >
-          <WowItemLink itemId={row.tokenItemId}>
-            {formatTierSetTokenLabel(row.tokenItemId, locale)}
-          </WowItemLink>
+          <WowItemLink itemId={row.tokenItemId} />
           {row.count > 1 ? ` ×${row.count}` : null}
         </Typography>
       ))}
@@ -225,7 +220,6 @@ function SpecGearHintSection({
 
       <TierSetTokenSection
         tokenRows={tokenRows}
-        locale={locale}
         marginBottom={0}
         t={t}
       />

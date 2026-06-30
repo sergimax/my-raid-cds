@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
 import { restorationShamanBis } from "../data/bis-presets/restoration-shaman.ts";
 import { holyPriestBis } from "../data/bis-presets/holy-priest.ts";
+import { getWotlkItemName } from "../data/wotlk-item-names.ts";
 import { ClassName } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
 import { buildBisSlotMap } from "./bis-lists.ts";
 import {
   aggregateTierSetTokenNeeds,
   evaluateTierSetHint,
+  formatTierSetTokenLabel,
 } from "./tier-set-hint.ts";
 import { canClassUseTierSetToken } from "../data/tier-set-tokens.ts";
 
@@ -62,7 +64,7 @@ describe("evaluateTierSetHint", () => {
     );
 
     expect(hint.tokenNeeds).toHaveLength(4);
-    expect(hint.tokenNeeds.every((need) => need.tokenItemId === 52030)).toBe(
+    expect(hint.tokenNeeds.every((need) => need.tokenItemId === 52028)).toBe(
       true,
     );
   });
@@ -95,7 +97,7 @@ describe("evaluateTierSetHint", () => {
 
     expect(hint.tokenNeeds).toEqual([
       {
-        tokenItemId: 52005,
+        tokenItemId: 52025,
         slot: 0,
         targetItemId: 51127,
       },
@@ -111,7 +113,7 @@ describe("evaluateTierSetHint", () => {
     );
 
     expect(hint.tokenNeeds.length).toBeGreaterThan(0);
-    expect(hint.tokenNeeds[0]?.tokenItemId).toBe(52005);
+    expect(hint.tokenNeeds[0]?.tokenItemId).toBe(52025);
   });
 
   it("does not show tokens when gear is not imported for non-token raids", () => {
@@ -153,8 +155,8 @@ describe("evaluateTierSetHint", () => {
 
     const aggregated = aggregateTierSetTokenNeeds(hint.tokenNeeds);
     expect(aggregated).toEqual([
-      { tokenItemId: 52005, count: 1, slots: [6] },
-      { tokenItemId: 52030, count: 3, slots: [0, 2, 4] },
+      { tokenItemId: 52025, count: 1, slots: [6] },
+      { tokenItemId: 52028, count: 3, slots: [0, 2, 4] },
     ]);
   });
 
@@ -176,7 +178,7 @@ describe("evaluateTierSetHint", () => {
     );
 
     expect(hint.tokenNeeds).toHaveLength(4);
-    expect(hint.tokenNeeds.every((need) => need.tokenItemId === 52030)).toBe(
+    expect(hint.tokenNeeds.every((need) => need.tokenItemId === 52028)).toBe(
       true,
     );
   });
@@ -197,12 +199,21 @@ describe("evaluateTierSetHint", () => {
     ).toBe(true);
     expect(
       hint.tokenNeeds.every(
-        (need) => need.tokenItemId === 52031 || need.tokenItemId === 52006,
+        (need) => need.tokenItemId === 52029 || need.tokenItemId === 52026,
       ),
     ).toBe(true);
   });
 
-  it("shows vanquisher tokens for Holy Priest, not protector", () => {
+  it("formats token labels from bundled item names when available", () => {
+    expect(formatTierSetTokenLabel(52027, "en")).toBe(
+      "Conqueror's Mark of Sanctification",
+    );
+    expect(formatTierSetTokenLabel(52027, "ru")).toBe(
+      getWotlkItemName(52027, "ru"),
+    );
+  });
+
+  it("shows conqueror tokens for Holy Priest, not protector", () => {
     const hint = evaluateTierSetHint(
       undefined,
       icc25Heroic,
@@ -218,7 +229,7 @@ describe("evaluateTierSetHint", () => {
     ).toBe(true);
     expect(
       hint.tokenNeeds.every(
-        (need) => need.tokenItemId === 52030 || need.tokenItemId === 52005,
+        (need) => need.tokenItemId === 52030 || need.tokenItemId === 52027,
       ),
     ).toBe(true);
   });
@@ -234,21 +245,21 @@ describe("evaluateTierSetHint", () => {
     );
 
     expect(hint.tokenNeeds).toHaveLength(1);
-    expect(hint.tokenNeeds[0]?.tokenItemId).toBe(52030);
+    expect(hint.tokenNeeds[0]?.tokenItemId).toBe(52028);
   });
 });
 
 describe("aggregateTierSetTokenNeeds", () => {
   it("groups token needs by token item id", () => {
     const aggregated = aggregateTierSetTokenNeeds([
-      { tokenItemId: 52030, slot: 0, targetItemId: 51312 },
-      { tokenItemId: 52030, slot: 2, targetItemId: 51314 },
-      { tokenItemId: 52005, slot: 4, targetItemId: 51129 },
+      { tokenItemId: 52028, slot: 0, targetItemId: 51312 },
+      { tokenItemId: 52028, slot: 2, targetItemId: 51314 },
+      { tokenItemId: 52025, slot: 4, targetItemId: 51129 },
     ]);
 
     expect(aggregated).toEqual([
-      { tokenItemId: 52005, count: 1, slots: [4] },
-      { tokenItemId: 52030, count: 2, slots: [0, 2] },
+      { tokenItemId: 52025, count: 1, slots: [4] },
+      { tokenItemId: 52028, count: 2, slots: [0, 2] },
     ]);
   });
 });
