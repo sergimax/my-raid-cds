@@ -18,7 +18,7 @@ Open [http://localhost:5173](http://localhost:5173).
 | `npm run preview` | Preview production build |
 | `npm run lint` | ESLint |
 | `npm run test` / `npm run test:run` | Vitest (watch / CI) |
-| `npm run build:wow-data` | Regenerate bundled WoW JSON from `scripts/wowsims-db.json` |
+| `npm run build:wow-data` | Regenerate bundled WoW JSON from `scripts/wowsims-db.json` (includes VoA tier loot derived from tier set metadata when WowSims omits zone 4603) |
 | `npm run generate:bis-presets` | Regenerate built-in BiS presets from `scripts/bis-list-sources.md` |
 | `npm run comment:bis-presets` | Add slot comments to BiS preset files |
 
@@ -31,7 +31,7 @@ Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spe
 - **Table** — Sort by name, type (size + Heroic), ilvl, or completions; search dungeons; compact layout on narrow screens.
 - **Export** — Copy a raid roster of characters still missing CD for visible (filtered) rows.
 - **BiS lists** — Built-in presets per spec (Titans + community sources); save editable local copies; drives gear upgrade hints.
-- **Gear hints** — Amber = missing BiS targets; blue = stat-filtered ilvl upgrades; tooltips list boss loot and tier tokens.
+- **Gear hints** — Amber = missing BiS targets; blue = stat-filtered ilvl upgrades; tooltips list boss loot and tier tokens (including Vault of Archavon tier hands/legs).
 - **EN / RU** — Full UI + item tooltips (Cavern of Time / WoWRoad).
 - **Theme** — Light/dark mode, saved locally.
 

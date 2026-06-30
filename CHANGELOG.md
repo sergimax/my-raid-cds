@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.33.1] - 2026-06-30
+
+### Fixed
+
+- **Vault of Archavon gear hints:** WowSims has no zone data for VoA — `build:wow-data` now supplements tier set hands/legs (T9 from Koralon, T10 from Toravon) into `raid-loot-by-key.json` and `wotlk-item-drop-sources.json`, restoring BiS and ilvl tooltip recommendations for VoA rows. RU boss labels added for Archavon, Emalon, Koralon, and Toravon.
+
 ## [1.33.0] - 2026-06-30
 
 ### Added
