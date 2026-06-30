@@ -19,8 +19,7 @@ Open [http://localhost:5173](http://localhost:5173).
 | `npm run lint` | ESLint |
 | `npm run test` / `npm run test:run` | Vitest (watch / CI) |
 | `npm run build:wow-data` | Regenerate bundled WoW JSON from `scripts/wowsims-db.json` |
-| `npm run generate:titans-bis` | Regenerate Titans BiS presets |
-| `npm run generate:bis-sources` | Regenerate community BiS presets from `scripts/bis-list-sources.md` |
+| `npm run generate:bis-presets` | Regenerate built-in BiS presets from `scripts/bis-list-sources.md` |
 | `npm run comment:bis-presets` | Add slot comments to BiS preset files |
 
 ## Features

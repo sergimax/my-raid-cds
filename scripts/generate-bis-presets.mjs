@@ -1,14 +1,16 @@
 /**
- * Parse scripts/bis-list-sources.md and write matching preset `.ts` files
- * under src/data/bis-presets/ (does not modify index.ts — register new exports there).
+ * Parse scripts/bis-list-sources.md and write preset `.ts` files under src/data/bis-presets/.
+ * Titans guild lists and community guides share one markdown source.
  *
- * Run: npm run generate:bis-sources
+ * Run: npm run generate:bis-presets
  *
  * Also writes scripts/bis-list-sources-resolved.json for debugging unresolved names.
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { formatPresetSlots } from "./bis-preset-format.mjs";
+import { isTitansGuildList, resolveTitansListLines } from "./bis-resolve-titans.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, "..");
@@ -336,6 +338,7 @@ const CLASS_BY_HEADING = {
   mage: "Mage",
   druid: "Druid",
   shaman: "Shaman",
+  paladin: "Paladin",
   "death knight": "Death Knight",
 };
 
@@ -374,23 +377,21 @@ function parseHeading(heading) {
 
 function parseSubHeading(line) {
   const text = line.replace(/^##\s*/, "").trim();
-  const urlMatch = text.match(/(https:\/\/\S+)\s*$/);
-  if (!urlMatch) {
-    return null;
-  }
-
-  const url = urlMatch[1];
-  const rest = text.slice(0, text.length - url.length).replace(/\s+-\s*$/, "");
-  const parts = rest.split(" - ");
+  const urlMatch = text.match(/(https?:\/\/\S+)\s*$/);
+  const url = urlMatch ? urlMatch[1] : undefined;
+  const rest = urlMatch
+    ? text.slice(0, text.length - url.length).replace(/\s+-\s*$/, "")
+    : text;
+  const parts = rest.split(" - ").map((part) => part.trim()).filter(Boolean);
   if (parts.length < 3) {
     return null;
   }
 
   return {
-    server: parts[0].trim(),
-    author: parts[1].trim(),
-    presetName: parts.slice(2).join(" - ").trim(),
-    url,
+    server: parts[0],
+    author: parts[1],
+    presetName: parts.slice(2).join(" - "),
+    url: url ?? "local",
   };
 }
 
@@ -543,7 +544,7 @@ function parsePresetItems(listLines, context) {
 
   for (const rawLine of listLines) {
     const line = normalizeListLine(rawLine);
-    if (!line || /^note:/i.test(line)) {
+    if (!line || /^note:/i.test(line) || /^<!--/.test(line)) {
       continue;
     }
 
@@ -632,6 +633,22 @@ function parsePresetItems(listLines, context) {
 }
 
 function buildEntry({ className, spec, server, author, url, presetName, listLines, context }) {
+  if (isTitansGuildList(server, presetName)) {
+    const { slots, unknown } = resolveTitansListLines(className, spec, listLines);
+    return {
+      className,
+      spec,
+      server,
+      author,
+      url,
+      presetName,
+      id: "titans",
+      displayName: "Titans",
+      slots,
+      unknown,
+    };
+  }
+
   const { slots, unknown } = parsePresetItems(listLines, context);
   return {
     className,
@@ -721,7 +738,8 @@ for (const entry of entries) {
     console.log("UNKNOWN:", entry.unknown);
   }
   for (const slot of entry.slots) {
-    console.log(`  ${slot.slot}: [${slot.itemIds.join(", ")}] ${slot.itemNames.join(" / ")}`);
+    const names = slot.itemNames?.join(" / ") ?? "";
+    console.log(`  ${slot.slot}: [${slot.itemIds.join(", ")}]${names ? ` ${names}` : ""}`);
   }
 }
 
@@ -741,48 +759,14 @@ const CLASS_ENUM = {
   Warrior: "ClassName.Warrior",
   Hunter: "ClassName.Hunter",
   Mage: "ClassName.Mage",
+  Paladin: "ClassName.Paladin",
 };
 
 const SPEC_OUTPUT = {
-  "Death Knight|Unholy": {
-    fileName: "unholy-death-knight.ts",
-    exportName: "unholyDeathKnightBis",
-    comment: "Unholy Death Knight",
-  },
-  "Shaman|Enhancement": {
-    fileName: "enhancement-shaman.ts",
-    exportName: "enhancementShamanBis",
-    comment: "Enhancement Shaman",
-  },
-  "Druid|Feral": {
-    fileName: "feral-druid.ts",
-    exportName: "feralDruidBis",
-    comment: "Feral Druid",
-  },
-  "Druid|Restoration": {
-    fileName: "restoration-druid.ts",
-    exportName: "restorationDruidBis",
-    comment: "Restoration Druid",
-  },
-  "Priest|Holy": {
-    fileName: "holy-priest.ts",
-    exportName: "holyPriestBis",
-    comment: "Holy Priest",
-  },
-  "Rogue|Subtlety": {
-    fileName: "subtlety-rogue.ts",
-    exportName: "subtletyRogueBis",
-    comment: "Subtlety Rogue",
-  },
-  "Rogue|Assassination": {
-    fileName: "assassination-rogue.ts",
-    exportName: "assassinationRogueBis",
-    comment: "Assassination Rogue",
-  },
-  "Warlock|Destruction": {
-    fileName: "destruction-warlock.ts",
-    exportName: "destructionWarlockBis",
-    comment: "Destruction Warlock",
+  "Warrior|Fury": {
+    fileName: "fury-warrior.ts",
+    exportName: "furyWarriorBis",
+    comment: "Fury Warrior",
   },
   "Warrior|Arms": {
     fileName: "arms-warrior.ts",
@@ -794,6 +778,56 @@ const SPEC_OUTPUT = {
     exportName: "protectionWarriorBis",
     comment: "Protection Warrior",
   },
+  "Druid|Feral": {
+    fileName: "feral-druid.ts",
+    exportName: "feralDruidBis",
+    comment: "Feral Druid",
+  },
+  "Druid|Balance": {
+    fileName: "balance-druid.ts",
+    exportName: "balanceDruidBis",
+    comment: "Balance Druid",
+  },
+  "Druid|Restoration": {
+    fileName: "restoration-druid.ts",
+    exportName: "restorationDruidBis",
+    comment: "Restoration Druid",
+  },
+  "Priest|Holy": {
+    fileName: "holy-priest.ts",
+    exportName: "holyPriestBis",
+    comment: "Holy Priest",
+  },
+  "Priest|Shadow": {
+    fileName: "shadow-priest.ts",
+    exportName: "shadowPriestBis",
+    comment: "Shadow Priest",
+  },
+  "Priest|Discipline": {
+    fileName: "discipline-priest.ts",
+    exportName: "disciplinePriestBis",
+    comment: "Discipline Priest",
+  },
+  "Mage|Arcane": {
+    fileName: "arcane-mage.ts",
+    exportName: "arcaneMageBis",
+    comment: "Arcane Mage",
+  },
+  "Mage|Fire": {
+    fileName: "fire-mage.ts",
+    exportName: "fireMageBis",
+    comment: "Fire Mage",
+  },
+  "Mage|Frost": {
+    fileName: "frost-mage.ts",
+    exportName: "frostMageBis",
+    comment: "Frost Mage",
+  },
+  "Hunter|Marksmanship": {
+    fileName: "marksmanship-hunter.ts",
+    exportName: "marksmanshipHunterBis",
+    comment: "Marksmanship Hunter",
+  },
   "Hunter|Beast Mastery": {
     fileName: "beast-mastery-hunter.ts",
     exportName: "beastMasteryHunterBis",
@@ -804,10 +838,80 @@ const SPEC_OUTPUT = {
     exportName: "survivalHunterBis",
     comment: "Survival Hunter",
   },
-  "Mage|Frost": {
-    fileName: "frost-mage.ts",
-    exportName: "frostMageBis",
-    comment: "Frost Mage",
+  "Paladin|Retribution": {
+    fileName: "retribution-paladin.ts",
+    exportName: "retributionPaladinBis",
+    comment: "Retribution Paladin",
+  },
+  "Paladin|Protection": {
+    fileName: "protection-paladin.ts",
+    exportName: "protectionPaladinBis",
+    comment: "Protection Paladin",
+  },
+  "Paladin|Holy": {
+    fileName: "holy-paladin.ts",
+    exportName: "holyPaladinBis",
+    comment: "Holy Paladin",
+  },
+  "Rogue|Combat": {
+    fileName: "combat-rogue.ts",
+    exportName: "combatRogueBis",
+    comment: "Combat Rogue",
+  },
+  "Rogue|Subtlety": {
+    fileName: "subtlety-rogue.ts",
+    exportName: "subtletyRogueBis",
+    comment: "Subtlety Rogue",
+  },
+  "Rogue|Assassination": {
+    fileName: "assassination-rogue.ts",
+    exportName: "assassinationRogueBis",
+    comment: "Assassination Rogue",
+  },
+  "Death Knight|Blood": {
+    fileName: "blood-death-knight.ts",
+    exportName: "bloodDeathKnightBis",
+    comment: "Blood Death Knight",
+  },
+  "Death Knight|Unholy": {
+    fileName: "unholy-death-knight.ts",
+    exportName: "unholyDeathKnightBis",
+    comment: "Unholy Death Knight",
+  },
+  "Death Knight|Frost": {
+    fileName: "frost-death-knight.ts",
+    exportName: "frostDeathKnightBis",
+    comment: "Frost Death Knight",
+  },
+  "Warlock|Affliction": {
+    fileName: "affliction-warlock.ts",
+    exportName: "afflictionWarlockBis",
+    comment: "Affliction Warlock",
+  },
+  "Warlock|Demonology": {
+    fileName: "demonology-warlock.ts",
+    exportName: "demonologyWarlockBis",
+    comment: "Demonology Warlock",
+  },
+  "Warlock|Destruction": {
+    fileName: "destruction-warlock.ts",
+    exportName: "destructionWarlockBis",
+    comment: "Destruction Warlock",
+  },
+  "Shaman|Elemental": {
+    fileName: "elemental-shaman.ts",
+    exportName: "elementalShamanBis",
+    comment: "Elemental Shaman",
+  },
+  "Shaman|Enhancement": {
+    fileName: "enhancement-shaman.ts",
+    exportName: "enhancementShamanBis",
+    comment: "Enhancement Shaman",
+  },
+  "Shaman|Restoration": {
+    fileName: "restoration-shaman.ts",
+    exportName: "restorationShamanBis",
+    comment: "Restoration Shaman",
   },
 };
 
@@ -831,12 +935,7 @@ function normalizePresetSlots(slots) {
 
 function formatPresetBlock(entry) {
   const slots = normalizePresetSlots(entry.slots);
-  const slotLines = slots
-    .map(
-      (slotEntry) =>
-        `        { slot: ${slotEntry.slot}, itemIds: [${slotEntry.itemIds.join(", ")}] },`,
-    )
-    .join("\n");
+  const slotLines = formatPresetSlots(slots);
 
   return `    {
       id: "${entry.id}",
@@ -845,6 +944,14 @@ function formatPresetBlock(entry) {
 ${slotLines}
       ],
     }`;
+}
+
+function sortSpecEntries(specEntries) {
+  return [...specEntries].sort((left, right) => {
+    if (left.id === "titans") return -1;
+    if (right.id === "titans") return 1;
+    return left.displayName.localeCompare(right.displayName);
+  });
 }
 
 const grouped = new Map();
@@ -865,18 +972,20 @@ for (const [key, specEntries] of grouped.entries()) {
   }
 
   const [className, spec] = key.split("|");
-  const presetBlocks = specEntries.map(formatPresetBlock).join(",\n");
-  const sourceLines = specEntries
+  const orderedEntries = sortSpecEntries(specEntries);
+  const presetBlocks = orderedEntries.map(formatPresetBlock).join(",\n");
+  const sourceLines = orderedEntries
+    .filter((entry) => entry.url !== "local")
     .map((entry) => ` * @see ${entry.url}`)
     .join("\n");
+  const sourceComment = sourceLines.length > 0 ? `${sourceLines}\n` : "";
 
   const fileContents = `import { ClassName } from "../../types/characters.ts";
 import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
 
 /**
- * WotLK BiS presets for ${meta.comment} (community sources).
-${sourceLines}
- */
+ * WotLK BiS presets for ${meta.comment}.
+${sourceComment} */
 export const ${meta.exportName}: BuiltInSpecBis = {
   className: ${CLASS_ENUM[className]},
   spec: ${JSON.stringify(spec)},

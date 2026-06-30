@@ -1,17 +1,12 @@
 /**
- * Generates Titans guild BiS preset TypeScript from source.md (guild BiS lists).
- * Run: npm run generate:titans-bis
+ * Resolve Russian guild (Titans) BiS list lines: T10 tokens, ilvl hints, weapon slots.
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { formatPresetSlots } from "../bis-preset-format.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.join(__dirname, "../..");
-const sourceMd = path.join(__dirname, "source.md");
-const dataDir = path.join(rootDir, "src/data");
-const presetsDir = path.join(rootDir, "src/data/bis-presets");
+const dataDir = path.join(__dirname, "../src/data");
 
 const namesRu = JSON.parse(
   fs.readFileSync(path.join(dataDir, "wotlk-item-names-ru.json"), "utf8"),
@@ -31,7 +26,7 @@ const WeaponType = { OffHand: 5 };
 const HandType = { MainHand: 1, OneHand: 2, OffHand: 3, TwoHand: 4 };
 
 /** Sanctified T10 (277) by class|spec. */
-const T10_BY_SPEC = {
+export const T10_BY_SPEC = {
   "Warrior|Fury": { 0: 51227, 2: 51229, 4: 51225, 6: 51226, 8: 51228 },
   "Druid|Feral": { 0: 51296, 2: 51299, 4: 51300, 6: 51295, 8: 51297 },
   "Druid|Balance": { 0: 51290, 2: 51292, 4: 51294, 6: 51291, 8: 51293 },
@@ -56,48 +51,24 @@ const T10_BY_SPEC = {
 };
 
 const MANUAL_ITEM_IDS = {
-  "зов": 50737,
+  зов: 50737,
   "зов хаоса": 50737,
   "зов хаоса х2": 50737,
   "зов хаоса топор королей лордерона": 50737,
-  "фалинраш": 50733,
+  фалинраш: 50733,
   "фал'инраш": 50733,
-  "клятвохранитель": 50735,
-  "глоренцельг": 50730,
-  "прилив": 50732,
+  клятвохранитель: 50735,
+  глоренцельг: 50730,
+  прилив: 50732,
   "катушка тенешелка": 50719,
   "шип для пронзания трупов": 50684,
   "кованая плетью секира": 50654,
   "сила тлеющей стали": 50616,
-  "теренаска": 50734,
+  теренаска: 50734,
   "темная скорбь": 49623,
   "поручи полой тени": 54580,
   "солнечные часы вечного заката": 50635,
 };
-
-const SPEC_ENTRIES = [
-  { header: /^#Фури/i, className: "Warrior", spec: "Fury", file: "fury-warrior.ts", export: "furyWarriorBis" },
-  { header: /^#Кот\\?Ферал/i, className: "Druid", spec: "Feral", file: "feral-druid.ts", export: "feralDruidBis" },
-  { header: /^#Сова\\?Баланс/i, className: "Druid", spec: "Balance", file: "balance-druid.ts", export: "balanceDruidBis" },
-  { header: /^#Рестор \(друид\)/i, className: "Druid", spec: "Restoration", file: "restoration-druid.ts", export: "restorationDruidBis" },
-  { header: /^#ШП/i, className: "Priest", spec: "Shadow", file: "shadow-priest.ts", export: "shadowPriestBis" },
-  { header: /^#ДЦ/i, className: "Priest", spec: "Discipline", file: "discipline-priest.ts", export: "disciplinePriestBis" },
-  { header: /^#Аркан/i, className: "Mage", spec: "Arcane", file: "arcane-mage.ts", export: "arcaneMageBis" },
-  { header: /^#Фмаг/i, className: "Mage", spec: "Fire", file: "fire-mage.ts", export: "fireMageBis" },
-  { header: /^#ММ/i, className: "Hunter", spec: "Marksmanship", file: "marksmanship-hunter.ts", export: "marksmanshipHunterBis" },
-  { header: /^#Ретро/i, className: "Paladin", spec: "Retribution", file: "retribution-paladin.ts", export: "retributionPaladinBis" },
-  { header: /^#Прото/i, className: "Paladin", spec: "Protection", file: "protection-paladin.ts", export: "protectionPaladinBis" },
-  { header: /^#Холи \(Паладин\)/i, className: "Paladin", spec: "Holy", file: "holy-paladin.ts", export: "holyPaladinBis" },
-  { header: /^#Комбат/i, className: "Rogue", spec: "Combat", file: "combat-rogue.ts", export: "combatRogueBis" },
-  { header: /^#Анхоли/i, className: "Death Knight", spec: "Unholy", file: null, export: null, mergeInto: "unholy-death-knight.ts" },
-  { header: /^#Фрост/i, className: "Death Knight", spec: "Frost", file: "frost-death-knight.ts", export: "frostDeathKnightBis" },
-  { header: /^#БдкТАНК/i, className: "Death Knight", spec: "Blood", file: null, export: null, mergeInto: "blood-death-knight.ts" },
-  { header: /^#Демон/i, className: "Warlock", spec: "Demonology", file: "demonology-warlock.ts", export: "demonologyWarlockBis" },
-  { header: /^#Афли/i, className: "Warlock", spec: "Affliction", file: "affliction-warlock.ts", export: "afflictionWarlockBis" },
-  { header: /^#Элем/i, className: "Shaman", spec: "Elemental", file: "elemental-shaman.ts", export: "elementalShamanBis" },
-  { header: /^#Рестор \(Шаман\)/i, className: "Shaman", spec: "Restoration", file: "restoration-shaman.ts", export: "restorationShamanBis" },
-  { header: /^#Энх/i, className: "Shaman", spec: "Enhancement", file: "enhancement-shaman.ts", export: "enhancementShamanBis" },
-];
 
 const SLOT_KEYS = {
   Голова: 0,
@@ -148,7 +119,7 @@ function manualItemId(itemName, className, spec) {
 }
 
 function findItemIds(itemName, slotIdx, sourceHint, className, spec) {
-  if (/^т10$/i.test(itemName.trim())) return null;
+  if (/^т10$/i.test(itemName.trim())) return [];
 
   const manualId = manualItemId(itemName, className, spec);
   if (manualId) return [manualId];
@@ -206,7 +177,6 @@ function splitWeaponParts(value) {
     return primaryParts;
   }
 
-  // "MainAlt1 / MainAlt2 + OffHand" — first main option + shared off-hand after +
   for (let index = 1; index < segments.length; index += 1) {
     const segment = stripSourceHints(segments[index]);
     const plusIndex = segment.indexOf("+");
@@ -238,12 +208,9 @@ function splitWeaponParts(value) {
     "Сила тлеющей",
   ];
   for (const prefix of splitPrefixes) {
-    const index = primary.indexOf(prefix);
-    if (index > 0) {
-      return [
-        primary.slice(0, index).trim(),
-        primary.slice(index).trim(),
-      ];
+    const prefixIndex = primary.indexOf(prefix);
+    if (prefixIndex > 0) {
+      return [primary.slice(0, prefixIndex).trim(), primary.slice(prefixIndex).trim()];
     }
   }
   return [primary.trim()];
@@ -269,7 +236,6 @@ function isRangedItem(itemId) {
   return equipProps[String(itemId)]?.t === ItemType.Ranged;
 }
 
-/** Mirrors app equip rules for weapon slot assignment (main → off → ranged). */
 function canEquipWeaponInSlot(itemId, gearSlot, className, spec) {
   const props = equipProps[String(itemId)];
   if (!props) {
@@ -354,49 +320,35 @@ function assignWeaponSlots(parts, sourceHint, className, spec) {
   return assigned;
 }
 
-function parseSections(markdown) {
-  const lines = markdown.split(/\r?\n/);
-  const sections = [];
-  let current = null;
-
-  for (const line of lines) {
-    const headerMatch = line.match(/^#(.+)/);
-    if (headerMatch) {
-      if (current) sections.push(current);
-      const header = headerMatch[1].trim();
-      current = {
-        header,
-        meta: SPEC_ENTRIES.find((entry) => entry.header.test(`#${header}`)),
-        rows: [],
-      };
-      continue;
-    }
-    const rowMatch = line.match(/^\s*([^:]+):\s*(.+)$/);
-    if (rowMatch && current) {
-      current.rows.push({
-        slotLabel: rowMatch[1].trim().replace(/^[^:]+:\s*/, ""),
-        value: rowMatch[2].trim(),
-      });
-    }
+function parseListRows(listLines) {
+  const rows = [];
+  for (const rawLine of listLines) {
+    const line = rawLine.replace(/^-\s*/, "").trim();
+    if (!line) continue;
+    const rowMatch = line.match(/^([^:]+):\s*(.+)$/);
+    if (!rowMatch) continue;
+    rows.push({
+      slotLabel: rowMatch[1].trim().replace(/^[^:]+:\s*/, ""),
+      value: rowMatch[2].trim(),
+    });
   }
-  if (current) sections.push(current);
-  return sections;
+  return rows;
 }
 
-function resolveSection(section) {
-  const { className, spec } = section.meta;
-  const t10Key = `${className}|${spec}`;
-  const t10Map = T10_BY_SPEC[t10Key];
+function resolveRows(className, spec, rows) {
+  const t10Map = T10_BY_SPEC[`${className}|${spec}`];
   const slotEntries = [];
   const unresolved = [];
 
-  for (const row of section.rows) {
-    const slotKey = SLOT_KEYS[row.slotLabel] ?? SLOT_KEYS[row.slotLabel.replace(/^.*:\s*/, "")];
+  for (const row of rows) {
+    const slotKey =
+      SLOT_KEYS[row.slotLabel] ??
+      SLOT_KEYS[row.slotLabel.replace(/^.*:\s*/, "")];
 
     if (slotKey === "rings" || slotKey === "trinkets") {
       const parts = splitItemParts(row.value);
       const slotIndexes = slotKey === "rings" ? [10, 11] : [12, 13];
-      for (let index = 0; index < parts.length && index < slotIndexes.length; index++) {
+      for (let index = 0; index < parts.length && index < slotIndexes.length; index += 1) {
         slotEntries.push({
           slot: slotIndexes[index],
           itemIds: findItemIds(parts[index], slotIndexes[index], row.value, className, spec),
@@ -437,143 +389,14 @@ function resolveSection(section) {
   }
 
   const slots = [...slotsByIndex.values()].sort((first, second) => first.slot - second.slot);
-  return { className, spec, meta: section.meta, slots, unresolved };
+  return { slots, unknown: unresolved.map((entry) => entry.label ?? String(entry.slot)) };
 }
 
-function classNameEnum(className) {
-  return `ClassName.${className.replace(/ /g, "")}`;
+/** @param {string} className @param {string} spec @param {string[]} listLines */
+export function resolveTitansListLines(className, spec, listLines) {
+  return resolveRows(className, spec, parseListRows(listLines));
 }
 
-function formatPreset(slots) {
-  return formatPresetSlots(slots);
+export function isTitansGuildList(server, presetName) {
+  return server === "Titans" && presetName === "Titans";
 }
-
-function writePresetFile(fileName, exportName, className, spec, slots) {
-  const content = `import { ClassName } from "../../types/characters.ts";
-import type { BuiltInSpecBis } from "../../types/bis-lists.ts";
-
-/** WotLK BiS (ICC / RS tier) — Titans guild (${className} / ${spec}). */
-export const ${exportName}: BuiltInSpecBis = {
-  className: ClassName.${className.replace(/ /g, "")},
-  spec: "${spec}",
-  presets: [
-    {
-      id: "titans",
-      name: "Titans",
-      slots: [
-${formatPreset(slots)}
-      ],
-    },
-  ],
-};
-`;
-  fs.writeFileSync(path.join(presetsDir, fileName), content, "utf8");
-}
-
-function mergeTitansPreset(fileName, slots) {
-  const filePath = path.join(presetsDir, fileName);
-  let source = fs.readFileSync(filePath, "utf8");
-  source = source.replace(/\n    \{\n      id: "titans",[\s\S]*?\n    \},/g, "");
-  const presetBlock = `    {
-      id: "titans",
-      name: "Titans",
-      slots: [
-${formatPreset(slots)}
-      ],
-    },`;
-  const updated = source.replace(/(\n  \],)/, `\n${presetBlock}$1`);
-  fs.writeFileSync(filePath, updated, "utf8");
-}
-
-function hasPresetImport(source, exportName) {
-  return new RegExp(`^import \\{ ${exportName} \\} from "\\./`, "m").test(source);
-}
-
-function hasPresetArrayEntry(source, exportName) {
-  return new RegExp(`^  ${exportName},$`, "m").test(source);
-}
-
-function addPresetImports(source, entries) {
-  const importLines = entries
-    .map(
-      ({ file, export: exportName }) =>
-        `import { ${exportName} } from "./${file}";`,
-    )
-    .join("\n");
-  const updated = source.replace(
-    /\nexport const BuiltInBisPresets/,
-    `\n${importLines}\nexport const BuiltInBisPresets`,
-  );
-  if (updated === source) {
-    throw new Error(
-      "Failed to update bis-presets/index.ts: could not locate BuiltInBisPresets export.",
-    );
-  }
-  return updated;
-}
-
-function addPresetArrayEntries(source, exportNames) {
-  const arrayLines = exportNames.map((exportName) => `  ${exportName},`).join("\n");
-  const updated = source.replace(
-    /(export const BuiltInBisPresets: readonly BuiltInSpecBis\[\] = \[\n)([\s\S]*?)(\n];)/,
-    `$1$2\n${arrayLines}$3`,
-  );
-  if (updated === source) {
-    throw new Error(
-      "Failed to update bis-presets/index.ts: could not locate BuiltInBisPresets array.",
-    );
-  }
-  return updated;
-}
-
-function updateIndexSource(indexSource, newExports) {
-  const needsImport = newExports.filter(
-    ({ export: exportName }) => !hasPresetImport(indexSource, exportName),
-  );
-  const needsArray = newExports.filter(
-    ({ export: exportName }) => !hasPresetArrayEntry(indexSource, exportName),
-  );
-
-  if (needsImport.length === 0 && needsArray.length === 0) {
-    return indexSource;
-  }
-
-  let updated = indexSource;
-  if (needsImport.length > 0) {
-    updated = addPresetImports(updated, needsImport);
-  }
-  if (needsArray.length > 0) {
-    updated = addPresetArrayEntries(
-      updated,
-      needsArray.map(({ export: exportName }) => exportName),
-    );
-  }
-  return updated;
-}
-
-const markdown = fs.readFileSync(sourceMd, "utf8");
-const resolved = parseSections(markdown).map(resolveSection);
-const newExports = [];
-
-for (const result of resolved) {
-  if (result.unresolved.length > 0) {
-    console.warn(
-      `${result.className} ${result.spec} unresolved:`,
-      result.unresolved.map((entry) => entry.label ?? entry.slot),
-    );
-  }
-  const { meta, slots, className, spec } = result;
-  if (meta.mergeInto) {
-    mergeTitansPreset(meta.mergeInto, slots);
-  } else {
-    writePresetFile(meta.file, meta.export, className, spec, slots);
-    newExports.push({ file: meta.file, export: meta.export });
-  }
-}
-
-const indexPath = path.join(presetsDir, "index.ts");
-const indexSource = fs.readFileSync(indexPath, "utf8");
-const updatedIndexSource = updateIndexSource(indexSource, newExports);
-
-fs.writeFileSync(indexPath, updatedIndexSource, "utf8");
-console.log("Generated Titans presets.");
