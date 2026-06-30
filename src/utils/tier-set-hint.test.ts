@@ -11,7 +11,7 @@ import {
   evaluateTierSetHint,
   formatTierSetTokenLabel,
 } from "./tier-set-hint.ts";
-import { canClassUseTierSetToken } from "../data/tier-set-tokens.ts";
+import { canClassUseTierSetToken, getTierSetTokenName } from "../data/tier-set-tokens.ts";
 
 describe("evaluateTierSetHint", () => {
   const icc25Heroic = {
@@ -211,6 +211,14 @@ describe("evaluateTierSetHint", () => {
     expect(formatTierSetTokenLabel(52027, "ru")).toBe(
       getWotlkItemName(52027, "ru"),
     );
+  });
+
+  it("bundled EN names include heroic suffix for ICC mark tokens", () => {
+    for (const tokenItemId of [52028, 52029, 52030] as const) {
+      expect(getWotlkItemName(tokenItemId, "en")).toBe(
+        getTierSetTokenName(tokenItemId, "en"),
+      );
+    }
   });
 
   it("shows conqueror tokens for Holy Priest, not protector", () => {
