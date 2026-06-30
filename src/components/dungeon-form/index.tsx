@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   FormControl,
   InputLabel,
   MenuItem,
@@ -6,9 +7,14 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { useMemo, type SyntheticEvent } from "react";
 import { MAX_DUNGEON_SHORT_NAME_LENGTH } from "../../constants/dungeon-form-defaults.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedDifficulty } from "../../i18n/localized-domain.ts";
+import {
+  defaultShortNameForDungeonName,
+  getLocalizedRaidNameSuggestions,
+} from "../../utils/dungeon-short-name.ts";
 import {
   DungeonDifficulty,
   DungeonSizes,
@@ -34,19 +40,50 @@ export function DungeonForm({
   onSubmit,
 }: DungeonFormProps) {
   const { t, locale } = useTranslation();
+  const nameSuggestions = useMemo(
+    () => getLocalizedRaidNameSuggestions(locale),
+    [locale],
+  );
+
+  const handleNameInputChange = (
+    _event: SyntheticEvent,
+    nextName: string,
+  ) => {
+    onNameChange(nextName);
+  };
+
+  const handleNameChange = (
+    _event: SyntheticEvent,
+    nextName: string | null,
+  ) => {
+    if (nextName == null) {
+      return;
+    }
+    onNameChange(nextName);
+    const defaultShort = defaultShortNameForDungeonName(nextName);
+    if (defaultShort && !shortName.trim()) {
+      onShortNameChange(defaultShort);
+    }
+  };
 
   return (
     <form onSubmit={onSubmit} noValidate>
       <Stack spacing={2}>
-        <TextField
-          label={t("common.name")}
-          name="dungeonName"
-          value={name}
-          onChange={(event) => {
-            onNameChange(event.target.value);
-          }}
-          required
-          autoComplete="off"
+        <Autocomplete
+          freeSolo
+          options={nameSuggestions}
+          inputValue={name}
+          onInputChange={handleNameInputChange}
+          onChange={handleNameChange}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={t("common.name")}
+              name="dungeonName"
+              required
+              autoComplete="off"
+            />
+          )}
         />
         <TextField
           label={t("dungeonForm.shortName")}

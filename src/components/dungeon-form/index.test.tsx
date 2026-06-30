@@ -5,53 +5,60 @@ import {
   DEFAULT_DUNGEON_FORM_SIZE,
   DEFAULT_DUNGEON_ITEM_LEVEL_TEXT,
 } from "../../constants/dungeon-form-defaults.ts";
+import { RaidNames } from "../../data/raid-names.ts";
 import { renderWithTheme, screen } from "../../test/render-with-theme.tsx";
 import { DungeonForm } from "./index.tsx";
+import type { DungeonFormProps } from "./types.ts";
+
+function renderDungeonForm(overrides: Partial<DungeonFormProps> = {}) {
+  const props = {
+    name: "",
+    shortName: "",
+    size: DEFAULT_DUNGEON_FORM_SIZE,
+    itemLevelText: DEFAULT_DUNGEON_ITEM_LEVEL_TEXT,
+    difficulty: DEFAULT_DUNGEON_DIFFICULTY,
+    error: "",
+    onNameChange: vi.fn(),
+    onShortNameChange: vi.fn(),
+    onSizeChange: vi.fn(),
+    onItemLevelTextChange: vi.fn(),
+    onDifficultyChange: vi.fn(),
+    onSubmit: vi.fn(),
+    ...overrides,
+  };
+  renderWithTheme(<DungeonForm {...props} />);
+  return props;
+}
 
 describe("DungeonForm", () => {
   it("renders dungeon fields including optional short name", () => {
-    renderWithTheme(
-      <DungeonForm
-        name=""
-        shortName=""
-        size={DEFAULT_DUNGEON_FORM_SIZE}
-        itemLevelText={DEFAULT_DUNGEON_ITEM_LEVEL_TEXT}
-        difficulty={DEFAULT_DUNGEON_DIFFICULTY}
-        error=""
-        onNameChange={vi.fn()}
-        onShortNameChange={vi.fn()}
-        onSizeChange={vi.fn()}
-        onItemLevelTextChange={vi.fn()}
-        onDifficultyChange={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    renderDungeonForm();
 
-    expect(screen.getByRole("textbox", { name: /^Name/ })).toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /^Name/ })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: /^Short name/ })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: /^Item levels/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add dungeon" })).toBeInTheDocument();
   });
 
   it("displays validation error", () => {
-    renderWithTheme(
-      <DungeonForm
-        name=""
-        shortName=""
-        size={DEFAULT_DUNGEON_FORM_SIZE}
-        itemLevelText={DEFAULT_DUNGEON_ITEM_LEVEL_TEXT}
-        difficulty={DEFAULT_DUNGEON_DIFFICULTY}
-        error="Enter a dungeon name."
-        onNameChange={vi.fn()}
-        onShortNameChange={vi.fn()}
-        onSizeChange={vi.fn()}
-        onItemLevelTextChange={vi.fn()}
-        onDifficultyChange={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    renderDungeonForm({ error: "Enter a dungeon name." });
 
     expect(screen.getByText("Enter a dungeon name.")).toBeInTheDocument();
+  });
+
+  it("suggests known raid names and fills short name on selection", async () => {
+    const user = userEvent.setup();
+    const props = renderDungeonForm();
+
+    await user.click(screen.getByRole("combobox", { name: /^Name/ }));
+    await user.click(
+      screen.getByRole("option", { name: RaidNames.icecrownCitadel.en }),
+    );
+
+    expect(props.onNameChange).toHaveBeenCalledWith(RaidNames.icecrownCitadel.en);
+    expect(props.onShortNameChange).toHaveBeenCalledWith(
+      RaidNames.icecrownCitadel.shortEn,
+    );
   });
 
   it("calls onSubmit when form is submitted", async () => {
@@ -60,22 +67,10 @@ describe("DungeonForm", () => {
       event.preventDefault();
     });
 
-    renderWithTheme(
-      <DungeonForm
-        name="My Raid"
-        shortName=""
-        size={DEFAULT_DUNGEON_FORM_SIZE}
-        itemLevelText={DEFAULT_DUNGEON_ITEM_LEVEL_TEXT}
-        difficulty={DEFAULT_DUNGEON_DIFFICULTY}
-        error=""
-        onNameChange={vi.fn()}
-        onShortNameChange={vi.fn()}
-        onSizeChange={vi.fn()}
-        onItemLevelTextChange={vi.fn()}
-        onDifficultyChange={vi.fn()}
-        onSubmit={onSubmit}
-      />,
-    );
+    renderDungeonForm({
+      name: "My Raid",
+      onSubmit,
+    });
 
     await user.click(
       screen.getByRole("button", { name: "Add dungeon" }),
