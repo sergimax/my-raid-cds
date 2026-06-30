@@ -170,7 +170,7 @@ export const enMessages = {
     belowIlvl: "Up to {{count}} of {{total}} items below ilvl {{ilvl}}",
     bisBossLoot: "BiS loot in this raid",
     bisVariantBossLoot: "BiS normal variants in this raid",
-    ilvlBossLoot: "Other upgrades in this raid",
+    ilvlBossLoot: "Other possible upgrades in this raid",
   },
   tierSet: {
     tokensFromRaid: "{{count}} tier set token(s) from this raid",
