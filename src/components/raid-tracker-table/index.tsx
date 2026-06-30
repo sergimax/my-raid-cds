@@ -1,8 +1,5 @@
 import { Stack, Table, TableBody, TableContainer } from "@mui/material";
 import { memo, useCallback, useMemo, useState } from "react";
-import { ExportPanel } from "../export-panel/index.tsx";
-import { getExportToolbarPanelMeta } from "../tracker-toolbar-panel/toolbar-panel-meta.ts";
-import { TrackerToolbarPanel } from "../tracker-toolbar-panel/index.tsx";
 import { CharacterEditDialog } from "../character-edit-dialog/index.tsx";
 import { DungeonEditDialog } from "../dungeon-edit-dialog/index.tsx";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
@@ -13,17 +10,15 @@ import { RaidTrackerDeleteDialog } from "./raid-tracker-delete-dialog.tsx";
 import { raidTrackerTableAriaLabel } from "./raid-tracker-table-empty-state.ts";
 import { RaidTrackerTableEmptyState } from "./raid-tracker-table-empty-state.tsx";
 import { RaidTrackerTableHead } from "./raid-tracker-table-head.tsx";
+import type { RaidTrackerTableState } from "./use-raid-tracker-table-state.ts";
 import "./styles.css";
-import { useRaidTrackerTableState } from "./use-raid-tracker-table-state.ts";
 
 type RaidTrackerTableProps = {
-  showExportPanel: boolean;
-  closeExportPanel: () => void;
+  tableState: RaidTrackerTableState;
 };
 
 export const RaidTrackerTable = memo(function RaidTrackerTable({
-  showExportPanel,
-  closeExportPanel,
+  tableState,
 }: RaidTrackerTableProps) {
   const { t } = useTranslation();
   const domain = useRaidTrackerContext();
@@ -32,8 +27,6 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
     dungeons,
     dungeonToggles,
     handleDungeonToggle: onDungeonToggle,
-    handleDeleteCharacter: onDeleteCharacter,
-    handleDeleteDungeon: onDeleteDungeon,
     handleResetCharacterToggles: onResetCharacterToggles,
     updateCharacter,
     updateDungeon,
@@ -68,14 +61,6 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
     setEditingDungeonId(null);
   }, []);
 
-  const tableState = useRaidTrackerTableState({
-    characters,
-    dungeons,
-    dungeonToggles,
-    onDeleteCharacter,
-    onDeleteDungeon,
-  });
-
   const {
     compactTable,
     visiblePinnedColumns,
@@ -99,22 +84,8 @@ export const RaidTrackerTable = memo(function RaidTrackerTable({
     handleConfirmDelete,
   } = tableState;
 
-  const exportToolbarPanelMeta = useMemo(
-    () => getExportToolbarPanelMeta(t, closeExportPanel),
-    [closeExportPanel, t],
-  );
-
   return (
     <Stack spacing={2}>
-      {showExportPanel ? (
-        <TrackerToolbarPanel panelId="export" {...exportToolbarPanelMeta}>
-          <ExportPanel
-            characters={characters}
-            visibleDungeons={sortedDungeons}
-            dungeonToggles={dungeonToggles}
-          />
-        </TrackerToolbarPanel>
-      ) : null}
       <TableContainer sx={{ overflowX: "auto" }}>
         <Table
           aria-label={raidTrackerTableAriaLabel(

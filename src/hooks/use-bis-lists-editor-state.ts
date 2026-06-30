@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "../i18n/use-translation.ts";
 import type { BisListPreset } from "../types/bis-lists.ts";
 import type { ClassName } from "../types/characters.ts";
@@ -44,8 +44,10 @@ export function useBisListsEditorState({
   const [editingSlots, setEditingSlots] = useState<Record<number, boolean>>({});
   const [saveListName, setSaveListName] = useState("");
   const [error, setError] = useState("");
+  const [trackedEditorSessionKey, setTrackedEditorSessionKey] = useState("");
 
-  useEffect(() => {
+  if (editorSessionKey !== trackedEditorSessionKey) {
+    setTrackedEditorSessionKey(editorSessionKey);
     const nextDrafts = selectedPreset
       ? presetToSlotDrafts(selectedPreset)
       : createEmptySlotDrafts();
@@ -56,7 +58,7 @@ export function useBisListsEditorState({
       selectedPreset && isLocalBisPreset(selectedPreset) ? selectedPreset.name : "",
     );
     setError("");
-  }, [editorSessionKey, equipContext, selectedPreset]);
+  }
 
   const hasSlotErrors = Object.keys(slotErrors).length > 0;
   const hasUnconfirmedSlots = slotDrafts.some(isSlotDraftDirty);

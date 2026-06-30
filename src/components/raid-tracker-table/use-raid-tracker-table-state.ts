@@ -194,3 +194,5 @@ export function useRaidTrackerTableState({
     handleConfirmDelete: confirmDelete,
   };
 }
+
+export type RaidTrackerTableState = ReturnType<typeof useRaidTrackerTableState>;

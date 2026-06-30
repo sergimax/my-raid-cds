@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { useMemo, useState } from "react";
 import { describe, expect, it } from "vitest";
 import type { AppLocale } from "../../i18n/types.ts";
-import { loadLocalBisListsState } from "../../storage/bis-lists/index.ts";
 import {
   createTestCharacter,
   createTestDungeon,
@@ -18,11 +17,12 @@ const testDungeon = createTestDungeon({
   name: "Icecrown Citadel",
 });
 const testToggles = createTestToggles([]);
-const testBisListsLocalState = loadLocalBisListsState();
+const emptyBisSlotMap = () => new Map();
 
 function LocaleHarness() {
   const [locale, setLocale] = useState<AppLocale>("en");
   const stableToggles = useMemo(() => testToggles, []);
+  const getBisSlotMapForSpec = useMemo(() => emptyBisSlotMap, []);
 
   return (
     <>
@@ -38,7 +38,7 @@ function LocaleHarness() {
               dungeonToggles={stableToggles}
               onDungeonToggle={() => {}}
               locale={locale}
-              bisListsLocalState={testBisListsLocalState}
+              getBisSlotMapForSpec={getBisSlotMapForSpec}
             />
           </TableRow>
         </TableBody>

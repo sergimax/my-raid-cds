@@ -1,9 +1,9 @@
 import { Switch, TableCell, Tooltip } from "@mui/material";
-import { memo, useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, memo } from "react";
 import type { AppLocale } from "../../i18n/types.ts";
 import type { CharacterRecord, ClassName } from "../../types/characters.ts";
-import type { LocalBisListsState } from "../../types/bis-lists.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
+import type { BisSlotMap } from "../../utils/bis-lists.ts";
 import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
@@ -16,9 +16,10 @@ import {
   gearUpgradeHintDualCellSx,
   gearUpgradeHintCellSx,
 } from "../../utils/gear-hint-display.ts";
-import { resolveBisSlotMap } from "../../utils/bis-lists.ts";
 import { GearHintTooltipContent } from "../gear-hint-tooltip/index.tsx";
 import { CHARACTER_BODY_CELL_SX } from "./table-layout.ts";
+
+type GetBisSlotMapForSpec = (className: ClassName, spec: string) => BisSlotMap;
 
 type CharacterToggleCellProps = {
   character: CharacterRecord;
@@ -26,7 +27,7 @@ type CharacterToggleCellProps = {
   dungeonToggles: DungeonToggles;
   onDungeonToggle: (characterId: string, dungeonId: string) => void;
   locale: AppLocale;
-  bisListsLocalState: LocalBisListsState;
+  getBisSlotMapForSpec: GetBisSlotMapForSpec;
 };
 
 function areCharacterToggleCellPropsEqual(
@@ -45,7 +46,7 @@ function areCharacterToggleCellPropsEqual(
   if (previous.locale !== next.locale) {
     return false;
   }
-  if (previous.bisListsLocalState !== next.bisListsLocalState) {
+  if (previous.getBisSlotMapForSpec !== next.getBisSlotMapForSpec) {
     return false;
   }
   const characterId = previous.character.id;
@@ -62,15 +63,9 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
   dungeonToggles,
   onDungeonToggle,
   locale,
-  bisListsLocalState,
+  getBisSlotMapForSpec,
 }: CharacterToggleCellProps) {
   const { t } = useTranslation();
-
-  const getBisSlotMapForSpec = useCallback(
-    (className: ClassName, spec: string) =>
-      resolveBisSlotMap(className, spec, bisListsLocalState),
-    [bisListsLocalState],
-  );
 
   const gearHints = useMemo(
     () =>
