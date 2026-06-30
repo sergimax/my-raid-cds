@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **CI:** GitHub Actions runs **Lint**, **Test**, and **Build** as parallel jobs (shared `.github/actions/setup-project` setup); stale workflow runs cancel on new pushes.
+- **CI:** GitHub Actions runs **Lint**, **Test**, and **Build** as parallel jobs (shared `.github/actions/setup-project` setup); stale workflow runs cancel on new pushes. Actions upgraded to Node.js 24–native versions (`checkout@v5`, `setup-node@v5`, `upload-artifact@v6`).
 
 ## [1.33.1] - 2026-06-30
 
