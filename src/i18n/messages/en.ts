@@ -173,7 +173,7 @@ export const enMessages = {
     ilvlBossLoot: "Other possible upgrades in this raid",
   },
   tierSet: {
-    tokensFromRaid: "{{count}} tier set token(s) from this raid",
+    tokensFromRaid: "Tier set tokens in this raid",
     tokenColumn: "Token",
     countColumn: "Qty",
     slotsColumn: "Slots",
