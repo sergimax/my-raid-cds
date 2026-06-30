@@ -182,10 +182,6 @@ export function formatBisSlotItems(itemIds: readonly number[]): string {
     .join(" / ");
 }
 
-export function formatBisSlotLine(slotEntry: BisListSlot): string {
-  return `${gearSlotLabel(slotEntry.slot)}: ${formatBisSlotItems(slotEntry.itemIds)}`;
-}
-
 /** Parses `#51312` or `51312` as a WotLK item id reference. */
 export function parseBisSlotItemId(rawSegment: string): number | undefined {
   const trimmedSegment = rawSegment.trim();
