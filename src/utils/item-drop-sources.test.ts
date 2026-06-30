@@ -113,4 +113,44 @@ describe("item-drop-sources", () => {
 
     expect(groups).toEqual([{ bossName: "", itemIds: [49310] }]);
   });
+
+  it("groups Vault of Archavon tier loot by Toravon for a matching 10-man row", () => {
+    const groups = groupBisItemIdsByBossForDungeon(
+      [50079],
+      {
+        name: "Vault of Archavon",
+        raidKey: "vaultOfArchavon",
+        size: 10,
+        difficulty: DungeonDifficulty.NORMAL,
+      },
+      "en",
+    );
+
+    expect(groups).toEqual([
+      {
+        bossName: "Toravon the Ice Watcher",
+        itemIds: [50079],
+      },
+    ]);
+  });
+
+  it("localizes Vault of Archavon boss names for RU locale", () => {
+    const groups = groupBisItemIdsByBossForDungeon(
+      [47752],
+      {
+        name: "Склеп Аркавона",
+        raidKey: "vaultOfArchavon",
+        size: 10,
+        difficulty: DungeonDifficulty.NORMAL,
+      },
+      "ru",
+    );
+
+    expect(groups).toEqual([
+      {
+        bossName: "Коралон Страж Пламени",
+        itemIds: [47752],
+      },
+    ]);
+  });
 });

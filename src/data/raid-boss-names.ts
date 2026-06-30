@@ -8,6 +8,10 @@ export type RaidBossNameEntry = {
  * Keys match `b` values in `wotlk-item-drop-sources.json` (WowSims `otherName` / `category`).
  */
 export const RaidBossNames: Record<string, RaidBossNameEntry> = {
+  "Archavon the Stone Watcher": {
+    en: "Archavon the Stone Watcher",
+    ru: "Аркавон Страж Камня",
+  },
   "Anub'arak": { en: "Anub'arak", ru: "Ануб'арак" },
   "Argent Crusade Tribute Chest": {
     en: "Argent Crusade Tribute Chest",
@@ -19,6 +23,10 @@ export const RaidBossNames: Record<string, RaidBossNameEntry> = {
     ru: "Кровавая королева Лан'тель",
   },
   "Class Item drops": { en: "Class Item drops", ru: "Классовые предметы" },
+  "Emalon the Storm Watcher": {
+    en: "Emalon the Storm Watcher",
+    ru: "Эмалон Страж Бури",
+  },
   "Deathbringer Saurfang": {
     en: "Deathbringer Saurfang",
     ru: "Саурфанг Смертоносный",
@@ -27,6 +35,10 @@ export const RaidBossNames: Record<string, RaidBossNameEntry> = {
   Festergut: { en: "Festergut", ru: "Тухлопуз" },
   Halion: { en: "Halion", ru: "Халион" },
   "Hard Mode": { en: "Hard Mode", ru: "Сложный режим" },
+  "Koralon the Flame Watcher": {
+    en: "Koralon the Flame Watcher",
+    ru: "Коралон Страж Пламени",
+  },
   "Icecrown Gunship Battle": {
     en: "Icecrown Gunship Battle",
     ru: "Бой на кораблях",
@@ -38,6 +50,10 @@ export const RaidBossNames: Record<string, RaidBossNameEntry> = {
   "Professor Putricide": { en: "Professor Putricide", ru: "Профессор Мерзоцид" },
   Rotface: { en: "Rotface", ru: "Гниломорд" },
   Sindragosa: { en: "Sindragosa", ru: "Синдрагоса" },
+  "Toravon the Ice Watcher": {
+    en: "Toravon the Ice Watcher",
+    ru: "Торавон Страж Льда",
+  },
   "The Beasts of Northrend": {
     en: "The Beasts of Northrend",
     ru: "Звери Нордскола",

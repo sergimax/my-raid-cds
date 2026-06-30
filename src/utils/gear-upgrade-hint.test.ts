@@ -483,6 +483,36 @@ describe("evaluateGearUpgradeHint", () => {
       ),
     );
   });
+
+  it("detects Vault of Archavon tier loot for BiS hands missing from gear", () => {
+    const dungeon = createTestDungeon({
+      name: "Vault of Archavon",
+      raidKey: "vaultOfArchavon",
+      size: 10,
+      difficulty: DungeonDifficulty.NORMAL,
+      itemLevel: [232, 251],
+    });
+    const bisSlotMap = buildBisSlotMap({
+      id: "voa-test",
+      name: "VoA test",
+      slots: [{ slot: 6, itemIds: [50079] }],
+    });
+
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 6, id: 47230 }],
+      dungeon,
+      bisSlotMap,
+      { className: ClassName.Warrior, spec: "Protection" },
+    );
+
+    expect(hint.slotAware).toBe(true);
+    expect(hint.bis.level).toBeGreaterThan(0);
+    expect(hint.bis.upgradeSlots).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ slot: 6, bestLootItemId: 50079 }),
+      ]),
+    );
+  });
 });
 
 describe("formatGearUpgradeHintTooltip", () => {
@@ -619,5 +649,42 @@ describe("formatGearUpgradeHintTooltip", () => {
     );
 
     expect(hints.main?.ilvlBossLootGroups.length).toBeGreaterThan(0);
+  });
+
+  it("builds Vault of Archavon BiS boss loot groups for tooltip recommendations", () => {
+    const dungeon = createTestDungeon({
+      name: "Склеп Аркавона",
+      raidKey: "vaultOfArchavon",
+      size: 10,
+      difficulty: DungeonDifficulty.NORMAL,
+      itemLevel: [232, 251],
+    });
+    const bisSlotMap = buildBisSlotMap({
+      id: "voa-test",
+      name: "VoA test",
+      slots: [{ slot: 6, itemIds: [50079] }],
+    });
+
+    const hints = evaluateCharacterGearHints(
+      createTestCharacter({
+        id: "prot",
+        name: "Prot",
+        class: Classes.find((characterClass) => characterClass.name === ClassName.Warrior),
+        mainSpec: {
+          spec: "Protection",
+          gearItems: [{ slot: 6, id: 47230 }],
+        },
+      }),
+      dungeon,
+      () => bisSlotMap,
+      "ru",
+    );
+
+    expect(hints.main?.bisBossLootGroups).toEqual([
+      {
+        bossName: "Торавон Страж Льда",
+        itemIds: [50079],
+      },
+    ]);
   });
 });
