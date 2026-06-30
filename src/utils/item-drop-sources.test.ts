@@ -4,6 +4,7 @@ import {
   formatItemDropSourceLine,
   getFormattedItemDropSources,
   groupBisItemIdsByBossForDungeon,
+  groupBisItemIdsByBossForDungeonWithFallback,
 } from "./item-drop-sources.ts";
 
 describe("item-drop-sources", () => {
@@ -80,5 +81,36 @@ describe("item-drop-sources", () => {
     );
 
     expect(groups).toEqual([]);
+  });
+
+  it("groups Onyxia loot when dungeon row is marked Heroic (raid is Normal-only)", () => {
+    const groups = groupBisItemIdsByBossForDungeon(
+      [49306],
+      {
+        name: "Логово Ониксии",
+        raidKey: "onyxiasLair",
+        size: 10,
+        difficulty: DungeonDifficulty.HEROIC,
+      },
+      "ru",
+    );
+
+    expect(groups.length).toBeGreaterThan(0);
+    expect(groups[0]?.itemIds).toContain(49306);
+  });
+
+  it("falls back to a flat item list when boss drop metadata is missing", () => {
+    const groups = groupBisItemIdsByBossForDungeonWithFallback(
+      [49310],
+      {
+        name: "Логово Ониксии",
+        raidKey: "onyxiasLair",
+        size: 10,
+        difficulty: DungeonDifficulty.NORMAL,
+      },
+      "ru",
+    );
+
+    expect(groups).toEqual([{ bossName: "", itemIds: [49310] }]);
   });
 });

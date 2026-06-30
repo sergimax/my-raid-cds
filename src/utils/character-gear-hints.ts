@@ -11,7 +11,7 @@ import {
 } from "./gear-upgrade-hint.ts";
 import { evaluateTierSetHint } from "./tier-set-hint.ts";
 import {
-  groupBisItemIdsByBossForDungeon,
+  groupBisItemIdsByBossForDungeonWithFallback,
   type BossBisLootGroup,
 } from "./item-drop-sources.ts";
 
@@ -62,18 +62,30 @@ function evaluateSpecGearHint(
 
   const bisBossLootGroups =
     missingExactBisItemIds.length > 0
-      ? groupBisItemIdsByBossForDungeon(missingExactBisItemIds, dungeon, locale)
+      ? groupBisItemIdsByBossForDungeonWithFallback(
+          missingExactBisItemIds,
+          dungeon,
+          locale,
+        )
       : [];
 
   const bisVariantBossLootGroups =
     missingVariantBisItemIds.length > 0
-      ? groupBisItemIdsByBossForDungeon(missingVariantBisItemIds, dungeon, locale)
+      ? groupBisItemIdsByBossForDungeonWithFallback(
+          missingVariantBisItemIds,
+          dungeon,
+          locale,
+        )
       : [];
 
   const missingIlvlLootItemIds = collectMissingIlvlLootItemIds(gearHint);
   const ilvlBossLootGroups =
     missingIlvlLootItemIds.length > 0
-      ? groupBisItemIdsByBossForDungeon(missingIlvlLootItemIds, dungeon, locale)
+      ? groupBisItemIdsByBossForDungeonWithFallback(
+          missingIlvlLootItemIds,
+          dungeon,
+          locale,
+        )
       : [];
 
   return {

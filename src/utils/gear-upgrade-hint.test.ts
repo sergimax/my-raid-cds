@@ -5,6 +5,7 @@ import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts
 import { retributionPaladinBis } from "../data/bis-presets/retribution-paladin.ts";
 import { createTestDungeon } from "../test/fixtures.ts";
 import { testTranslator } from "../test/i18n.ts";
+import { evaluateCharacterGearHints } from "./character-gear-hints.ts";
 import { buildBisSlotMap } from "./bis-lists.ts";
 import {
   evaluateGearUpgradeHint,
@@ -588,5 +589,35 @@ describe("formatGearUpgradeHintTooltip", () => {
     expect(bisHigh).not.toEqual(ilvlHigh);
     expect(bisLow).not.toEqual(bisHigh);
     expect(ilvlLow).not.toEqual(ilvlHigh);
+  });
+
+  it("builds Onyxia gear hint sections with item links for imported gear", () => {
+    const dungeon = createTestDungeon({
+      name: "Логово Ониксии",
+      raidKey: "onyxiasLair",
+      size: 10,
+      difficulty: DungeonDifficulty.NORMAL,
+      itemLevel: [232],
+    });
+
+    const hints = evaluateCharacterGearHints(
+      {
+        id: "emst",
+        name: "emst",
+        class: { name: ClassName.Warrior },
+        mainSpec: {
+          spec: "Protection",
+          gearItems: [
+            { slot: 1, id: 37646 },
+            { slot: 12, id: 37657 },
+          ],
+        },
+      },
+      dungeon,
+      () => new Map(),
+      "ru",
+    );
+
+    expect(hints.main?.ilvlBossLootGroups.length).toBeGreaterThan(0);
   });
 });
