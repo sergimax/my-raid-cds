@@ -17,6 +17,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-project
       - run: npm run lint
 
@@ -26,6 +27,7 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-project
       - run: npm run test:run
 
@@ -35,5 +37,6 @@ jobs:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-project
       - run: npm run build
