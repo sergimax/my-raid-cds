@@ -1,5 +1,12 @@
 import { RaidNames } from "../data/raid-names.ts";
+import type { AppLocale } from "../i18n/types.ts";
 import type { Dungeon } from "../types/dungeons.ts";
+
+export function getLocalizedRaidNameSuggestions(locale: AppLocale): string[] {
+  return Object.values(RaidNames)
+    .map((raid) => (locale === "ru" ? raid.ru : raid.en))
+    .sort((left, right) => left.localeCompare(right, locale));
+}
 
 export function defaultShortNameForDungeonName(name: string): string | undefined {
   for (const raid of Object.values(RaidNames)) {
