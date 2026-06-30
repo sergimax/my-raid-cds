@@ -33,6 +33,8 @@ export type SpecStatProfile = {
   hybridCasterItems?: boolean;
   /** Drop loot with +spirit (WotLK shamans do not use spirit on any spec). */
   rejectSpiritStats?: boolean;
+  /** Drop loot with +hit (WotLK healers do not use hit on any healing spec). */
+  rejectHitStats?: boolean;
   /** Ilvl hints: off-hand slot must be a shield (Restoration shaman). */
   offHandShieldOnly?: boolean;
   /** Main hand must be a two-handed weapon (Feral druid cat/bear). */
@@ -101,6 +103,7 @@ const SPEC_PROFILES: Record<SpecProfileKey, SpecStatProfile> = {
   },
   PALADIN_HOLY: {
     role: "HEALER",
+    rejectHitStats: true,
     pve: { INT: 2.2, SP: 2.5, HASTE: 1.35, CRIT: 1.15, MP5: 1.35, SPI: 0.4 },
   },
   PALADIN_PROTECTION: {
@@ -147,10 +150,12 @@ const SPEC_PROFILES: Record<SpecProfileKey, SpecStatProfile> = {
   },
   PRIEST_DISCIPLINE: {
     role: "HEALER",
+    rejectHitStats: true,
     pve: { INT: 1.7, SP: 1.9, CRIT: 0.95, HASTE: 0.85, MP5: 0.8, SPI: 0.5 },
   },
   PRIEST_HOLY: {
     role: "HEALER",
+    rejectHitStats: true,
     pve: { INT: 1.95, SP: 2.45, HASTE: 1.3, CRIT: 1.3, SPI: 1.35, MP5: 0.95 },
   },
   PRIEST_SHADOW: {
@@ -184,6 +189,7 @@ const SPEC_PROFILES: Record<SpecProfileKey, SpecStatProfile> = {
   SHAMAN_RESTORATION: {
     role: "HEALER",
     rejectSpiritStats: true,
+    rejectHitStats: true,
     offHandShieldOnly: true,
     pve: { INT: 2.0, SP: 2.25, HASTE: 1.3, CRIT: 0.95, MP5: 1.15 },
   },
@@ -222,6 +228,7 @@ const SPEC_PROFILES: Record<SpecProfileKey, SpecStatProfile> = {
   },
   DRUID_RESTORATION: {
     role: "HEALER",
+    rejectHitStats: true,
     pve: { INT: 3.2, SP: 3.3, HASTE: 2.1, CRIT: 1.25, MP5: 1.55, SPI: 1.65 },
   },
 };

@@ -244,6 +244,10 @@ export function isItemStatUsableForSpec(
     return false;
   }
 
+  if (profile.rejectHitStats === true && statValue(stats, "HIT") > 0) {
+    return false;
+  }
+
   if (hasUnweightedPhysicalStats(stats, profile)) {
     return false;
   }
