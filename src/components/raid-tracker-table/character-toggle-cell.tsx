@@ -11,11 +11,11 @@ import {
   evaluateCharacterGearHints,
   hasAnyGearHint,
 } from "../../utils/character-gear-hints.ts";
+import { getGearHintCellDisplay } from "../../utils/gear-upgrade-hint.ts";
 import {
   gearUpgradeHintDualCellSx,
   gearUpgradeHintCellSx,
-  getGearHintCellDisplay,
-} from "../../utils/gear-upgrade-hint.ts";
+} from "../../utils/gear-hint-display.ts";
 import { resolveBisSlotMap } from "../../utils/bis-lists.ts";
 import { GearHintTooltipContent } from "../gear-hint-tooltip/index.tsx";
 import { CHARACTER_BODY_CELL_SX } from "./table-layout.ts";
