@@ -42,4 +42,22 @@ describe("defaultShortNameForDungeonName", () => {
       RaidNames.icecrownCitadel.shortEn,
     );
   });
+
+  it("resolves short name for English raids that previously lacked shortEn", () => {
+    expect(defaultShortNameForDungeonName(RaidNames.trialOfTheCrusader.en)).toBe(
+      RaidNames.trialOfTheCrusader.shortEn,
+    );
+    expect(defaultShortNameForDungeonName(RaidNames.onyxiasLair.en)).toBe(
+      RaidNames.onyxiasLair.shortEn,
+    );
+    expect(defaultShortNameForDungeonName(RaidNames.ulduar.en)).toBe(
+      RaidNames.ulduar.shortEn,
+    );
+  });
+
+  it("resolves short name for Russian raid names", () => {
+    expect(defaultShortNameForDungeonName(RaidNames.trialOfTheCrusader.ru)).toBe(
+      RaidNames.trialOfTheCrusader.shortRu,
+    );
+  });
 });

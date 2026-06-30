@@ -20,6 +20,7 @@ export const RaidNames = {
     ru: "Логово Ониксии",
     en: "Onyxia's Lair",
     shortRu: "Оня",
+    shortEn: "Ony",
     emblem: EmblemKey.TRIUMPH,
   },
   vaultOfArchavon: {
@@ -33,12 +34,14 @@ export const RaidNames = {
     ru: "Испытание крестоносца",
     en: "Trial of the Crusader",
     shortRu: "ИК",
+    shortEn: "ToC",
     emblem: EmblemKey.TRIUMPH,
   },
   ulduar: {
     ru: "Ульдуар",
     en: "Ulduar",
     shortRu: "Ульда",
+    shortEn: "Ulda",
     emblem: EmblemKey.TRIUMPH,
   },
   icecrownCitadel: {

@@ -77,6 +77,23 @@ describe("DungeonForm", () => {
     );
   });
 
+  it("fills short name for English raids without shortEn guard regression", async () => {
+    const user = userEvent.setup();
+    const props = renderDungeonForm();
+
+    await user.click(screen.getByRole("combobox", { name: /^Name/ }));
+    await user.click(
+      screen.getByRole("option", { name: RaidNames.trialOfTheCrusader.en }),
+    );
+
+    expect(props.onNameChange).toHaveBeenCalledWith(
+      RaidNames.trialOfTheCrusader.en,
+    );
+    expect(props.onShortNameChange).toHaveBeenCalledWith(
+      RaidNames.trialOfTheCrusader.shortEn,
+    );
+  });
+
   it("calls onSubmit when form is submitted", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn((event) => {
