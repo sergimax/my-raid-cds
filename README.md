@@ -103,18 +103,18 @@ BiS list selections and local presets are stored separately under `my-raid-cds-b
 
 ```
 src/
-├── components/       # app-header, tracker-layout, raid-tracker-main, tracker-toolbar-panel, character-form, character-edit-dialog (+ character-spec-gear-import-section, character-edit-spec-gear), character-spec-gear-fields, spec-option-label, dungeon-form, dungeon-edit-dialog, dungeon-customization-fields, export-panel, bis-lists-panel, bis-item-drop-sources, gear-hint-tooltip, wow-item-link (+ item-link-styles.ts), stored-gear-item-line, item-tooltip-locale-toggle, tracker-controls, …
+├── components/       # app-header, tracker-layout, raid-tracker-main, tracker-toolbar-panel, character-form, character-edit-dialog (+ character-spec-gear-import-section, character-edit-spec-gear), character-spec-gear-fields, spec-option-label, dungeon-form, dungeon-edit-dialog, dungeon-customization-fields, export-panel, bis-lists-panel, bis-slot-row, bis-item-drop-sources, gear-hint-tooltip, wow-item-link (+ item-link-styles.ts), stored-gear-item-line, item-tooltip-locale-toggle, tracker-controls, …
 │   raid-tracker-table/   # grid, character-toggle-cell, use-raid-tracker-table-state, head/row, character-header-cell, pinned-column-renderers, …
 ├── i18n/             # messages/en.ts, messages/ru.ts, translate.ts, localized-domain.ts, use-translation.ts
 ├── constants/        # character.ts, dungeon-form-defaults.ts, item-tooltips.ts
 ├── contexts/         # raid-tracker-provider, raid-tracker-context, color-mode-provider, bis-lists-provider, item-tooltip-locale-provider
-├── hooks/            # use-tracker-domain.ts, use-tracker-forms.ts, use-bis-lists-domain.ts, use-character-form-state.ts, use-export-panel-state.ts, use-scroll-to-top-on-panel-open.ts, use-compact-layout.ts, color-mode.ts, item-tooltip-locale.ts, …
+├── hooks/            # use-tracker-domain.ts, use-overlay-panels.ts, use-bis-lists-domain.ts, use-bis-lists-editor-state.ts, use-character-form-state.ts, use-scroll-to-top-on-panel-open.ts, use-compact-layout.ts, color-mode.ts, item-tooltip-locale.ts, …
 ├── theme/            # create-app-theme.ts (MUI palette per mode)
 ├── types/            # characters, dungeons, character-gear, bis-lists
 ├── data/             # raid-names.ts, raid-boss-names.ts, class-specs.ts, spec-stat-priorities.ts, bis-item-variants.ts, dungeon-list.ts, create-template-dungeon.ts, dungeons.ts, bis-presets/, item-drop-sources.ts, gear-slot-names.ts, raid-loot.ts, wotlk-item-levels.ts, wotlk-item-names.ts, wotlk-item-gear-slots.ts, wotlk-item-equip-props.ts, wotlk-item-stats.json, wotlk-item-drop-sources.json (+ other bundled JSON)
-├── utils/            # validate-character/dungeon, dungeon-toggles, character-display, format-character-details, format-character-export, build-export-status, format-dungeon-label, dungeon-type.ts, dungeon-short-name, bis-lists.ts, item-drop-sources.ts, item-stat-fit.ts, gear-upgrade-hint.ts, character-gear-hints.ts, item-equip-restrictions.ts, tier-set-hint.ts, parse-wowsims-exporter.ts, format-stored-gear.ts, hide-external-wow-tooltips.ts, sort/filter, …
+├── utils/            # validate-character/dungeon, dungeon-toggles, character-display, format-character-details, format-character-export, build-export-status, format-dungeon-label, dungeon-type.ts, dungeon-short-name, bis-lists.ts, bis-list-editor.ts, item-drop-sources.ts, item-stat-fit.ts, gear-upgrade-hint.ts, gear-hint-display.ts, character-gear-hints.ts, item-equip-restrictions.ts, tier-set-hint.ts, parse-wowsims-exporter.ts, format-stored-gear.ts, hide-external-wow-tooltips.ts, sort/filter, …
 ├── assets/           # class-icons/ (+ specs/), emblems/
-├── storage/          # index.ts (public API), parse, persist, types, constants; bis-lists/ (separate localStorage key)
+├── storage/          # index.ts (public API), parse, persist, guards.ts, types, constants; bis-lists/ (separate localStorage key)
 ├── test/             # setup.ts, fixtures.ts, render-with-theme.tsx, test-providers.tsx, i18n.ts (Vitest + Testing Library)
 ├── uuid.ts           # generateUUID
 └── vite-env.d.ts     # __APP_VERSION__ declaration
@@ -126,7 +126,7 @@ docs/                 # roadmap.md (future feature ideas)
 
 Tests live next to source as `*.test.ts` / `*.test.tsx` (e.g. `utils/dungeon-toggles.test.ts`, `storage/parse.test.ts`).
 
-`App` mounts `RaidTrackerProvider`, `BisListsProvider`, and `ItemTooltipLocaleProvider`, then `TrackerLayout` (toolbar, overlay panel orchestration). `RaidTrackerMain` wraps add-character, add-dungeon, and BiS content in `TrackerToolbarPanel`; `RaidTrackerTable` wraps export the same way. Table UI state (sort, search, delete confirmation, compact layout) lives in `useRaidTrackerTableState` under `raid-tracker-table/`.
+`App` mounts `RaidTrackerProvider`, `BisListsProvider`, and `ItemTooltipLocaleProvider`, then `TrackerLayout` (toolbar + `useOverlayPanels` for mutually exclusive character/dungeon/export/BiS panels). `RaidTrackerMain` renders all toolbar panels in `TrackerToolbarPanel`, owns `useRaidTrackerTableState` (sort, search, delete confirmation, compact layout), and passes `tableState` to `RaidTrackerTable`. Gear hints read BiS data via `getBisSlotMapForSpec` from `useBisListsContext()`.
 
 Production builds split vendor code into separate chunks (React, MUI, icons) via `vite.config.ts` `manualChunks`.
 
