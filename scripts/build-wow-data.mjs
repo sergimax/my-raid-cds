@@ -7,8 +7,8 @@
  * - src/data/wotlk-item-gear-slots.json — valid gear slot indices per item id
  * - src/data/wotlk-item-equip-props.json — item type/armor/weapon metadata for class equip rules
  * - src/data/wotlk-item-stats.json — sparse WowSims stat indices per bundled item id
- * - src/data/raid-loot-by-key.json — raid loot indexed by gear slot
- * - src/data/wotlk-item-drop-sources.json — boss / raid drop sources per bundled item id
+ * - src/data/raid-loot-by-key.json — raid loot indexed by gear slot (VoA tier hands/legs supplemented when WowSims omits zone 4603)
+ * - src/data/wotlk-item-drop-sources.json — boss / raid drop sources per bundled item id (includes Koralon/Toravon for VoA)
  * - src/data/tier-sets-by-item-id.json — tier set piece upgrade chains
  *
  * Pass --skip-ru to skip the WoWRoad Russian name fetch (network-heavy).
