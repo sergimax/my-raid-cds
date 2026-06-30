@@ -79,7 +79,12 @@ function evaluateSpecGearHint(
   return {
     specGear,
     gearHint,
-    tierSetHint: evaluateTierSetHint(specGear.gearItems, dungeon, bisSlotMap),
+    tierSetHint: evaluateTierSetHint(
+      specGear.gearItems,
+      dungeon,
+      bisSlotMap,
+      className,
+    ),
     bisBossLootGroups,
     bisVariantBossLootGroups,
     ilvlBossLootGroups,

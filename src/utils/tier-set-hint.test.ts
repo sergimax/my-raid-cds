@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
+import { restorationShamanBis } from "../data/bis-presets/restoration-shaman.ts";
+import { holyPriestBis } from "../data/bis-presets/holy-priest.ts";
+import { ClassName } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
 import { buildBisSlotMap } from "./bis-lists.ts";
 import {
   aggregateTierSetTokenNeeds,
   evaluateTierSetHint,
 } from "./tier-set-hint.ts";
+import { canClassUseTierSetToken } from "../data/tier-set-tokens.ts";
 
 describe("evaluateTierSetHint", () => {
   const icc25Heroic = {
@@ -30,10 +34,17 @@ describe("evaluateTierSetHint", () => {
   };
 
   const unholyBis = buildBisSlotMap(unholyDeathKnightBis.presets[0]);
+  const restoShamanBis = buildBisSlotMap(restorationShamanBis.presets[0]);
+  const holyPriestBisSlotMap = buildBisSlotMap(holyPriestBis.presets[0]);
 
   it("returns no tokens when BiS map is empty", () => {
     expect(
-      evaluateTierSetHint([{ slot: 0, id: 50096 }], icc25Heroic, new Map()),
+      evaluateTierSetHint(
+        [{ slot: 0, id: 50096 }],
+        icc25Heroic,
+        new Map(),
+        ClassName.DeathKnight,
+      ),
     ).toEqual({ tokenNeeds: [] });
   });
 
@@ -47,6 +58,7 @@ describe("evaluateTierSetHint", () => {
       ],
       icc25Heroic,
       unholyBis,
+      ClassName.DeathKnight,
     );
 
     expect(hint.tokenNeeds).toHaveLength(4);
@@ -65,6 +77,7 @@ describe("evaluateTierSetHint", () => {
       ],
       rubySanctum25Heroic,
       unholyBis,
+      ClassName.DeathKnight,
     );
 
     expect(hint.tokenNeeds).toEqual([]);
@@ -77,6 +90,7 @@ describe("evaluateTierSetHint", () => {
       [{ slot: 0, id: 50096 }],
       icc10Heroic,
       bisSlotMap,
+      ClassName.DeathKnight,
     );
 
     expect(hint.tokenNeeds).toEqual([
@@ -89,14 +103,24 @@ describe("evaluateTierSetHint", () => {
   });
 
   it("shows droppable tokens when gear is not imported", () => {
-    const hint = evaluateTierSetHint(undefined, icc25Heroic, unholyBis);
+    const hint = evaluateTierSetHint(
+      undefined,
+      icc25Heroic,
+      unholyBis,
+      ClassName.DeathKnight,
+    );
 
     expect(hint.tokenNeeds.length).toBeGreaterThan(0);
     expect(hint.tokenNeeds[0]?.tokenItemId).toBe(52005);
   });
 
   it("does not show tokens when gear is not imported for non-token raids", () => {
-    const hint = evaluateTierSetHint(undefined, rubySanctum25Heroic, unholyBis);
+    const hint = evaluateTierSetHint(
+      undefined,
+      rubySanctum25Heroic,
+      unholyBis,
+      ClassName.DeathKnight,
+    );
 
     expect(hint.tokenNeeds).toEqual([]);
   });
@@ -108,6 +132,7 @@ describe("evaluateTierSetHint", () => {
       [{ slot: 0, id: 51312 }],
       icc25Heroic,
       bisSlotMap,
+      ClassName.DeathKnight,
     );
 
     expect(hint.tokenNeeds).toEqual([]);
@@ -123,6 +148,7 @@ describe("evaluateTierSetHint", () => {
       ],
       icc25Heroic,
       unholyBis,
+      ClassName.DeathKnight,
     );
 
     const aggregated = aggregateTierSetTokenNeeds(hint.tokenNeeds);
@@ -146,12 +172,55 @@ describe("evaluateTierSetHint", () => {
         difficulty: DungeonDifficulty.HEROIC,
       },
       unholyBis,
+      ClassName.DeathKnight,
     );
 
     expect(hint.tokenNeeds).toHaveLength(4);
     expect(hint.tokenNeeds.every((need) => need.tokenItemId === 52030)).toBe(
       true,
     );
+  });
+
+  it("shows protector tokens for Restoration Shaman, not vanquisher", () => {
+    const hint = evaluateTierSetHint(
+      undefined,
+      icc25Heroic,
+      restoShamanBis,
+      ClassName.Shaman,
+    );
+
+    expect(hint.tokenNeeds.length).toBeGreaterThan(0);
+    expect(
+      hint.tokenNeeds.every((need) =>
+        canClassUseTierSetToken(ClassName.Shaman, need.tokenItemId),
+      ),
+    ).toBe(true);
+    expect(
+      hint.tokenNeeds.every(
+        (need) => need.tokenItemId === 52031 || need.tokenItemId === 52006,
+      ),
+    ).toBe(true);
+  });
+
+  it("shows vanquisher tokens for Holy Priest, not protector", () => {
+    const hint = evaluateTierSetHint(
+      undefined,
+      icc25Heroic,
+      holyPriestBisSlotMap,
+      ClassName.Priest,
+    );
+
+    expect(hint.tokenNeeds.length).toBeGreaterThan(0);
+    expect(
+      hint.tokenNeeds.every((need) =>
+        canClassUseTierSetToken(ClassName.Priest, need.tokenItemId),
+      ),
+    ).toBe(true);
+    expect(
+      hint.tokenNeeds.every(
+        (need) => need.tokenItemId === 52030 || need.tokenItemId === 52005,
+      ),
+    ).toBe(true);
   });
 
   it("shows the next droppable token when an off-set item below BiS tier is equipped", () => {
@@ -161,6 +230,7 @@ describe("evaluateTierSetHint", () => {
       [{ slot: 0, id: 51127 }],
       icc25Heroic,
       bisSlotMap,
+      ClassName.DeathKnight,
     );
 
     expect(hint.tokenNeeds).toHaveLength(1);
