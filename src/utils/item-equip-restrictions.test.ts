@@ -82,6 +82,24 @@ describe("canEquipItemForCharacter", () => {
     ).toBe(false);
   });
 
+  it("rejects one-handed main-hand weapons for Feral druids", () => {
+    expect(
+      canEquipItemForCharacter(50736, 14, {
+        className: ClassName.Druid,
+        spec: "Feral",
+      }),
+    ).toBe(false);
+  });
+
+  it("allows two-handed polearm main-hand weapons for Feral druids", () => {
+    expect(
+      canEquipItemForCharacter(50735, 14, {
+        className: ClassName.Druid,
+        spec: "Feral",
+      }),
+    ).toBe(true);
+  });
+
   it("rejects plate armor for priests", () => {
     expect(
       canEquipItemForCharacter(51197, 0, {

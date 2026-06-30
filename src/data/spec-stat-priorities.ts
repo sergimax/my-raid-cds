@@ -35,6 +35,8 @@ export type SpecStatProfile = {
   rejectSpiritStats?: boolean;
   /** Ilvl hints: off-hand slot must be a shield (Restoration shaman). */
   offHandShieldOnly?: boolean;
+  /** Main hand must be a two-handed weapon (Feral druid cat/bear). */
+  mainHandTwoHandOnly?: boolean;
   /** Primary PvE stat weights (GearScore2 `Tables.SpecProfiles` pve). */
   pve: GsStatWeights;
   /** Optional secondary weights when `hybridCasterItems` (Enhancement spellhance). */
@@ -215,6 +217,7 @@ const SPEC_PROFILES: Record<SpecProfileKey, SpecStatProfile> = {
   },
   DRUID_FERAL_DPS: {
     role: "MELEE",
+    mainHandTwoHandOnly: true,
     pve: { AGI: 2.2, AP: 0.95, HIT: 1.45, HASTE: 0.7, CRIT: 1.05, ARP: 1.0, EXPERTISE: 1.05 },
   },
   DRUID_RESTORATION: {

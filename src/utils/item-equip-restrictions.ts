@@ -1,4 +1,5 @@
 import { getWotlkItemEquipProps } from "../data/wotlk-item-equip-props.ts";
+import { getSpecStatProfile } from "../data/spec-stat-priorities.ts";
 import { isItemStatUsableForSpec } from "./item-stat-fit.ts";
 import { ClassName, type ClassName as ClassNameType } from "../types/characters.ts";
 
@@ -62,6 +63,7 @@ const RangedWeaponType = {
 } as const;
 
 const GearSlot = {
+  MainHand: 14,
   OffHand: 15,
 } as const;
 
@@ -279,6 +281,18 @@ export function canEquipItemForCharacter(
     }
 
     if (handType === HandType.TwoHand && !eligibleWeaponType.canUseTwoHand) {
+      return false;
+    }
+
+    const specProfile =
+      context.spec !== undefined
+        ? getSpecStatProfile(className, context.spec)
+        : undefined;
+    if (
+      specProfile?.mainHandTwoHandOnly === true &&
+      gearSlot === GearSlot.MainHand &&
+      handType !== HandType.TwoHand
+    ) {
       return false;
     }
 
