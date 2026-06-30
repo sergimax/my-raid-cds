@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
+import { ClassName } from "../types/characters.ts";
 import {
   collectSlotValidationErrors,
   createEmptySlotDrafts,
@@ -67,6 +68,7 @@ describe("collectSlotValidationErrors", () => {
     const errors = collectSlotValidationErrors(
       [{ ...headDraft, itemsText: "51132" }],
       "strict",
+      { className: ClassName.DeathKnight, spec: "Unholy" },
     );
 
     expect(errors[0]).toContain("Hands");
