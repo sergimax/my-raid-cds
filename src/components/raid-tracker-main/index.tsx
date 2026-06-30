@@ -1,7 +1,7 @@
 import { Alert, Stack } from "@mui/material";
 import { useMemo } from "react";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
-import type { TrackerFormsState } from "../../hooks/use-tracker-forms.ts";
+import type { TrackerFormsState } from "../../hooks/use-overlay-panels.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import { LOAD_WARNING_CORRUPTED_SAVE } from "../../storage/constants.ts";
