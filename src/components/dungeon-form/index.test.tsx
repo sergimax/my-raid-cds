@@ -61,6 +61,22 @@ describe("DungeonForm", () => {
     );
   });
 
+  it("replaces short name when selecting a different known raid", async () => {
+    const user = userEvent.setup();
+    const props = renderDungeonForm({
+      shortName: RaidNames.trialOfTheCrusader.shortRu,
+    });
+
+    await user.click(screen.getByRole("combobox", { name: /^Name/ }));
+    await user.click(
+      screen.getByRole("option", { name: RaidNames.icecrownCitadel.en }),
+    );
+
+    expect(props.onShortNameChange).toHaveBeenCalledWith(
+      RaidNames.icecrownCitadel.shortEn,
+    );
+  });
+
   it("calls onSubmit when form is submitted", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn((event) => {

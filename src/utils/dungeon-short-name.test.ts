@@ -3,6 +3,7 @@ import { RaidNames } from "../data/raid-names.ts";
 import {
   defaultShortNameForDungeonName,
   getLocalizedRaidNameSuggestions,
+  isKnownRaidName,
 } from "./dungeon-short-name.ts";
 
 describe("getLocalizedRaidNameSuggestions", () => {
@@ -24,6 +25,14 @@ describe("getLocalizedRaidNameSuggestions", () => {
     expect([...suggestions]).toEqual(
       [...suggestions].sort((left, right) => left.localeCompare(right, "ru")),
     );
+  });
+});
+
+describe("isKnownRaidName", () => {
+  it("matches localized raid names", () => {
+    expect(isKnownRaidName(RaidNames.icecrownCitadel.en)).toBe(true);
+    expect(isKnownRaidName(RaidNames.icecrownCitadel.ru)).toBe(true);
+    expect(isKnownRaidName("Custom dungeon")).toBe(false);
   });
 });
 

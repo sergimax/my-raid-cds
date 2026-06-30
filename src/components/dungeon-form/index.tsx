@@ -14,6 +14,7 @@ import { getLocalizedDifficulty } from "../../i18n/localized-domain.ts";
 import {
   defaultShortNameForDungeonName,
   getLocalizedRaidNameSuggestions,
+  isKnownRaidName,
 } from "../../utils/dungeon-short-name.ts";
 import {
   DungeonDifficulty,
@@ -60,9 +61,8 @@ export function DungeonForm({
       return;
     }
     onNameChange(nextName);
-    const defaultShort = defaultShortNameForDungeonName(nextName);
-    if (defaultShort && !shortName.trim()) {
-      onShortNameChange(defaultShort);
+    if (isKnownRaidName(nextName)) {
+      onShortNameChange(defaultShortNameForDungeonName(nextName) ?? "");
     }
   };
 
