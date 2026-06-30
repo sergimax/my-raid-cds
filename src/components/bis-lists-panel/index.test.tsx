@@ -1,15 +1,49 @@
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { BisListsPanel } from "./index.tsx";
-import { renderWithTheme, screen } from "../../test/render-with-theme.tsx";
+import {
+  BIS_LISTS_SCHEMA_VERSION,
+  BIS_LISTS_STORAGE_KEY,
+} from "../../storage/bis-lists/constants.ts";
+import { ClassName } from "../../types/characters.ts";
+import { renderWithTheme, screen, within } from "../../test/render-with-theme.tsx";
+import { specBisStorageKey } from "../../utils/bis-lists.ts";
+
+function seedLocalUnholyPreset(presetName: string, presetId = "local-test") {
+  const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
+  localStorage.setItem(
+    BIS_LISTS_STORAGE_KEY,
+    JSON.stringify({
+      schemaVersion: BIS_LISTS_SCHEMA_VERSION,
+      entries: {
+        [storageKey]: {
+          selectedPresetId: presetId,
+          presets: [
+            {
+              id: presetId,
+              name: presetName,
+              slots: [{ slot: 0, itemIds: [51312] }],
+            },
+          ],
+        },
+      },
+    }),
+  );
+}
 
 describe("BisListsPanel", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   it("shows slot items for the default Unholy DK preset on open", () => {
     renderWithTheme(<BisListsPanel />);
 
     expect(screen.getByText(/Udk-STR \(Warmane/i)).toBeInTheDocument();
     expect(screen.getByText(/Head/i)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Sanctified Scourgelord Helmet/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Sanctified Scourgelord Helmet/i }),
+    ).toBeInTheDocument();
   });
 
   it("shows built-in preset items for Warrior Arms", async () => {
@@ -23,5 +57,96 @@ describe("BisListsPanel", () => {
 
     expect(screen.getByText(/Arms \(icy-veins/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Shadowmourne/i })).toBeInTheDocument();
+  });
+
+  it("shows built-in lists as read-only without slot edit controls", () => {
+    renderWithTheme(<BisListsPanel />);
+
+    expect(
+      screen.getByText(/Built-in list \(read-only\)/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Edit Head item/i })).not.toBeInTheDocument();
+  });
+
+  it("saves a copy of the built-in list under a custom name", async () => {
+    const user = userEvent.setup();
+    renderWithTheme(<BisListsPanel />);
+
+    await user.type(screen.getByRole("textbox", { name: /List name/i }), "My DK copy");
+    await user.click(screen.getByRole("button", { name: /Save list/i }));
+
+    expect(screen.getByRole("button", { name: /My DK copy/i })).toBeInTheDocument();
+
+    const persisted = JSON.parse(localStorage.getItem(BIS_LISTS_STORAGE_KEY)!);
+    const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
+    expect(persisted.entries[storageKey].presets[0].name).toBe("My DK copy");
+  });
+
+  it("disables save while edited slots are unconfirmed", async () => {
+    const user = userEvent.setup();
+    seedLocalUnholyPreset("Editable local");
+    renderWithTheme(<BisListsPanel />);
+
+    await user.click(screen.getByRole("button", { name: /Edit Head item/i }));
+    const headInput = screen.getByPlaceholderText("Name, id, or #id");
+    await user.clear(headInput);
+    await user.type(headInput, "51312");
+
+    expect(screen.getByRole("button", { name: /Save list/i })).toBeDisabled();
+  });
+
+  it("shows validation errors for items in the wrong slot", async () => {
+    const user = userEvent.setup();
+    seedLocalUnholyPreset("Editable local");
+    renderWithTheme(<BisListsPanel />);
+
+    await user.click(screen.getByRole("button", { name: /Edit Head item/i }));
+    const headInput = screen.getByPlaceholderText("Name, id, or #id");
+    await user.clear(headInput);
+    await user.type(headInput, "51132");
+    await user.tab();
+
+    expect(screen.getByText(/Hands/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Confirm Head item/i }),
+    ).toBeDisabled();
+  });
+
+  it("confirms a slot edit and persists it for a local preset", async () => {
+    const user = userEvent.setup();
+    seedLocalUnholyPreset("Editable local");
+    renderWithTheme(<BisListsPanel />);
+
+    await user.click(screen.getByRole("button", { name: /Edit Head item/i }));
+    const headInput = screen.getByPlaceholderText("Name, id, or #id");
+    await user.clear(headInput);
+    await user.type(headInput, "51312");
+    await user.click(screen.getByRole("button", { name: /Confirm Head item/i }));
+
+    expect(
+      screen.getByRole("link", { name: /Sanctified Scourgelord Helmet/i }),
+    ).toBeInTheDocument();
+
+    const persisted = JSON.parse(localStorage.getItem(BIS_LISTS_STORAGE_KEY)!);
+    const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
+    expect(persisted.entries[storageKey].presets[0].slots).toEqual([
+      { slot: 0, itemIds: [51312] },
+    ]);
+  });
+
+  it("deletes a local preset from the sidebar", async () => {
+    const user = userEvent.setup();
+    seedLocalUnholyPreset("Deletable list");
+    renderWithTheme(<BisListsPanel />);
+
+    const localChip = screen.getByRole("button", { name: /Deletable list/i });
+    await user.click(within(localChip).getByTestId("CancelIcon"));
+
+    expect(screen.queryByRole("button", { name: /Deletable list/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/Udk-STR \(Warmane/i)).toBeInTheDocument();
+
+    const persisted = JSON.parse(localStorage.getItem(BIS_LISTS_STORAGE_KEY)!);
+    const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
+    expect(persisted.entries[storageKey].presets).toHaveLength(0);
   });
 });
