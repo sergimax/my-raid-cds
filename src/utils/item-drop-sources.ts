@@ -1,11 +1,13 @@
 import type { ItemDropSource } from "../data/item-drop-sources.ts";
 import { getItemDropSources } from "../data/item-drop-sources.ts";
-import { RaidNames } from "../data/raid-names.ts";
+import { DungeonList } from "../data/dungeon-list.ts";
+import { RaidNames, type RaidKey } from "../data/raid-names.ts";
 import type { AppLocale } from "../i18n/types.ts";
 import {
   getLocalizedBossName,
   getLocalizedDungeonDisplayName,
 } from "../i18n/localized-domain.ts";
+import { DungeonDifficulty, type DungeonSize } from "../types/dungeons.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import { formatDungeonExportLabel } from "./format-dungeon-label.ts";
 import { resolveDungeonRaidKey } from "./resolve-dungeon-raid-key.ts";
@@ -21,6 +23,15 @@ type DungeonSourceMatch = Pick<
   "name" | "shortName" | "raidKey" | "size" | "difficulty"
 >;
 
+function dungeonTemplateHasHeroic(raidKey: RaidKey, size: DungeonSize): boolean {
+  return DungeonList.some(
+    (row) =>
+      row.raidKey === raidKey &&
+      row.size === size &&
+      row.difficulty === DungeonDifficulty.HEROIC,
+  );
+}
+
 function dungeonMatchesDropSource(
   dungeon: DungeonSourceMatch,
   source: ItemDropSource,
@@ -32,7 +43,18 @@ function dungeonMatchesDropSource(
   if (dungeon.size !== source.size) {
     return false;
   }
-  return dungeon.difficulty === source.difficulty;
+  if (dungeon.difficulty !== source.difficulty) {
+    // Onyxia, VoA, Naxx, etc. only have Normal loot — still show items when the row
+    // is marked Heroic or drop metadata is tagged Normal only.
+    if (
+      source.difficulty === DungeonDifficulty.NORMAL &&
+      !dungeonTemplateHasHeroic(raidKey, dungeon.size)
+    ) {
+      return true;
+    }
+    return false;
+  }
+  return true;
 }
 
 function formatRaidLabelForSource(
@@ -151,6 +173,24 @@ export function groupBisItemIdsByBossForDungeon(
     .sort((leftGroup, rightGroup) =>
       leftGroup.bossName.localeCompare(rightGroup.bossName, locale),
     );
+}
+
+function sortUniqueItemIds(itemIds: readonly number[]): number[] {
+  return [...new Set(itemIds)].sort((leftId, rightId) => leftId - rightId);
+}
+
+/** Like {@link groupBisItemIdsByBossForDungeon} but lists items flat when boss metadata is missing. */
+export function groupBisItemIdsByBossForDungeonWithFallback(
+  itemIds: readonly number[],
+  dungeon: DungeonSourceMatch,
+  locale: AppLocale,
+): BossBisLootGroup[] {
+  const grouped = groupBisItemIdsByBossForDungeon(itemIds, dungeon, locale);
+  if (grouped.length > 0 || itemIds.length === 0) {
+    return grouped;
+  }
+
+  return [{ bossName: "", itemIds: sortUniqueItemIds(itemIds) }];
 }
 
 /** Short raid label for a dungeon row (export-style abbreviation + size + mode). */

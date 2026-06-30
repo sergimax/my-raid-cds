@@ -62,7 +62,7 @@ function BisBossLootSection({
       >
         {groups.map((group) => (
           <Typography
-            key={group.bossName}
+            key={group.bossName || group.itemIds.join(",")}
             variant="caption"
             component="div"
             sx={{
@@ -71,10 +71,12 @@ function BisBossLootSection({
               "&:last-child": { mb: 0 },
             }}
           >
-            <Box component="span" sx={{ fontWeight: 600, color: "text.secondary" }}>
-              {group.bossName}
-              {": "}
-            </Box>
+            {group.bossName ? (
+              <Box component="span" sx={{ fontWeight: 600, color: "text.secondary" }}>
+                {group.bossName}
+                {": "}
+              </Box>
+            ) : null}
             <WowItemAlternatives itemIds={group.itemIds} />
           </Typography>
         ))}
