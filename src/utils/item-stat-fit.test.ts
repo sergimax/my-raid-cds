@@ -88,6 +88,33 @@ describe("isItemStatUsableForSpec", () => {
     ).toBe(false);
   });
 
+  it("rejects agility hunter helm for Elemental Shaman", () => {
+    expect(
+      isItemStatUsableForSpec(47718, {
+        className: ClassName.Shaman,
+        spec: "Elemental",
+      }),
+    ).toBe(false);
+  });
+
+  it("rejects agility hunter helm for Restoration Shaman", () => {
+    expect(
+      isItemStatUsableForSpec(47718, {
+        className: ClassName.Shaman,
+        spec: "Restoration",
+      }),
+    ).toBe(false);
+  });
+
+  it("allows agility mail for Enhancement Shaman", () => {
+    expect(
+      isItemStatUsableForSpec(51197, {
+        className: ClassName.Shaman,
+        spec: "Enhancement",
+      }),
+    ).toBe(true);
+  });
+
   it("allows spirit-free resto shaman BiS cloak", () => {
     expect(
       isItemStatUsableForSpec(54583, {

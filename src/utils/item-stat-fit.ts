@@ -112,6 +112,32 @@ function hasPhysicalPrimaryStats(stats: NormalizedGsStats): boolean {
   );
 }
 
+const CASTER_HEALER_PHYSICAL_KEYS: GsStatKey[] = ["STR", "AGI", "AP", "RAP"];
+
+function hasWeightedStat(profile: SpecStatProfile, key: GsStatKey): boolean {
+  if ((profile.pve[key] ?? 0) > 0) {
+    return true;
+  }
+  if (profile.hybridPve && (profile.hybridPve[key] ?? 0) > 0) {
+    return true;
+  }
+  return false;
+}
+
+/** Caster/healer specs should not see loot with physical primaries they do not weight. */
+function hasUnweightedPhysicalStats(
+  stats: NormalizedGsStats,
+  profile: SpecStatProfile,
+): boolean {
+  if (profile.role !== "CASTER" && profile.role !== "HEALER") {
+    return false;
+  }
+
+  return CASTER_HEALER_PHYSICAL_KEYS.some(
+    (key) => statValue(stats, key) > 0 && !hasWeightedStat(profile, key),
+  );
+}
+
 /** Mirrors GearScore2 `GS_IsItemCompatible` stat/role checks (no slot/armor metadata). */
 function isItemStatCompatible(stats: NormalizedGsStats, profile: SpecStatProfile): boolean {
   const role = profile.role;
@@ -215,6 +241,10 @@ export function isItemStatUsableForSpec(
   const stats = normalizeItemStatsToGs(sparseStats);
 
   if (profile.rejectSpiritStats === true && statValue(stats, "SPI") > 0) {
+    return false;
+  }
+
+  if (hasUnweightedPhysicalStats(stats, profile)) {
     return false;
   }
 

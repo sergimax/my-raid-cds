@@ -406,6 +406,23 @@ describe("evaluateGearUpgradeHint", () => {
     ).not.toBe(50067);
   });
 
+  it("does not suggest agility hunter helm for Elemental Shaman", () => {
+    const hint = evaluateGearUpgradeHint(
+      [{ slot: 0, id: 51247 }],
+      {
+        name: "ICC25H",
+        raidKey: "icecrownCitadel",
+        itemLevel: [277, 284],
+      },
+      undefined,
+      { className: ClassName.Shaman, spec: "Elemental" },
+    );
+
+    const headUpgrade = hint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 0);
+    expect(headUpgrade?.bestLootItemId).not.toBe(47718);
+    expect(headUpgrade?.bestLootItemId).not.toBe(47942);
+  });
+
   it("does not suggest spirit priest cloak for Restoration Shaman", () => {
     const hint = evaluateGearUpgradeHint(
       [{ slot: 3, id: 54583 }],
