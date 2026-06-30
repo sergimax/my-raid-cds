@@ -314,7 +314,23 @@ export function canEquipItemForCharacter(
 
   const armorType = item.a ?? 0;
   const maxArmorType = classToMaxArmorType[playerClass];
-  return maxArmorType !== undefined && maxArmorType >= armorType;
+  if (maxArmorType === undefined || maxArmorType < armorType) {
+    return false;
+  }
+
+  const specProfile =
+    context.spec !== undefined
+      ? getSpecStatProfile(className, context.spec)
+      : undefined;
+  if (
+    specProfile?.plateArmorOnly === true &&
+    armorType > 0 &&
+    armorType < ArmorType.Plate
+  ) {
+    return false;
+  }
+
+  return true;
 }
 
 export type FilterUsableLootOptions = {

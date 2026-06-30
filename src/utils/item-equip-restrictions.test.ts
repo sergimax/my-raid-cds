@@ -100,6 +100,42 @@ describe("canEquipItemForCharacter", () => {
     ).toBe(true);
   });
 
+  it("rejects leather armor for Protection Warrior", () => {
+    expect(
+      canEquipItemForCharacter(53126, 5, {
+        className: ClassName.Warrior,
+        spec: "Protection",
+      }),
+    ).toBe(false);
+  });
+
+  it("allows plate armor for Protection Warrior", () => {
+    expect(
+      canEquipItemForCharacter(51225, 4, {
+        className: ClassName.Warrior,
+        spec: "Protection",
+      }),
+    ).toBe(true);
+  });
+
+  it("still allows leather armor for Fury Warrior", () => {
+    expect(
+      canEquipItemForCharacter(53126, 5, {
+        className: ClassName.Warrior,
+        spec: "Fury",
+      }),
+    ).toBe(true);
+  });
+
+  it("still allows neck items without armor class for Protection Paladin", () => {
+    expect(
+      canEquipItemForCharacter(50633, 1, {
+        className: ClassName.Paladin,
+        spec: "Protection",
+      }),
+    ).toBe(true);
+  });
+
   it("rejects plate armor for priests", () => {
     expect(
       canEquipItemForCharacter(51197, 0, {
