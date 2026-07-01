@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Fixed
+
+- **Dual-spec gear hint cells:** When a character has main and off specs, toggle cell tint is split left/right per spec; only the side with upgrade hints is colored instead of filling the whole cell.
+- **Tank gear hints:** Ilvl upgrade suggestions for tank specs now require defense, dodge, or parry on the item; DPS Ruby Sanctum loot (e.g. Penumbra Pendant, Signet of Twilight, Bracers of the Heir, Baltharus' Gift) is no longer suggested. BiS list targets are unchanged. Also maps bundled WowSims defense/dodge/parry stats and fixes ranged attack power index (21).
+
 ### Changed
 
 - **Gear hint cell contrast:** Toggle tint alphas are tuned per theme — slightly stronger level-1 hints in light mode, higher opacity across levels in dark mode for easier scanning.
