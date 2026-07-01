@@ -7,7 +7,11 @@ import type { TranslateFn } from "../../i18n/translate.ts";
 import type { ClassName } from "../../types/characters.ts";
 import { SpecOptionLabel } from "../spec-option-label/index.tsx";
 import { WowItemAlternatives, WowItemLink } from "../wow-item-link/index.tsx";
-import { formatGearUpgradeHintTooltip } from "../../utils/gear-upgrade-hint.ts";
+import { getGearHintKindColor } from "../../utils/gear-hint-display.ts";
+import {
+  formatGearUpgradeHintTooltip,
+  type GearHintCellDisplay,
+} from "../../utils/gear-upgrade-hint.ts";
 import {
   aggregateTierSetTokenNeeds,
   type AggregatedTierSetTokenNeed,
@@ -25,12 +29,66 @@ type GearHintTooltipContentProps = {
   t: TranslateFn;
 };
 
+function GearHintSectionTitle({
+  hintKind,
+  titleKey,
+  t,
+}: {
+  hintKind: GearHintCellDisplay["kind"];
+  titleKey:
+    | "gearHint.bisBossLoot"
+    | "gearHint.bisVariantBossLoot"
+    | "gearHint.ilvlBossLoot";
+  t: TranslateFn;
+}) {
+  const kindLabelKey =
+    hintKind === "bis" ? "gearHint.kindLabelBis" : "gearHint.kindLabelUpgrades";
+
+  return (
+    <Typography
+      variant="caption"
+      component="p"
+      sx={{
+        fontWeight: 600,
+        mb: 0.25,
+        lineHeight: 1.25,
+        display: "flex",
+        alignItems: "center",
+        gap: 0.5,
+      }}
+    >
+      <Box
+        component="span"
+        aria-hidden
+        sx={(theme) => ({
+          width: 8,
+          height: 8,
+          borderRadius: "50%",
+          flexShrink: 0,
+          bgcolor: getGearHintKindColor(hintKind, theme),
+        })}
+      />
+      <Box component="span" sx={{ fontWeight: 700 }}>
+        {t(kindLabelKey)}
+      </Box>
+      <Box component="span" sx={{ color: "text.secondary" }} aria-hidden>
+        ·
+      </Box>
+      <Box component="span" sx={{ color: "text.secondary" }}>
+        {t(titleKey)}
+      </Box>
+    </Typography>
+  );
+}
+
 function BisBossLootSection({
+  hintKind,
   titleKey,
   groups,
   marginBottom,
   t,
 }: {
+  hintKind: GearHintCellDisplay["kind"];
   titleKey:
     | "gearHint.bisBossLoot"
     | "gearHint.bisVariantBossLoot"
@@ -45,13 +103,7 @@ function BisBossLootSection({
 
   return (
     <Box sx={{ mb: marginBottom }}>
-      <Typography
-        variant="caption"
-        component="p"
-        sx={{ fontWeight: 600, mb: 0.25, lineHeight: 1.25 }}
-      >
-        {t(titleKey)}
-      </Typography>
+      <GearHintSectionTitle hintKind={hintKind} titleKey={titleKey} t={t} />
       <Box
         sx={{
           maxHeight: BIS_LOOT_LIST_MAX_HEIGHT,
@@ -196,6 +248,7 @@ function SpecGearHintSection({
       ) : null}
 
       <BisBossLootSection
+        hintKind="bis"
         titleKey="gearHint.bisBossLoot"
         groups={specHint.bisBossLootGroups}
         marginBottom={hasBisVariantList ? 1 : sectionMarginBelowLootLists}
@@ -203,6 +256,7 @@ function SpecGearHintSection({
       />
 
       <BisBossLootSection
+        hintKind="bis"
         titleKey="gearHint.bisVariantBossLoot"
         groups={specHint.bisVariantBossLootGroups}
         marginBottom={hasIlvlLootList ? 1 : sectionMarginBelowLootLists}
@@ -210,6 +264,7 @@ function SpecGearHintSection({
       />
 
       <BisBossLootSection
+        hintKind="ilvl"
         titleKey="gearHint.ilvlBossLoot"
         groups={specHint.ilvlBossLootGroups}
         marginBottom={sectionMarginBelowLootLists}

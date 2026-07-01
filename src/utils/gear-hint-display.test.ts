@@ -4,6 +4,7 @@ import { createAppTheme } from "../theme/create-app-theme.ts";
 import {
   gearUpgradeHintDualCellSx,
   getGearHintCellBackgroundColor,
+  getGearHintKindColor,
 } from "./gear-hint-display.ts";
 
 const dungeonItemLevels = [271, 284] as const;
@@ -104,5 +105,18 @@ describe("getGearHintCellBackgroundColor", () => {
 
   it("uses a lighter warning main in dark mode for zinc backgrounds", () => {
     expect(createAppTheme("dark").palette.warning.main).toBe("#f59e0b");
+  });
+});
+
+describe("getGearHintKindColor", () => {
+  it("returns warning and info mains for BiS and ilvl dots", () => {
+    const theme = createAppTheme("light");
+
+    expect(getGearHintKindColor("bis", theme)).toBe(
+      theme.palette.warning.main,
+    );
+    expect(getGearHintKindColor("ilvl", theme)).toBe(
+      theme.palette.info.main,
+    );
   });
 });

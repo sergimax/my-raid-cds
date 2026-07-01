@@ -164,6 +164,8 @@ export const enMessages = {
     allHaveCd: "All selected characters have CD on matching dungeons.",
   },
   gearHint: {
+    kindLabelBis: "BiS",
+    kindLabelUpgrades: "Upgrades",
     bisMissing: "{{count}} missing BiS slot(s)",
     bisVariantMissing: "{{count}} normal variant(s)",
     raidLootUpgrades: "Up to {{count}} ilvl upgrade(s)",

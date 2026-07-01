@@ -167,6 +167,8 @@ export const ruMessages: Messages = {
     allHaveCd: "У всех выбранных персонажей есть КД на подходящих подземельях.",
   },
   gearHint: {
+    kindLabelBis: "BiS",
+    kindLabelUpgrades: "Улучшения",
     bisMissing: "{{count}} BiS без предмета",
     bisVariantMissing: "{{count}} обычн. версий",
     raidLootUpgrades: "До {{count}} улучшений по ilvl",

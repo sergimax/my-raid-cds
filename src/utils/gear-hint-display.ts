@@ -65,6 +65,18 @@ function hintDisplayBackgroundColor(
   return alpha(infoMain, opacity);
 }
 
+/** Solid BiS (amber) or ilvl (blue) accent — tooltip dots, legends. */
+export function getGearHintKindColor(
+  kind: GearHintCellDisplay["kind"],
+  theme: Theme,
+): string {
+  if (kind === "bis") {
+    return theme.palette.warning.main;
+  }
+
+  return theme.palette.info?.main ?? theme.palette.primary.main;
+}
+
 /** Toggle cell tint (amber BiS or blue ilvl by hint level). */
 export function getGearHintCellBackgroundColor(
   display: GearHintCellDisplay,
