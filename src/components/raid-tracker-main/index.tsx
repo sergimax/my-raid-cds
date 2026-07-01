@@ -1,5 +1,6 @@
 import { Alert, Stack } from "@mui/material";
 import { useCallback, useMemo } from "react";
+import { useGearHintLegendDismissed } from "../../hooks/use-gear-hint-legend-dismissed.ts";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { TrackerFormsState } from "../../hooks/use-overlay-panels.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
@@ -11,6 +12,7 @@ import { BisListsPanel } from "../bis-lists-panel/index.tsx";
 import { CharacterForm } from "../character-form/index.tsx";
 import { DungeonForm } from "../dungeon-form/index.tsx";
 import { ExportPanel } from "../export-panel/index.tsx";
+import { GearHintLegend } from "../gear-hint-legend/index.tsx";
 import { RaidTrackerTable } from "../raid-tracker-table/index.tsx";
 import { useRaidTrackerTableState } from "../raid-tracker-table/use-raid-tracker-table-state.ts";
 import { TrackerToolbarPanel } from "../tracker-toolbar-panel/index.tsx";
@@ -50,8 +52,14 @@ export function RaidTrackerMain({
 }: RaidTrackerMainProps) {
   const { t } = useTranslation();
   const domain = useRaidTrackerContext();
+  const { dismissed: gearHintLegendDismissed, dismiss: dismissGearHintLegend } =
+    useGearHintLegendDismissed();
   const showIntro =
     domain.characters.length === 0 && domain.dungeons.length === 0;
+  const showGearHintLegend =
+    !gearHintLegendDismissed &&
+    domain.characters.length > 0 &&
+    domain.dungeons.length > 0;
 
   const tableState = useRaidTrackerTableState({
     characters: domain.characters,
@@ -151,6 +159,10 @@ export function RaidTrackerMain({
 
           {showBisListsPanel ? <BisListsPanel /> : null}
         </TrackerToolbarPanel>
+      ) : null}
+
+      {showGearHintLegend ? (
+        <GearHintLegend onDismiss={dismissGearHintLegend} />
       ) : null}
 
       <RaidTrackerTable tableState={tableState} />
