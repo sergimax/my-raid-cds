@@ -20,7 +20,15 @@ function resolveDualCellBackground(
     dungeonItemLevels,
   );
   const resolved = typeof sx === "function" ? sx(theme) : sx;
-  return resolved.background as string | undefined;
+  if (
+    typeof resolved !== "object" ||
+    resolved === null ||
+    !("background" in resolved)
+  ) {
+    return undefined;
+  }
+  const background = resolved.background;
+  return typeof background === "string" ? background : undefined;
 }
 
 describe("gearUpgradeHintDualCellSx", () => {
