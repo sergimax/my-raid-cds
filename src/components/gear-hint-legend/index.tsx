@@ -26,6 +26,7 @@ function GearHintKindLegendItem({
         alignItems: "center",
         gap: 0.5,
         flexWrap: "wrap",
+        lineHeight: 1.5,
       }}
     >
       <Box
@@ -39,10 +40,15 @@ function GearHintKindLegendItem({
           bgcolor: getGearHintKindColor(hintKind, theme),
         })}
       />
-      <Box component="span" sx={{ fontWeight: 700 }}>
+      <Typography component="span" variant="caption" sx={{ fontWeight: 700, lineHeight: 1.5 }}>
         {t(labelKey)}
-      </Box>
-      <Typography component="span" variant="caption" color="text.secondary">
+      </Typography>
+      <Typography
+        component="span"
+        variant="caption"
+        color="text.secondary"
+        sx={{ lineHeight: 1.5 }}
+      >
         = {t(meaningKey)}
       </Typography>
     </Box>
@@ -64,10 +70,19 @@ export function GearHintLegend({ onDismiss }: GearHintLegendProps) {
         },
       }}
       sx={{
-        py: 0.25,
+        alignItems: "center",
+        py: 0.75,
         "& .MuiAlert-message": {
-          py: 0.25,
+          display: "flex",
+          alignItems: "center",
+          py: 0,
           width: "100%",
+        },
+        "& .MuiAlert-action": {
+          alignItems: "center",
+          pt: 0,
+          pb: 0,
+          mr: -0.5,
         },
       }}
     >
@@ -85,7 +100,13 @@ export function GearHintLegend({ onDismiss }: GearHintLegendProps) {
           labelKey="gearHint.kindLabelBis"
           meaningKey="gearHint.legendBisMeaning"
         />
-        <Typography component="span" variant="caption" color="text.secondary" aria-hidden>
+        <Typography
+          component="span"
+          variant="caption"
+          color="text.secondary"
+          aria-hidden
+          sx={{ lineHeight: 1.5 }}
+        >
           ·
         </Typography>
         <GearHintKindLegendItem
