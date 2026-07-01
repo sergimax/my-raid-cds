@@ -169,6 +169,9 @@ export const ruMessages: Messages = {
   gearHint: {
     kindLabelBis: "BiS",
     kindLabelUpgrades: "Улучшения",
+    legendBisMeaning: "нет BiS по списку",
+    legendUpgradesMeaning: "улучшения по ilvl (статы)",
+    legendDismissAria: "Скрыть подсказку о цветах",
     bisMissing: "{{count}} BiS без предмета",
     bisVariantMissing: "{{count}} обычн. версий",
     raidLootUpgrades: "До {{count}} улучшений по ilvl",
