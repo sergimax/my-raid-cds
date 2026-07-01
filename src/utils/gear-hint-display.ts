@@ -56,7 +56,7 @@ export function gearUpgradeHintCellSx(
   });
 }
 
-/** Split cell tint when both main and off spec have upgrade hints. */
+/** Split cell tint for main (left) and off (right) spec hints; empty halves stay untinted. */
 export function gearUpgradeHintDualCellSx(
   mainDisplay: GearHintCellDisplay | null,
   offDisplay: GearHintCellDisplay | null,
@@ -68,21 +68,30 @@ export function gearUpgradeHintDualCellSx(
   if (!mainDisplay && !offDisplay) {
     return {};
   }
-  if (!offDisplay) {
-    return gearUpgradeHintCellSx(mainDisplay, dungeonItemLevels);
-  }
-  if (!mainDisplay) {
-    return gearUpgradeHintCellSx(offDisplay, dungeonItemLevels);
-  }
 
   return (theme) => {
-    const mainColor = hintDisplayBackgroundColor(mainDisplay, dungeonItemLevels, theme);
-    const offColor = hintDisplayBackgroundColor(offDisplay, dungeonItemLevels, theme);
-    if (!mainColor || !offColor) {
-      return {};
+    const mainColor = mainDisplay
+      ? hintDisplayBackgroundColor(mainDisplay, dungeonItemLevels, theme)
+      : undefined;
+    const offColor = offDisplay
+      ? hintDisplayBackgroundColor(offDisplay, dungeonItemLevels, theme)
+      : undefined;
+
+    if (mainColor && offColor) {
+      return {
+        background: `linear-gradient(to right, ${mainColor} 50%, ${offColor} 50%)`,
+      };
     }
-    return {
-      background: `linear-gradient(to right, ${mainColor} 50%, ${offColor} 50%)`,
-    };
+    if (mainColor) {
+      return {
+        background: `linear-gradient(to right, ${mainColor} 50%, transparent 50%)`,
+      };
+    }
+    if (offColor) {
+      return {
+        background: `linear-gradient(to right, transparent 50%, ${offColor} 50%)`,
+      };
+    }
+    return {};
   };
 }

@@ -93,19 +93,19 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
   const offDisplay = gearHints.off
     ? getGearHintCellDisplay(gearHints.off.gearHint)
     : null;
-  const hasBothSpecHints = Boolean(mainDisplay && offDisplay);
+  const hasDualSpecGear = Boolean(character.mainSpec && character.offSpec);
 
   const cellHintSx = useMemo(() => {
     if (isDungeonMarkedComplete) {
       return {};
     }
-    if (hasBothSpecHints) {
+    if (hasDualSpecGear) {
       return gearUpgradeHintDualCellSx(mainDisplay, offDisplay, dungeon.itemLevel);
     }
     return gearUpgradeHintCellSx(mainDisplay ?? offDisplay, dungeon.itemLevel);
   }, [
     dungeon.itemLevel,
-    hasBothSpecHints,
+    hasDualSpecGear,
     isDungeonMarkedComplete,
     mainDisplay,
     offDisplay,
