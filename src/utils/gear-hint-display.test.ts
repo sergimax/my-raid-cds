@@ -63,3 +63,40 @@ describe("gearUpgradeHintDualCellSx", () => {
     );
   });
 });
+
+describe("getGearHintCellBackgroundColor", () => {
+  it("uses stronger level-1 alphas in light mode than before", () => {
+    const theme = createAppTheme("light");
+    const bisLevel1 = getGearHintCellBackgroundColor(
+      { kind: "bis", level: 1 },
+      theme,
+    );
+    const ilvlLevel1 = getGearHintCellBackgroundColor(
+      { kind: "ilvl", level: 1 },
+      theme,
+    );
+
+    expect(bisLevel1).toBe("rgba(237, 108, 2, 0.22)");
+    expect(ilvlLevel1).toBe("rgba(2, 132, 199, 0.18)");
+  });
+
+  it("uses higher alphas in dark mode than light for the same hint level", () => {
+    const lightTheme = createAppTheme("light");
+    const darkTheme = createAppTheme("dark");
+
+    for (const display of [
+      { kind: "bis" as const, level: 1 as const },
+      { kind: "bis" as const, level: 3 as const },
+      { kind: "ilvl" as const, level: 1 as const },
+      { kind: "ilvl" as const, level: 3 as const },
+    ]) {
+      const lightColor = getGearHintCellBackgroundColor(display, lightTheme)!;
+      const darkColor = getGearHintCellBackgroundColor(display, darkTheme)!;
+
+      expect(lightColor).toMatch(/^rgba\(/);
+      expect(darkColor).toMatch(/^rgba\(/);
+      expect(lightColor).not.toEqual(darkColor);
+      expect(darkColor.split(",")[3]).not.toEqual(lightColor.split(",")[3]);
+    }
+  });
+});

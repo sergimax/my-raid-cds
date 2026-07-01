@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+
+- **Gear hint cell contrast:** Toggle tint alphas are tuned per theme — slightly stronger level-1 hints in light mode, higher opacity across levels in dark mode for easier scanning.
 
 ## [1.34.0] - 2026-06-30
 
