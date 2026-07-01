@@ -3,20 +3,47 @@ import type { Theme } from "@mui/material/styles";
 import { alpha } from "@mui/material/styles";
 import type { GearHintCellDisplay, GearUpgradeHintLevel } from "./gear-upgrade-hint.ts";
 
-const BIS_HINT_ALPHAS: Record<GearUpgradeHintLevel, number> = {
+type HintAlphaScale = Record<GearUpgradeHintLevel, number>;
+
+/** BiS (amber) cell tint opacity by hint level — slightly stronger in dark mode. */
+const BIS_HINT_ALPHAS_LIGHT: HintAlphaScale = {
   0: 0,
-  1: 0.2,
+  1: 0.22,
   2: 0.32,
   3: 0.44,
 };
 
-/** Blue intensity for generic ilvl upgrades (not dungeon ilvl-tier rainbow). */
-const ILVL_HINT_ALPHAS: Record<GearUpgradeHintLevel, number> = {
+const BIS_HINT_ALPHAS_DARK: HintAlphaScale = {
   0: 0,
-  1: 0.16,
+  1: 0.26,
+  2: 0.38,
+  3: 0.5,
+};
+
+/** Ilvl (blue) cell tint opacity by hint level — slightly stronger in dark mode. */
+const ILVL_HINT_ALPHAS_LIGHT: HintAlphaScale = {
+  0: 0,
+  1: 0.18,
   2: 0.28,
   3: 0.4,
 };
+
+const ILVL_HINT_ALPHAS_DARK: HintAlphaScale = {
+  0: 0,
+  1: 0.22,
+  2: 0.34,
+  3: 0.46,
+};
+
+function hintAlphasForMode(
+  mode: "light" | "dark",
+  kind: GearHintCellDisplay["kind"],
+): HintAlphaScale {
+  if (kind === "bis") {
+    return mode === "dark" ? BIS_HINT_ALPHAS_DARK : BIS_HINT_ALPHAS_LIGHT;
+  }
+  return mode === "dark" ? ILVL_HINT_ALPHAS_DARK : ILVL_HINT_ALPHAS_LIGHT;
+}
 
 function hintDisplayBackgroundColor(
   display: GearHintCellDisplay,
@@ -27,12 +54,15 @@ function hintDisplayBackgroundColor(
     return undefined;
   }
 
+  const alphas = hintAlphasForMode(theme.palette.mode, display.kind);
+  const opacity = alphas[display.level];
+
   if (display.kind === "bis") {
-    return alpha(theme.palette.warning.main, BIS_HINT_ALPHAS[display.level]);
+    return alpha(theme.palette.warning.main, opacity);
   }
 
   const infoMain = theme.palette.info?.main ?? theme.palette.primary.main;
-  return alpha(infoMain, ILVL_HINT_ALPHAS[display.level]);
+  return alpha(infoMain, opacity);
 }
 
 /** Toggle cell tint (amber BiS or blue ilvl by hint level). */
