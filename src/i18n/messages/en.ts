@@ -166,7 +166,7 @@ export const enMessages = {
   gearHint: {
     kindLabelBis: "BiS",
     kindLabelUpgrades: "Upgrades",
-    legendBisMeaning: "missing BiS targets",
+    legendBisMeaning: "missing BiS targets from selected list",
     legendUpgradesMeaning: "stat-filtered ilvl upgrades",
     legendDismissAria: "Dismiss gear hint legend",
     bisMissing: "{{count}} missing BiS slot(s)",
