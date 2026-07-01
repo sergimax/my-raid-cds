@@ -44,7 +44,6 @@ const WOWSIMS_INDEX_TO_GS_STAT: Partial<Record<number, GsStatKey>> = {
   [WowSimsItemStat.BlockValue]: "BLOCKVALUE",
   [WowSimsItemStat.Dodge]: "DODGE",
   [WowSimsItemStat.Parry]: "PARRY",
-  [WowSimsItemStat.Resilience]: "RESILIENCE",
 };
 
 function statValue(stats: NormalizedGsStats, key: GsStatKey): number {
