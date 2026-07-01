@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { alpha } from "@mui/material/styles";
 import { createAppTheme } from "../theme/create-app-theme.ts";
 import {
+  gearUpgradeHintCellSx,
   gearUpgradeHintDualCellSx,
   getGearHintCellBackgroundColor,
   getGearHintKindColor,
@@ -9,34 +10,60 @@ import {
 
 const dungeonItemLevels = [271, 284] as const;
 
-function resolveDualCellBackground(
+function resolveDualCellOverlayBackground(
   mainDisplay: Parameters<typeof gearUpgradeHintDualCellSx>[0],
   offDisplay: Parameters<typeof gearUpgradeHintDualCellSx>[1],
-): string | undefined {
+): { background: string | undefined; resolved: Record<string, unknown> } {
   const theme = createAppTheme("light");
   const sx = gearUpgradeHintDualCellSx(
     mainDisplay,
     offDisplay,
     dungeonItemLevels,
   );
-  const resolved = typeof sx === "function" ? sx(theme) : sx;
-  if (
-    typeof resolved !== "object" ||
-    resolved === null ||
-    !("background" in resolved)
-  ) {
-    return undefined;
+  const resolved = (typeof sx === "function" ? sx(theme) : sx) as Record<
+    string,
+    unknown
+  >;
+
+  const overlay = resolved["&::after"];
+  if (typeof overlay !== "object" || overlay === null || !("background" in overlay)) {
+    return { background: undefined, resolved };
   }
-  const background = resolved.background;
-  return typeof background === "string" ? background : undefined;
+
+  const background = overlay.background;
+  return {
+    background: typeof background === "string" ? background : undefined,
+    resolved,
+  };
 }
+
+describe("gearUpgradeHintCellSx", () => {
+  it("renders hint tint on a ::after overlay so row hover can show through", () => {
+    const theme = createAppTheme("light");
+    const sx = gearUpgradeHintCellSx({ kind: "bis", level: 1 }, dungeonItemLevels);
+    const resolved = (typeof sx === "function" ? sx(theme) : sx) as Record<
+      string,
+      unknown
+    >;
+
+    expect(resolved.position).toBe("relative");
+    expect(resolved.background).toBeUndefined();
+    expect(resolved["&::after"]).toMatchObject({
+      background: getGearHintCellBackgroundColor({ kind: "bis", level: 1 }, theme),
+      pointerEvents: "none",
+    });
+  });
+});
 
 describe("gearUpgradeHintDualCellSx", () => {
   it("tints only the left half when only main has a hint", () => {
-    const background = resolveDualCellBackground(
+    const { background, resolved } = resolveDualCellOverlayBackground(
       { kind: "ilvl", level: 2 },
       null,
     );
+
+    expect(resolved.position).toBe("relative");
+    expect(resolved.background).toBeUndefined();
 
     expect(background).toMatch(/^linear-gradient\(to right,/);
     expect(background).toContain("50%, transparent 50%");
@@ -44,7 +71,7 @@ describe("gearUpgradeHintDualCellSx", () => {
   });
 
   it("tints only the right half when only off has a hint", () => {
-    const background = resolveDualCellBackground(
+    const { background } = resolveDualCellOverlayBackground(
       null,
       { kind: "bis", level: 1 },
     );
@@ -63,7 +90,7 @@ describe("gearUpgradeHintDualCellSx", () => {
       { kind: "bis", level: 1 },
       theme,
     );
-    const background = resolveDualCellBackground(
+    const { background } = resolveDualCellOverlayBackground(
       { kind: "ilvl", level: 2 },
       { kind: "bis", level: 1 },
     );

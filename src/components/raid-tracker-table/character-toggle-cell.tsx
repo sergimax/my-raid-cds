@@ -1,4 +1,4 @@
-import { Switch, TableCell, Tooltip } from "@mui/material";
+import { Switch, TableCell, Tooltip, Box } from "@mui/material";
 import { useCallback, useMemo, useState, memo } from "react";
 import type { AppLocale } from "../../i18n/types.ts";
 import type { CharacterRecord, ClassName } from "../../types/characters.ts";
@@ -170,24 +170,29 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
         cellHintSx,
       ]}
     >
-      {hasGearHints ? (
-        <Tooltip
-          open={!isDungeonMarkedComplete && gearHintTooltipOpen}
-          onOpen={handleGearHintTooltipOpen}
-          onClose={handleGearHintTooltipClose}
-          disableInteractive={false}
-          slotProps={{
-            tooltip: {
-              sx: { maxWidth: "none", p: 1 },
-            },
-          }}
-          title={tooltipTitle}
-        >
-          <span>{toggleSwitch}</span>
-        </Tooltip>
-      ) : (
-        toggleSwitch
-      )}
+      <Box
+        component="span"
+        sx={{ position: "relative", zIndex: 1, display: "inline-flex" }}
+      >
+        {hasGearHints ? (
+          <Tooltip
+            open={!isDungeonMarkedComplete && gearHintTooltipOpen}
+            onOpen={handleGearHintTooltipOpen}
+            onClose={handleGearHintTooltipClose}
+            disableInteractive={false}
+            slotProps={{
+              tooltip: {
+                sx: { maxWidth: "none", p: 1 },
+              },
+            }}
+            title={tooltipTitle}
+          >
+            <span>{toggleSwitch}</span>
+          </Tooltip>
+        ) : (
+          toggleSwitch
+        )}
+      </Box>
     </TableCell>
   );
 }, areCharacterToggleCellPropsEqual);
