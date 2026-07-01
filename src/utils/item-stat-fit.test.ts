@@ -5,7 +5,7 @@ import { isItemStatUsableForSpec } from "./item-stat-fit.ts";
 describe("isItemStatUsableForSpec", () => {
   it("allows neutral stamina-only gear", () => {
     expect(
-      isItemStatUsableForSpec(15058, {
+      isItemStatUsableForSpec(40767, {
         className: ClassName.Shaman,
         spec: "Enhancement",
       }),
@@ -167,6 +167,35 @@ describe("isItemStatUsableForSpec", () => {
       isItemStatUsableForSpec(50736, {
         className: ClassName.Rogue,
         spec: "Assassination",
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects Ruby Sanctum DPS loot without avoidance for Protection Warrior", () => {
+    const protectionWarrior = {
+      className: ClassName.Warrior,
+      spec: "Protection",
+    } as const;
+
+    expect(isItemStatUsableForSpec(53132, protectionWarrior)).toBe(false);
+    expect(isItemStatUsableForSpec(53133, protectionWarrior)).toBe(false);
+    expect(isItemStatUsableForSpec(53112, protectionWarrior)).toBe(false);
+    expect(isItemStatUsableForSpec(53110, protectionWarrior)).toBe(false);
+    expect(isItemStatUsableForSpec(53103, protectionWarrior)).toBe(false);
+    expect(isItemStatUsableForSpec(53113, protectionWarrior)).toBe(false);
+  });
+
+  it("allows tank loot with defense or dodge for Protection Warrior", () => {
+    expect(
+      isItemStatUsableForSpec(53111, {
+        className: ClassName.Warrior,
+        spec: "Protection",
+      }),
+    ).toBe(true);
+    expect(
+      isItemStatUsableForSpec(50611, {
+        className: ClassName.Warrior,
+        spec: "Protection",
       }),
     ).toBe(true);
   });

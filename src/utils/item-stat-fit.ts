@@ -39,6 +39,12 @@ const WOWSIMS_INDEX_TO_GS_STAT: Partial<Record<number, GsStatKey>> = {
   [WowSimsItemStat.ArmorPenetration]: "ARP",
   [WowSimsItemStat.Expertise]: "EXPERTISE",
   [WowSimsItemStat.RangedAttackPower]: "RAP",
+  [WowSimsItemStat.Defense]: "DEFENSE",
+  [WowSimsItemStat.Block]: "BLOCK",
+  [WowSimsItemStat.BlockValue]: "BLOCKVALUE",
+  [WowSimsItemStat.Dodge]: "DODGE",
+  [WowSimsItemStat.Parry]: "PARRY",
+  [WowSimsItemStat.Resilience]: "RESILIENCE",
 };
 
 function statValue(stats: NormalizedGsStats, key: GsStatKey): number {
@@ -200,6 +206,14 @@ function scoreItemStats(stats: NormalizedGsStats, weights: GsStatWeights): numbe
   return total;
 }
 
+function hasTankAvoidanceStats(stats: NormalizedGsStats): boolean {
+  return (
+    statValue(stats, "DEFENSE") > 0 ||
+    statValue(stats, "DODGE") > 0 ||
+    statValue(stats, "PARRY") > 0
+  );
+}
+
 function isRoleNeutralItem(stats: NormalizedGsStats): boolean {
   return getRoleSignatureKind(stats) === undefined;
 }
@@ -253,6 +267,10 @@ export function isItemStatUsableForSpec(
   }
 
   if (!isItemStatCompatible(stats, profile)) {
+    return false;
+  }
+
+  if (profile.requireTankAvoidanceStats === true && !hasTankAvoidanceStats(stats)) {
     return false;
   }
 
