@@ -26,6 +26,11 @@ export function createAppTheme(mode: PaletteMode) {
               light: "#38bdf8",
               dark: "#0369a1",
             },
+            warning: {
+              main: "#d97706",
+              light: "#fbbf24",
+              dark: "#b45309",
+            },
             text: {
               primary: "#18181b",
               secondary: "#52525b",
@@ -41,6 +46,11 @@ export function createAppTheme(mode: PaletteMode) {
               main: "#38bdf8",
               light: "#7dd3fc",
               dark: "#0284c7",
+            },
+            warning: {
+              main: "#f59e0b",
+              light: "#fbbf24",
+              dark: "#d97706",
             },
             background: {
               default: "#18181b",

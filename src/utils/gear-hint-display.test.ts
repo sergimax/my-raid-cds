@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { alpha } from "@mui/material/styles";
 import { createAppTheme } from "../theme/create-app-theme.ts";
 import {
   gearUpgradeHintDualCellSx,
@@ -65,7 +66,7 @@ describe("gearUpgradeHintDualCellSx", () => {
 });
 
 describe("getGearHintCellBackgroundColor", () => {
-  it("uses stronger level-1 alphas in light mode than before", () => {
+  it("uses theme warning and info colors for BiS and ilvl tints", () => {
     const theme = createAppTheme("light");
     const bisLevel1 = getGearHintCellBackgroundColor(
       { kind: "bis", level: 1 },
@@ -76,8 +77,9 @@ describe("getGearHintCellBackgroundColor", () => {
       theme,
     );
 
-    expect(bisLevel1).toBe("rgba(237, 108, 2, 0.22)");
-    expect(ilvlLevel1).toBe("rgba(2, 132, 199, 0.18)");
+    expect(bisLevel1).toBe(alpha(theme.palette.warning.main, 0.22));
+    expect(ilvlLevel1).toBe(alpha(theme.palette.info.main, 0.18));
+    expect(theme.palette.warning.main).toBe("#d97706");
   });
 
   it("uses higher alphas in dark mode than light for the same hint level", () => {
@@ -98,5 +100,9 @@ describe("getGearHintCellBackgroundColor", () => {
       expect(lightColor).not.toEqual(darkColor);
       expect(darkColor.split(",")[3]).not.toEqual(lightColor.split(",")[3]);
     }
+  });
+
+  it("uses a lighter warning main in dark mode for zinc backgrounds", () => {
+    expect(createAppTheme("dark").palette.warning.main).toBe("#f59e0b");
   });
 });
