@@ -85,6 +85,33 @@ export function getGearHintCellBackgroundColor(
   return hintDisplayBackgroundColor(display, [1], theme);
 }
 
+const GEAR_HINT_CELL_OVERLAY_SX = {
+  position: "relative",
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    inset: 0,
+    pointerEvents: "none",
+    zIndex: 0,
+  },
+} as const;
+
+function gearHintOverlaySx(
+  overlayBackground: string | undefined,
+): SystemStyleObject<Theme> {
+  if (!overlayBackground) {
+    return {};
+  }
+
+  return {
+    ...GEAR_HINT_CELL_OVERLAY_SX,
+    "&::after": {
+      ...GEAR_HINT_CELL_OVERLAY_SX["&::after"],
+      background: overlayBackground,
+    },
+  };
+}
+
 export function gearUpgradeHintCellSx(
   display: GearHintCellDisplay | null,
   dungeonItemLevels: readonly number[],
@@ -93,9 +120,10 @@ export function gearUpgradeHintCellSx(
     return {};
   }
 
-  return (theme) => ({
-    backgroundColor: hintDisplayBackgroundColor(display, dungeonItemLevels, theme),
-  });
+  return (theme) =>
+    gearHintOverlaySx(
+      hintDisplayBackgroundColor(display, dungeonItemLevels, theme),
+    );
 }
 
 /** Split cell tint for main (left) and off (right) spec hints; empty halves stay untinted. */
@@ -120,19 +148,19 @@ export function gearUpgradeHintDualCellSx(
       : undefined;
 
     if (mainColor && offColor) {
-      return {
-        background: `linear-gradient(to right, ${mainColor} 50%, ${offColor} 50%)`,
-      };
+      return gearHintOverlaySx(
+        `linear-gradient(to right, ${mainColor} 50%, ${offColor} 50%)`,
+      );
     }
     if (mainColor) {
-      return {
-        background: `linear-gradient(to right, ${mainColor} 50%, transparent 50%)`,
-      };
+      return gearHintOverlaySx(
+        `linear-gradient(to right, ${mainColor} 50%, transparent 50%)`,
+      );
     }
     if (offColor) {
-      return {
-        background: `linear-gradient(to right, transparent 50%, ${offColor} 50%)`,
-      };
+      return gearHintOverlaySx(
+        `linear-gradient(to right, transparent 50%, ${offColor} 50%)`,
+      );
     }
     return {};
   };

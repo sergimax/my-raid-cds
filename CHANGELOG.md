@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Gear hint cell contrast:** Toggle tint alphas are tuned per theme — slightly stronger level-1 hints in light mode, higher opacity across levels in dark mode for easier scanning. BiS amber uses custom `warning` palette colors aligned with the zinc/sky theme (replacing MUI defaults).
 - **Gear hint tooltips:** Boss-loot section headers show a colored dot and short **BiS** (amber) or **Upgrades** (blue) label before the section description, matching toggle cell tints.
+- **Gear hint row hover:** Toggle cell tints render on a `::after` overlay so table row hover fills the whole cell evenly; dual-spec half-tints no longer look broken on the untinted side.
 
 ## [1.34.0] - 2026-06-30
 
