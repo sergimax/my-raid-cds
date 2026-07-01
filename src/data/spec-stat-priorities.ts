@@ -41,6 +41,8 @@ export type SpecStatProfile = {
   mainHandTwoHandOnly?: boolean;
   /** Armor with cloth/leather/mail armor class is not useful (plate tanks). */
   plateArmorOnly?: boolean;
+  /** Ilvl hints: require +defense, +dodge, or +parry (BiS list overrides). */
+  requireTankAvoidanceStats?: boolean;
   /** Primary PvE stat weights (GearScore2 `Tables.SpecProfiles` pve). */
   pve: GsStatWeights;
   /** Optional secondary weights when `hybridCasterItems` (Enhancement spellhance). */
@@ -92,6 +94,7 @@ const SPEC_PROFILES: Record<SpecProfileKey, SpecStatProfile> = {
   WARRIOR_PROTECTION: {
     role: "TANK",
     plateArmorOnly: true,
+    requireTankAvoidanceStats: true,
     pve: {
       STA: 1.7,
       STR: 0.85,
@@ -112,6 +115,7 @@ const SPEC_PROFILES: Record<SpecProfileKey, SpecStatProfile> = {
   PALADIN_PROTECTION: {
     role: "TANK",
     plateArmorOnly: true,
+    requireTankAvoidanceStats: true,
     pve: {
       STA: 1.65,
       STR: 0.82,
@@ -169,6 +173,7 @@ const SPEC_PROFILES: Record<SpecProfileKey, SpecStatProfile> = {
   DEATHKNIGHT_BLOOD: {
     role: "TANK",
     plateArmorOnly: true,
+    requireTankAvoidanceStats: true,
     pve: { STA: 2.35, STR: 1.45, DEFENSE: 2.95, DODGE: 2.35, PARRY: 2.35, HIT: 1.15, EXPERTISE: 1.35 },
   },
   DEATHKNIGHT_FROST: {

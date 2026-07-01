@@ -17,7 +17,13 @@ export const WowSimsItemStat = {
   MeleeHaste: 14,
   ArmorPenetration: 15,
   Expertise: 16,
-  RangedAttackPower: 22,
+  RangedAttackPower: 21,
+  Defense: 22,
+  Block: 23,
+  BlockValue: 24,
+  Dodge: 25,
+  Parry: 26,
+  Resilience: 27,
 } as const;
 
 export type WowSimsItemStatIndex =

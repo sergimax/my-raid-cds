@@ -460,6 +460,63 @@ describe("evaluateGearUpgradeHint", () => {
     expect(offHandUpgrade?.bestLootItemId).not.toBe(47064);
   });
 
+  it("does not suggest Ruby Sanctum DPS loot for Protection Warrior ilvl hints", () => {
+    const equipContext = { className: ClassName.Warrior, spec: "Protection" };
+
+    const rs25NormalHint = evaluateGearUpgradeHint(
+      [{ slot: 1, id: 37646 }],
+      {
+        name: "РС 25",
+        raidKey: "rubySanctum",
+        itemLevel: [271],
+      },
+      undefined,
+      equipContext,
+    );
+    expect(
+      rs25NormalHint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 1)
+        ?.bestLootItemId,
+    ).not.toBe(53132);
+    expect(
+      rs25NormalHint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 1)
+        ?.bestLootItemId,
+    ).not.toBe(54557);
+
+    const rs10HeroicHint = evaluateGearUpgradeHint(
+      [{ slot: 5, id: 37646 }],
+      {
+        name: "РС 10 ХМ",
+        raidKey: "rubySanctum",
+        itemLevel: [271],
+      },
+      undefined,
+      equipContext,
+    );
+    expect(
+      rs10HeroicHint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 5)
+        ?.bestLootItemId,
+    ).not.toBe(54559);
+
+    const rs10NormalHint = evaluateGearUpgradeHint(
+      [
+        { slot: 1, id: 37646 },
+        { slot: 5, id: 37646 },
+        { slot: 10, id: 37646 },
+      ],
+      {
+        name: "РС 10",
+        raidKey: "rubySanctum",
+        itemLevel: [258],
+      },
+      undefined,
+      equipContext,
+    );
+    const rs10NormalLootIds = collectMissingIlvlLootItemIds(rs10NormalHint);
+    expect(rs10NormalLootIds).not.toContain(53103);
+    expect(rs10NormalLootIds).not.toContain(53110);
+    expect(rs10NormalLootIds).not.toContain(53112);
+  });
+
   it("collects best ilvl loot item ids for boss-grouped tooltip sections", () => {
     const parsed = parseWowSimsExporterJson(RHEE_EXPORT, ClassName.Shaman);
     expect(parsed.ok).toBe(true);

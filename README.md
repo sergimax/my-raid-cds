@@ -31,7 +31,7 @@ Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spe
 - **Table** — Sort by name, type (size + Heroic), ilvl, or completions; search dungeons; compact layout on narrow screens.
 - **Export** — Copy a raid roster of characters still missing CD for visible (filtered) rows.
 - **BiS lists** — Built-in presets per spec (Titans + community sources); save editable local copies; drives gear upgrade hints.
-- **Gear hints** — Amber = missing BiS targets; blue = stat-filtered ilvl upgrades; tooltips list boss loot and tier tokens (including Vault of Archavon tier hands/legs).
+- **Gear hints** — Amber = missing BiS targets; blue = stat-filtered ilvl upgrades; tooltips list boss loot and tier tokens (including Vault of Archavon tier hands/legs). Tank ilvl hints require defense, dodge, or parry (BiS list overrides).
 - **EN / RU** — Full UI + item tooltips (Cavern of Time / WoWRoad).
 - **Theme** — Light/dark mode, saved locally.
 
