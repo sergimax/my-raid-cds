@@ -153,12 +153,14 @@ export const enMessages = {
     title: "Export",
     closeAria: "Close export panel",
     instructions:
-      "Filter dungeons with the table search, then copy lines below — one per matching raid listing characters still without CD (toggle off). Check which specs to include for each character. Optionally set a minimum GS (e.g. 5.6 or 5600) to omit lower-GS specs from export lines.",
+      "Filter dungeons with the table search, then copy lines below — one per matching raid listing characters still without CD (toggle off). Check which specs to include for each character. Optionally enable the minimum GS slider (e.g. 5.6) to omit lower-GS specs from export lines.",
     noCharacters: "Add a character to build a status summary.",
     exportText: "Export text",
-    minGearScore: "Min gear score",
-    minGearScoreHelper: "Compact GS like 5.6 or full value like 5600. Only checked specs at or above this GS. Leave empty for no filter.",
-    minGearScoreInvalid: "Enter compact GS (e.g. 5.6), full value ({{min}}–{{max}}), or leave empty.",
+    minGearScoreEnable: "Minimum GS filter",
+    minGearScoreEnableAria: "Enable minimum gear score filter for export",
+    minGearScoreHelper:
+      "Only checked specs at or above the selected GS are included in export lines.",
+    minGearScoreSliderValue: "≥ {{value}}",
     minGearScoreAria: "Minimum gear score for export lines",
     includeSpecAria: "Include {{spec}} for {{name}}",
     includeCharacterAria: "Include {{name}} in export",

@@ -29,7 +29,7 @@ Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spe
 - **Characters & dungeons** — Add manually or load a WotLK raid template when the list is empty. The new-dungeon form suggests known raid names and auto-fills short abbreviations. Edit name, specs, gear (WowSims import), dungeon metadata, and emblem badges.
 - **Cooldown toggles** — Per character–dungeon switches; reset per character or all at once.
 - **Table** — Sort by name, type (size + Heroic), ilvl, or completions; search dungeons; compact layout on narrow screens.
-- **Export** — Copy a raid roster of characters still missing CD for visible (filtered) rows; optional minimum GS filter (`5.6`, `5600`, `5.6gs`) omits lower-GS specs from lines.
+- **Export** — Copy a raid roster of characters still missing CD for visible (filtered) rows; optional minimum GS slider (`≥ 5.6`, etc.) omits lower-GS specs from lines.
 - **BiS lists** — Built-in presets per spec (Titans + community sources); save editable local copies; drives gear upgrade hints.
 - **Gear hints** — Amber = missing BiS targets from the selected list; blue = stat-filtered ilvl upgrades (darker tint = more slots). Dual-spec characters split the toggle cell left (main) / right (off). Dismissible legend above the table explains colors. Tooltips label boss-loot sections **BiS** / **Upgrades** and list tier tokens (including Vault of Archavon tier hands/legs). Tank ilvl hints require defense, dodge, or parry (BiS list overrides).
 - **EN / RU** — Full UI + item tooltips (Cavern of Time / WoWRoad).
