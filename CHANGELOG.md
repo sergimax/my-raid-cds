@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.36.0] - 2026-06-30
+
+### Added
+
+- **Export minimum GS filter:** Optional checkbox + compact GS slider (`4`–`7`, e.g. `≥ 5.6`) above the character spec checklist omits checked specs below the threshold from export lines; specs without a stored GS are still included.
+
 ## [1.35.0] - 2026-06-30
 
 ### Fixed
