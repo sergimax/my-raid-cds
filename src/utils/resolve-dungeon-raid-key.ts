@@ -14,6 +14,23 @@ function raidNameCandidates(raid: (typeof RaidNames)[RaidKey]): string[] {
   return candidates;
 }
 
+/** All name variants used for dungeon table search (stored + template raid labels). */
+export function getDungeonSearchNameCandidates(
+  dungeon: Pick<DungeonRecord, "name" | "shortName" | "raidKey">,
+): string[] {
+  const candidates = new Set<string>([dungeon.name]);
+  if (dungeon.shortName) {
+    candidates.add(dungeon.shortName);
+  }
+  const raidKey = resolveDungeonRaidKey(dungeon);
+  if (raidKey) {
+    for (const candidate of raidNameCandidates(RaidNames[raidKey])) {
+      candidates.add(candidate);
+    }
+  }
+  return [...candidates];
+}
+
 /** Resolve template raid metadata for a dungeon row (saved key or known name). */
 export function resolveDungeonRaidKey(
   dungeon: Pick<DungeonRecord, "name" | "raidKey">,
