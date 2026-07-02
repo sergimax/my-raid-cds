@@ -6,10 +6,6 @@ import {
   Typography,
 } from "@mui/material";
 import { useMemo, useState } from "react";
-import {
-  MAX_CHARACTER_GEAR_SCORE,
-  MIN_CHARACTER_GEAR_SCORE,
-} from "../../constants/character.ts";
 import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
@@ -20,8 +16,12 @@ import {
   type CharacterExportSpecSelection,
 } from "../../utils/format-character-export.ts";
 import { buildExportStatusString } from "../../utils/build-export-status.ts";
-import { parseExportMinGearScore } from "../../utils/parse-export-min-gear-score.ts";
+import {
+  EXPORT_MIN_GS_COMPACT_DEFAULT,
+  resolveExportMinGearScoreThreshold,
+} from "../../utils/parse-export-min-gear-score.ts";
 import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
+import { ExportMinGearScoreFilter } from "./export-min-gear-score-filter.tsx";
 import type { ExportPanelProps } from "./types.ts";
 
 type StoredExportSpecSelection = Partial<CharacterExportSpecSelection>;
@@ -97,14 +97,15 @@ export function ExportPanel({
   const { t, locale } = useTranslation();
   const [exportSpecSelectionByCharacterId, setExportSpecSelectionByCharacterId] =
     useState<Record<string, StoredExportSpecSelection>>({});
-  const [minGearScoreText, setMinGearScoreText] = useState("");
+  const [minGearScoreFilterEnabled, setMinGearScoreFilterEnabled] = useState(false);
+  const [minGearScoreCompact, setMinGearScoreCompact] = useState(
+    EXPORT_MIN_GS_COMPACT_DEFAULT,
+  );
 
-  const parsedMinGearScore = parseExportMinGearScore(minGearScoreText);
-  const minGearScoreInvalid = Number.isNaN(parsedMinGearScore);
-  const minGearScore =
-    parsedMinGearScore !== undefined && !minGearScoreInvalid
-      ? parsedMinGearScore
-      : undefined;
+  const minGearScore = useMemo(
+    () => resolveExportMinGearScoreThreshold(minGearScoreFilterEnabled, minGearScoreCompact),
+    [minGearScoreCompact, minGearScoreFilterEnabled],
+  );
 
   const includedCharacters = useMemo(
     () =>
@@ -235,29 +236,11 @@ export function ExportPanel({
               );
             })}
           </Stack>
-          <TextField
-            label={t("exportPanel.minGearScore")}
-            value={minGearScoreText}
-            onChange={(event) => {
-              setMinGearScoreText(event.target.value);
-            }}
-            autoComplete="off"
-            error={minGearScoreInvalid}
-            helperText={
-              minGearScoreInvalid
-                ? t("exportPanel.minGearScoreInvalid", {
-                    min: MIN_CHARACTER_GEAR_SCORE,
-                    max: MAX_CHARACTER_GEAR_SCORE,
-                  })
-                : t("exportPanel.minGearScoreHelper")
-            }
-            slotProps={{
-              htmlInput: {
-                "aria-label": t("exportPanel.minGearScoreAria"),
-                inputMode: "numeric",
-              },
-            }}
-            sx={{ maxWidth: 220 }}
+          <ExportMinGearScoreFilter
+            enabled={minGearScoreFilterEnabled}
+            compactValue={minGearScoreCompact}
+            onEnabledChange={setMinGearScoreFilterEnabled}
+            onCompactValueChange={setMinGearScoreCompact}
           />
         </>
       ) : (

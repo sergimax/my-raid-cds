@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  compactExportMinGearScoreToThreshold,
   normalizeExportMinGearScoreInput,
   parseExportMinGearScore,
+  resolveExportMinGearScoreThreshold,
 } from "./parse-export-min-gear-score.ts";
 
 describe("normalizeExportMinGearScoreInput", () => {
@@ -37,5 +39,22 @@ describe("parseExportMinGearScore", () => {
     expect(parseExportMinGearScore("0")).toBeNaN();
     expect(parseExportMinGearScore("55")).toBeNaN();
     expect(parseExportMinGearScore("7001")).toBeNaN();
+  });
+});
+
+describe("compactExportMinGearScoreToThreshold", () => {
+  it("converts compact slider values to numeric thresholds", () => {
+    expect(compactExportMinGearScoreToThreshold(5.6)).toBe(5600);
+    expect(compactExportMinGearScoreToThreshold(6)).toBe(6000);
+  });
+});
+
+describe("resolveExportMinGearScoreThreshold", () => {
+  it("returns undefined when the filter is disabled", () => {
+    expect(resolveExportMinGearScoreThreshold(false, 5.6)).toBeUndefined();
+  });
+
+  it("returns the threshold when the filter is enabled", () => {
+    expect(resolveExportMinGearScoreThreshold(true, 5.6)).toBe(5600);
   });
 });
