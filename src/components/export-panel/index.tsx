@@ -167,31 +167,8 @@ export function ExportPanel({
 
   return (
     <Stack spacing={2}>
-      <TextField
-        label={t("exportPanel.minGearScore")}
-        value={minGearScoreText}
-        onChange={(event) => {
-          setMinGearScoreText(event.target.value);
-        }}
-        autoComplete="off"
-        error={minGearScoreInvalid}
-        helperText={
-          minGearScoreInvalid
-            ? t("exportPanel.minGearScoreInvalid", {
-                min: MIN_CHARACTER_GEAR_SCORE,
-                max: MAX_CHARACTER_GEAR_SCORE,
-              })
-            : t("exportPanel.minGearScoreHelper")
-        }
-        slotProps={{
-          htmlInput: {
-            "aria-label": t("exportPanel.minGearScoreAria"),
-            inputMode: "numeric",
-          },
-        }}
-        sx={{ maxWidth: 220 }}
-      />
       {characters.length > 0 ? (
+        <>
           <Stack spacing={1}>
             {characters.map((character) => {
               const selection = resolveExportSpecSelection(
@@ -258,25 +235,50 @@ export function ExportPanel({
               );
             })}
           </Stack>
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            {t("exportPanel.noCharacters")}
-          </Typography>
-        )}
-        <TextField
-          label={t("exportPanel.exportText")}
-          value={statusText}
-          multiline
-          minRows={4}
-          maxRows={16}
-          slotProps={{
-            input: {
-              readOnly: true,
-            },
-            htmlInput: {
-              "aria-label": t("exportPanel.textareaAria"),
-            },
-          }}
+          <TextField
+            label={t("exportPanel.minGearScore")}
+            value={minGearScoreText}
+            onChange={(event) => {
+              setMinGearScoreText(event.target.value);
+            }}
+            autoComplete="off"
+            error={minGearScoreInvalid}
+            helperText={
+              minGearScoreInvalid
+                ? t("exportPanel.minGearScoreInvalid", {
+                    min: MIN_CHARACTER_GEAR_SCORE,
+                    max: MAX_CHARACTER_GEAR_SCORE,
+                  })
+                : t("exportPanel.minGearScoreHelper")
+            }
+            slotProps={{
+              htmlInput: {
+                "aria-label": t("exportPanel.minGearScoreAria"),
+                inputMode: "numeric",
+              },
+            }}
+            sx={{ maxWidth: 220 }}
+          />
+        </>
+      ) : (
+        <Typography variant="body2" color="text.secondary">
+          {t("exportPanel.noCharacters")}
+        </Typography>
+      )}
+      <TextField
+        label={t("exportPanel.exportText")}
+        value={statusText}
+        multiline
+        minRows={4}
+        maxRows={16}
+        slotProps={{
+          input: {
+            readOnly: true,
+          },
+          htmlInput: {
+            "aria-label": t("exportPanel.textareaAria"),
+          },
+        }}
         onFocus={(event) => {
           event.target.select();
         }}
