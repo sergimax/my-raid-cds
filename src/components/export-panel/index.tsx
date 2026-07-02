@@ -20,7 +20,7 @@ import {
   type CharacterExportSpecSelection,
 } from "../../utils/format-character-export.ts";
 import { buildExportStatusString } from "../../utils/build-export-status.ts";
-import { parseOptionalGearScore } from "../../utils/parse-optional-gear-score.ts";
+import { parseExportMinGearScore } from "../../utils/parse-export-min-gear-score.ts";
 import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
 import type { ExportPanelProps } from "./types.ts";
 
@@ -99,7 +99,7 @@ export function ExportPanel({
     useState<Record<string, StoredExportSpecSelection>>({});
   const [minGearScoreText, setMinGearScoreText] = useState("");
 
-  const parsedMinGearScore = parseOptionalGearScore(minGearScoreText);
+  const parsedMinGearScore = parseExportMinGearScore(minGearScoreText);
   const minGearScoreInvalid = Number.isNaN(parsedMinGearScore);
   const minGearScore =
     parsedMinGearScore !== undefined && !minGearScoreInvalid
