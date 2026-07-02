@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.37.0] - 2026-07-02
+
+### Changed
+
+- **Dungeon table search:** Mixed queries filter by raid name, optional size, and optional heroic suffix (e.g. `ICC`, `Uld10`, `ToC25H`, `ЦЛК25хм`); English and Russian raid names and abbreviations match in either UI locale. Search field placeholder and tooltip show example patterns.
+
 ## [1.36.0] - 2026-06-30
 
 ### Added
