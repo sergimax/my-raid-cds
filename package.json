@@ -12,6 +12,7 @@
     "build:wow-data": "node scripts/build-wow-data.mjs",
     "generate:bis-presets": "node scripts/generate-bis-presets.mjs",
     "comment:bis-presets": "node scripts/comment-bis-presets.mjs",
+    "download:gear-slot-icons": "node scripts/download-gear-slot-icons.mjs",
     "test:run": "vitest run"
   },
   "dependencies": {
