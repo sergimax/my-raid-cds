@@ -170,6 +170,12 @@ export function ExportPanel({
     <Stack spacing={2}>
       {characters.length > 0 ? (
         <>
+          <ExportMinGearScoreFilter
+            enabled={minGearScoreFilterEnabled}
+            compactValue={minGearScoreCompact}
+            onEnabledChange={setMinGearScoreFilterEnabled}
+            onCompactValueChange={setMinGearScoreCompact}
+          />
           <Stack spacing={1}>
             {characters.map((character) => {
               const selection = resolveExportSpecSelection(
@@ -236,12 +242,6 @@ export function ExportPanel({
               );
             })}
           </Stack>
-          <ExportMinGearScoreFilter
-            enabled={minGearScoreFilterEnabled}
-            compactValue={minGearScoreCompact}
-            onEnabledChange={setMinGearScoreFilterEnabled}
-            onCompactValueChange={setMinGearScoreCompact}
-          />
         </>
       ) : (
         <Typography variant="body2" color="text.secondary">
