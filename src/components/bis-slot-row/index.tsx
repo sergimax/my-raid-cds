@@ -19,11 +19,12 @@ import {
 } from "../../utils/bis-list-editor.ts";
 import type { CharacterEquipContext } from "../../utils/item-equip-restrictions.ts";
 import { BisItemDropSources } from "../bis-item-drop-sources/index.tsx";
+import { GearSlotIcon } from "../gear-slot-icon/index.tsx";
 import { WowItemAlternatives } from "../wow-item-link/index.tsx";
 
 const slotRowSx = {
   display: "grid",
-  gridTemplateColumns: "6.25rem minmax(0, 1fr) auto",
+  gridTemplateColumns: "minmax(5.75rem, auto) minmax(0, 1fr) auto",
   columnGap: 1,
   alignItems: "start",
   py: 0.375,
@@ -91,19 +92,14 @@ export function BisSlotRow({
           : slotRowSx.gridTemplateColumns,
       }}
     >
-      <Typography
-        variant="caption"
-        component="span"
+      <Box
         sx={{
-          fontWeight: 600,
-          color: "text.secondary",
-          lineHeight: 1.3,
           pt: isEditing ? 0.75 : 0,
           alignSelf: isEditing ? "start" : "center",
         }}
       >
-        {slotLabel}
-      </Typography>
+        <GearSlotIcon slot={slotDraft.slot} />
+      </Box>
 
       {isEditing ? (
         <TextField
