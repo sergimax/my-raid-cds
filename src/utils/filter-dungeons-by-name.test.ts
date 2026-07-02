@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { RaidNames } from "../data/raid-names.ts";
+import { DungeonDifficulty } from "../types/dungeons.ts";
 import { filterDungeonsByName } from "./filter-dungeons-by-name.ts";
 import { createTestDungeon } from "../test/fixtures.ts";
 
@@ -13,6 +15,37 @@ describe("filterDungeonsByName", () => {
     shortName: "ЦЛК",
     raidKey: "icecrownCitadel",
   });
+
+  const iccRaids = [
+    createTestDungeon({
+      id: "icc-10",
+      shortName: "ICC",
+      raidKey: "icecrownCitadel",
+      size: 10,
+      difficulty: DungeonDifficulty.NORMAL,
+    }),
+    createTestDungeon({
+      id: "icc-10h",
+      shortName: "ICC",
+      raidKey: "icecrownCitadel",
+      size: 10,
+      difficulty: DungeonDifficulty.HEROIC,
+    }),
+    createTestDungeon({
+      id: "icc-25",
+      shortName: "ICC",
+      raidKey: "icecrownCitadel",
+      size: 25,
+      difficulty: DungeonDifficulty.NORMAL,
+    }),
+    createTestDungeon({
+      id: "icc-25h",
+      shortName: "ICC",
+      raidKey: "icecrownCitadel",
+      size: 25,
+      difficulty: DungeonDifficulty.HEROIC,
+    }),
+  ];
 
   it("returns full list when query is empty", () => {
     expect(filterDungeonsByName(dungeons, "")).toEqual(dungeons);
@@ -42,6 +75,43 @@ describe("filterDungeonsByName", () => {
   it("matches Russian short name for template raid", () => {
     expect(filterDungeonsByName([russianIccDungeon], "цлк")).toEqual([
       russianIccDungeon,
+    ]);
+  });
+
+  it("matches all raids for a short name query", () => {
+    expect(filterDungeonsByName(iccRaids, "ICC")).toEqual(iccRaids);
+  });
+
+  it("filters by short name and size", () => {
+    expect(filterDungeonsByName(iccRaids, "ICC25")).toEqual([
+      iccRaids[2],
+      iccRaids[3],
+    ]);
+    expect(filterDungeonsByName(iccRaids, "ICC10")).toEqual([
+      iccRaids[0],
+      iccRaids[1],
+    ]);
+  });
+
+  it("filters by short name, size, and heroic suffix", () => {
+    expect(filterDungeonsByName(iccRaids, "ICC25H")).toEqual([iccRaids[3]]);
+    expect(filterDungeonsByName(iccRaids, "ICC25h")).toEqual([iccRaids[3]]);
+    expect(filterDungeonsByName(iccRaids, "ICC10H")).toEqual([iccRaids[1]]);
+  });
+
+  it("filters Russian rows with Cyrillic heroic suffix", () => {
+    const russianIccRaids = iccRaids.map((dungeon) =>
+      createTestDungeon({
+        ...dungeon,
+        name: RaidNames.icecrownCitadel.ru,
+        shortName: RaidNames.icecrownCitadel.shortRu,
+      }),
+    );
+    expect(filterDungeonsByName(russianIccRaids, "ЦЛК25хм")).toEqual([
+      russianIccRaids[3],
+    ]);
+    expect(filterDungeonsByName(russianIccRaids, "цлк25х")).toEqual([
+      russianIccRaids[3],
     ]);
   });
 });
