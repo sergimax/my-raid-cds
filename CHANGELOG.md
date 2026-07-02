@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.38.0] - 2026-07-03
+
+### Added
+
+- **BiS slot icons:** BiS list rows show WoW paper-doll placeholder icons beside localized slot labels; Back reuses the Chest icon (same as WotLK UI). Regenerate PNGs via `npm run download:gear-slot-icons`.
+
 ## [1.37.0] - 2026-07-02
 
 ### Changed

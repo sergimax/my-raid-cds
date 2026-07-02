@@ -21,6 +21,7 @@ Open [http://localhost:5173](http://localhost:5173).
 | `npm run build:wow-data` | Regenerate bundled WoW JSON from `scripts/wowsims-db.json` (includes VoA tier loot derived from tier set metadata when WowSims omits zone 4603) |
 | `npm run generate:bis-presets` | Regenerate built-in BiS presets from `scripts/bis-list-sources.md` |
 | `npm run comment:bis-presets` | Add slot comments to BiS preset files |
+| `npm run download:gear-slot-icons` | Regenerate WoW paper-doll slot placeholder PNGs in `src/assets/gear-slot-icons/` |
 
 Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spec` sections with `## Server - Author - List - URL` blocks; Titans guild lists use `## Titans - Guild - Titans` with Russian slot labels). Regenerate TypeScript presets after editing the markdown.
 
@@ -30,7 +31,7 @@ Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spe
 - **Cooldown toggles** — Per character–dungeon switches; reset per character or all at once.
 - **Table** — Sort by name, type (size + Heroic), ilvl, or completions; mixed dungeon search by raid name, size, and mode (e.g. `ICC`, `Uld10`, `ToC25H`; EN/RU names work in either locale); compact layout on narrow screens.
 - **Export** — Copy a raid roster of characters still missing CD for visible (filtered) rows; optional minimum GS slider (`≥ 5.6`, etc.) omits lower-GS specs from lines.
-- **BiS lists** — Built-in presets per spec (Titans + community sources); save editable local copies; drives gear upgrade hints.
+- **BiS lists** — Built-in presets per spec (Titans + community sources); save editable local copies; drives gear upgrade hints. Slot rows show WoW paper-doll placeholder icons beside localized labels (Back uses the Chest icon).
 - **Gear hints** — Amber = missing BiS targets from the selected list; blue = stat-filtered ilvl upgrades (darker tint = more slots). Dual-spec characters split the toggle cell left (main) / right (off). Dismissible legend above the table explains colors. Tooltips label boss-loot sections **BiS** / **Upgrades** and list tier tokens (including Vault of Archavon tier hands/legs). Tank ilvl hints require defense, dodge, or parry (BiS list overrides).
 - **EN / RU** — Full UI + item tooltips (Cavern of Time / WoWRoad).
 - **Theme** — Light/dark mode, saved locally.
