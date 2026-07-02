@@ -15,6 +15,7 @@ export type BuildExportStatusParams = {
   dungeons: DungeonRecord[];
   dungeonToggles: DungeonToggles;
   exportSpecSelectionByCharacterId?: ExportSpecSelectionByCharacterId;
+  minGearScore?: number;
   locale?: AppLocale;
   t: TranslateFn;
 };
@@ -25,6 +26,7 @@ export function buildExportStatusString({
   dungeons,
   dungeonToggles,
   exportSpecSelectionByCharacterId,
+  minGearScore,
   locale = "en",
   t,
 }: BuildExportStatusParams): string {
@@ -55,6 +57,7 @@ export function buildExportStatusString({
             exportSpecSelectionByCharacterId,
           ),
           locale,
+          minGearScore,
         ),
       )
       .filter((entry): entry is string => entry !== null)

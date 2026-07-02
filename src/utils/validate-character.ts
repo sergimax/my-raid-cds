@@ -11,7 +11,7 @@ import type {
   CharacterRecord,
   CharacterSpecGear,
 } from "../types/characters.ts";
-import { parseOptionalPositiveInteger } from "./parse-optional-positive-integer.ts";
+import { parseOptionalGearScore } from "./parse-optional-gear-score.ts";
 
 export type CharacterFormValues = {
   name: string;
@@ -47,14 +47,7 @@ export type ParseCharacterSpecGearResult =
   | { ok: false; error: string };
 
 function parseGearScoreField(text: string): number | undefined | typeof Number.NaN {
-  const value = parseOptionalPositiveInteger(text);
-  if (value === undefined || Number.isNaN(value)) {
-    return value;
-  }
-  if (value < MIN_CHARACTER_GEAR_SCORE || value > MAX_CHARACTER_GEAR_SCORE) {
-    return Number.NaN;
-  }
-  return value;
+  return parseOptionalGearScore(text);
 }
 
 function parseSpecGearPair(

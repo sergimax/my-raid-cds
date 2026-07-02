@@ -57,6 +57,19 @@ export function isCharacterIncludedInExport(
   return selection.includeMain || selection.includeOff;
 }
 
+export function specPassesExportMinGearScore(
+  specGear: CharacterSpecGear,
+  minGearScore?: number,
+): boolean {
+  if (minGearScore === undefined) {
+    return true;
+  }
+  if (specGear.gearScore === undefined) {
+    return true;
+  }
+  return specGear.gearScore >= minGearScore;
+}
+
 function formatSpecExportSegment(
   className: ClassName,
   specGear: CharacterSpecGear,
@@ -77,6 +90,7 @@ export function formatCharacterExportLabel(
   character: CharacterRecord,
   selection: CharacterExportSpecSelection = defaultExportSpecSelection(character),
   locale: AppLocale = "en",
+  minGearScore?: number,
 ): string | null {
   if (!isCharacterIncludedInExport(character, selection)) {
     return null;
@@ -85,14 +99,27 @@ export function formatCharacterExportLabel(
   const className = character.class?.name;
   const specSegments: string[] = [];
 
-  if (selection.includeMain && character.mainSpec && className) {
+  if (
+    selection.includeMain &&
+    character.mainSpec &&
+    className &&
+    specPassesExportMinGearScore(character.mainSpec, minGearScore)
+  ) {
     specSegments.push(formatSpecExportSegment(className, character.mainSpec, locale));
   }
-  if (selection.includeOff && character.offSpec && className) {
+  if (
+    selection.includeOff &&
+    character.offSpec &&
+    className &&
+    specPassesExportMinGearScore(character.offSpec, minGearScore)
+  ) {
     specSegments.push(formatSpecExportSegment(className, character.offSpec, locale));
   }
 
   if (specSegments.length === 0) {
+    if (characterHasExportSpecs(character)) {
+      return null;
+    }
     return character.name;
   }
 

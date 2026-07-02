@@ -105,4 +105,53 @@ describe("formatCharacterExportLabel", () => {
       ),
     ).toBe("Elst: Udk");
   });
+
+  it("omits specs below the minimum gear score filter", () => {
+    const character = createTestCharacter({
+      name: "Elst",
+      class: Classes[0],
+      mainSpec: { spec: "Unholy", gearScore: 6615 },
+      offSpec: { spec: "Blood", gearScore: 6023 },
+    });
+
+    expect(
+      formatCharacterExportLabel(
+        character,
+        {
+          includeMain: true,
+          includeOff: true,
+          includeWithoutSpec: true,
+        },
+        "en",
+        6500,
+      ),
+    ).toBe("Elst: Udk 6.6");
+    expect(
+      formatCharacterExportLabel(
+        character,
+        {
+          includeMain: true,
+          includeOff: true,
+          includeWithoutSpec: true,
+        },
+        "en",
+        6700,
+      ),
+    ).toBeNull();
+  });
+
+  it("keeps specs without gear score when a minimum is set", () => {
+    expect(
+      formatCharacterExportLabel(
+        createTestCharacter({
+          name: "Elst",
+          class: Classes[0],
+          mainSpec: { spec: "Unholy" },
+        }),
+        mainOnlySelection,
+        "en",
+        6500,
+      ),
+    ).toBe("Elst: Udk");
+  });
 });
