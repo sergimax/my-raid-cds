@@ -48,7 +48,9 @@ export const ruMessages: Messages = {
     itemLevel: "ilvl",
     complete: "Готово",
     rowActions: "Действия строки",
-    filterByDungeonName: "Фильтр по названию подземелья",
+    filterByDungeonName:
+      "Фильтр: название, название+размер или название+размер+режим — напр. ЦЛК, Ульда10 или ИК25хм",
+    dungeonSearchPlaceholder: "ЦЛК, Ульда10, ИК25хм ...",
     emptyNoDungeons:
       "Добавьте подземелье или используйте «Добавить из шаблона».",
     emptyNoSearchMatches: "Нет подземелий по вашему запросу.",

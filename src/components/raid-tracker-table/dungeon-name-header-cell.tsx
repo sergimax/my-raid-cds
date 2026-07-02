@@ -42,7 +42,7 @@ export function DungeonNameHeaderCell({
         <TextField
           className="raid-tracker-table__dungeon-search"
           size="small"
-          placeholder={t("common.searchPlaceholder")}
+          placeholder={t("table.dungeonSearchPlaceholder")}
           value={searchQuery}
           onChange={(event) => {
             onSearchQueryChange(event.target.value);
@@ -56,6 +56,7 @@ export function DungeonNameHeaderCell({
           slotProps={{
             htmlInput: {
               "aria-label": t("table.filterByDungeonName"),
+              title: t("table.filterByDungeonName"),
             },
           }}
           fullWidth
