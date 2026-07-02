@@ -1,4 +1,5 @@
 import type { DungeonRecord } from "../types/dungeons.ts";
+import { getDungeonSearchNameCandidates } from "./resolve-dungeon-raid-key.ts";
 
 export function filterDungeonsByName(
   list: DungeonRecord[],
@@ -6,12 +7,9 @@ export function filterDungeonsByName(
 ): DungeonRecord[] {
   const normalizedQuery = query.trim().toLowerCase();
   if (normalizedQuery === "") return list;
-  return list.filter((dungeon) => {
-    const normalizedName = dungeon.name.toLowerCase();
-    const normalizedShortName = dungeon.shortName?.toLowerCase() ?? "";
-    return (
-      normalizedName.includes(normalizedQuery) ||
-      normalizedShortName.includes(normalizedQuery)
-    );
-  });
+  return list.filter((dungeon) =>
+    getDungeonSearchNameCandidates(dungeon).some((candidate) =>
+      candidate.toLowerCase().includes(normalizedQuery),
+    ),
+  );
 }

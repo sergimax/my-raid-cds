@@ -8,6 +8,12 @@ describe("filterDungeonsByName", () => {
     createTestDungeon({ name: "Ulduar", shortName: "Uld" }),
   ];
 
+  const russianIccDungeon = createTestDungeon({
+    name: "Цитадель Ледяной Короны",
+    shortName: "ЦЛК",
+    raidKey: "icecrownCitadel",
+  });
+
   it("returns full list when query is empty", () => {
     expect(filterDungeonsByName(dungeons, "")).toEqual(dungeons);
     expect(filterDungeonsByName(dungeons, "   ")).toEqual(dungeons);
@@ -19,5 +25,23 @@ describe("filterDungeonsByName", () => {
 
   it("matches short name", () => {
     expect(filterDungeonsByName(dungeons, "uld")).toEqual([dungeons[1]]);
+  });
+
+  it("matches English name when dungeon is stored with Russian labels", () => {
+    expect(filterDungeonsByName([russianIccDungeon], "icecrown")).toEqual([
+      russianIccDungeon,
+    ]);
+  });
+
+  it("matches English short name when dungeon is stored with Russian labels", () => {
+    expect(filterDungeonsByName([russianIccDungeon], "icc")).toEqual([
+      russianIccDungeon,
+    ]);
+  });
+
+  it("matches Russian short name for template raid", () => {
+    expect(filterDungeonsByName([russianIccDungeon], "цлк")).toEqual([
+      russianIccDungeon,
+    ]);
   });
 });
