@@ -46,7 +46,9 @@ export const enMessages = {
     itemLevel: "Item level",
     complete: "Complete",
     rowActions: "Row actions",
-    filterByDungeonName: "Filter by dungeon name",
+    filterByDungeonName:
+      "Filter by raid name, name+size, or name+size+mode — e.g. ICC, Uld10, or ToC25H",
+    dungeonSearchPlaceholder: "ICC, Uld10, ToC25H ...",
     emptyNoDungeons: "Add a dungeon or use Add from template to get started.",
     emptyNoSearchMatches: "No dungeons match your search.",
     ariaNoDungeons: "Raid cooldown tracker, no dungeons",
