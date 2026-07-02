@@ -173,4 +173,28 @@ describe("buildExportStatusString", () => {
       }),
     ).toBe("All selected characters have CD on matching dungeons.");
   });
+
+  it("filters export lines by minimum gear score", () => {
+    const character = createTestCharacter({
+      id: "character-1",
+      name: "Elst",
+      class: Classes[0],
+      mainSpec: { spec: "Unholy", gearScore: 6615 },
+      offSpec: { spec: "Blood", gearScore: 6023 },
+    });
+    const dungeon = createTestDungeon({ id: "dungeon-1", shortName: "ICC" });
+    const toggles = createTestToggles([
+      { characterId: "character-1", dungeonId: "dungeon-1", on: false },
+    ]);
+
+    expect(
+      buildExportStatusString({
+        ...baseParams,
+        characters: [character],
+        dungeons: [dungeon],
+        dungeonToggles: toggles,
+        minGearScore: 6500,
+      }),
+    ).toBe("ICC25 - Elst: Udk 6.6");
+  });
 });
