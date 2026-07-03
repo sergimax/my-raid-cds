@@ -258,5 +258,84 @@ describe("isItemStatUsableForSpec", () => {
         12,
       ),
     ).toBe(true);
+    expect(
+      isItemStatUsableForSpec(
+        50360,
+        { className: ClassName.Shaman, spec: "Enhancement" },
+        12,
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects mismatched trinkets and strength loot for Feral Druid cat", () => {
+    const feralCat = { className: ClassName.Druid, spec: "Feral" } as const;
+
+    expect(isItemStatUsableForSpec(54588, feralCat, 12)).toBe(false);
+    expect(isItemStatUsableForSpec(54591, feralCat, 12)).toBe(false);
+    expect(isItemStatUsableForSpec(50360, feralCat, 12)).toBe(false);
+    expect(isItemStatUsableForSpec(53110, feralCat, 14)).toBe(false);
+  });
+
+  it("still allows agility feral cat trinkets and weapons", () => {
+    expect(
+      isItemStatUsableForSpec(
+        50363,
+        { className: ClassName.Druid, spec: "Feral" },
+        12,
+      ),
+    ).toBe(true);
+    expect(
+      isItemStatUsableForSpec(
+        54590,
+        { className: ClassName.Druid, spec: "Feral" },
+        13,
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects damage, tank, and melee proc trinkets for Restoration Druid", () => {
+    const restorationDruid = {
+      className: ClassName.Druid,
+      spec: "Restoration",
+    } as const;
+
+    expect(
+      isItemStatUsableForSpec(54588, restorationDruid, 12),
+    ).toBe(false);
+    expect(
+      isItemStatUsableForSpec(50348, restorationDruid, 13),
+    ).toBe(false);
+    expect(
+      isItemStatUsableForSpec(50342, restorationDruid, 12),
+    ).toBe(false);
+    expect(
+      isItemStatUsableForSpec(47946, restorationDruid, 12),
+    ).toBe(false);
+    expect(
+      isItemStatUsableForSpec(45158, restorationDruid, 12),
+    ).toBe(false);
+    expect(
+      isItemStatUsableForSpec(40431, restorationDruid, 12),
+    ).toBe(false);
+    expect(
+      isItemStatUsableForSpec(40257, restorationDruid, 12),
+    ).toBe(false);
+  });
+
+  it("still allows spell power healer trinkets for Restoration Druid", () => {
+    expect(
+      isItemStatUsableForSpec(
+        54589,
+        { className: ClassName.Druid, spec: "Restoration" },
+        12,
+      ),
+    ).toBe(true);
+    expect(
+      isItemStatUsableForSpec(
+        50366,
+        { className: ClassName.Druid, spec: "Restoration" },
+        13,
+      ),
+    ).toBe(true);
   });
 });

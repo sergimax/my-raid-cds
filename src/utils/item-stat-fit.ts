@@ -18,10 +18,37 @@ const TrinketGearSlots = new Set([12, 13]);
 const ItemTypeWeapon = 13;
 const WeaponTypeShield = 7;
 
-/** Caster proc trinkets whose static stats mirror physical crit sticks (no bundled proc data). */
-const CasterProcTrinketItemIds = new Set([
+/** Caster proc trinkets whose static stats mirror physical sticks (no bundled proc data). */
+const CasterCritProcTrinketItemIds = new Set([
   50340, // Muradin's Spyglass
   50345, // Muradin's Spyglass (heroic)
+  50360, // Phylactery of the Nameless Lich
+  50365, // Phylactery of the Nameless Lich (heroic)
+  47726, // Talisman of Volatile Power
+  47946, // Talisman of Volatile Power (heroic)
+]);
+
+const CasterHasteProcTrinketItemIds = new Set([
+  50348, // Dislodged Foreign Object
+  50353, // Dislodged Foreign Object (heroic)
+  54572, // Charred Twilight Scale
+  54588, // Charred Twilight Scale (heroic)
+]);
+
+const TankProcTrinketItemIds = new Set([
+  40257, // Defender's Code
+  45158, // Heart of Iron
+  54571, // Petrified Twilight Scale
+  54591, // Petrified Twilight Scale (heroic)
+]);
+
+const MeleeProcTrinketItemIds = new Set([
+  50342, // Whispering Fanged Skull
+  50343, // Whispering Fanged Skull (heroic)
+]);
+
+const DamageProcTrinketWithoutStatsItemIds = new Set([
+  40431, // Fury of the Five Flights
 ]);
 
 type NormalizedGsStats = Partial<Record<GsStatKey, number>>;
@@ -150,6 +177,24 @@ function hasUnweightedPhysicalStats(
   );
 }
 
+/** Agility melee specs should not see strength-primary loot (e.g. Feral cat). */
+function hasUnweightedStrengthForAgilityMelee(
+  stats: NormalizedGsStats,
+  profile: SpecStatProfile,
+): boolean {
+  if (profile.role !== "MELEE" && profile.role !== "RANGED") {
+    return false;
+  }
+
+  const agilityPrimary =
+    hasWeightedStat(profile, "AGI") && !hasWeightedStat(profile, "STR");
+  if (!agilityPrimary) {
+    return false;
+  }
+
+  return statValue(stats, "STR") > 0;
+}
+
 /** Mirrors GearScore2 `GS_IsItemCompatible` stat/role checks (no slot/armor metadata). */
 function isItemStatCompatible(stats: NormalizedGsStats, profile: SpecStatProfile): boolean {
   const role = profile.role;
@@ -261,6 +306,39 @@ function hasOnlyHasteStats(stats: NormalizedGsStats): boolean {
   return hasHaste;
 }
 
+function isRejectedProcTrinketForProfile(
+  itemId: number,
+  profile: SpecStatProfile,
+  gearSlot: number | undefined,
+): boolean {
+  if (gearSlot === undefined || !TrinketGearSlots.has(gearSlot)) {
+    return false;
+  }
+
+  if (profile.role === "HEALER" || profile.role === "CASTER") {
+    return (
+      MeleeProcTrinketItemIds.has(itemId) ||
+      CasterHasteProcTrinketItemIds.has(itemId) ||
+      CasterCritProcTrinketItemIds.has(itemId) ||
+      TankProcTrinketItemIds.has(itemId) ||
+      DamageProcTrinketWithoutStatsItemIds.has(itemId)
+    );
+  }
+
+  if (
+    (profile.role === "MELEE" || profile.role === "RANGED") &&
+    !profile.hybridCasterItems
+  ) {
+    return (
+      CasterHasteProcTrinketItemIds.has(itemId) ||
+      CasterCritProcTrinketItemIds.has(itemId) ||
+      TankProcTrinketItemIds.has(itemId)
+    );
+  }
+
+  return false;
+}
+
 function isRoleNeutralItem(stats: NormalizedGsStats): boolean {
   return getRoleSignatureKind(stats) === undefined;
 }
@@ -296,7 +374,17 @@ export function isItemStatUsableForSpec(
 
   const sparseStats = getWotlkItemStats(itemId);
   if (!sparseStats) {
-    return profile.requireTankAvoidanceStats !== true;
+    if (profile.requireTankAvoidanceStats === true) {
+      return false;
+    }
+    if (profile.role === "HEALER" || profile.role === "CASTER") {
+      return false;
+    }
+    return true;
+  }
+
+  if (isRejectedProcTrinketForProfile(itemId, profile, gearSlot)) {
+    return false;
   }
 
   const stats = normalizeItemStatsToGs(sparseStats);
@@ -304,7 +392,10 @@ export function isItemStatUsableForSpec(
   if (
     gearSlot !== undefined &&
     TrinketGearSlots.has(gearSlot) &&
-    (profile.role === "MELEE" || profile.role === "RANGED") &&
+    (profile.role === "MELEE" ||
+      profile.role === "RANGED" ||
+      profile.role === "HEALER" ||
+      profile.role === "CASTER") &&
     hasOnlyStaminaStats(stats)
   ) {
     return false;
@@ -315,7 +406,7 @@ export function isItemStatUsableForSpec(
     TrinketGearSlots.has(gearSlot) &&
     (profile.role === "MELEE" || profile.role === "RANGED") &&
     !profile.hybridCasterItems &&
-    (hasOnlyHasteStats(stats) || CasterProcTrinketItemIds.has(itemId))
+    hasOnlyHasteStats(stats)
   ) {
     return false;
   }
@@ -329,6 +420,10 @@ export function isItemStatUsableForSpec(
   }
 
   if (hasUnweightedPhysicalStats(stats, profile)) {
+    return false;
+  }
+
+  if (hasUnweightedStrengthForAgilityMelee(stats, profile)) {
     return false;
   }
 
