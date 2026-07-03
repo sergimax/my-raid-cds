@@ -199,4 +199,64 @@ describe("isItemStatUsableForSpec", () => {
       }),
     ).toBe(true);
   });
+
+  it("rejects stat-less trinkets for Protection Paladin ilvl filtering", () => {
+    expect(
+      isItemStatUsableForSpec(
+        40431,
+        { className: ClassName.Paladin, spec: "Protection" },
+        12,
+      ),
+    ).toBe(false);
+  });
+
+  it("rejects tank necks and avoidance gear for Retribution Paladin", () => {
+    const retributionPaladin = {
+      className: ClassName.Paladin,
+      spec: "Retribution",
+    } as const;
+
+    expect(isItemStatUsableForSpec(50627, retributionPaladin, 1)).toBe(false);
+    expect(isItemStatUsableForSpec(50611, retributionPaladin, 5)).toBe(false);
+  });
+
+  it("rejects stamina-only and caster proc trinkets for Retribution Paladin", () => {
+    const retributionPaladin = {
+      className: ClassName.Paladin,
+      spec: "Retribution",
+    } as const;
+
+    expect(
+      isItemStatUsableForSpec(47088, retributionPaladin, 12),
+    ).toBe(false);
+    expect(
+      isItemStatUsableForSpec(50340, retributionPaladin, 12),
+    ).toBe(false);
+    expect(
+      isItemStatUsableForSpec(50348, retributionPaladin, 13),
+    ).toBe(false);
+    expect(
+      isItemStatUsableForSpec(54588, retributionPaladin, 12),
+    ).toBe(false);
+  });
+
+  it("still allows hit-based physical trinkets for Retribution Paladin", () => {
+    expect(
+      isItemStatUsableForSpec(
+        50351,
+        { className: ClassName.Paladin, spec: "Retribution" },
+        12,
+      ),
+    ).toBe(true);
+  });
+
+  it("still allows haste trinkets for Enhancement Shaman hybrid gear", () => {
+    expect(
+      isItemStatUsableForSpec(
+        54588,
+        { className: ClassName.Shaman, spec: "Enhancement" },
+        12,
+      ),
+    ).toBe(true);
+  });
 });

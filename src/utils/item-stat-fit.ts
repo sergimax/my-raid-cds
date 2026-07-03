@@ -14,8 +14,15 @@ import {
 
 /** WowSims gear slot / item type (mirrors item-equip-restrictions.ts). */
 const GearSlotOffHand = 15;
+const TrinketGearSlots = new Set([12, 13]);
 const ItemTypeWeapon = 13;
 const WeaponTypeShield = 7;
+
+/** Caster proc trinkets whose static stats mirror physical crit sticks (no bundled proc data). */
+const CasterProcTrinketItemIds = new Set([
+  50340, // Muradin's Spyglass
+  50345, // Muradin's Spyglass (heroic)
+]);
 
 type NormalizedGsStats = Partial<Record<GsStatKey, number>>;
 
@@ -172,6 +179,13 @@ function isItemStatCompatible(stats: NormalizedGsStats, profile: SpecStatProfile
   }
 
   if (
+    (role === "MELEE" || role === "RANGED") &&
+    roleSignature === "TANK"
+  ) {
+    return false;
+  }
+
+  if (
     (role === "CASTER" || role === "HEALER") &&
     (roleSignature === "MELEE" || roleSignature === "RANGED") &&
     statValue(stats, "SP") === 0 &&
@@ -213,6 +227,40 @@ function hasTankAvoidanceStats(stats: NormalizedGsStats): boolean {
   );
 }
 
+function hasOnlyStaminaStats(stats: NormalizedGsStats): boolean {
+  let hasStamina = false;
+
+  for (const [statKey, value] of Object.entries(stats) as [GsStatKey, number][]) {
+    if (value <= 0) {
+      continue;
+    }
+    if (statKey === "STA") {
+      hasStamina = true;
+      continue;
+    }
+    return false;
+  }
+
+  return hasStamina;
+}
+
+function hasOnlyHasteStats(stats: NormalizedGsStats): boolean {
+  let hasHaste = false;
+
+  for (const [statKey, value] of Object.entries(stats) as [GsStatKey, number][]) {
+    if (value <= 0) {
+      continue;
+    }
+    if (statKey === "HASTE") {
+      hasHaste = true;
+      continue;
+    }
+    return false;
+  }
+
+  return hasHaste;
+}
+
 function isRoleNeutralItem(stats: NormalizedGsStats): boolean {
   return getRoleSignatureKind(stats) === undefined;
 }
@@ -248,10 +296,29 @@ export function isItemStatUsableForSpec(
 
   const sparseStats = getWotlkItemStats(itemId);
   if (!sparseStats) {
-    return true;
+    return profile.requireTankAvoidanceStats !== true;
   }
 
   const stats = normalizeItemStatsToGs(sparseStats);
+
+  if (
+    gearSlot !== undefined &&
+    TrinketGearSlots.has(gearSlot) &&
+    (profile.role === "MELEE" || profile.role === "RANGED") &&
+    hasOnlyStaminaStats(stats)
+  ) {
+    return false;
+  }
+
+  if (
+    gearSlot !== undefined &&
+    TrinketGearSlots.has(gearSlot) &&
+    (profile.role === "MELEE" || profile.role === "RANGED") &&
+    !profile.hybridCasterItems &&
+    (hasOnlyHasteStats(stats) || CasterProcTrinketItemIds.has(itemId))
+  ) {
+    return false;
+  }
 
   if (profile.rejectSpiritStats === true && statValue(stats, "SPI") > 0) {
     return false;
