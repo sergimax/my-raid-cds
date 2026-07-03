@@ -338,4 +338,35 @@ describe("isItemStatUsableForSpec", () => {
       ),
     ).toBe(true);
   });
+
+  it("rejects intellect mail armor for Unholy Death Knight ilvl filtering", () => {
+    const unholyDeathKnight = {
+      className: ClassName.DeathKnight,
+      spec: "Unholy",
+    } as const;
+
+    expect(isItemStatUsableForSpec(53119, unholyDeathKnight, 4)).toBe(false);
+    expect(isItemStatUsableForSpec(40995, unholyDeathKnight, 4)).toBe(false);
+    expect(isItemStatUsableForSpec(51197, unholyDeathKnight, 0)).toBe(false);
+  });
+
+  it("still allows agility leather cross-armor for Unholy Death Knight", () => {
+    expect(
+      isItemStatUsableForSpec(
+        50653,
+        { className: ClassName.DeathKnight, spec: "Unholy" },
+        4,
+      ),
+    ).toBe(true);
+  });
+
+  it("still allows intellect mail for Elemental Shaman", () => {
+    expect(
+      isItemStatUsableForSpec(
+        40995,
+        { className: ClassName.Shaman, spec: "Elemental" },
+        4,
+      ),
+    ).toBe(true);
+  });
 });
