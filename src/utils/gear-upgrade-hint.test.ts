@@ -468,15 +468,13 @@ describe("evaluateGearUpgradeHint", () => {
       {
         name: "РС 25",
         raidKey: "rubySanctum",
+        size: 25,
+        difficulty: DungeonDifficulty.NORMAL,
         itemLevel: [271],
       },
       undefined,
       equipContext,
     );
-    expect(
-      rs25NormalHint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 1)
-        ?.bestLootItemId,
-    ).not.toBe(53132);
     expect(
       rs25NormalHint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 1)
         ?.bestLootItemId,
@@ -487,6 +485,8 @@ describe("evaluateGearUpgradeHint", () => {
       {
         name: "РС 10 ХМ",
         raidKey: "rubySanctum",
+        size: 10,
+        difficulty: DungeonDifficulty.HEROIC,
         itemLevel: [271],
       },
       undefined,
@@ -495,7 +495,11 @@ describe("evaluateGearUpgradeHint", () => {
     expect(
       rs10HeroicHint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 5)
         ?.bestLootItemId,
-    ).not.toBe(54559);
+    ).not.toBe(53126);
+    expect(
+      rs10HeroicHint.ilvl.upgradeSlots.find((slotHint) => slotHint.slot === 5)
+        ?.bestLootItemId,
+    ).not.toBe(53134);
 
     const rs10NormalHint = evaluateGearUpgradeHint(
       [
@@ -506,6 +510,8 @@ describe("evaluateGearUpgradeHint", () => {
       {
         name: "РС 10",
         raidKey: "rubySanctum",
+        size: 10,
+        difficulty: DungeonDifficulty.NORMAL,
         itemLevel: [258],
       },
       undefined,
@@ -515,6 +521,75 @@ describe("evaluateGearUpgradeHint", () => {
     expect(rs10NormalLootIds).not.toContain(53103);
     expect(rs10NormalLootIds).not.toContain(53110);
     expect(rs10NormalLootIds).not.toContain(53112);
+  });
+
+  it("separates Ruby Sanctum 10H and 25N loot at the same item level", () => {
+    const equipContext = { className: ClassName.Warrior, spec: "Fury" };
+    const gearItems = [{ slot: 5, id: 37646 }];
+
+    const rs10HeroicHint = evaluateGearUpgradeHint(
+      gearItems,
+      {
+        name: "RS 10H",
+        raidKey: "rubySanctum",
+        size: 10,
+        difficulty: DungeonDifficulty.HEROIC,
+        itemLevel: [271],
+      },
+      undefined,
+      equipContext,
+    );
+    expect(rs10HeroicHint.ilvl.upgradeSlots[0]?.bestLootItemId).toBe(54559);
+
+    const rs25NormalHint = evaluateGearUpgradeHint(
+      gearItems,
+      {
+        name: "RS 25",
+        raidKey: "rubySanctum",
+        size: 25,
+        difficulty: DungeonDifficulty.NORMAL,
+        itemLevel: [271],
+      },
+      undefined,
+      equipContext,
+    );
+    expect(rs25NormalHint.ilvl.upgradeSlots[0]?.bestLootItemId).toBe(53126);
+  });
+
+  it("groups Ruby Sanctum 25H BiS loot by boss in gear hint tooltips", () => {
+    const dungeon = createTestDungeon({
+      name: "The Ruby Sanctum",
+      raidKey: "rubySanctum",
+      size: 25,
+      difficulty: DungeonDifficulty.HEROIC,
+      itemLevel: [284],
+    });
+    const bisSlotMap = buildBisSlotMap(retributionPaladinBis.presets[0]!);
+
+    const hints = evaluateCharacterGearHints(
+      createTestCharacter({
+        class: Classes.find((characterClass) => characterClass.name === ClassName.Paladin),
+        mainSpec: {
+          spec: "Retribution",
+          gearItems: [
+            { slot: 1, id: 37646 },
+            { slot: 9, id: 37646 },
+            { slot: 11, id: 37646 },
+            { slot: 13, id: 37646 },
+          ],
+        },
+      }),
+      dungeon,
+      () => bisSlotMap,
+      "en",
+    );
+
+    expect(hints.main?.bisBossLootGroups).toEqual([
+      {
+        bossName: "Halion",
+        itemIds: [54576, 54578, 54581, 54590],
+      },
+    ]);
   });
 
   it("collects best ilvl loot item ids for boss-grouped tooltip sections", () => {

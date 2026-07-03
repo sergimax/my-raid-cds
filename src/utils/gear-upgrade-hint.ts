@@ -13,6 +13,7 @@ import {
   type CharacterEquipContext,
   filterUsableLootItemIds,
 } from "./item-equip-restrictions.ts";
+import { filterRaidLootItemIdsForDungeon } from "./item-drop-sources.ts";
 import { resolveDungeonRaidKey } from "./resolve-dungeon-raid-key.ts";
 
 export type GearUpgradeHintLevel = 0 | 1 | 2 | 3;
@@ -137,16 +138,43 @@ function pickBestLootItemLevel(
   return Math.max(...itemLevels);
 }
 
+type GearUpgradeDungeon = Pick<
+  DungeonRecord,
+  "name" | "shortName" | "raidKey" | "itemLevel"
+> &
+  Partial<Pick<DungeonRecord, "size" | "difficulty">>;
+
+function getRaidLootItemIdsForDungeonRow(
+  raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
+  gearSlot: number,
+  dungeon: GearUpgradeDungeon,
+): number[] {
+  const tierItemIds = getRaidLootItemIdsForTier(
+    raidKey,
+    gearSlot,
+    dungeon.itemLevel,
+  );
+  if (dungeon.size === undefined || dungeon.difficulty === undefined) {
+    return tierItemIds;
+  }
+  return filterRaidLootItemIdsForDungeon(tierItemIds, dungeon);
+}
+
 type LootFilterMode = "exact-bis" | "variant-bis" | "ilvl";
 
 function isSlotUpgradeableWithLoot(
   item: CharacterGearItem,
-  raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
-  dungeonItemLevels: readonly number[],
+  dungeon: GearUpgradeDungeon,
   equipContext: CharacterEquipContext,
   mode: LootFilterMode,
   bisItemIdsForSlot?: readonly number[],
 ): GearUpgradeSlotHint | null {
+  const raidKey = resolveDungeonRaidKey(dungeon);
+  if (!raidKey) {
+    return null;
+  }
+
+  const dungeonItemLevels = dungeon.itemLevel;
   if (mode !== "ilvl" && (!bisItemIdsForSlot || bisItemIdsForSlot.length === 0)) {
     return null;
   }
@@ -161,7 +189,7 @@ function isSlotUpgradeableWithLoot(
       : [];
 
   const raidLootIds = filterUsableLootItemIds(
-    getRaidLootItemIdsForTier(raidKey, item.slot, dungeonItemLevels),
+    getRaidLootItemIdsForDungeonRow(raidKey, item.slot, dungeon),
     item.slot,
     equipContext,
     { filterBySpecStats: mode === "ilvl" },
@@ -289,8 +317,7 @@ function evaluateNaiveIlvlTrack(
 
 function evaluateBisTrack(
   gearItems: readonly CharacterGearItem[],
-  dungeonItemLevels: readonly number[],
-  raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
+  dungeon: GearUpgradeDungeon,
   equipContext: CharacterEquipContext,
   bisSlotMap: BisSlotMap,
   mode: "exact-bis" | "variant-bis",
@@ -305,8 +332,7 @@ function evaluateBisTrack(
 
     const slotHint = isSlotUpgradeableWithLoot(
       item,
-      raidKey,
-      dungeonItemLevels,
+      dungeon,
       equipContext,
       mode,
       bisItemIdsForSlot,
@@ -321,8 +347,7 @@ function evaluateBisTrack(
 
 function evaluateIlvlRaidLootTrack(
   gearItems: readonly CharacterGearItem[],
-  dungeonItemLevels: readonly number[],
-  raidKey: NonNullable<ReturnType<typeof resolveDungeonRaidKey>>,
+  dungeon: GearUpgradeDungeon,
   equipContext: CharacterEquipContext,
   bisSlotMap?: BisSlotMap,
 ): GearUpgradeHintTrack {
@@ -333,8 +358,7 @@ function evaluateIlvlRaidLootTrack(
 
     const slotHint = isSlotUpgradeableWithLoot(
       item,
-      raidKey,
-      dungeonItemLevels,
+      dungeon,
       equipContext,
       "ilvl",
       bisItemIdsForSlot,
@@ -366,7 +390,7 @@ function emptyGearUpgradeHint(
 
 export function evaluateGearUpgradeHint(
   gearItems: readonly CharacterGearItem[] | undefined,
-  dungeon: Pick<DungeonRecord, "name" | "raidKey" | "itemLevel">,
+  dungeon: GearUpgradeDungeon,
   bisSlotMap?: BisSlotMap,
   equipContext: CharacterEquipContext = {},
 ): GearUpgradeHint {
@@ -390,8 +414,7 @@ export function evaluateGearUpgradeHint(
       bisListActive && bisSlotMap
         ? evaluateBisTrack(
             gearItems,
-            dungeonItemLevels,
-            raidKey,
+            dungeon,
             equipContext,
             bisSlotMap,
             "exact-bis",
@@ -402,8 +425,7 @@ export function evaluateGearUpgradeHint(
       bisListActive && bisSlotMap
         ? evaluateBisTrack(
             gearItems,
-            dungeonItemLevels,
-            raidKey,
+            dungeon,
             equipContext,
             bisSlotMap,
             "variant-bis",
@@ -412,8 +434,7 @@ export function evaluateGearUpgradeHint(
 
     const ilvl = evaluateIlvlRaidLootTrack(
       gearItems,
-      dungeonItemLevels,
-      raidKey,
+      dungeon,
       equipContext,
       bisListActive ? bisSlotMap : undefined,
     );

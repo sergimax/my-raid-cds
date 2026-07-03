@@ -32,7 +32,7 @@ function dungeonTemplateHasHeroic(raidKey: RaidKey, size: DungeonSize): boolean 
   );
 }
 
-function dungeonMatchesDropSource(
+export function dungeonMatchesDropSource(
   dungeon: DungeonSourceMatch,
   source: ItemDropSource,
 ): boolean {
@@ -179,6 +179,25 @@ function sortUniqueItemIds(itemIds: readonly number[]): number[] {
   return [...new Set(itemIds)].sort((leftId, rightId) => leftId - rightId);
 }
 
+/** Keeps tier-matched loot whose drop source fits this dungeon row (size + difficulty). */
+export function filterRaidLootItemIdsForDungeon(
+  itemIds: readonly number[],
+  dungeon: DungeonSourceMatch,
+): number[] {
+  const raidKey = resolveDungeonRaidKey(dungeon);
+  if (!raidKey) {
+    return [...itemIds];
+  }
+
+  return itemIds.filter((itemId) => {
+    const sources = getItemDropSources(itemId);
+    if (sources.length === 0) {
+      return true;
+    }
+    return sources.some((source) => dungeonMatchesDropSource(dungeon, source));
+  });
+}
+
 /** Like {@link groupBisItemIdsByBossForDungeon} but lists items flat when boss metadata is missing. */
 export function groupBisItemIdsByBossForDungeonWithFallback(
   itemIds: readonly number[],
@@ -190,7 +209,14 @@ export function groupBisItemIdsByBossForDungeonWithFallback(
     return grouped;
   }
 
-  return [{ bossName: "", itemIds: sortUniqueItemIds(itemIds) }];
+  const itemIdsWithoutDropSources = itemIds.filter(
+    (itemId) => getItemDropSources(itemId).length === 0,
+  );
+  if (itemIdsWithoutDropSources.length === 0) {
+    return [];
+  }
+
+  return [{ bossName: "", itemIds: sortUniqueItemIds(itemIdsWithoutDropSources) }];
 }
 
 /** Short raid label for a dungeon row (export-style abbreviation + size + mode). */

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DungeonDifficulty } from "../types/dungeons.ts";
 import {
   formatItemDropSourceLine,
+  filterRaidLootItemIdsForDungeon,
   getFormattedItemDropSources,
   groupBisItemIdsByBossForDungeon,
   groupBisItemIdsByBossForDungeonWithFallback,
@@ -97,6 +98,25 @@ describe("item-drop-sources", () => {
 
     expect(groups.length).toBeGreaterThan(0);
     expect(groups[0]?.itemIds).toContain(49306);
+  });
+
+  it("filters raid loot by dungeon size and difficulty", () => {
+    const rs10Heroic = {
+      name: "The Ruby Sanctum",
+      raidKey: "rubySanctum" as const,
+      size: 10 as const,
+      difficulty: DungeonDifficulty.HEROIC,
+    };
+
+    expect(
+      filterRaidLootItemIdsForDungeon([53126, 54559], rs10Heroic),
+    ).toEqual([54559]);
+    expect(
+      filterRaidLootItemIdsForDungeon([53103, 53112], {
+        ...rs10Heroic,
+        difficulty: DungeonDifficulty.NORMAL,
+      }),
+    ).toEqual([53103, 53112]);
   });
 
   it("falls back to a flat item list when boss drop metadata is missing", () => {
