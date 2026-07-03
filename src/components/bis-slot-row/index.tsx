@@ -24,7 +24,7 @@ import { WowItemAlternatives } from "../wow-item-link/index.tsx";
 
 const slotRowSx = {
   display: "grid",
-  gridTemplateColumns: "minmax(5.75rem, 6.25rem) minmax(0, 1fr) auto",
+  gridTemplateColumns: "6.25rem minmax(0, 1fr) auto",
   columnGap: 1,
   alignItems: "start",
   py: 0.375,
@@ -84,14 +84,7 @@ export function BisSlotRow({
   }, [isEditing]);
 
   return (
-    <Box
-      sx={{
-        ...slotRowSx,
-        gridTemplateColumns: readOnly
-          ? "6.25rem minmax(0, 1fr)"
-          : slotRowSx.gridTemplateColumns,
-      }}
-    >
+    <Box sx={slotRowSx}>
       <Box
         sx={{
           pt: isEditing ? 0.75 : 0,
