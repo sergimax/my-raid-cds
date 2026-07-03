@@ -18,6 +18,9 @@ const TrinketGearSlots = new Set([12, 13]);
 const ItemTypeWeapon = 13;
 const WeaponTypeShield = 7;
 
+/** WowSims armor type (mirrors item-equip-restrictions.ts). */
+const ArmorTypeMail = 3;
+
 /** Caster proc trinkets whose static stats mirror physical sticks (no bundled proc data). */
 const CasterCritProcTrinketItemIds = new Set([
   50340, // Muradin's Spyglass
@@ -193,6 +196,26 @@ function hasUnweightedStrengthForAgilityMelee(
   }
 
   return statValue(stats, "STR") > 0;
+}
+
+/** Plate melee specs do not use intellect mail (Enhancement/Elemental gear). Leather may still BiS. */
+function isIntellectMailRejectedForProfile(
+  itemId: number,
+  stats: NormalizedGsStats,
+  profile: SpecStatProfile,
+): boolean {
+  if (profile.role !== "MELEE" && profile.role !== "RANGED") {
+    return false;
+  }
+  if (profile.hybridCasterItems || hasWeightedStat(profile, "INT")) {
+    return false;
+  }
+  if (statValue(stats, "INT") <= 0) {
+    return false;
+  }
+
+  const item = getWotlkItemEquipProps(itemId);
+  return (item?.a ?? 0) === ArmorTypeMail;
 }
 
 /** Mirrors GearScore2 `GS_IsItemCompatible` stat/role checks (no slot/armor metadata). */
@@ -424,6 +447,10 @@ export function isItemStatUsableForSpec(
   }
 
   if (hasUnweightedStrengthForAgilityMelee(stats, profile)) {
+    return false;
+  }
+
+  if (isIntellectMailRejectedForProfile(itemId, stats, profile)) {
     return false;
   }
 
