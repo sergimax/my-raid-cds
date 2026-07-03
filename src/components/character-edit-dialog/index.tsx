@@ -27,6 +27,8 @@ import {
   attachGearToSpec,
   gearItemsForSpecSave,
   initialGearLoadedForSpec,
+  initialSpecGearSyncBaseline,
+  specGearSyncBaselineAfterSpecChange,
 } from "./character-edit-spec-gear.ts";
 
 type CharacterEditDialogProps = {
@@ -68,27 +70,47 @@ function CharacterEditDialogContent({
   const [offGearLoadedForSpec, setOffGearLoadedForSpec] = useState(() =>
     initialGearLoadedForSpec(character.offSpec),
   );
+  const [mainSyncBaseline, setMainSyncBaseline] = useState(() =>
+    initialSpecGearSyncBaseline(
+      character.mainSpec,
+      initialValues.mainSpec,
+      initialValues.mainGearScoreText,
+    ),
+  );
+  const [offSyncBaseline, setOffSyncBaseline] = useState(() =>
+    initialSpecGearSyncBaseline(
+      character.offSpec,
+      initialValues.offSpec,
+      initialValues.offGearScoreText,
+    ),
+  );
   const [error, setError] = useState("");
 
   useEffect(() => () => hideExternalWowTooltips(), []);
 
   const handleMainSpecChange = useCallback((value: string) => {
+    if (value !== mainSpec) {
+      setMainSyncBaseline(specGearSyncBaselineAfterSpecChange(mainGearScoreText));
+    }
     setMainSpec(value);
     if (value !== mainGearLoadedForSpec) {
       setMainGearItems(undefined);
       setMainGearLoadedForSpec("");
     }
     setError("");
-  }, [mainGearLoadedForSpec]);
+  }, [mainGearLoadedForSpec, mainGearScoreText, mainSpec]);
 
   const handleOffSpecChange = useCallback((value: string) => {
+    if (value !== offSpec) {
+      setOffSyncBaseline(specGearSyncBaselineAfterSpecChange(offGearScoreText));
+    }
     setOffSpec(value);
     if (value !== offGearLoadedForSpec) {
       setOffGearItems(undefined);
       setOffGearLoadedForSpec("");
     }
     setError("");
-  }, [offGearLoadedForSpec]);
+  }, [offGearLoadedForSpec, offGearScoreText, offSpec]);
 
   const handleMainGearItemsChange = useCallback(
     (gearItems: CharacterGearItem[] | undefined) => {
@@ -204,13 +226,13 @@ function CharacterEditDialogContent({
                 importSectionLabel={mainSpecLabel}
                 spec={mainSpec}
                 gearScoreText={mainGearScoreText}
-                initialGearScoreText={initialValues.mainGearScoreText}
+                initialGearScoreText={mainSyncBaseline.gearScoreText}
                 specName="mainSpec"
                 gearScoreName="mainGearScore"
                 specLabelId="character-main-spec-label"
                 characterClass={character.class}
                 gearItems={mainGearItems}
-                initialGearItems={character.mainSpec?.gearItems}
+                initialGearItems={mainSyncBaseline.gearItems}
                 onSpecChange={handleMainSpecChange}
                 onGearScoreTextChange={(value) => {
                   setMainGearScoreText(value);
@@ -227,13 +249,13 @@ function CharacterEditDialogContent({
                 importSectionLabel={offSpecLabel}
                 spec={offSpec}
                 gearScoreText={offGearScoreText}
-                initialGearScoreText={initialValues.offGearScoreText}
+                initialGearScoreText={offSyncBaseline.gearScoreText}
                 specName="offSpec"
                 gearScoreName="offGearScore"
                 specLabelId="character-off-spec-label"
                 characterClass={character.class}
                 gearItems={offGearItems}
-                initialGearItems={character.offSpec?.gearItems}
+                initialGearItems={offSyncBaseline.gearItems}
                 onSpecChange={handleOffSpecChange}
                 onGearScoreTextChange={(value) => {
                   setOffGearScoreText(value);

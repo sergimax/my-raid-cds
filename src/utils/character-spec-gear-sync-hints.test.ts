@@ -105,4 +105,19 @@ describe("getSpecGearSyncHints", () => {
       suggestUpdateGearScore: false,
     });
   });
+
+  it("suggests update gear score when old-spec gear baseline is stale after spec change", () => {
+    expect(
+      getSpecGearSyncHints({
+        spec: "Blood",
+        initialGearScoreText: "6600",
+        gearScoreText: "6600",
+        initialGearItems: [{ slot: 1, id: 100 }],
+        currentGearItems: undefined,
+      }),
+    ).toEqual({
+      suggestImportGear: false,
+      suggestUpdateGearScore: true,
+    });
+  });
 });
