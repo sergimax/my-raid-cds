@@ -1,6 +1,35 @@
 import type { CharacterGearItem } from "../../types/character-gear.ts";
 import type { CharacterSpecGear } from "../../types/characters.ts";
 
+export type SpecGearSyncBaseline = {
+  gearItems: CharacterGearItem[] | undefined;
+  gearScoreText: string;
+};
+
+/** Baseline for sync hints when the dialog opens on the stored spec. */
+export function initialSpecGearSyncBaseline(
+  storedSpecGear: CharacterSpecGear | undefined,
+  initialSpec: string,
+  initialGearScoreText: string,
+): SpecGearSyncBaseline {
+  const specMatches =
+    initialSpec !== "" && storedSpecGear?.spec === initialSpec;
+  return {
+    gearItems: specMatches ? storedSpecGear?.gearItems : undefined,
+    gearScoreText: initialGearScoreText,
+  };
+}
+
+/** Reset sync baselines when the user picks a different spec. */
+export function specGearSyncBaselineAfterSpecChange(
+  gearScoreText: string,
+): SpecGearSyncBaseline {
+  return {
+    gearItems: undefined,
+    gearScoreText,
+  };
+}
+
 /** Spec name the current gear draft belongs to; empty when no gear is loaded. */
 export function initialGearLoadedForSpec(
   specGear: CharacterSpecGear | undefined,
