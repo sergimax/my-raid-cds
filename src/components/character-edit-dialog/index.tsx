@@ -204,11 +204,13 @@ function CharacterEditDialogContent({
                 importSectionLabel={mainSpecLabel}
                 spec={mainSpec}
                 gearScoreText={mainGearScoreText}
+                initialGearScoreText={initialValues.mainGearScoreText}
                 specName="mainSpec"
                 gearScoreName="mainGearScore"
                 specLabelId="character-main-spec-label"
                 characterClass={character.class}
                 gearItems={mainGearItems}
+                initialGearItems={character.mainSpec?.gearItems}
                 onSpecChange={handleMainSpecChange}
                 onGearScoreTextChange={(value) => {
                   setMainGearScoreText(value);
@@ -225,11 +227,13 @@ function CharacterEditDialogContent({
                 importSectionLabel={offSpecLabel}
                 spec={offSpec}
                 gearScoreText={offGearScoreText}
+                initialGearScoreText={initialValues.offGearScoreText}
                 specName="offSpec"
                 gearScoreName="offGearScore"
                 specLabelId="character-off-spec-label"
                 characterClass={character.class}
                 gearItems={offGearItems}
+                initialGearItems={character.offSpec?.gearItems}
                 onSpecChange={handleOffSpecChange}
                 onGearScoreTextChange={(value) => {
                   setOffGearScoreText(value);

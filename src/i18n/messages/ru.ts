@@ -110,6 +110,10 @@ export const ruMessages: Messages = {
     clearGearButton: "Очистить экипировку",
     importedSummary: "Импортировано: {{summary}}.",
     importedSpec: "Спек: {{spec}}.",
+    suggestImportGear:
+      "Gear score изменился — переимпортируйте экипировку из WowSimsExporter (/wse export), чтобы подсказки по апгрейдам оставались точными.",
+    suggestUpdateGearScore:
+      "Экипировка изменилась — обновите поле gear score, чтобы экспорт и фильтры соответствовали текущей экипировке.",
   },
   dungeonEdit: {
     title: "Изменить подземелье",

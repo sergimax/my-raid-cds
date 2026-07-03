@@ -174,7 +174,6 @@ function isSlotUpgradeableWithLoot(
     return null;
   }
 
-  const dungeonItemLevels = dungeon.itemLevel;
   if (mode !== "ilvl" && (!bisItemIdsForSlot || bisItemIdsForSlot.length === 0)) {
     return null;
   }
