@@ -162,11 +162,58 @@ function getRaidLootItemIdsForDungeonRow(
 
 type LootFilterMode = "exact-bis" | "variant-bis" | "ilvl";
 
+/** Finger and trinket slots are interchangeable in-game; BiS lists pin them to slot 1/2 only. */
+const SwappableGearSlotGroups: readonly (readonly number[])[] = [
+  [10, 11],
+  [12, 13],
+];
+
+function getSwappableGearSlots(slot: number): readonly number[] {
+  for (const group of SwappableGearSlotGroups) {
+    if (group.includes(slot)) {
+      return group;
+    }
+  }
+  return [slot];
+}
+
+function equippedItemsInSwappableGroup(
+  gearItems: readonly CharacterGearItem[],
+  slot: number,
+): CharacterGearItem[] {
+  const swappableSlots = getSwappableGearSlots(slot);
+  if (swappableSlots.length === 1) {
+    return gearItems.filter((item) => item.slot === slot);
+  }
+  return gearItems.filter((item) => swappableSlots.includes(item.slot));
+}
+
+function isBisExactTargetSatisfied(
+  item: CharacterGearItem,
+  bisItemIdsForSlot: readonly number[],
+  gearItems: readonly CharacterGearItem[],
+): boolean {
+  return equippedItemsInSwappableGroup(gearItems, item.slot).some((equipped) =>
+    bisItemIdsForSlot.includes(equipped.id),
+  );
+}
+
+function isBisVariantTargetSatisfied(
+  item: CharacterGearItem,
+  bisItemIdsForSlot: readonly number[],
+  gearItems: readonly CharacterGearItem[],
+): boolean {
+  return equippedItemsInSwappableGroup(gearItems, item.slot).some((equipped) =>
+    isItemIdOrNameVariantAtSlot(equipped.id, bisItemIdsForSlot, item.slot),
+  );
+}
+
 function isSlotUpgradeableWithLoot(
   item: CharacterGearItem,
   dungeon: GearUpgradeDungeon,
   equipContext: CharacterEquipContext,
   mode: LootFilterMode,
+  gearItems: readonly CharacterGearItem[],
   bisItemIdsForSlot?: readonly number[],
 ): GearUpgradeSlotHint | null {
   const raidKey = resolveDungeonRaidKey(dungeon);
@@ -232,7 +279,7 @@ function isSlotUpgradeableWithLoot(
   }
 
   if (mode === "exact-bis") {
-    if (bisItemIdsForSlot!.includes(item.id)) {
+    if (isBisExactTargetSatisfied(item, bisItemIdsForSlot!, gearItems)) {
       return null;
     }
 
@@ -249,7 +296,7 @@ function isSlotUpgradeableWithLoot(
   }
 
   if (mode === "variant-bis") {
-    if (isItemIdOrNameVariantAtSlot(item.id, bisItemIdsForSlot!, item.slot)) {
+    if (isBisVariantTargetSatisfied(item, bisItemIdsForSlot!, gearItems)) {
       return null;
     }
 
@@ -334,6 +381,7 @@ function evaluateBisTrack(
       dungeon,
       equipContext,
       mode,
+      gearItems,
       bisItemIdsForSlot,
     );
     if (slotHint) {
@@ -360,6 +408,7 @@ function evaluateIlvlRaidLootTrack(
       dungeon,
       equipContext,
       "ilvl",
+      gearItems,
       bisItemIdsForSlot,
     );
     if (slotHint) {

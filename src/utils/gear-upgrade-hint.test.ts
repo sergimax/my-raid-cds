@@ -224,6 +224,56 @@ describe("evaluateGearUpgradeHint", () => {
     expect(rsHint.bis.upgradeSlots[0]?.bestLootItemId).toBe(54581);
   });
 
+  it("does not flag BiS trinkets missing when equipped in the swapped trinket slot", () => {
+    const unholyBis = buildBisSlotMap(unholyDeathKnightBis.presets[0]);
+    const rsHint = evaluateGearUpgradeHint(
+      [
+        { slot: 12, id: 54590 },
+        { slot: 13, id: 50363 },
+      ],
+      {
+        name: "The Ruby Sanctum",
+        raidKey: "rubySanctum",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+        itemLevel: [284],
+      },
+      unholyBis,
+    );
+
+    expect(rsHint.bis.upgradeSlots.some((slotHint) => slotHint.bestLootItemId === 54590)).toBe(
+      false,
+    );
+    expect(rsHint.bis.upgradeSlots.some((slotHint) => slotHint.bestLootItemId === 50363)).toBe(
+      false,
+    );
+  });
+
+  it("does not flag BiS rings missing when equipped in the swapped finger slot", () => {
+    const unholyBis = buildBisSlotMap(unholyDeathKnightBis.presets[0]);
+    const iccHint = evaluateGearUpgradeHint(
+      [
+        { slot: 10, id: 50657 },
+        { slot: 11, id: 52572 },
+      ],
+      {
+        name: "ICC25 HM",
+        raidKey: "icecrownCitadel",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+        itemLevel: [277, 284],
+      },
+      unholyBis,
+    );
+
+    expect(iccHint.bis.upgradeSlots.some((slotHint) => slotHint.bestLootItemId === 52572)).toBe(
+      false,
+    );
+    expect(iccHint.bis.upgradeSlots.some((slotHint) => slotHint.bestLootItemId === 50657)).toBe(
+      false,
+    );
+  });
+
   it("flags missing BiS targets even when equipped gear is higher ilvl", () => {
     const bryntrollBis = buildBisSlotMap({
       id: "local-uhdk-bryn",
