@@ -209,14 +209,18 @@ export function groupBisItemIdsByBossForDungeonWithFallback(
     return grouped;
   }
 
-  const itemIdsWithoutDropSources = itemIds.filter(
-    (itemId) => getItemDropSources(itemId).length === 0,
-  );
-  if (itemIdsWithoutDropSources.length === 0) {
+  const flatFallbackItemIds = itemIds.filter((itemId) => {
+    const sources = getItemDropSources(itemId);
+    if (sources.length === 0) {
+      return true;
+    }
+    return sources.some((source) => dungeonMatchesDropSource(dungeon, source));
+  });
+  if (flatFallbackItemIds.length === 0) {
     return [];
   }
 
-  return [{ bossName: "", itemIds: sortUniqueItemIds(itemIdsWithoutDropSources) }];
+  return [{ bossName: "", itemIds: sortUniqueItemIds(flatFallbackItemIds) }];
 }
 
 /** Short raid label for a dungeon row (export-style abbreviation + size + mode). */

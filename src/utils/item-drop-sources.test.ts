@@ -134,6 +134,36 @@ describe("item-drop-sources", () => {
     expect(groups).toEqual([{ bossName: "", itemIds: [49310] }]);
   });
 
+  it("falls back flat for items without drop sources in a mixed batch", () => {
+    const groups = groupBisItemIdsByBossForDungeonWithFallback(
+      [49310, 53126],
+      {
+        name: "The Ruby Sanctum",
+        raidKey: "rubySanctum",
+        size: 10,
+        difficulty: DungeonDifficulty.HEROIC,
+      },
+      "en",
+    );
+
+    expect(groups).toEqual([{ bossName: "", itemIds: [49310] }]);
+  });
+
+  it("omits flat fallback items whose drop sources do not match the dungeon row", () => {
+    const groups = groupBisItemIdsByBossForDungeonWithFallback(
+      [53126],
+      {
+        name: "The Ruby Sanctum",
+        raidKey: "rubySanctum",
+        size: 10,
+        difficulty: DungeonDifficulty.HEROIC,
+      },
+      "en",
+    );
+
+    expect(groups).toEqual([]);
+  });
+
   it("groups Vault of Archavon tier loot by Toravon for a matching 10-man row", () => {
     const groups = groupBisItemIdsByBossForDungeon(
       [50079],
