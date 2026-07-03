@@ -83,8 +83,17 @@ export function BisSlotRow({
     }
   }, [isEditing]);
 
+  const showActionsColumn = isEditing || !readOnly;
+
   return (
-    <Box sx={slotRowSx}>
+    <Box
+      sx={{
+        ...slotRowSx,
+        gridTemplateColumns: showActionsColumn
+          ? slotRowSx.gridTemplateColumns
+          : "6.25rem minmax(0, 1fr)",
+      }}
+    >
       <Box
         sx={{
           pt: isEditing ? 0.75 : 0,
