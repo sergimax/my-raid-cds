@@ -59,7 +59,7 @@ export function GearSlotIcon({
     <Stack
       direction="row"
       spacing={0.75}
-      sx={{ alignItems: "center", minWidth: 0 }}
+      sx={{ alignItems: "center", minWidth: 0, maxWidth: "100%" }}
     >
       {icon}
       <Typography
@@ -70,6 +70,9 @@ export function GearSlotIcon({
           color: "text.secondary",
           lineHeight: 1.3,
           minWidth: 0,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
         }}
       >
         {slotLabel}

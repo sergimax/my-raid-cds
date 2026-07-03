@@ -24,7 +24,7 @@ import { WowItemAlternatives } from "../wow-item-link/index.tsx";
 
 const slotRowSx = {
   display: "grid",
-  gridTemplateColumns: "minmax(5.75rem, auto) minmax(0, 1fr) auto",
+  gridTemplateColumns: "minmax(5.75rem, 6.25rem) minmax(0, 1fr) auto",
   columnGap: 1,
   alignItems: "start",
   py: 0.375,
@@ -96,6 +96,9 @@ export function BisSlotRow({
         sx={{
           pt: isEditing ? 0.75 : 0,
           alignSelf: isEditing ? "start" : "center",
+          minWidth: 0,
+          maxWidth: "100%",
+          overflow: "hidden",
         }}
       >
         <GearSlotIcon slot={slotDraft.slot} />
