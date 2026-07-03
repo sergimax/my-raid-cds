@@ -107,6 +107,10 @@ export const enMessages = {
     clearGearButton: "Clear gear",
     importedSummary: "Imported {{summary}}.",
     importedSpec: "Spec: {{spec}}.",
+    suggestImportGear:
+      "Gear score changed — re-import gear from WowSimsExporter (/wse export) so upgrade hints stay accurate.",
+    suggestUpdateGearScore:
+      "Gear changed — update the gear score field so exports and filters reflect your current setup.",
   },
   dungeonEdit: {
     title: "Edit dungeon details",
