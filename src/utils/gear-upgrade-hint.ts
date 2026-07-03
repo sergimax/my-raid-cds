@@ -154,10 +154,17 @@ function getRaidLootItemIdsForDungeonRow(
     gearSlot,
     dungeon.itemLevel,
   );
-  if (dungeon.size === undefined || dungeon.difficulty === undefined) {
+  const { size, difficulty } = dungeon;
+  if (size === undefined || difficulty === undefined) {
     return tierItemIds;
   }
-  return filterRaidLootItemIdsForDungeon(tierItemIds, dungeon);
+  return filterRaidLootItemIdsForDungeon(tierItemIds, {
+    name: dungeon.name,
+    shortName: dungeon.shortName,
+    raidKey: dungeon.raidKey,
+    size,
+    difficulty,
+  });
 }
 
 type LootFilterMode = "exact-bis" | "variant-bis" | "ilvl";
