@@ -18,6 +18,10 @@ import { ExportDungeonFilter } from "./export-dungeon-filter.tsx";
 import { ExportFilterSection } from "./export-filter-section.tsx";
 import { ExportMinGearScoreFilter } from "./export-min-gear-score-filter.tsx";
 import { ExportRoleFilterPanel } from "./export-role-filter.tsx";
+import {
+  EXPORT_FILTER_GRID_COLUMN_COUNT,
+  getExportFilterBlockMaxWidthCss,
+} from "./constants.ts";
 import type { ExportPanelProps } from "./types.ts";
 import {
   DEFAULT_EXPORT_ROLE_FILTER,
@@ -114,27 +118,50 @@ export function ExportPanel({
 
   return (
     <Stack spacing={1.5}>
-      {totalDungeonCount > 0 ? (
-        <ExportFilterSection
-          title={t("exportPanel.dungeonFilterTitle")}
-          description={t("exportPanel.dungeonFilterHelper")}
-        >
-          <ExportDungeonFilter
-            dungeonNameSearch={dungeonNameSearch}
-            visibleDungeons={visibleDungeons}
-            totalDungeonCount={totalDungeonCount}
-            locale={locale}
-            t={t}
-          />
-        </ExportFilterSection>
-      ) : null}
-
-      <Stack
-        direction={{ xs: "column", md: "row" }}
-        spacing={1.5}
-        sx={{ alignItems: "stretch", gap: 1.5 }}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: `minmax(0, min(100%, ${getExportFilterBlockMaxWidthCss()}))`,
+            md: `repeat(${EXPORT_FILTER_GRID_COLUMN_COUNT}, minmax(0, ${getExportFilterBlockMaxWidthCss()}))`,
+          },
+          gap: 1.5,
+          alignItems: "stretch",
+          justifyContent: "start",
+          width: "fit-content",
+          maxWidth: "100%",
+        }}
       >
-        <Box sx={{ flex: 1, minWidth: 0 }}>
+        {totalDungeonCount > 0 ? (
+          <Box
+            sx={{
+              minWidth: 0,
+              maxWidth: getExportFilterBlockMaxWidthCss(),
+              width: "100%",
+            }}
+          >
+            <ExportFilterSection
+              title={t("exportPanel.dungeonFilterTitle")}
+              description={t("exportPanel.dungeonFilterHelper")}
+            >
+              <ExportDungeonFilter
+                dungeonNameSearch={dungeonNameSearch}
+                visibleDungeons={visibleDungeons}
+                totalDungeonCount={totalDungeonCount}
+                locale={locale}
+                t={t}
+              />
+            </ExportFilterSection>
+          </Box>
+        ) : null}
+
+        <Box
+          sx={{
+            minWidth: 0,
+            maxWidth: getExportFilterBlockMaxWidthCss(),
+            width: "100%",
+          }}
+        >
           <ExportFilterSection
             title={t("exportPanel.gearScoreFilterTitle")}
             description={t("exportPanel.minGearScoreHelper")}
@@ -147,7 +174,14 @@ export function ExportPanel({
             />
           </ExportFilterSection>
         </Box>
-        <Box sx={{ flex: 1, minWidth: 0 }}>
+
+        <Box
+          sx={{
+            minWidth: 0,
+            maxWidth: getExportFilterBlockMaxWidthCss(),
+            width: "100%",
+          }}
+        >
           <ExportFilterSection
             title={t("exportPanel.roleFilterTitle")}
             description={t("exportPanel.roleFilterHelper")}
@@ -158,20 +192,28 @@ export function ExportPanel({
             />
           </ExportFilterSection>
         </Box>
-      </Stack>
 
-      <ExportFilterSection
-        title={t("exportPanel.characterSpecsFilterTitle")}
-        description={t("exportPanel.characterSpecsFilterHelper")}
-      >
-        <ExportCharacterSpecFilter
-          characters={characters}
-          exportSpecSelectionByCharacterId={exportSpecSelectionByCharacterId}
-          roleFilter={roleFilter}
-          minGearScore={minGearScore}
-          onSpecIncluded={setSpecIncluded}
-        />
-      </ExportFilterSection>
+        <Box
+          sx={{
+            minWidth: 0,
+            maxWidth: getExportFilterBlockMaxWidthCss(),
+            width: "100%",
+          }}
+        >
+          <ExportFilterSection
+            title={t("exportPanel.characterSpecsFilterTitle")}
+            description={t("exportPanel.characterSpecsFilterHelper")}
+          >
+            <ExportCharacterSpecFilter
+              characters={characters}
+              exportSpecSelectionByCharacterId={exportSpecSelectionByCharacterId}
+              roleFilter={roleFilter}
+              minGearScore={minGearScore}
+              onSpecIncluded={setSpecIncluded}
+            />
+          </ExportFilterSection>
+        </Box>
+      </Box>
 
       <TextField
         label={t("exportPanel.exportText")}
