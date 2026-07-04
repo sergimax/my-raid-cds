@@ -5,6 +5,7 @@ import {
   defaultExportSpecSelection,
   formatCharacterExportLabel,
   isCharacterIncludedInExport,
+  resolveEffectiveExportSpecSelection,
 } from "./format-character-export.ts";
 import { createTestCharacter } from "../test/fixtures.ts";
 
@@ -173,14 +174,7 @@ describe("formatCharacterExportLabel", () => {
     expect(
       formatCharacterExportLabel(
         character,
-        {
-          includeMain: true,
-          includeOff: true,
-          includeWithoutSpec: true,
-        },
-        "en",
-        undefined,
-        tanksOnly,
+        resolveEffectiveExportSpecSelection(character, undefined, tanksOnly),
       ),
     ).toBe("Elst: Blood 6");
   });

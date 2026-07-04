@@ -170,7 +170,7 @@ export const enMessages = {
     minGearScoreAria: "Minimum gear score for export lines",
     roleFilterLabel: "Filter by role",
     roleFilterHelper:
-      "Only specs in checked roles are included in export lines.",
+      "Unchecked roles disable matching spec checkboxes and omit them from export lines.",
     roleTank: "Tank",
     roleHealer: "Healer",
     roleMeleeDps: "Melee DPS",
