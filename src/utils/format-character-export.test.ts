@@ -115,29 +115,28 @@ describe("formatCharacterExportLabel", () => {
       mainSpec: { spec: "Unholy", gearScore: 6615 },
       offSpec: { spec: "Blood", gearScore: 6023 },
     });
+    const allRoles = { ...DEFAULT_EXPORT_ROLE_FILTER };
 
     expect(
       formatCharacterExportLabel(
         character,
-        {
-          includeMain: true,
-          includeOff: true,
-          includeWithoutSpec: true,
-        },
-        "en",
-        6500,
+        resolveEffectiveExportSpecSelection(
+          character,
+          undefined,
+          allRoles,
+          6500,
+        ),
       ),
     ).toBe("Elst: Udk 6.6");
     expect(
       formatCharacterExportLabel(
         character,
-        {
-          includeMain: true,
-          includeOff: true,
-          includeWithoutSpec: true,
-        },
-        "en",
-        6700,
+        resolveEffectiveExportSpecSelection(
+          character,
+          undefined,
+          allRoles,
+          6700,
+        ),
       ),
     ).toBeNull();
   });
@@ -150,9 +149,16 @@ describe("formatCharacterExportLabel", () => {
           class: Classes[0],
           mainSpec: { spec: "Unholy" },
         }),
-        mainOnlySelection,
-        "en",
-        6500,
+        resolveEffectiveExportSpecSelection(
+          createTestCharacter({
+            name: "Elst",
+            class: Classes[0],
+            mainSpec: { spec: "Unholy" },
+          }),
+          undefined,
+          DEFAULT_EXPORT_ROLE_FILTER,
+          6500,
+        ),
       ),
     ).toBe("Elst: Udk");
   });

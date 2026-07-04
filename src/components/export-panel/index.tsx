@@ -15,6 +15,7 @@ import {
   isSpecIncludedForExportRole,
   resolveEffectiveExportSpecSelection,
   resolveExportSpecSelection,
+  specPassesExportMinGearScore,
   type CharacterExportSpecSelection,
 } from "../../utils/format-character-export.ts";
 import { buildExportStatusString } from "../../utils/build-export-status.ts";
@@ -129,10 +130,11 @@ export function ExportPanel({
             character,
             exportSpecSelectionByCharacterId,
             roleFilter,
+            minGearScore,
           ),
         ),
       ),
-    [characters, exportSpecSelectionByCharacterId, roleFilter],
+    [characters, exportSpecSelectionByCharacterId, minGearScore, roleFilter],
   );
 
   const statusText = useMemo(
@@ -202,6 +204,7 @@ export function ExportPanel({
                 character,
                 exportSpecSelectionByCharacterId,
                 roleFilter,
+                minGearScore,
               );
               const hasSpecs = characterHasExportSpecs(character);
               const mainRoleAllowed =
@@ -218,6 +221,12 @@ export function ExportPanel({
                   character.offSpec.spec,
                   roleFilter,
                 );
+              const mainGearScoreAllowed =
+                !character.mainSpec ||
+                specPassesExportMinGearScore(character.mainSpec, minGearScore);
+              const offGearScoreAllowed =
+                !character.offSpec ||
+                specPassesExportMinGearScore(character.offSpec, minGearScore);
               return (
                 <Stack
                   key={character.id}
@@ -237,7 +246,7 @@ export function ExportPanel({
                       specGear={character.mainSpec}
                       slot="includeMain"
                       checked={selection.includeMain}
-                      disabled={!mainRoleAllowed}
+                      disabled={!mainRoleAllowed || !mainGearScoreAllowed}
                       onCheckedChange={(slot, included) => {
                         setSpecIncluded(character, slot, included);
                       }}
@@ -249,7 +258,7 @@ export function ExportPanel({
                       specGear={character.offSpec}
                       slot="includeOff"
                       checked={selection.includeOff}
-                      disabled={!offRoleAllowed}
+                      disabled={!offRoleAllowed || !offGearScoreAllowed}
                       onCheckedChange={(slot, included) => {
                         setSpecIncluded(character, slot, included);
                       }}

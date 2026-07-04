@@ -62,9 +62,9 @@ export function buildExportStatusString({
             character,
             exportSpecSelectionByCharacterId,
             effectiveRoleFilter,
+            minGearScore,
           ),
           locale,
-          minGearScore,
         ),
       )
       .filter((entry): entry is string => entry !== null)
