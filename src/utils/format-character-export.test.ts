@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Classes } from "../types/characters.ts";
+import { DEFAULT_EXPORT_ROLE_FILTER } from "./export-spec-role.ts";
 import {
   defaultExportSpecSelection,
   formatCharacterExportLabel,
@@ -153,5 +154,34 @@ describe("formatCharacterExportLabel", () => {
         6500,
       ),
     ).toBe("Elst: Udk");
+  });
+
+  it("omits specs whose role is unchecked in the role filter", () => {
+    const character = createTestCharacter({
+      name: "Elst",
+      class: Classes[0],
+      mainSpec: { spec: "Unholy", gearScore: 6615 },
+      offSpec: { spec: "Blood", gearScore: 6023 },
+    });
+    const tanksOnly = {
+      ...DEFAULT_EXPORT_ROLE_FILTER,
+      healer: false,
+      meleeDps: false,
+      rangedDps: false,
+    };
+
+    expect(
+      formatCharacterExportLabel(
+        character,
+        {
+          includeMain: true,
+          includeOff: true,
+          includeWithoutSpec: true,
+        },
+        "en",
+        undefined,
+        tanksOnly,
+      ),
+    ).toBe("Elst: Blood 6");
   });
 });

@@ -9,6 +9,7 @@ import {
 } from "./format-character-export.ts";
 import { formatDungeonExportLabel } from "./format-dungeon-label.ts";
 import { isCooldownOn } from "./dungeon-toggles.ts";
+import type { ExportRoleFilter } from "./export-spec-role.ts";
 
 export type BuildExportStatusParams = {
   characters: CharacterRecord[];
@@ -16,6 +17,7 @@ export type BuildExportStatusParams = {
   dungeonToggles: DungeonToggles;
   exportSpecSelectionByCharacterId?: ExportSpecSelectionByCharacterId;
   minGearScore?: number;
+  roleFilter?: ExportRoleFilter;
   locale?: AppLocale;
   t: TranslateFn;
 };
@@ -27,6 +29,7 @@ export function buildExportStatusString({
   dungeonToggles,
   exportSpecSelectionByCharacterId,
   minGearScore,
+  roleFilter,
   locale = "en",
   t,
 }: BuildExportStatusParams): string {
@@ -58,6 +61,7 @@ export function buildExportStatusString({
           ),
           locale,
           minGearScore,
+          roleFilter,
         ),
       )
       .filter((entry): entry is string => entry !== null)

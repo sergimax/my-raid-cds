@@ -22,7 +22,12 @@ import {
 } from "../../utils/parse-export-min-gear-score.ts";
 import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
 import { ExportMinGearScoreFilter } from "./export-min-gear-score-filter.tsx";
+import { ExportRoleFilterPanel } from "./export-role-filter.tsx";
 import type { ExportPanelProps } from "./types.ts";
+import {
+  DEFAULT_EXPORT_ROLE_FILTER,
+  type ExportRoleFilter,
+} from "../../utils/export-spec-role.ts";
 
 type StoredExportSpecSelection = Partial<CharacterExportSpecSelection>;
 
@@ -101,6 +106,9 @@ export function ExportPanel({
   const [minGearScoreCompact, setMinGearScoreCompact] = useState(
     EXPORT_MIN_GS_COMPACT_DEFAULT,
   );
+  const [roleFilter, setRoleFilter] = useState<ExportRoleFilter>(
+    () => ({ ...DEFAULT_EXPORT_ROLE_FILTER }),
+  );
 
   const minGearScore = useMemo(
     () => resolveExportMinGearScoreThreshold(minGearScoreFilterEnabled, minGearScoreCompact),
@@ -129,6 +137,7 @@ export function ExportPanel({
         dungeonToggles,
         exportSpecSelectionByCharacterId,
         minGearScore,
+        roleFilter,
         locale,
         t,
       }),
@@ -138,6 +147,7 @@ export function ExportPanel({
       includedCharacters,
       locale,
       minGearScore,
+      roleFilter,
       t,
       visibleDungeons,
     ],
@@ -175,6 +185,10 @@ export function ExportPanel({
             compactValue={minGearScoreCompact}
             onEnabledChange={setMinGearScoreFilterEnabled}
             onCompactValueChange={setMinGearScoreCompact}
+          />
+          <ExportRoleFilterPanel
+            roleFilter={roleFilter}
+            onRoleFilterChange={setRoleFilter}
           />
           <Stack spacing={1}>
             {characters.map((character) => {
