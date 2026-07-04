@@ -159,9 +159,20 @@ export const enMessages = {
     title: "Export",
     closeAria: "Close export panel",
     instructions:
-      "Filter dungeons with the table search, then copy lines below — one per matching raid listing characters still without CD (toggle off). Check which specs to include for each character. Optionally filter by role (tank, healer, melee DPS, ranged DPS) and enable the minimum GS slider (e.g. 5.6) to omit lower-GS specs from export lines.",
+      "Copy lines below — one per matching raid listing characters still without CD (toggle off). Use the filter blocks to narrow raids (table search), roles, gear score, and per-character specs.",
     noCharacters: "Add a character to build a status summary.",
     exportText: "Export text",
+    dungeonFilterTitle: "Filter by raid",
+    dungeonFilterHelper:
+      "Uses the dungeon search field in the table header. Export includes one line per matching raid row.",
+    dungeonFilterSearchEmpty: "Table search: (none) — all raids included",
+    dungeonFilterSearchActive: "Table search: {{query}}",
+    dungeonFilterMatchCount: "{{count}} of {{total}} raid(s) in export",
+    dungeonFilterNoMatches: "No raids match the current table search.",
+    gearScoreFilterTitle: "Filter by gear score",
+    characterSpecsFilterTitle: "Filter by character specs",
+    characterSpecsFilterHelper:
+      "Choose which specs to include per character in export lines.",
     minGearScoreEnable: "Minimum GS filter",
     minGearScoreEnableAria: "Enable minimum gear score filter for export",
     minGearScoreHelper:
@@ -169,6 +180,7 @@ export const enMessages = {
     minGearScoreSliderValue: "≥ {{value}}",
     minGearScoreAria: "Minimum gear score for export lines",
     roleFilterLabel: "Filter by role",
+    roleFilterTitle: "Filter by role",
     roleFilterHelper:
       "Unchecked roles disable matching spec checkboxes and omit them from export lines.",
     roleTank: "Tank",
