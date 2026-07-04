@@ -10,6 +10,7 @@ import {
 import { formatDungeonExportLabel } from "./format-dungeon-label.ts";
 import { isCooldownOn } from "./dungeon-toggles.ts";
 import type { ExportRoleFilter } from "./export-spec-role.ts";
+import { DEFAULT_EXPORT_ROLE_FILTER } from "./export-spec-role.ts";
 
 export type BuildExportStatusParams = {
   characters: CharacterRecord[];
@@ -33,6 +34,8 @@ export function buildExportStatusString({
   locale = "en",
   t,
 }: BuildExportStatusParams): string {
+  const effectiveRoleFilter = roleFilter ?? DEFAULT_EXPORT_ROLE_FILTER;
+
   if (dungeons.length === 0) {
     return t("exportPanel.noDungeonsFilter");
   }
@@ -58,7 +61,7 @@ export function buildExportStatusString({
           resolveEffectiveExportSpecSelection(
             character,
             exportSpecSelectionByCharacterId,
-            roleFilter,
+            effectiveRoleFilter,
           ),
           locale,
           minGearScore,
