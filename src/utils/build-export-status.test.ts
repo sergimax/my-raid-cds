@@ -174,6 +174,38 @@ describe("buildExportStatusString", () => {
     ).toBe("All selected characters have CD on matching dungeons.");
   });
 
+  it("defaults role filter when omitted or undefined", () => {
+    const character = createTestCharacter({
+      id: "character-1",
+      name: "Beta",
+      class: Classes[5],
+      mainSpec: { spec: "Shadow", gearScore: 5800 },
+    });
+    const dungeon = createTestDungeon({ id: "dungeon-1", shortName: "ICC" });
+    const toggles = createTestToggles([
+      { characterId: "character-1", dungeonId: "dungeon-1", on: false },
+    ]);
+    const expected = "ICC25 - Beta: SP 5.8";
+
+    expect(
+      buildExportStatusString({
+        ...baseParams,
+        characters: [character],
+        dungeons: [dungeon],
+        dungeonToggles: toggles,
+      }),
+    ).toBe(expected);
+    expect(
+      buildExportStatusString({
+        ...baseParams,
+        characters: [character],
+        dungeons: [dungeon],
+        dungeonToggles: toggles,
+        roleFilter: undefined,
+      }),
+    ).toBe(expected);
+  });
+
   it("filters export lines by minimum gear score", () => {
     const character = createTestCharacter({
       id: "character-1",

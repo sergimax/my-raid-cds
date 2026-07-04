@@ -60,5 +60,6 @@ export function specPassesExportRoleFilter(
     return true;
   }
 
-  return roleFilter[exportRole];
+  const activeRoleFilter = roleFilter ?? DEFAULT_EXPORT_ROLE_FILTER;
+  return activeRoleFilter[exportRole];
 }
