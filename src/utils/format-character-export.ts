@@ -2,6 +2,11 @@ import { getLocalizedSpecName } from "../i18n/localized-domain.ts";
 import type { AppLocale } from "../i18n/types.ts";
 import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import { formatExportGearScore } from "./format-character-details.ts";
+import {
+  DEFAULT_EXPORT_ROLE_FILTER,
+  specPassesExportRoleFilter,
+  type ExportRoleFilter,
+} from "./export-spec-role.ts";
 
 export type CharacterExportSpecSelection = {
   includeMain: boolean;
@@ -91,6 +96,7 @@ export function formatCharacterExportLabel(
   selection: CharacterExportSpecSelection = defaultExportSpecSelection(character),
   locale: AppLocale = "en",
   minGearScore?: number,
+  roleFilter: ExportRoleFilter = DEFAULT_EXPORT_ROLE_FILTER,
 ): string | null {
   if (!isCharacterIncludedInExport(character, selection)) {
     return null;
@@ -103,7 +109,8 @@ export function formatCharacterExportLabel(
     selection.includeMain &&
     character.mainSpec &&
     className &&
-    specPassesExportMinGearScore(character.mainSpec, minGearScore)
+    specPassesExportMinGearScore(character.mainSpec, minGearScore) &&
+    specPassesExportRoleFilter(className, character.mainSpec.spec, roleFilter)
   ) {
     specSegments.push(formatSpecExportSegment(className, character.mainSpec, locale));
   }
@@ -111,7 +118,8 @@ export function formatCharacterExportLabel(
     selection.includeOff &&
     character.offSpec &&
     className &&
-    specPassesExportMinGearScore(character.offSpec, minGearScore)
+    specPassesExportMinGearScore(character.offSpec, minGearScore) &&
+    specPassesExportRoleFilter(className, character.offSpec.spec, roleFilter)
   ) {
     specSegments.push(formatSpecExportSegment(className, character.offSpec, locale));
   }
