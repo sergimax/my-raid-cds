@@ -52,6 +52,38 @@ export function resolveExportSpecSelection(
   };
 }
 
+export function isSpecIncludedForExportRole(
+  character: Pick<CharacterRecord, "class">,
+  spec: string,
+  roleFilter: ExportRoleFilter = DEFAULT_EXPORT_ROLE_FILTER,
+): boolean {
+  return specPassesExportRoleFilter(character.class?.name, spec, roleFilter);
+}
+
+/** Stored spec toggles with the role filter applied for display and export lines. */
+export function resolveEffectiveExportSpecSelection(
+  character: CharacterRecord,
+  exportSpecSelectionByCharacterId?: ExportSpecSelectionByCharacterId,
+  roleFilter: ExportRoleFilter = DEFAULT_EXPORT_ROLE_FILTER,
+): CharacterExportSpecSelection {
+  const selection = resolveExportSpecSelection(
+    character,
+    exportSpecSelectionByCharacterId,
+  );
+
+  return {
+    includeMain:
+      selection.includeMain &&
+      (!character.mainSpec ||
+        isSpecIncludedForExportRole(character, character.mainSpec.spec, roleFilter)),
+    includeOff:
+      selection.includeOff &&
+      (!character.offSpec ||
+        isSpecIncludedForExportRole(character, character.offSpec.spec, roleFilter)),
+    includeWithoutSpec: selection.includeWithoutSpec,
+  };
+}
+
 export function isCharacterIncludedInExport(
   character: Pick<CharacterRecord, "mainSpec" | "offSpec">,
   selection: CharacterExportSpecSelection,
@@ -96,7 +128,6 @@ export function formatCharacterExportLabel(
   selection: CharacterExportSpecSelection = defaultExportSpecSelection(character),
   locale: AppLocale = "en",
   minGearScore?: number,
-  roleFilter: ExportRoleFilter = DEFAULT_EXPORT_ROLE_FILTER,
 ): string | null {
   if (!isCharacterIncludedInExport(character, selection)) {
     return null;
@@ -109,8 +140,7 @@ export function formatCharacterExportLabel(
     selection.includeMain &&
     character.mainSpec &&
     className &&
-    specPassesExportMinGearScore(character.mainSpec, minGearScore) &&
-    specPassesExportRoleFilter(className, character.mainSpec.spec, roleFilter)
+    specPassesExportMinGearScore(character.mainSpec, minGearScore)
   ) {
     specSegments.push(formatSpecExportSegment(className, character.mainSpec, locale));
   }
@@ -118,8 +148,7 @@ export function formatCharacterExportLabel(
     selection.includeOff &&
     character.offSpec &&
     className &&
-    specPassesExportMinGearScore(character.offSpec, minGearScore) &&
-    specPassesExportRoleFilter(className, character.offSpec.spec, roleFilter)
+    specPassesExportMinGearScore(character.offSpec, minGearScore)
   ) {
     specSegments.push(formatSpecExportSegment(className, character.offSpec, locale));
   }

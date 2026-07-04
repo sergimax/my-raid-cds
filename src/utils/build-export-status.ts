@@ -4,7 +4,7 @@ import type { AppLocale } from "../i18n/types.ts";
 import type { TranslateFn } from "../i18n/translate.ts";
 import {
   formatCharacterExportLabel,
-  resolveExportSpecSelection,
+  resolveEffectiveExportSpecSelection,
   type ExportSpecSelectionByCharacterId,
 } from "./format-character-export.ts";
 import { formatDungeonExportLabel } from "./format-dungeon-label.ts";
@@ -55,13 +55,13 @@ export function buildExportStatusString({
       .map((character) =>
         formatCharacterExportLabel(
           character,
-          resolveExportSpecSelection(
+          resolveEffectiveExportSpecSelection(
             character,
             exportSpecSelectionByCharacterId,
+            roleFilter,
           ),
           locale,
           minGearScore,
-          roleFilter,
         ),
       )
       .filter((entry): entry is string => entry !== null)

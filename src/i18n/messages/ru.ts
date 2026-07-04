@@ -173,7 +173,7 @@ export const ruMessages: Messages = {
     minGearScoreAria: "Минимальный GS для строк экспорта",
     roleFilterLabel: "Фильтр по роли",
     roleFilterHelper:
-      "В экспорт попадут только спеки отмеченных ролей.",
+      "Снятая роль отключает соответствующие спеки и убирает их из экспорта.",
     roleTank: "Танк",
     roleHealer: "Хил",
     roleMeleeDps: "МДД",

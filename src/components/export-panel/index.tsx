@@ -12,6 +12,8 @@ import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import {
   characterHasExportSpecs,
   isCharacterIncludedInExport,
+  isSpecIncludedForExportRole,
+  resolveEffectiveExportSpecSelection,
   resolveExportSpecSelection,
   type CharacterExportSpecSelection,
 } from "../../utils/format-character-export.ts";
@@ -36,6 +38,7 @@ type ExportSpecCheckboxProps = {
   specGear: CharacterSpecGear;
   slot: keyof CharacterExportSpecSelection;
   checked: boolean;
+  disabled?: boolean;
   onCheckedChange: (
     slot: keyof CharacterExportSpecSelection,
     included: boolean,
@@ -47,6 +50,7 @@ function ExportSpecCheckbox({
   specGear,
   slot,
   checked,
+  disabled = false,
   onCheckedChange,
 }: ExportSpecCheckboxProps) {
   const { t, locale } = useTranslation();
@@ -67,6 +71,7 @@ function ExportSpecCheckbox({
         <Checkbox
           size="small"
           checked={checked}
+          disabled={disabled}
           onChange={(event) => {
             onCheckedChange(slot, event.target.checked);
           }}
@@ -120,13 +125,14 @@ export function ExportPanel({
       characters.filter((character) =>
         isCharacterIncludedInExport(
           character,
-          resolveExportSpecSelection(
+          resolveEffectiveExportSpecSelection(
             character,
             exportSpecSelectionByCharacterId,
+            roleFilter,
           ),
         ),
       ),
-    [characters, exportSpecSelectionByCharacterId],
+    [characters, exportSpecSelectionByCharacterId, roleFilter],
   );
 
   const statusText = useMemo(
@@ -192,11 +198,26 @@ export function ExportPanel({
           />
           <Stack spacing={1}>
             {characters.map((character) => {
-              const selection = resolveExportSpecSelection(
+              const selection = resolveEffectiveExportSpecSelection(
                 character,
                 exportSpecSelectionByCharacterId,
+                roleFilter,
               );
               const hasSpecs = characterHasExportSpecs(character);
+              const mainRoleAllowed =
+                !character.mainSpec ||
+                isSpecIncludedForExportRole(
+                  character,
+                  character.mainSpec.spec,
+                  roleFilter,
+                );
+              const offRoleAllowed =
+                !character.offSpec ||
+                isSpecIncludedForExportRole(
+                  character,
+                  character.offSpec.spec,
+                  roleFilter,
+                );
               return (
                 <Stack
                   key={character.id}
@@ -216,6 +237,7 @@ export function ExportPanel({
                       specGear={character.mainSpec}
                       slot="includeMain"
                       checked={selection.includeMain}
+                      disabled={!mainRoleAllowed}
                       onCheckedChange={(slot, included) => {
                         setSpecIncluded(character, slot, included);
                       }}
@@ -227,6 +249,7 @@ export function ExportPanel({
                       specGear={character.offSpec}
                       slot="includeOff"
                       checked={selection.includeOff}
+                      disabled={!offRoleAllowed}
                       onCheckedChange={(slot, included) => {
                         setSpecIncluded(character, slot, included);
                       }}
