@@ -1,8 +1,5 @@
 import type { TranslateFn } from "../../i18n/translate.ts";
-import {
-  TRACKER_EXPORT_PANEL_MAX_WIDTH,
-  TRACKER_NARROW_PANEL_MAX_WIDTH,
-} from "./constants.ts";
+import { TRACKER_NARROW_PANEL_MAX_WIDTH } from "./constants.ts";
 import type { MainToolbarPanelId, ToolbarPanelId } from "./resolve-toolbar-panel-id.ts";
 
 export type ToolbarPanelMeta = {
@@ -75,6 +72,5 @@ function getExportToolbarPanelMeta(
     description: t("exportPanel.instructions"),
     closeAriaLabel: t("exportPanel.closeAria"),
     onClose,
-    maxWidth: TRACKER_EXPORT_PANEL_MAX_WIDTH,
   };
 }

@@ -1,4 +1,5 @@
 import {
+  Box,
   Checkbox,
   FormControlLabel,
   Stack,
@@ -188,16 +189,26 @@ export function ExportPanel({
     <Stack spacing={2}>
       {characters.length > 0 ? (
         <>
-          <ExportMinGearScoreFilter
-            enabled={minGearScoreFilterEnabled}
-            compactValue={minGearScoreCompact}
-            onEnabledChange={setMinGearScoreFilterEnabled}
-            onCompactValueChange={setMinGearScoreCompact}
-          />
-          <ExportRoleFilterPanel
-            roleFilter={roleFilter}
-            onRoleFilterChange={setRoleFilter}
-          />
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={2}
+            sx={{ alignItems: "flex-start", gap: 2 }}
+          >
+            <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
+              <ExportMinGearScoreFilter
+                enabled={minGearScoreFilterEnabled}
+                compactValue={minGearScoreCompact}
+                onEnabledChange={setMinGearScoreFilterEnabled}
+                onCompactValueChange={setMinGearScoreCompact}
+              />
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
+              <ExportRoleFilterPanel
+                roleFilter={roleFilter}
+                onRoleFilterChange={setRoleFilter}
+              />
+            </Box>
+          </Stack>
           <Stack spacing={1}>
             {characters.map((character) => {
               const selection = resolveEffectiveExportSpecSelection(
