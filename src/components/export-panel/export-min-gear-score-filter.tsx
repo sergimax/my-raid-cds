@@ -30,34 +30,34 @@ export function ExportMinGearScoreFilter({
   const compactLabel = formatCompactExportMinGearScore(compactValue);
 
   return (
-    <Stack spacing={0.5} sx={{ minWidth: 0 }}>
+    <Stack spacing={0.75} sx={{ minWidth: 0 }}>
+      <FormControlLabel
+        control={
+          <Checkbox
+            size="small"
+            checked={enabled}
+            onChange={(event) => {
+              onEnabledChange(event.target.checked);
+            }}
+            slotProps={{
+              input: {
+                "aria-label": t("exportPanel.minGearScoreEnableAria"),
+              },
+            }}
+          />
+        }
+        label={
+          <Typography variant="body2" component="span">
+            {t("exportPanel.minGearScoreEnable")}
+          </Typography>
+        }
+        sx={{ mr: 0, alignSelf: "flex-start" }}
+      />
       <Stack
         direction="row"
         spacing={1}
-        sx={{ alignItems: "center", flexWrap: "wrap", gap: 1 }}
+        sx={{ alignItems: "center", pl: 0.5, minWidth: 0 }}
       >
-        <FormControlLabel
-          control={
-            <Checkbox
-              size="small"
-              checked={enabled}
-              onChange={(event) => {
-                onEnabledChange(event.target.checked);
-              }}
-              slotProps={{
-                input: {
-                  "aria-label": t("exportPanel.minGearScoreEnableAria"),
-                },
-              }}
-            />
-          }
-          label={
-            <Typography variant="body2" component="span" sx={{ whiteSpace: "nowrap" }}>
-              {t("exportPanel.minGearScoreEnable")}
-            </Typography>
-          }
-          sx={{ mr: 0, flexShrink: 0 }}
-        />
         <Slider
           disabled={!enabled}
           min={EXPORT_MIN_GS_COMPACT_MIN}
@@ -83,7 +83,7 @@ export function ExportMinGearScoreFilter({
               "aria-label": t("exportPanel.minGearScoreAria"),
             },
           }}
-          sx={{ flex: 1, minWidth: 120, mx: 0.5 }}
+          sx={{ flex: 1, minWidth: 0, mx: 0.5 }}
         />
         <Typography
           variant="body2"
