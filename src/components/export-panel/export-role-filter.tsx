@@ -54,12 +54,6 @@ export function ExportRoleFilterPanel({
         spacing={1}
         sx={{ alignItems: "center", flexWrap: "wrap", gap: 1, pl: 0.5 }}
       >
-        <Typography
-          variant="body2"
-          sx={{ fontWeight: 600, flexShrink: 0, whiteSpace: "nowrap" }}
-        >
-          {t("exportPanel.roleFilterLabel")}
-        </Typography>
         {EXPORT_ROLE_FILTER_IDS.map((roleId) => (
           <FormControlLabel
             key={roleId}
@@ -88,9 +82,6 @@ export function ExportRoleFilterPanel({
           />
         ))}
       </Stack>
-      <Typography variant="caption" color="text.secondary" sx={{ pl: 0.5 }}>
-        {t("exportPanel.roleFilterHelper")}
-      </Typography>
     </Stack>
   );
 }

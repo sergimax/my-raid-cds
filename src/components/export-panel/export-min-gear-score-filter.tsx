@@ -100,9 +100,6 @@ export function ExportMinGearScoreFilter({
             : "—"}
         </Typography>
       </Stack>
-      <Typography variant="caption" color="text.secondary" sx={{ pl: 0.5 }}>
-        {t("exportPanel.minGearScoreHelper")}
-      </Typography>
     </Stack>
   );
 }

@@ -162,9 +162,20 @@ export const ruMessages: Messages = {
     title: "Экспорт",
     closeAria: "Закрыть панель экспорта",
     instructions:
-      "Отфильтруйте подземелья поиском в таблице, скопируйте строки ниже — по одной на рейд с персонажами без КД (переключатель выкл.). Отметьте спеки для каждого персонажа. Можно отфильтровать по роли (танк, хил, мили ДД, рейндж ДД) и включить ползунок минимального GS (напр. 5.6) — спеки ниже порога не попадут в экспорт.",
+      "Скопируйте строки ниже — по одной на рейд с персонажами без КД (переключатель выкл.). Блоки фильтров сужают рейды (поиск в таблице), роли, GS и спеки персонажей.",
     noCharacters: "Добавьте персонажа для формирования сводки.",
     exportText: "Текст экспорта",
+    dungeonFilterTitle: "Фильтр по рейду",
+    dungeonFilterHelper:
+      "Использует поле поиска подземелий в заголовке таблицы. В экспорт попадает по одной строке на каждый подходящий рейд.",
+    dungeonFilterSearchEmpty: "Поиск в таблице: (нет) — все рейды",
+    dungeonFilterSearchActive: "Поиск в таблице: {{query}}",
+    dungeonFilterMatchCount: "{{count}} из {{total}} рейдов в экспорте",
+    dungeonFilterNoMatches: "Нет рейдов по текущему поиску в таблице.",
+    gearScoreFilterTitle: "Фильтр по gear score",
+    characterSpecsFilterTitle: "Фильтр по спекам персонажей",
+    characterSpecsFilterHelper:
+      "Выберите, какие спеки каждого персонажа включать в строки экспорта.",
     minGearScoreEnable: "Фильтр по мин. GS",
     minGearScoreEnableAria: "Включить фильтр по минимальному GS для экспорта",
     minGearScoreHelper:
@@ -172,6 +183,7 @@ export const ruMessages: Messages = {
     minGearScoreSliderValue: "≥ {{value}}",
     minGearScoreAria: "Минимальный GS для строк экспорта",
     roleFilterLabel: "Фильтр по роли",
+    roleFilterTitle: "Фильтр по роли",
     roleFilterHelper:
       "Снятая роль отключает соответствующие спеки и убирает их из экспорта.",
     roleTank: "Танк",

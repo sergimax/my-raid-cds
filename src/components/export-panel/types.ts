@@ -5,4 +5,6 @@ export type ExportPanelProps = {
   characters: CharacterRecord[];
   visibleDungeons: DungeonRecord[];
   dungeonToggles: DungeonToggles;
+  dungeonNameSearch: string;
+  totalDungeonCount: number;
 };

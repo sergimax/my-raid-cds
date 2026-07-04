@@ -1,22 +1,11 @@
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, TextField } from "@mui/material";
 import { useMemo, useState } from "react";
-import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
+import type { CharacterRecord } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
-import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import {
-  characterHasExportSpecs,
   isCharacterIncludedInExport,
-  isSpecIncludedForExportRole,
   resolveEffectiveExportSpecSelection,
   resolveExportSpecSelection,
-  specPassesExportMinGearScore,
   type CharacterExportSpecSelection,
 } from "../../utils/format-character-export.ts";
 import { buildExportStatusString } from "../../utils/build-export-status.ts";
@@ -24,7 +13,9 @@ import {
   EXPORT_MIN_GS_COMPACT_DEFAULT,
   resolveExportMinGearScoreThreshold,
 } from "../../utils/parse-export-min-gear-score.ts";
-import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
+import { ExportCharacterSpecFilter } from "./export-character-spec-filter.tsx";
+import { ExportDungeonFilter } from "./export-dungeon-filter.tsx";
+import { ExportFilterSection } from "./export-filter-section.tsx";
 import { ExportMinGearScoreFilter } from "./export-min-gear-score-filter.tsx";
 import { ExportRoleFilterPanel } from "./export-role-filter.tsx";
 import type { ExportPanelProps } from "./types.ts";
@@ -35,76 +26,12 @@ import {
 
 type StoredExportSpecSelection = Partial<CharacterExportSpecSelection>;
 
-type ExportSpecCheckboxProps = {
-  character: CharacterRecord;
-  specGear: CharacterSpecGear;
-  slot: keyof CharacterExportSpecSelection;
-  checked: boolean;
-  disabled?: boolean;
-  onCheckedChange: (
-    slot: keyof CharacterExportSpecSelection,
-    included: boolean,
-  ) => void;
-};
-
-function ExportSpecCheckbox({
-  character,
-  specGear,
-  slot,
-  checked,
-  disabled = false,
-  onCheckedChange,
-}: ExportSpecCheckboxProps) {
-  const { t, locale } = useTranslation();
-
-  if (!character.class) {
-    return null;
-  }
-
-  const specLabel = getLocalizedSpecName(
-    character.class.name,
-    specGear.spec,
-    locale,
-  );
-
-  return (
-    <FormControlLabel
-      control={
-        <Checkbox
-          size="small"
-          checked={checked}
-          disabled={disabled}
-          onChange={(event) => {
-            onCheckedChange(slot, event.target.checked);
-          }}
-          slotProps={{
-            input: {
-              "aria-label": t("exportPanel.includeSpecAria", {
-                spec: specLabel,
-                name: character.name,
-              }),
-            },
-          }}
-        />
-      }
-      label={
-        <CharacterSpecGearLabel
-          characterClass={character.class}
-          spec={specGear.spec}
-          gearScore={specGear.gearScore}
-          iconSize={18}
-          showSpecName={false}
-        />
-      }
-      sx={{ mr: 0 }}
-    />
-  );
-}
-
 export function ExportPanel({
   characters,
   visibleDungeons,
   dungeonToggles,
+  dungeonNameSearch,
+  totalDungeonCount,
 }: ExportPanelProps) {
   const { t, locale } = useTranslation();
   const [exportSpecSelectionByCharacterId, setExportSpecSelectionByCharacterId] =
@@ -186,125 +113,66 @@ export function ExportPanel({
   };
 
   return (
-    <Stack spacing={2}>
-      {characters.length > 0 ? (
-        <>
-          <Stack
-            direction={{ xs: "column", md: "row" }}
-            spacing={2}
-            sx={{ alignItems: "flex-start", gap: 2 }}
+    <Stack spacing={1.5}>
+      {totalDungeonCount > 0 ? (
+        <ExportFilterSection
+          title={t("exportPanel.dungeonFilterTitle")}
+          description={t("exportPanel.dungeonFilterHelper")}
+        >
+          <ExportDungeonFilter
+            dungeonNameSearch={dungeonNameSearch}
+            visibleDungeons={visibleDungeons}
+            totalDungeonCount={totalDungeonCount}
+            locale={locale}
+            t={t}
+          />
+        </ExportFilterSection>
+      ) : null}
+
+      <Stack
+        direction={{ xs: "column", md: "row" }}
+        spacing={1.5}
+        sx={{ alignItems: "stretch", gap: 1.5 }}
+      >
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <ExportFilterSection
+            title={t("exportPanel.gearScoreFilterTitle")}
+            description={t("exportPanel.minGearScoreHelper")}
           >
-            <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
-              <ExportMinGearScoreFilter
-                enabled={minGearScoreFilterEnabled}
-                compactValue={minGearScoreCompact}
-                onEnabledChange={setMinGearScoreFilterEnabled}
-                onCompactValueChange={setMinGearScoreCompact}
-              />
-            </Box>
-            <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>
-              <ExportRoleFilterPanel
-                roleFilter={roleFilter}
-                onRoleFilterChange={setRoleFilter}
-              />
-            </Box>
-          </Stack>
-          <Stack spacing={1}>
-            {characters.map((character) => {
-              const selection = resolveEffectiveExportSpecSelection(
-                character,
-                exportSpecSelectionByCharacterId,
-                roleFilter,
-                minGearScore,
-              );
-              const hasSpecs = characterHasExportSpecs(character);
-              const mainRoleAllowed =
-                !character.mainSpec ||
-                isSpecIncludedForExportRole(
-                  character,
-                  character.mainSpec.spec,
-                  roleFilter,
-                );
-              const offRoleAllowed =
-                !character.offSpec ||
-                isSpecIncludedForExportRole(
-                  character,
-                  character.offSpec.spec,
-                  roleFilter,
-                );
-              const mainGearScoreAllowed =
-                !character.mainSpec ||
-                specPassesExportMinGearScore(character.mainSpec, minGearScore);
-              const offGearScoreAllowed =
-                !character.offSpec ||
-                specPassesExportMinGearScore(character.offSpec, minGearScore);
-              return (
-                <Stack
-                  key={character.id}
-                  direction="row"
-                  spacing={1}
-                  sx={{ alignItems: "center", flexWrap: "wrap", gap: 1 }}
-                >
-                  <Typography
-                    variant="body2"
-                    sx={{ minWidth: 72, fontWeight: 600 }}
-                  >
-                    {character.name}
-                  </Typography>
-                  {character.mainSpec ? (
-                    <ExportSpecCheckbox
-                      character={character}
-                      specGear={character.mainSpec}
-                      slot="includeMain"
-                      checked={selection.includeMain}
-                      disabled={!mainRoleAllowed || !mainGearScoreAllowed}
-                      onCheckedChange={(slot, included) => {
-                        setSpecIncluded(character, slot, included);
-                      }}
-                    />
-                  ) : null}
-                  {character.offSpec ? (
-                    <ExportSpecCheckbox
-                      character={character}
-                      specGear={character.offSpec}
-                      slot="includeOff"
-                      checked={selection.includeOff}
-                      disabled={!offRoleAllowed || !offGearScoreAllowed}
-                      onCheckedChange={(slot, included) => {
-                        setSpecIncluded(character, slot, included);
-                      }}
-                    />
-                  ) : null}
-                  {!hasSpecs ? (
-                    <Checkbox
-                      size="small"
-                      checked={selection.includeWithoutSpec}
-                      onChange={(event) => {
-                        setSpecIncluded(
-                          character,
-                          "includeWithoutSpec",
-                          event.target.checked,
-                        );
-                      }}
-                      slotProps={{
-                        input: {
-                          "aria-label": t("exportPanel.includeCharacterAria", {
-                            name: character.name,
-                          }),
-                        },
-                      }}
-                    />
-                  ) : null}
-                </Stack>
-              );
-            })}
-          </Stack>
-        </>
-      ) : (
-        <Typography variant="body2" color="text.secondary">
-          {t("exportPanel.noCharacters")}
-        </Typography>
-      )}
+            <ExportMinGearScoreFilter
+              enabled={minGearScoreFilterEnabled}
+              compactValue={minGearScoreCompact}
+              onEnabledChange={setMinGearScoreFilterEnabled}
+              onCompactValueChange={setMinGearScoreCompact}
+            />
+          </ExportFilterSection>
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <ExportFilterSection
+            title={t("exportPanel.roleFilterTitle")}
+            description={t("exportPanel.roleFilterHelper")}
+          >
+            <ExportRoleFilterPanel
+              roleFilter={roleFilter}
+              onRoleFilterChange={setRoleFilter}
+            />
+          </ExportFilterSection>
+        </Box>
+      </Stack>
+
+      <ExportFilterSection
+        title={t("exportPanel.characterSpecsFilterTitle")}
+        description={t("exportPanel.characterSpecsFilterHelper")}
+      >
+        <ExportCharacterSpecFilter
+          characters={characters}
+          exportSpecSelectionByCharacterId={exportSpecSelectionByCharacterId}
+          roleFilter={roleFilter}
+          minGearScore={minGearScore}
+          onSpecIncluded={setSpecIncluded}
+        />
+      </ExportFilterSection>
+
       <TextField
         label={t("exportPanel.exportText")}
         value={statusText}
