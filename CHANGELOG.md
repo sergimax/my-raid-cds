@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.40.0] - 2026-07-04
+
 ### Added
 
 - **Export role filter:** Tank, healer, melee DPS, and ranged DPS checkboxes (all on by default). Unchecked roles disable matching per-character spec checkboxes and omit those specs from export lines. Roles are derived from bundled spec profiles (`spec-stat-priorities.ts`).
