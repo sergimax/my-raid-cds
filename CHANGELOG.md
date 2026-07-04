@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Export role filter:** Tank, healer, melee DPS, and ranged DPS checkboxes (all on by default). Unchecked roles disable matching per-character spec checkboxes and omit those specs from export lines. Roles are derived from bundled spec profiles (`spec-stat-priorities.ts`).
+
+### Changed
+
+- **Export minimum GS filter:** When enabled, specs below the selected threshold are disabled in the character checklist and omitted from export lines (same UX as the role filter; stored spec toggles are preserved when the filter is turned off).
+
 ## [1.39.0] - 2026-07-04
 
 ### Added
