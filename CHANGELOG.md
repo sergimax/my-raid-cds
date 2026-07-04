@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.39.0] - 2026-07-04
+
+### Added
+
+- **Character edit sync hints:** Info alerts when gear score was edited without re-importing WowSimsExporter gear, or when imported gear changed without updating the gear score field; baselines reset when the spec changes.
+
+### Changed
+
+- **Ruby Sanctum gear hints:** Ilvl and BiS loot pools respect dungeon size and difficulty — RS 10 Normal, 10 Heroic, 25 Normal, and 25 Heroic each use their own drop pool (including at the same item level).
+- **BiS read-only layout:** Built-in preset rows hide the action column; slot labels use a fixed column with ellipsis when names overflow.
+
+### Fixed
+
+- **BiS ring/trinket hints:** Swapped finger and trinket slots no longer show as missing BiS when the target item is equipped in the alternate slot of the pair.
+- **BiS slot row layout:** Fixed column shift when viewing read-only presets.
+- **Gear hint tooltips:** Boss-grouped BiS sections and flat fallbacks omit items whose drop sources do not match the dungeon row.
+- **Ilvl stat filtering:** Tighter compatibility rules for Protection and Retribution Paladin (tank necks, stamina-only trinkets, caster procs), Druid specs, Unholy Death Knight intellect mail, and related cross-armor edge cases.
+
 ## [1.38.0] - 2026-07-03
 
 ### Added
