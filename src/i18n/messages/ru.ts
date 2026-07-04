@@ -168,7 +168,7 @@ export const ruMessages: Messages = {
     minGearScoreEnable: "Фильтр по мин. GS",
     minGearScoreEnableAria: "Включить фильтр по минимальному GS для экспорта",
     minGearScoreHelper:
-      "В экспорт попадут только отмеченные спеки с GS не ниже выбранного значения.",
+      "При включении спеки ниже выбранного GS отключаются и не попадают в экспорт.",
     minGearScoreSliderValue: "≥ {{value}}",
     minGearScoreAria: "Минимальный GS для строк экспорта",
     roleFilterLabel: "Фильтр по роли",
