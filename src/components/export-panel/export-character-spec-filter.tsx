@@ -122,7 +122,7 @@ export function ExportCharacterSpecFilter({
     <Box
       sx={{
         display: "grid",
-        gridTemplateColumns: "max-content minmax(5.5rem, 1fr) minmax(5.5rem, 1fr)",
+        gridTemplateColumns: "max-content minmax(6rem, 1fr) minmax(6rem, 1fr)",
         columnGap: 1,
         rowGap: 0.75,
         alignItems: "center",
