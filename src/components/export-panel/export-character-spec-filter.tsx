@@ -1,4 +1,5 @@
-import { Checkbox, FormControlLabel, Stack, Typography } from "@mui/material";
+import type { ReactNode } from "react";
+import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
@@ -89,8 +90,14 @@ function ExportSpecCheckbox({
           showSpecName={false}
         />
       }
-      sx={{ mr: 0 }}
+      sx={{ mr: 0, width: "100%" }}
     />
+  );
+}
+
+function SpecCell({ children }: { children: ReactNode }) {
+  return (
+    <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>{children}</Box>
   );
 }
 
@@ -112,7 +119,16 @@ export function ExportCharacterSpecFilter({
   }
 
   return (
-    <Stack spacing={1}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "max-content minmax(5.5rem, 1fr) minmax(5.5rem, 1fr)",
+        columnGap: 1,
+        rowGap: 0.75,
+        alignItems: "center",
+        minWidth: 0,
+      }}
+    >
       {characters.map((character) => {
         const selection = resolveEffectiveExportSpecSelection(
           character,
@@ -143,67 +159,67 @@ export function ExportCharacterSpecFilter({
           specPassesExportMinGearScore(character.offSpec, minGearScore);
 
         return (
-          <Stack
+          <Box
             key={character.id}
-            direction="row"
-            spacing={1}
-            sx={{ alignItems: "center", flexWrap: "nowrap", gap: 1, minWidth: 0 }}
+            sx={{
+              display: "contents",
+            }}
           >
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, flexShrink: 0, minWidth: 56 }}
-            >
+            <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: "nowrap" }}>
               {character.name}
             </Typography>
-            {character.mainSpec ? (
-              <ExportSpecCheckbox
-                character={character}
-                specGear={character.mainSpec}
-                slot="includeMain"
-                checked={selection.includeMain}
-                disabled={!mainRoleAllowed || !mainGearScoreAllowed}
-                onCheckedChange={(slot, included) => {
-                  onSpecIncluded(character, slot, included);
-                }}
-                t={t}
-              />
-            ) : null}
-            {character.offSpec ? (
-              <ExportSpecCheckbox
-                character={character}
-                specGear={character.offSpec}
-                slot="includeOff"
-                checked={selection.includeOff}
-                disabled={!offRoleAllowed || !offGearScoreAllowed}
-                onCheckedChange={(slot, included) => {
-                  onSpecIncluded(character, slot, included);
-                }}
-                t={t}
-              />
-            ) : null}
-            {!hasSpecs ? (
-              <Checkbox
-                size="small"
-                checked={selection.includeWithoutSpec}
-                onChange={(event) => {
-                  onSpecIncluded(
-                    character,
-                    "includeWithoutSpec",
-                    event.target.checked,
-                  );
-                }}
-                slotProps={{
-                  input: {
-                    "aria-label": t("exportPanel.includeCharacterAria", {
-                      name: character.name,
-                    }),
-                  },
-                }}
-              />
-            ) : null}
-          </Stack>
+            <SpecCell>
+              {character.mainSpec ? (
+                <ExportSpecCheckbox
+                  character={character}
+                  specGear={character.mainSpec}
+                  slot="includeMain"
+                  checked={selection.includeMain}
+                  disabled={!mainRoleAllowed || !mainGearScoreAllowed}
+                  onCheckedChange={(slot, included) => {
+                    onSpecIncluded(character, slot, included);
+                  }}
+                  t={t}
+                />
+              ) : !hasSpecs ? (
+                <Checkbox
+                  size="small"
+                  checked={selection.includeWithoutSpec}
+                  onChange={(event) => {
+                    onSpecIncluded(
+                      character,
+                      "includeWithoutSpec",
+                      event.target.checked,
+                    );
+                  }}
+                  slotProps={{
+                    input: {
+                      "aria-label": t("exportPanel.includeCharacterAria", {
+                        name: character.name,
+                      }),
+                    },
+                  }}
+                />
+              ) : null}
+            </SpecCell>
+            <SpecCell>
+              {character.offSpec ? (
+                <ExportSpecCheckbox
+                  character={character}
+                  specGear={character.offSpec}
+                  slot="includeOff"
+                  checked={selection.includeOff}
+                  disabled={!offRoleAllowed || !offGearScoreAllowed}
+                  onCheckedChange={(slot, included) => {
+                    onSpecIncluded(character, slot, included);
+                  }}
+                  t={t}
+                />
+              ) : null}
+            </SpecCell>
+          </Box>
         );
       })}
-    </Stack>
+    </Box>
   );
 }
