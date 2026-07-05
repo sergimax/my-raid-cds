@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel, Stack, Typography } from "@mui/material";
+import { Box, Checkbox, Stack, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 import { exportRoleIcons } from "../../assets/role-icons/role-icons.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
@@ -33,18 +33,24 @@ const ROLE_FILTER_ARIA_KEYS: Record<
   rangedDps: "roleRangedDpsAria",
 };
 
-const ROLE_FILTER_ROWS: readonly (readonly ExportRoleFilterId[])[] = [
-  ["tank", "meleeDps"],
-  ["healer", "rangedDps"],
+const ROLE_FILTER_GRID_ORDER: readonly ExportRoleFilterId[] = [
+  "tank",
+  "meleeDps",
+  "healer",
+  "rangedDps",
 ];
 
-const roleFilterLabelSx: SxProps<Theme> = {
-  mr: 0,
+const roleFilterOptionSx: SxProps<Theme> = {
+  display: "flex",
   alignItems: "flex-start",
+  gap: 0.25,
+  width: "100%",
+  minWidth: 0,
+  cursor: "pointer",
   borderRadius: 1,
   px: 0.5,
   py: 0.25,
-  mx: -0.5,
+  boxSizing: "border-box",
   transition: (theme) =>
     theme.transitions.create(["background-color"], {
       duration: theme.transitions.duration.shortest,
@@ -61,7 +67,6 @@ const roleFilterLabelSx: SxProps<Theme> = {
         duration: theme.transitions.duration.shortest,
       }),
   },
-  "& .MuiFormControlLabel-label": { ml: 0.75 },
 };
 
 type RoleFilterOptionProps = {
@@ -78,43 +83,38 @@ function RoleFilterOption({
   t,
 }: RoleFilterOptionProps) {
   return (
-    <FormControlLabel
-      control={
-        <Checkbox
-          size="small"
-          checked={checked}
-          onChange={(event) => {
-            onCheckedChange(event.target.checked);
-          }}
-          slotProps={{
-            input: {
-              "aria-label": t(`exportPanel.${ROLE_FILTER_ARIA_KEYS[roleId]}`),
-            },
-          }}
-          sx={{ alignSelf: "flex-start", mt: 0.25 }}
+    <Box component="label" sx={roleFilterOptionSx}>
+      <Checkbox
+        size="small"
+        checked={checked}
+        onChange={(event) => {
+          onCheckedChange(event.target.checked);
+        }}
+        slotProps={{
+          input: {
+            "aria-label": t(`exportPanel.${ROLE_FILTER_ARIA_KEYS[roleId]}`),
+          },
+        }}
+        sx={{ alignSelf: "flex-start", mt: 0.25, p: 0.5, flexShrink: 0 }}
+      />
+      <Stack spacing={0.5} sx={{ alignItems: "center", flex: 1, minWidth: 0 }}>
+        <Box
+          component="img"
+          src={exportRoleIcons[roleId]}
+          alt=""
+          width={32}
+          height={32}
+          sx={{ borderRadius: "50%", flexShrink: 0, display: "block" }}
         />
-      }
-      label={
-        <Stack spacing={0.5} sx={{ alignItems: "center", minWidth: 0 }}>
-          <Box
-            component="img"
-            src={exportRoleIcons[roleId]}
-            alt=""
-            width={32}
-            height={32}
-            sx={{ borderRadius: "50%", flexShrink: 0, display: "block" }}
-          />
-          <Typography
-            variant="body2"
-            component="span"
-            sx={{ lineHeight: 1.2, textAlign: "center" }}
-          >
-            {t(`exportPanel.${ROLE_FILTER_MESSAGE_KEYS[roleId]}`)}
-          </Typography>
-        </Stack>
-      }
-      sx={roleFilterLabelSx}
-    />
+        <Typography
+          variant="body2"
+          component="span"
+          sx={{ lineHeight: 1.2, textAlign: "center", width: "100%" }}
+        >
+          {t(`exportPanel.${ROLE_FILTER_MESSAGE_KEYS[roleId]}`)}
+        </Typography>
+      </Stack>
+    </Box>
   );
 }
 
@@ -132,27 +132,27 @@ export function ExportRoleFilterPanel({
   };
 
   return (
-    <Stack spacing={0.75} sx={{ minWidth: 0, pl: 0.5 }}>
-      {ROLE_FILTER_ROWS.map((rowRoleIds) => (
-        <Stack
-          key={rowRoleIds.join("-")}
-          direction="row"
-          spacing={1.5}
-          sx={{ alignItems: "flex-start", gap: 1.5 }}
-        >
-          {rowRoleIds.map((roleId) => (
-            <RoleFilterOption
-              key={roleId}
-              roleId={roleId}
-              checked={roleFilter[roleId]}
-              onCheckedChange={(included) => {
-                setRoleIncluded(roleId, included);
-              }}
-              t={t}
-            />
-          ))}
-        </Stack>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+        columnGap: 1,
+        rowGap: 0.75,
+        width: "100%",
+        minWidth: 0,
+      }}
+    >
+      {ROLE_FILTER_GRID_ORDER.map((roleId) => (
+        <RoleFilterOption
+          key={roleId}
+          roleId={roleId}
+          checked={roleFilter[roleId]}
+          onCheckedChange={(included) => {
+            setRoleIncluded(roleId, included);
+          }}
+          t={t}
+        />
       ))}
-    </Stack>
+    </Box>
   );
 }
