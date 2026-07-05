@@ -1,4 +1,4 @@
-import { Box, Stack, TextField } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { useMemo, useState } from "react";
 import type { CharacterRecord } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
@@ -8,7 +8,7 @@ import {
   resolveExportSpecSelection,
   type CharacterExportSpecSelection,
 } from "../../utils/format-character-export.ts";
-import { buildExportStatusString } from "../../utils/build-export-status.ts";
+import { buildExportStatus } from "../../utils/build-export-status.ts";
 import {
   EXPORT_MIN_GS_COMPACT_DEFAULT,
   resolveExportMinGearScoreThreshold,
@@ -19,6 +19,7 @@ import { ExportFilterBlock } from "./export-filter-block.tsx";
 import { ExportFilterSection } from "./export-filter-section.tsx";
 import { ExportMinGearScoreFilter } from "./export-min-gear-score-filter.tsx";
 import { ExportRoleFilterPanel } from "./export-role-filter.tsx";
+import { ExportResultLines } from "./export-result-lines.tsx";
 import {
   getExportFilterGridTemplateAreas,
   getExportFilterGridTemplateColumns,
@@ -73,9 +74,9 @@ export function ExportPanel({
     [characters, exportSpecSelectionByCharacterId, minGearScore, roleFilter],
   );
 
-  const statusText = useMemo(
+  const exportStatus = useMemo(
     () =>
-      buildExportStatusString({
+      buildExportStatus({
         characters: includedCharacters,
         dungeons: visibleDungeons,
         dungeonToggles,
@@ -203,24 +204,9 @@ export function ExportPanel({
         ) : null}
       </Box>
 
-      <TextField
-        label={t("exportPanel.exportText")}
-        value={statusText}
-        multiline
-        minRows={4}
-        maxRows={16}
-        slotProps={{
-          input: {
-            readOnly: true,
-          },
-          htmlInput: {
-            "aria-label": t("exportPanel.textareaAria"),
-          },
-        }}
-        onFocus={(event) => {
-          event.target.select();
-        }}
-      />
+      <Box sx={{ width: "100%", minWidth: 0 }}>
+        <ExportResultLines result={exportStatus} />
+      </Box>
     </Stack>
   );
 }

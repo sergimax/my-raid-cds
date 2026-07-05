@@ -23,8 +23,22 @@ export type BuildExportStatusParams = {
   t: TranslateFn;
 };
 
-/** Characters without CD (toggle off) per visible dungeon, one line each. */
-export function buildExportStatusString({
+export type ExportStatusLine = {
+  dungeonId: string;
+  raidLabel: string;
+  charactersLabel: string;
+};
+
+export type BuildExportStatusResult =
+  | { kind: "message"; message: string }
+  | { kind: "lines"; lines: ExportStatusLine[] };
+
+export function formatExportLineCopyText(line: ExportStatusLine): string {
+  return `${line.raidLabel} - ${line.charactersLabel}`;
+}
+
+/** Characters without CD (toggle off) per visible dungeon. */
+export function buildExportStatus({
   characters,
   dungeons,
   dungeonToggles,
@@ -33,17 +47,17 @@ export function buildExportStatusString({
   roleFilter,
   locale = "en",
   t,
-}: BuildExportStatusParams): string {
+}: BuildExportStatusParams): BuildExportStatusResult {
   const effectiveRoleFilter = roleFilter ?? DEFAULT_EXPORT_ROLE_FILTER;
 
   if (dungeons.length === 0) {
-    return t("exportPanel.noDungeonsFilter");
+    return { kind: "message", message: t("exportPanel.noDungeonsFilter") };
   }
   if (characters.length === 0) {
-    return t("exportPanel.selectCharacter");
+    return { kind: "message", message: t("exportPanel.selectCharacter") };
   }
 
-  const lines: string[] = [];
+  const lines: ExportStatusLine[] = [];
 
   for (const dungeon of dungeons) {
     const charactersWithoutCd = characters.filter(
@@ -53,8 +67,8 @@ export function buildExportStatusString({
     if (charactersWithoutCd.length === 0) {
       continue;
     }
-    const label = formatDungeonExportLabel(dungeon, locale);
-    const names = charactersWithoutCd
+    const raidLabel = formatDungeonExportLabel(dungeon, locale);
+    const charactersLabel = charactersWithoutCd
       .map((character) =>
         formatCharacterExportLabel(
           character,
@@ -69,15 +83,28 @@ export function buildExportStatusString({
       )
       .filter((entry): entry is string => entry !== null)
       .join(" / ");
-    if (names.length === 0) {
+    if (charactersLabel.length === 0) {
       continue;
     }
-    lines.push(`${label} - ${names}`);
+    lines.push({
+      dungeonId: dungeon.id,
+      raidLabel,
+      charactersLabel,
+    });
   }
 
   if (lines.length === 0) {
-    return t("exportPanel.allHaveCd");
+    return { kind: "message", message: t("exportPanel.allHaveCd") };
   }
 
-  return lines.join("\n");
+  return { kind: "lines", lines };
+}
+
+/** Newline-joined copy text for all export lines (legacy / clipboard bulk). */
+export function buildExportStatusString(params: BuildExportStatusParams): string {
+  const result = buildExportStatus(params);
+  if (result.kind === "message") {
+    return result.message;
+  }
+  return result.lines.map(formatExportLineCopyText).join("\n");
 }
