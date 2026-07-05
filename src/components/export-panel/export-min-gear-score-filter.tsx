@@ -53,11 +53,7 @@ export function ExportMinGearScoreFilter({
         }
         sx={{ mr: 0, alignSelf: "flex-start" }}
       />
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{ alignItems: "center", pl: 0.5, minWidth: 0 }}
-      >
+      <Stack spacing={0.5} sx={{ pl: 0.5, minWidth: 0 }}>
         <Slider
           disabled={!enabled}
           min={EXPORT_MIN_GS_COMPACT_MIN}
@@ -67,12 +63,7 @@ export function ExportMinGearScoreFilter({
           onChange={(_event, nextValue) => {
             onCompactValueChange(nextValue as number);
           }}
-          valueLabelDisplay="auto"
-          valueLabelFormat={(value) =>
-            t("exportPanel.minGearScoreSliderValue", {
-              value: formatCompactExportMinGearScore(value),
-            })
-          }
+          valueLabelDisplay="off"
           getAriaValueText={(value) =>
             t("exportPanel.minGearScoreSliderValue", {
               value: formatCompactExportMinGearScore(value),
@@ -83,16 +74,18 @@ export function ExportMinGearScoreFilter({
               "aria-label": t("exportPanel.minGearScoreAria"),
             },
           }}
-          sx={{ flex: 1, minWidth: 0, mx: 0.5 }}
+          sx={{ width: "100%", mx: 0.5 }}
         />
         <Typography
-          variant="body2"
+          component="p"
           color={enabled ? "text.primary" : "text.disabled"}
           sx={{
-            minWidth: 40,
-            textAlign: "right",
+            textAlign: "center",
             fontVariantNumeric: "tabular-nums",
-            flexShrink: 0,
+            fontSize: "1.35rem",
+            fontWeight: 700,
+            lineHeight: 1.2,
+            letterSpacing: "0.01em",
           }}
         >
           {enabled
