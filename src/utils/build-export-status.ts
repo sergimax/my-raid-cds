@@ -1,5 +1,6 @@
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../types/dungeons.ts";
+import type { RaidKey } from "../data/raid-names.ts";
 import type { AppLocale } from "../i18n/types.ts";
 import type { TranslateFn } from "../i18n/translate.ts";
 import {
@@ -11,6 +12,7 @@ import { formatDungeonExportLabel } from "./format-dungeon-label.ts";
 import { isCooldownOn } from "./dungeon-toggles.ts";
 import type { ExportRoleFilter } from "./export-spec-role.ts";
 import { DEFAULT_EXPORT_ROLE_FILTER } from "./export-spec-role.ts";
+import { resolveDungeonRaidKey } from "./resolve-dungeon-raid-key.ts";
 
 export type BuildExportStatusParams = {
   characters: CharacterRecord[];
@@ -25,6 +27,7 @@ export type BuildExportStatusParams = {
 
 export type ExportStatusLine = {
   dungeonId: string;
+  raidKey?: RaidKey;
   raidLabel: string;
   charactersLabel: string;
 };
@@ -89,6 +92,7 @@ export function buildExportStatus({
     }
     lines.push({
       dungeonId: dungeon.id,
+      raidKey: resolveDungeonRaidKey(dungeon),
       raidLabel,
       charactersLabel,
     });
