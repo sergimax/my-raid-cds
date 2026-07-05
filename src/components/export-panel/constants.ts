@@ -1,6 +1,9 @@
 /** Width of one grid column unit (export filter blocks use width × height spans). */
 export const EXPORT_FILTER_UNIT_WIDTH = 300;
 
+/** Specs column is wider — two spec checkboxes + gear scores need more room. */
+export const EXPORT_FILTER_SPECS_UNIT_WIDTH = 380;
+
 /** Minimum height of one grid row unit. */
 export const EXPORT_FILTER_UNIT_HEIGHT = 200;
 
@@ -25,7 +28,9 @@ export const EXPORT_FILTER_BLOCK_SPANS = {
 export type ExportFilterGridAreaId = keyof typeof EXPORT_FILTER_BLOCK_SPANS;
 
 export function getExportFilterGridTemplateColumns(): string {
-  return `repeat(${EXPORT_FILTER_GRID_COLUMN_COUNT}, minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px))`;
+  const standardColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
+  const specsColumn = `minmax(0, ${EXPORT_FILTER_SPECS_UNIT_WIDTH}px)`;
+  return `${standardColumn} ${standardColumn} ${specsColumn}`;
 }
 
 export function getExportFilterGridTemplateRows(): string {
@@ -50,5 +55,8 @@ export function getExportFilterGridTemplateAreas(hasDungeon: boolean): string {
 }
 
 export function getExportFilterGridMaxWidth(): number {
-  return EXPORT_FILTER_GRID_COLUMN_COUNT * EXPORT_FILTER_UNIT_WIDTH;
+  return (
+    EXPORT_FILTER_UNIT_WIDTH * (EXPORT_FILTER_GRID_COLUMN_COUNT - 1) +
+    EXPORT_FILTER_SPECS_UNIT_WIDTH
+  );
 }

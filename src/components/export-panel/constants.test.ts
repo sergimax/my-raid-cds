@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   EXPORT_FILTER_BLOCK_SPANS,
   EXPORT_FILTER_GRID_COLUMN_COUNT,
+  EXPORT_FILTER_SPECS_UNIT_WIDTH,
+  EXPORT_FILTER_UNIT_WIDTH,
   getExportFilterGridTemplateAreas,
 } from "./constants.ts";
 
@@ -41,5 +43,6 @@ describe("EXPORT_FILTER_BLOCK_SPANS", () => {
       heightUnits: 2,
       widthUnits: 1,
     });
+    expect(EXPORT_FILTER_SPECS_UNIT_WIDTH).toBeGreaterThan(EXPORT_FILTER_UNIT_WIDTH);
   });
 });
