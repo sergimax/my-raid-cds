@@ -177,7 +177,7 @@ export const enMessages = {
     minGearScoreEnableAria: "Enable minimum gear score filter for export",
     minGearScoreHelper:
       "When enabled, specs below the selected GS are disabled and omitted from export lines.",
-    minGearScoreSliderValue: "≥ {{value}}",
+    minGearScoreSliderValue: "≥ {{value}}k GS",
     minGearScoreAria: "Minimum gear score for export lines",
     roleFilterLabel: "Filter by role",
     roleFilterTitle: "Filter by role",
