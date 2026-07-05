@@ -2,7 +2,10 @@ import { Chip, Stack, Typography } from "@mui/material";
 import type { AppLocale } from "../../i18n/types.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
+import { getRaidIcon } from "../../assets/raid-icons/raid-icons.ts";
+import { resolveDungeonRaidKey } from "../../utils/resolve-dungeon-raid-key.ts";
 import { formatDungeonExportLabel } from "../../utils/format-dungeon-label.ts";
+import { ExportRaidIcon } from "./export-raid-icon.tsx";
 
 type ExportDungeonFilterProps = {
   dungeonNameSearch: string;
@@ -41,14 +44,22 @@ export function ExportDungeonFilter({
         </Typography>
       ) : (
         <Stack direction="row" spacing={0.75} sx={{ flexWrap: "wrap", gap: 0.75 }}>
-          {visibleDungeons.map((dungeon) => (
-            <Chip
-              key={dungeon.id}
-              size="small"
-              variant="outlined"
-              label={formatDungeonExportLabel(dungeon, locale)}
-            />
-          ))}
+          {visibleDungeons.map((dungeon) => {
+            const raidKey = resolveDungeonRaidKey(dungeon);
+            const raidIcon = getRaidIcon(raidKey);
+
+            return (
+              <Chip
+                key={dungeon.id}
+                size="small"
+                variant="outlined"
+                icon={
+                  raidIcon ? <ExportRaidIcon raidKey={raidKey} size={16} /> : undefined
+                }
+                label={formatDungeonExportLabel(dungeon, locale)}
+              />
+            );
+          })}
         </Stack>
       )}
     </Stack>

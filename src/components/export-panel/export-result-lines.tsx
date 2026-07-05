@@ -14,6 +14,7 @@ import {
 } from "../../utils/build-export-status.ts";
 import { EXPORT_RESULT_MAX_HEIGHT } from "./constants.ts";
 import { ExportFilterSection } from "./export-filter-section.tsx";
+import { ExportRaidIcon } from "./export-raid-icon.tsx";
 
 type ExportResultLinesProps = {
   result: BuildExportStatusResult;
@@ -83,6 +84,9 @@ function ExportResultLineRow({ line, emphasizeCopy }: ExportResultLineRowProps) 
         sx={{
           flexShrink: 0,
           alignSelf: { xs: "flex-start", sm: "center" },
+          display: "flex",
+          alignItems: "center",
+          gap: 0.75,
           px: 1,
           py: 0.5,
           borderRadius: 1,
@@ -91,6 +95,7 @@ function ExportResultLineRow({ line, emphasizeCopy }: ExportResultLineRowProps) 
           borderColor: "divider",
         }}
       >
+        <ExportRaidIcon raidKey={line.raidKey} />
         <Typography
           variant="body2"
           component="span"
