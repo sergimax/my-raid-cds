@@ -45,7 +45,7 @@ export function ExportFilterSection({
       ) : (
         <Box sx={{ mb: 0.75 }} />
       )}
-      {children}
+      <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, overflow: "auto" }}>{children}</Box>
     </Box>
   );
 }
