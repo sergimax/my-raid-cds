@@ -52,8 +52,8 @@ export function ExportRoleFilterPanel({
     <Stack spacing={0.5} sx={{ minWidth: 0 }}>
       <Stack
         direction="row"
-        spacing={1}
-        sx={{ alignItems: "center", flexWrap: "wrap", gap: 1, pl: 0.5 }}
+        spacing={1.5}
+        sx={{ alignItems: "flex-start", flexWrap: "wrap", gap: 1.5, pl: 0.5 }}
       >
         {EXPORT_ROLE_FILTER_IDS.map((roleId) => (
           <FormControlLabel
@@ -72,24 +72,53 @@ export function ExportRoleFilterPanel({
                     ),
                   },
                 }}
+                sx={{ alignSelf: "flex-start", mt: 0.25 }}
               />
             }
             label={
-              <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
+              <Stack spacing={0.5} sx={{ alignItems: "center", minWidth: 0 }}>
                 <Box
                   component="img"
                   src={exportRoleIcons[roleId]}
                   alt=""
-                  width={18}
-                  height={18}
-                  sx={{ borderRadius: "50%", flexShrink: 0 }}
+                  width={32}
+                  height={32}
+                  sx={{ borderRadius: "50%", flexShrink: 0, display: "block" }}
                 />
-                <Typography variant="body2" component="span">
+                <Typography
+                  variant="body2"
+                  component="span"
+                  sx={{ lineHeight: 1.2, textAlign: "center" }}
+                >
                   {t(`exportPanel.${ROLE_FILTER_MESSAGE_KEYS[roleId]}`)}
                 </Typography>
               </Stack>
             }
-            sx={{ mr: 0 }}
+            sx={{
+              mr: 0,
+              alignItems: "flex-start",
+              borderRadius: 1,
+              px: 0.5,
+              py: 0.25,
+              mx: -0.5,
+              transition: (theme) =>
+                theme.transitions.create(["background-color"], {
+                  duration: theme.transitions.duration.shortest,
+                }),
+              "&:hover": {
+                backgroundColor: "action.hover",
+                "& img": {
+                  filter: "brightness(1.12)",
+                },
+              },
+              "& img": {
+                transition: (theme) =>
+                  theme.transitions.create("filter", {
+                    duration: theme.transitions.duration.shortest,
+                  }),
+              },
+              "& .MuiFormControlLabel-label": { ml: 0.75 },
+            }}
           />
         ))}
       </Stack>
