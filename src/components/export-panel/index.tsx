@@ -15,12 +15,14 @@ import {
 } from "../../utils/parse-export-min-gear-score.ts";
 import { ExportCharacterSpecFilter } from "./export-character-spec-filter.tsx";
 import { ExportDungeonFilter } from "./export-dungeon-filter.tsx";
+import { ExportFilterBlock } from "./export-filter-block.tsx";
 import { ExportFilterSection } from "./export-filter-section.tsx";
 import { ExportMinGearScoreFilter } from "./export-min-gear-score-filter.tsx";
 import { ExportRoleFilterPanel } from "./export-role-filter.tsx";
 import {
-  EXPORT_FILTER_GRID_COLUMN_COUNT,
-  getExportFilterBlockMaxWidthCss,
+  getExportFilterGridTemplateAreas,
+  getExportFilterGridTemplateColumns,
+  getExportFilterGridTemplateRows,
 } from "./constants.ts";
 import type { ExportPanelProps } from "./types.ts";
 import {
@@ -47,6 +49,8 @@ export function ExportPanel({
   const [roleFilter, setRoleFilter] = useState<ExportRoleFilter>(
     () => ({ ...DEFAULT_EXPORT_ROLE_FILTER }),
   );
+
+  const hasDungeonFilter = totalDungeonCount > 0;
 
   const minGearScore = useMemo(
     () => resolveExportMinGearScoreThreshold(minGearScoreFilterEnabled, minGearScoreCompact),
@@ -122,24 +126,25 @@ export function ExportPanel({
         sx={{
           display: "grid",
           gridTemplateColumns: {
-            xs: `minmax(0, min(100%, ${getExportFilterBlockMaxWidthCss()}))`,
-            md: `repeat(${EXPORT_FILTER_GRID_COLUMN_COUNT}, minmax(0, ${getExportFilterBlockMaxWidthCss()}))`,
+            xs: "minmax(0, 1fr)",
+            md: getExportFilterGridTemplateColumns(),
+          },
+          gridTemplateRows: {
+            xs: "auto",
+            md: getExportFilterGridTemplateRows(),
+          },
+          gridTemplateAreas: {
+            xs: "none",
+            md: getExportFilterGridTemplateAreas(hasDungeonFilter),
           },
           gap: 1.5,
           alignItems: "stretch",
-          justifyContent: "start",
           width: "fit-content",
           maxWidth: "100%",
         }}
       >
-        {totalDungeonCount > 0 ? (
-          <Box
-            sx={{
-              minWidth: 0,
-              maxWidth: getExportFilterBlockMaxWidthCss(),
-              width: "100%",
-            }}
-          >
+        {hasDungeonFilter ? (
+          <ExportFilterBlock gridArea="dungeon">
             <ExportFilterSection
               title={t("exportPanel.dungeonFilterTitle")}
               description={t("exportPanel.dungeonFilterHelper")}
@@ -152,16 +157,10 @@ export function ExportPanel({
                 t={t}
               />
             </ExportFilterSection>
-          </Box>
+          </ExportFilterBlock>
         ) : null}
 
-        <Box
-          sx={{
-            minWidth: 0,
-            maxWidth: getExportFilterBlockMaxWidthCss(),
-            width: "100%",
-          }}
-        >
+        <ExportFilterBlock gridArea="gearScore">
           <ExportFilterSection
             title={t("exportPanel.gearScoreFilterTitle")}
             description={t("exportPanel.minGearScoreHelper")}
@@ -173,15 +172,9 @@ export function ExportPanel({
               onCompactValueChange={setMinGearScoreCompact}
             />
           </ExportFilterSection>
-        </Box>
+        </ExportFilterBlock>
 
-        <Box
-          sx={{
-            minWidth: 0,
-            maxWidth: getExportFilterBlockMaxWidthCss(),
-            width: "100%",
-          }}
-        >
+        <ExportFilterBlock gridArea="role">
           <ExportFilterSection
             title={t("exportPanel.roleFilterTitle")}
             description={t("exportPanel.roleFilterHelper")}
@@ -191,15 +184,9 @@ export function ExportPanel({
               onRoleFilterChange={setRoleFilter}
             />
           </ExportFilterSection>
-        </Box>
+        </ExportFilterBlock>
 
-        <Box
-          sx={{
-            minWidth: 0,
-            maxWidth: getExportFilterBlockMaxWidthCss(),
-            width: "100%",
-          }}
-        >
+        <ExportFilterBlock gridArea="characterSpecs">
           <ExportFilterSection
             title={t("exportPanel.characterSpecsFilterTitle")}
             description={t("exportPanel.characterSpecsFilterHelper")}
@@ -212,7 +199,7 @@ export function ExportPanel({
               onSpecIncluded={setSpecIncluded}
             />
           </ExportFilterSection>
-        </Box>
+        </ExportFilterBlock>
       </Box>
 
       <TextField

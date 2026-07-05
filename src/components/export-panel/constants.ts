@@ -1,9 +1,54 @@
-/** Max width of a single export filter block. */
-export const EXPORT_FILTER_BLOCK_MAX_WIDTH = 300;
+/** Width of one grid column unit (export filter blocks use width × height spans). */
+export const EXPORT_FILTER_UNIT_WIDTH = 300;
 
-/** Filter blocks per row on md+ (raid, gear score, role, character specs). */
-export const EXPORT_FILTER_GRID_COLUMN_COUNT = 4;
+/** Minimum height of one grid row unit. */
+export const EXPORT_FILTER_UNIT_HEIGHT = 200;
 
-export function getExportFilterBlockMaxWidthCss(): string {
-  return `${EXPORT_FILTER_BLOCK_MAX_WIDTH}px`;
+/** Column units across the filter grid (raid 2 + GS 1 + specs 2). */
+export const EXPORT_FILTER_GRID_COLUMN_COUNT = 5;
+
+export type ExportFilterBlockSpan = {
+  /** Row span — height in unit rows (H in H×W). */
+  heightUnits: number;
+  /** Column span — width in unit columns (W in H×W). */
+  widthUnits: number;
+};
+
+/** Default H×W spans per filter block. */
+export const EXPORT_FILTER_BLOCK_SPANS = {
+  dungeon: { heightUnits: 1, widthUnits: 2 },
+  gearScore: { heightUnits: 1, widthUnits: 1 },
+  role: { heightUnits: 1, widthUnits: 2 },
+  characterSpecs: { heightUnits: 2, widthUnits: 2 },
+} as const satisfies Record<string, ExportFilterBlockSpan>;
+
+export type ExportFilterGridAreaId = keyof typeof EXPORT_FILTER_BLOCK_SPANS;
+
+export function getExportFilterGridTemplateColumns(): string {
+  return `repeat(${EXPORT_FILTER_GRID_COLUMN_COUNT}, minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px))`;
+}
+
+export function getExportFilterGridTemplateRows(): string {
+  const maxHeightUnits = Math.max(
+    ...Object.values(EXPORT_FILTER_BLOCK_SPANS).map((span) => span.heightUnits),
+  );
+  return `repeat(${maxHeightUnits}, minmax(${EXPORT_FILTER_UNIT_HEIGHT}px, auto))`;
+}
+
+export function getExportFilterGridTemplateAreas(hasDungeon: boolean): string {
+  if (hasDungeon) {
+    return [
+      '"dungeon dungeon gearScore characterSpecs characterSpecs"',
+      '"role role . characterSpecs characterSpecs"',
+    ].join(" ");
+  }
+
+  return [
+    '"gearScore role role characterSpecs characterSpecs"',
+    '". . . characterSpecs characterSpecs"',
+  ].join(" ");
+}
+
+export function getExportFilterGridMaxWidth(): number {
+  return EXPORT_FILTER_GRID_COLUMN_COUNT * EXPORT_FILTER_UNIT_WIDTH;
 }
