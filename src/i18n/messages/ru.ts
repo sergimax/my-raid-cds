@@ -38,8 +38,8 @@ export const ruMessages: Messages = {
     addFromTemplate: "Добавить из шаблона",
     addCharacter: "+ персонаж",
     addDungeon: "+ рейд",
-    bisLists: "BIS",
-    export: "Экспорт",
+    bisLists: "BIS сборки",
+    export: "Подбор персонажа",
     resetAllToggles: "Сброс статистики",
   },
   table: {
