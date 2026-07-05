@@ -3,8 +3,13 @@ import {
   EXPORT_FILTER_BLOCK_SPANS,
   EXPORT_FILTER_GRID_COLUMN_COUNT,
   EXPORT_FILTER_SPECS_UNIT_WIDTH,
+  EXPORT_FILTER_SPECS_VISIBLE_ROW_COUNT,
+  EXPORT_FILTER_UNIT_HEIGHT,
   EXPORT_FILTER_UNIT_WIDTH,
+  getExportFilterBlockHeight,
   getExportFilterGridTemplateAreas,
+  getExportFilterGridTemplateRows,
+  getExportFilterSpecsListMaxHeight,
 } from "./constants.ts";
 
 describe("getExportFilterGridTemplateAreas", () => {
@@ -44,5 +49,23 @@ describe("EXPORT_FILTER_BLOCK_SPANS", () => {
       widthUnits: 1,
     });
     expect(EXPORT_FILTER_SPECS_UNIT_WIDTH).toBeGreaterThan(EXPORT_FILTER_UNIT_WIDTH);
+  });
+});
+
+describe("export filter fixed heights", () => {
+  it("uses fixed grid row heights (no auto growth)", () => {
+    expect(getExportFilterGridTemplateRows()).toBe(
+      `repeat(2, ${EXPORT_FILTER_UNIT_HEIGHT}px)`,
+    );
+  });
+
+  it("sizes 1× and 2× blocks from the unit height", () => {
+    expect(getExportFilterBlockHeight(1)).toBe(EXPORT_FILTER_UNIT_HEIGHT);
+    expect(getExportFilterBlockHeight(2)).toBe(EXPORT_FILTER_UNIT_HEIGHT * 2);
+  });
+
+  it("fits eight character rows in the specs scroll viewport", () => {
+    expect(getExportFilterSpecsListMaxHeight()).toBe(346);
+    expect(EXPORT_FILTER_SPECS_VISIBLE_ROW_COUNT).toBe(8);
   });
 });
