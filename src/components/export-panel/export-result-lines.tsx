@@ -53,8 +53,8 @@ function ExportResultLineRow({ line, emphasizeCopy }: ExportResultLineRowProps) 
       sx={{
         display: "flex",
         flexDirection: { xs: "column", sm: "row" },
-        alignItems: { xs: "stretch", sm: "flex-start" },
-        gap: 1,
+        alignItems: { xs: "stretch", sm: "center" },
+        gap: 1.25,
         border: 1,
         borderColor: "divider",
         borderRadius: 1,
@@ -63,28 +63,6 @@ function ExportResultLineRow({ line, emphasizeCopy }: ExportResultLineRowProps) 
         minWidth: 0,
       }}
     >
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography
-          variant="body2"
-          component="p"
-          sx={{ fontWeight: 600, lineHeight: 1.3 }}
-        >
-          {line.raidLabel}
-        </Typography>
-        <Typography
-          variant="body2"
-          component="p"
-          color="text.secondary"
-          sx={{
-            mt: 0.35,
-            lineHeight: 1.4,
-            wordBreak: "break-word",
-            fontVariantNumeric: "tabular-nums",
-          }}
-        >
-          {line.charactersLabel}
-        </Typography>
-      </Box>
       <Button
         size="small"
         variant={emphasizeCopy ? "contained" : "outlined"}
@@ -95,12 +73,45 @@ function ExportResultLineRow({ line, emphasizeCopy }: ExportResultLineRowProps) 
         aria-label={t("exportPanel.copyLineAria", { raid: line.raidLabel })}
         sx={{
           flexShrink: 0,
-          alignSelf: { xs: "stretch", sm: "flex-start" },
+          alignSelf: { xs: "stretch", sm: "center" },
           whiteSpace: "nowrap",
         }}
       >
         {copied ? t("exportPanel.copied") : t("exportPanel.copyLine")}
       </Button>
+      <Box
+        sx={{
+          flexShrink: 0,
+          alignSelf: { xs: "flex-start", sm: "center" },
+          px: 1,
+          py: 0.5,
+          borderRadius: 1,
+          bgcolor: "action.hover",
+          border: 1,
+          borderColor: "divider",
+        }}
+      >
+        <Typography
+          variant="body2"
+          component="span"
+          sx={{ fontWeight: 600, lineHeight: 1.3, whiteSpace: "nowrap" }}
+        >
+          {line.raidLabel}
+        </Typography>
+      </Box>
+      <Typography
+        variant="body2"
+        component="p"
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          lineHeight: 1.4,
+          wordBreak: "break-word",
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
+        {line.charactersLabel}
+      </Typography>
     </Box>
   );
 }

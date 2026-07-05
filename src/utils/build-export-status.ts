@@ -33,8 +33,9 @@ export type BuildExportStatusResult =
   | { kind: "message"; message: string }
   | { kind: "lines"; lines: ExportStatusLine[] };
 
+/** PM paste text — characters only; raid label is shown separately in the UI. */
 export function formatExportLineCopyText(line: ExportStatusLine): string {
-  return `${line.raidLabel} - ${line.charactersLabel}`;
+  return line.charactersLabel;
 }
 
 /** Characters without CD (toggle off) per visible dungeon. */

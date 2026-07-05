@@ -60,7 +60,7 @@ describe("buildExportStatusString", () => {
         dungeons: [dungeon],
         dungeonToggles: toggles,
       }),
-    ).toBe("ICC25H - Beta: SP 5.8");
+    ).toBe("Beta: SP 5.8");
   });
 
   it("joins multiple characters with slash separator", () => {
@@ -94,7 +94,7 @@ describe("buildExportStatusString", () => {
         dungeons: [dungeon],
         dungeonToggles: toggles,
       }),
-    ).toBe("ICC25 - Alpha: SP 5.8 / Beta: Udk 6.6");
+    ).toBe("Alpha: SP 5.8 / Beta: Udk 6.6");
   });
 
   it("returns all-have-CD message when every selected character has CD", () => {
@@ -141,7 +141,7 @@ describe("buildExportStatusString", () => {
           },
         },
       }),
-    ).toBe("ICC25 - Elst: Blood 6");
+    ).toBe("Elst: Blood 6");
   });
 
   it("omits characters with no specs selected", () => {
@@ -185,7 +185,7 @@ describe("buildExportStatusString", () => {
     const toggles = createTestToggles([
       { characterId: "character-1", dungeonId: "dungeon-1", on: false },
     ]);
-    const expected = "ICC25 - Beta: SP 5.8";
+    const expected = "Beta: SP 5.8";
 
     expect(
       buildExportStatusString({
@@ -227,7 +227,7 @@ describe("buildExportStatusString", () => {
         dungeonToggles: toggles,
         minGearScore: 6500,
       }),
-    ).toBe("ICC25 - Elst: Udk 6.6");
+    ).toBe("Elst: Udk 6.6");
   });
 
   it("returns structured lines from buildExportStatus", () => {
@@ -265,6 +265,6 @@ describe("buildExportStatusString", () => {
         charactersLabel: "Beta: SP 5.8",
       },
     ]);
-    expect(formatExportLineCopyText(result.lines[0])).toBe("ICC25H - Beta: SP 5.8");
+    expect(formatExportLineCopyText(result.lines[0])).toBe("Beta: SP 5.8");
   });
 });
