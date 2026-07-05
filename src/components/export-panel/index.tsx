@@ -140,7 +140,7 @@ export function ExportPanel({
           },
           gap: 1.5,
           alignItems: "stretch",
-          width: "fit-content",
+          width: { xs: "100%", md: "fit-content" },
           maxWidth: "100%",
         }}
       >
