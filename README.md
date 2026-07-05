@@ -30,13 +30,13 @@ Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spe
 - **Characters & dungeons** — Add manually or load a WotLK raid template when the list is empty. The new-dungeon form suggests known raid names and auto-fills short abbreviations. Edit name, specs, gear (WowSims import), dungeon metadata, and emblem badges. The edit dialog nudges you to re-import gear or update gear score when those fields drift apart.
 - **Cooldown toggles** — Per character–dungeon switches; reset per character or all at once.
 - **Table** — Sort by name, type (size + Heroic), ilvl, or completions; mixed dungeon search by raid name, size, and mode (e.g. `ICC`, `Uld10`, `ToC25H`; EN/RU names work in either locale); compact layout on narrow screens.
-- **Export** — Copy a raid roster of characters still missing CD for visible (filtered) rows. The export panel uses a bordered filter grid: **min GS**, **role** (WoW LFG icons), **character specs**, and **raids** (table search). Below, **Ready to sign up** shows one line per raid; filter to a single raid, then **Copy for PM** and paste to the raid leader. Optional role and minimum GS filters disable specs that do not match.
-- **BiS lists** — Built-in presets per spec (Titans + community sources); save editable local copies; drives gear upgrade hints. Slot rows show WoW paper-doll placeholder icons beside localized labels (Back uses the Chest icon); read-only presets use a compact layout with truncated slot names.
+- **Character pick** — Copy a raid roster of characters still missing CD for visible (filtered) rows. Open via toolbar **Character pick** (EN) / **Подбор персонажа** (RU). The panel uses a bordered filter grid: **min GS**, **role** (WoW LFG icons), **character specs**, and **raids** (table search, chips with raid icons). Below, **Ready to sign up** shows one line per raid; filter to a single raid, then **Copy for PM** and paste to the raid leader. Optional role and minimum GS filters disable specs that do not match.
+- **BiS builds** — Built-in presets per spec (Titans + community sources); toolbar **BiS builds** (EN) / **BIS сборки** (RU). Save editable local copies; drives gear upgrade hints. Slot rows show WoW paper-doll placeholder icons beside localized labels (Back uses the Chest icon); read-only presets use a compact layout with truncated slot names.
 - **Gear hints** — Amber = missing BiS targets from the selected list; blue = stat-filtered ilvl upgrades (darker tint = more slots). Dual-spec characters split the toggle cell left (main) / right (off). Rings and trinkets count as satisfied when equipped in either slot of the pair. Ruby Sanctum rows filter loot by size and difficulty (10N/10H/25N/25H). Dismissible legend above the table explains colors. Tooltips label boss-loot sections **BiS** / **Upgrades**, omit wrong-mode drops, and list tier tokens (including Vault of Archavon tier hands/legs). Tank ilvl hints require defense, dodge, or parry (BiS list overrides).
 - **EN / RU** — Full UI + item tooltips (Cavern of Time / WoWRoad).
 - **Theme** — Light/dark mode, saved locally.
 
-Toolbar panels (add character, add dungeon, export, BiS) are mutually exclusive and share the same outlined panel shell.
+Toolbar panels (add character, add dungeon, character pick, BiS builds) are mutually exclusive and share the same outlined panel shell.
 
 ## Persistence
 

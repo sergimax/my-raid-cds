@@ -7,15 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.41.0] - 2026-07-06
+
 ### Added
 
-- **Export filter grid:** GS, role, character-spec, and raid filters in a fixed-layout bordered grid (full-width export panel). Role filter shows WoW LFG role icons in a 2×2 layout with hover highlight. Raid block reflects the table search (match count + chips). Character spec list scrolls after eight rows.
-- **Export result lines:** Per-raid signup lines replace the read-only textarea (raid badge as filter reminder; **Copy for PM** copies character text only).
+- **Export filter grid:** GS, role, character-spec, and raid filters in a fixed-layout bordered grid (full-width export panel). Role filter shows WoW LFG role icons in a 2×2 layout with hover highlight. Raid block reflects the table search (match count + chips with per-raid achievement icons). Character spec list scrolls after eight rows.
+- **Export result lines:** Per-raid signup lines replace the read-only textarea (**Copy for PM** | raid badge | character text; copy omits the raid prefix).
+- **Raid icons:** Bundled achievement artwork for all eight WotLK template raids in the export panel (`npm run download:raid-icons`).
 
 ### Changed
 
+- **Toolbar labels:** **Character pick** / **BiS builds** (EN), **Подбор персонажа** / **BIS сборки** (RU) replace Export and BiS on the toolbar buttons.
 - **Export minimum GS UI:** Slider value shown as large bold text under the track (no floating thumb label); helper text moved to the section description.
-- **Export panel width:** Export panel is full width like BiS (no 640px cap).
+- **Export panel width:** Export panel is full width like BiS (no 640px cap); filter grid uses full container width on narrow screens.
+
 ## [1.40.0] - 2026-07-04
 
 ### Added
