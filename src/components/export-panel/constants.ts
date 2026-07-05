@@ -1,3 +1,6 @@
+/** Max height of the export result list before it scrolls. */
+export const EXPORT_RESULT_MAX_HEIGHT = 320;
+
 /** Width of one grid column unit (export filter blocks use width × height spans). */
 export const EXPORT_FILTER_UNIT_WIDTH = 300;
 

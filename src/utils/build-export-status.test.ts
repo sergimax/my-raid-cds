@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Classes } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
-import { buildExportStatusString } from "./build-export-status.ts";
+import { buildExportStatus, buildExportStatusString, formatExportLineCopyText } from "./build-export-status.ts";
 import { testTranslator } from "../test/i18n.ts";
 import {
   createTestCharacter,
@@ -228,5 +228,43 @@ describe("buildExportStatusString", () => {
         minGearScore: 6500,
       }),
     ).toBe("ICC25 - Elst: Udk 6.6");
+  });
+
+  it("returns structured lines from buildExportStatus", () => {
+    const beta = createTestCharacter({
+      id: "character-2",
+      name: "Beta",
+      class: Classes[5],
+      mainSpec: { spec: "Shadow", gearScore: 5800 },
+    });
+    const dungeon = createTestDungeon({
+      id: "dungeon-1",
+      shortName: "ICC",
+      size: 25,
+      difficulty: DungeonDifficulty.HEROIC,
+    });
+    const toggles = createTestToggles([
+      { characterId: "character-2", dungeonId: "dungeon-1", on: false },
+    ]);
+
+    const result = buildExportStatus({
+      ...baseParams,
+      characters: [beta],
+      dungeons: [dungeon],
+      dungeonToggles: toggles,
+    });
+
+    expect(result.kind).toBe("lines");
+    if (result.kind !== "lines") {
+      return;
+    }
+    expect(result.lines).toEqual([
+      {
+        dungeonId: "dungeon-1",
+        raidLabel: "ICC25H",
+        charactersLabel: "Beta: SP 5.8",
+      },
+    ]);
+    expect(formatExportLineCopyText(result.lines[0])).toBe("ICC25H - Beta: SP 5.8");
   });
 });

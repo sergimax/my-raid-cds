@@ -159,9 +159,16 @@ export const enMessages = {
     title: "Export",
     closeAria: "Close export panel",
     instructions:
-      "Copy lines below — one per matching raid listing characters still without CD (toggle off). Use the filter blocks to narrow raids (table search), roles, gear score, and per-character specs.",
+      "Narrow to one raid (table search), pick the specs you want, and filter by role and GS. If a line appears below, copy it and send it to the raid leader in a private message.",
     noCharacters: "Add a character to build a status summary.",
-    exportText: "Export text",
+    exportLinesTitle: "Ready to sign up",
+    exportLinesHelper:
+      "One line per raid with characters still missing CD. Filter the table to a single raid, then copy the matching line.",
+    exportLinesHelperSingle:
+      "Characters you can offer for this raid. Copy the line and paste it in a PM to the raid leader.",
+    copyLine: "Copy for PM",
+    copyLineAria: "Copy signup line for {{raid}}",
+    copied: "Copied",
     dungeonFilterTitle: "Filter by raid",
     dungeonFilterHelper:
       "Uses the dungeon search field in the table header. Export includes one line per matching raid row.",
@@ -193,7 +200,6 @@ export const enMessages = {
     roleRangedDpsAria: "Include ranged DPS specs in export",
     includeSpecAria: "Include {{spec}} for {{name}}",
     includeCharacterAria: "Include {{name}} in export",
-    textareaAria: "Characters without CD per dungeon, for copy",
     noDungeonsFilter: "No dungeons match the current filter.",
     selectCharacter: "Select at least one character.",
     allHaveCd: "All selected characters have CD on matching dungeons.",
