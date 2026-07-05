@@ -36,8 +36,8 @@ export const enMessages = {
     addFromTemplate: "Add from template",
     addCharacter: "Add character",
     addDungeon: "Add dungeon",
-    bisLists: "BiS lists",
-    export: "Export",
+    bisLists: "BiS builds",
+    export: "Character pick",
     resetAllToggles: "Reset all toggles",
   },
   table: {
