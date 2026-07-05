@@ -35,6 +35,30 @@ export function defaultExportSpecSelection(
   };
 }
 
+export function buildSelectAllExportSpecSelection(
+  characters: readonly CharacterRecord[],
+): ExportSpecSelectionByCharacterId {
+  const selection: Record<string, Partial<CharacterExportSpecSelection>> = {};
+  for (const character of characters) {
+    selection[character.id] = defaultExportSpecSelection(character);
+  }
+  return selection;
+}
+
+export function buildClearAllExportSpecSelection(
+  characters: readonly CharacterRecord[],
+): ExportSpecSelectionByCharacterId {
+  const selection: Record<string, Partial<CharacterExportSpecSelection>> = {};
+  for (const character of characters) {
+    selection[character.id] = {
+      includeMain: false,
+      includeOff: false,
+      includeWithoutSpec: false,
+    };
+  }
+  return selection;
+}
+
 export function resolveExportSpecSelection(
   character: CharacterRecord,
   exportSpecSelectionByCharacterId?: ExportSpecSelectionByCharacterId,

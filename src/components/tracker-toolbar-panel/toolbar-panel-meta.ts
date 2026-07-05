@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import { TRACKER_NARROW_PANEL_MAX_WIDTH } from "./constants.ts";
 import type { MainToolbarPanelId, ToolbarPanelId } from "./resolve-toolbar-panel-id.ts";
@@ -8,6 +9,7 @@ export type ToolbarPanelMeta = {
   descriptionTooltip?: string;
   closeAriaLabel: string;
   onClose: () => void;
+  headerActions?: ReactNode;
   maxWidth?: number;
 };
 

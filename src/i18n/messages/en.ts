@@ -180,6 +180,11 @@ export const enMessages = {
     characterSpecsFilterTitle: "Filter by character specs",
     characterSpecsFilterHelper:
       "Choose which specs to include per character in character pick lines",
+    selectAllSpecs: "Select all",
+    selectAllSpecsAria: "Select all character specs",
+    clearAllSpecs: "Clear all",
+    clearAllSpecsAria: "Clear all character specs",
+    resetAllFilters: "Reset all filters",
     minGearScoreEnable: "Minimum GS filter",
     minGearScoreEnableAria: "Enable minimum gear score filter for character pick",
     minGearScoreHelper:
