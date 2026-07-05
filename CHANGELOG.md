@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Export filter grid:** GS, role, character-spec, and raid filters in a fixed-layout bordered grid (full-width export panel). Role filter shows WoW LFG role icons in a 2×2 layout with hover highlight. Raid block reflects the table search (match count + chips). Character spec list scrolls after eight rows.
+
+### Changed
+
+- **Export minimum GS UI:** Slider value shown as large bold text under the track (no floating thumb label); helper text moved to the section description.
+- **Export panel width:** Export panel is full width like BiS (no 640px cap).
 ## [1.40.0] - 2026-07-04
 
 ### Added
