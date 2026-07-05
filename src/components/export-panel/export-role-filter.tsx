@@ -1,4 +1,5 @@
-import { Checkbox, FormControlLabel, Stack, Typography } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Stack, Typography } from "@mui/material";
+import { exportRoleIcons } from "../../assets/role-icons/role-icons.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import {
   EXPORT_ROLE_FILTER_IDS,
@@ -74,9 +75,19 @@ export function ExportRoleFilterPanel({
               />
             }
             label={
-              <Typography variant="body2" component="span">
-                {t(`exportPanel.${ROLE_FILTER_MESSAGE_KEYS[roleId]}`)}
-              </Typography>
+              <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
+                <Box
+                  component="img"
+                  src={exportRoleIcons[roleId]}
+                  alt=""
+                  width={18}
+                  height={18}
+                  sx={{ borderRadius: "50%", flexShrink: 0 }}
+                />
+                <Typography variant="body2" component="span">
+                  {t(`exportPanel.${ROLE_FILTER_MESSAGE_KEYS[roleId]}`)}
+                </Typography>
+              </Stack>
             }
             sx={{ mr: 0 }}
           />
