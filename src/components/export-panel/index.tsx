@@ -143,23 +143,6 @@ export function ExportPanel({
           maxWidth: "100%",
         }}
       >
-        {hasDungeonFilter ? (
-          <ExportFilterBlock gridArea="dungeon">
-            <ExportFilterSection
-              title={t("exportPanel.dungeonFilterTitle")}
-              description={t("exportPanel.dungeonFilterHelper")}
-            >
-              <ExportDungeonFilter
-                dungeonNameSearch={dungeonNameSearch}
-                visibleDungeons={visibleDungeons}
-                totalDungeonCount={totalDungeonCount}
-                locale={locale}
-                t={t}
-              />
-            </ExportFilterSection>
-          </ExportFilterBlock>
-        ) : null}
-
         <ExportFilterBlock gridArea="gearScore">
           <ExportFilterSection
             title={t("exportPanel.gearScoreFilterTitle")}
@@ -201,6 +184,23 @@ export function ExportPanel({
             />
           </ExportFilterSection>
         </ExportFilterBlock>
+
+        {hasDungeonFilter ? (
+          <ExportFilterBlock gridArea="dungeon">
+            <ExportFilterSection
+              title={t("exportPanel.dungeonFilterTitle")}
+              description={t("exportPanel.dungeonFilterHelper")}
+            >
+              <ExportDungeonFilter
+                dungeonNameSearch={dungeonNameSearch}
+                visibleDungeons={visibleDungeons}
+                totalDungeonCount={totalDungeonCount}
+                locale={locale}
+                t={t}
+              />
+            </ExportFilterSection>
+          </ExportFilterBlock>
+        ) : null}
       </Box>
 
       <TextField

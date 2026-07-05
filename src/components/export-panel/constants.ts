@@ -4,8 +4,8 @@ export const EXPORT_FILTER_UNIT_WIDTH = 300;
 /** Minimum height of one grid row unit. */
 export const EXPORT_FILTER_UNIT_HEIGHT = 200;
 
-/** Column units across the filter grid (raid 2 + GS 1 + specs 2). */
-export const EXPORT_FILTER_GRID_COLUMN_COUNT = 5;
+/** Column units across the filter grid (GS + role + specs). */
+export const EXPORT_FILTER_GRID_COLUMN_COUNT = 3;
 
 export type ExportFilterBlockSpan = {
   /** Row span — height in unit rows (H in H×W). */
@@ -18,8 +18,8 @@ export type ExportFilterBlockSpan = {
 export const EXPORT_FILTER_BLOCK_SPANS = {
   dungeon: { heightUnits: 1, widthUnits: 2 },
   gearScore: { heightUnits: 1, widthUnits: 1 },
-  role: { heightUnits: 1, widthUnits: 2 },
-  characterSpecs: { heightUnits: 2, widthUnits: 2 },
+  role: { heightUnits: 1, widthUnits: 1 },
+  characterSpecs: { heightUnits: 2, widthUnits: 1 },
 } as const satisfies Record<string, ExportFilterBlockSpan>;
 
 export type ExportFilterGridAreaId = keyof typeof EXPORT_FILTER_BLOCK_SPANS;
@@ -38,14 +38,14 @@ export function getExportFilterGridTemplateRows(): string {
 export function getExportFilterGridTemplateAreas(hasDungeon: boolean): string {
   if (hasDungeon) {
     return [
-      '"dungeon dungeon gearScore characterSpecs characterSpecs"',
-      '"role role . characterSpecs characterSpecs"',
+      '"gearScore role characterSpecs"',
+      '"dungeon dungeon characterSpecs"',
     ].join(" ");
   }
 
   return [
-    '"gearScore role role characterSpecs characterSpecs"',
-    '". . . characterSpecs characterSpecs"',
+    '"gearScore role characterSpecs"',
+    '". . characterSpecs"',
   ].join(" ");
 }
 
