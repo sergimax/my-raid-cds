@@ -2,10 +2,13 @@ import { describe, expect, it } from "vitest";
 import { Classes } from "../types/characters.ts";
 import { DEFAULT_EXPORT_ROLE_FILTER } from "./export-spec-role.ts";
 import {
+  buildClearAllExportSpecSelection,
+  buildSelectAllExportSpecSelection,
   defaultExportSpecSelection,
   formatCharacterExportLabel,
   isCharacterIncludedInExport,
   resolveEffectiveExportSpecSelection,
+  resolveExportSpecSelection,
 } from "./format-character-export.ts";
 import { createTestCharacter } from "../test/fixtures.ts";
 
@@ -183,5 +186,53 @@ describe("formatCharacterExportLabel", () => {
         resolveEffectiveExportSpecSelection(character, undefined, tanksOnly),
       ),
     ).toBe("Elst: Blood 6");
+  });
+});
+
+describe("bulk export spec selection", () => {
+  it("select all matches default per-character selection", () => {
+    const characters = [
+      createTestCharacter({
+        name: "Elst",
+        class: Classes[0],
+        mainSpec: { spec: "Unholy" },
+        offSpec: { spec: "Blood" },
+      }),
+      createTestCharacter({ name: "Beta" }),
+    ];
+    const selection = buildSelectAllExportSpecSelection(characters);
+
+    for (const character of characters) {
+      expect(resolveExportSpecSelection(character, selection)).toEqual(
+        defaultExportSpecSelection(character),
+      );
+    }
+  });
+
+  it("clear all disables every spec slot", () => {
+    const characters = [
+      createTestCharacter({
+        name: "Elst",
+        class: Classes[0],
+        mainSpec: { spec: "Unholy" },
+        offSpec: { spec: "Blood" },
+      }),
+      createTestCharacter({ name: "Beta" }),
+    ];
+    const selection = buildClearAllExportSpecSelection(characters);
+
+    for (const character of characters) {
+      expect(resolveExportSpecSelection(character, selection)).toEqual({
+        includeMain: false,
+        includeOff: false,
+        includeWithoutSpec: false,
+      });
+      expect(
+        isCharacterIncludedInExport(
+          character,
+          resolveExportSpecSelection(character, selection),
+        ),
+      ).toBe(false);
+    }
   });
 });

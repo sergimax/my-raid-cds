@@ -1,9 +1,10 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import type { SxProps, Theme } from "@mui/material/styles";
 import type { ReactNode } from "react";
 
 type ExportFilterSectionProps = {
   title: string;
+  titleActions?: ReactNode;
   description?: string;
   children: ReactNode;
   sx?: SxProps<Theme>;
@@ -12,6 +13,7 @@ type ExportFilterSectionProps = {
 
 export function ExportFilterSection({
   title,
+  titleActions,
   description,
   children,
   sx,
@@ -35,12 +37,25 @@ export function ExportFilterSection({
         ...sx,
       }}
     >
-      <Typography
-        variant="body2"
-        sx={{ fontWeight: 600, lineHeight: 1.3, flexShrink: 0 }}
+      <Stack
+        direction="row"
+        spacing={0.5}
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexShrink: 0,
+          minWidth: 0,
+        }}
       >
-        {title}
-      </Typography>
+        <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3, minWidth: 0 }}>
+          {title}
+        </Typography>
+        {titleActions ? (
+          <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0, gap: 0.25 }}>
+            {titleActions}
+          </Box>
+        ) : null}
+      </Stack>
       {description ? (
         <Typography
           variant="caption"

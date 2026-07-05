@@ -1,8 +1,10 @@
 import { Box, Stack } from "@mui/material";
-import { useMemo, useState } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
 import type { CharacterRecord } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import {
+  buildClearAllExportSpecSelection,
+  buildSelectAllExportSpecSelection,
   isCharacterIncludedInExport,
   resolveEffectiveExportSpecSelection,
   resolveExportSpecSelection,
@@ -14,6 +16,7 @@ import {
   resolveExportMinGearScoreThreshold,
 } from "../../utils/parse-export-min-gear-score.ts";
 import { ExportCharacterSpecFilter } from "./export-character-spec-filter.tsx";
+import { ExportCharacterSpecFilterActions } from "./export-character-spec-filter-actions.tsx";
 import { ExportDungeonFilter } from "./export-dungeon-filter.tsx";
 import { ExportFilterBlock } from "./export-filter-block.tsx";
 import { ExportFilterSection } from "./export-filter-section.tsx";
@@ -33,180 +36,214 @@ import {
 
 type StoredExportSpecSelection = Partial<CharacterExportSpecSelection>;
 
-export function ExportPanel({
-  characters,
-  visibleDungeons,
-  dungeonToggles,
-  dungeonNameSearch,
-  totalDungeonCount,
-}: ExportPanelProps) {
-  const { t, locale } = useTranslation();
-  const [exportSpecSelectionByCharacterId, setExportSpecSelectionByCharacterId] =
-    useState<Record<string, StoredExportSpecSelection>>({});
-  const [minGearScoreFilterEnabled, setMinGearScoreFilterEnabled] = useState(false);
-  const [minGearScoreCompact, setMinGearScoreCompact] = useState(
-    EXPORT_MIN_GS_COMPACT_DEFAULT,
-  );
-  const [roleFilter, setRoleFilter] = useState<ExportRoleFilter>(
-    () => ({ ...DEFAULT_EXPORT_ROLE_FILTER }),
-  );
+export type ExportPanelHandle = {
+  resetAllFilters: () => void;
+};
 
-  const hasDungeonFilter = totalDungeonCount > 0;
+export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
+  function ExportPanel(
+    {
+      characters,
+      visibleDungeons,
+      dungeonToggles,
+      dungeonNameSearch,
+      totalDungeonCount,
+    },
+    ref,
+  ) {
+    const { t, locale } = useTranslation();
+    const [exportSpecSelectionByCharacterId, setExportSpecSelectionByCharacterId] =
+      useState<Record<string, StoredExportSpecSelection>>({});
+    const [minGearScoreFilterEnabled, setMinGearScoreFilterEnabled] = useState(false);
+    const [minGearScoreCompact, setMinGearScoreCompact] = useState(
+      EXPORT_MIN_GS_COMPACT_DEFAULT,
+    );
+    const [roleFilter, setRoleFilter] = useState<ExportRoleFilter>(
+      () => ({ ...DEFAULT_EXPORT_ROLE_FILTER }),
+    );
 
-  const minGearScore = useMemo(
-    () => resolveExportMinGearScoreThreshold(minGearScoreFilterEnabled, minGearScoreCompact),
-    [minGearScoreCompact, minGearScoreFilterEnabled],
-  );
+    const hasDungeonFilter = totalDungeonCount > 0;
 
-  const includedCharacters = useMemo(
-    () =>
-      characters.filter((character) =>
-        isCharacterIncludedInExport(
-          character,
-          resolveEffectiveExportSpecSelection(
+    const minGearScore = useMemo(
+      () =>
+        resolveExportMinGearScoreThreshold(minGearScoreFilterEnabled, minGearScoreCompact),
+      [minGearScoreCompact, minGearScoreFilterEnabled],
+    );
+
+    const resetAllFilters = () => {
+      setExportSpecSelectionByCharacterId({});
+      setMinGearScoreFilterEnabled(false);
+      setMinGearScoreCompact(EXPORT_MIN_GS_COMPACT_DEFAULT);
+      setRoleFilter({ ...DEFAULT_EXPORT_ROLE_FILTER });
+    };
+
+    const selectAllCharacterSpecs = () => {
+      setExportSpecSelectionByCharacterId(buildSelectAllExportSpecSelection(characters));
+    };
+
+    const clearAllCharacterSpecs = () => {
+      setExportSpecSelectionByCharacterId(buildClearAllExportSpecSelection(characters));
+    };
+
+    useImperativeHandle(ref, () => ({ resetAllFilters }), []);
+
+    const includedCharacters = useMemo(
+      () =>
+        characters.filter((character) =>
+          isCharacterIncludedInExport(
             character,
-            exportSpecSelectionByCharacterId,
-            roleFilter,
-            minGearScore,
+            resolveEffectiveExportSpecSelection(
+              character,
+              exportSpecSelectionByCharacterId,
+              roleFilter,
+              minGearScore,
+            ),
           ),
         ),
-      ),
-    [characters, exportSpecSelectionByCharacterId, minGearScore, roleFilter],
-  );
+      [characters, exportSpecSelectionByCharacterId, minGearScore, roleFilter],
+    );
 
-  const exportStatus = useMemo(
-    () =>
-      buildExportStatus({
-        characters: includedCharacters,
-        dungeons: visibleDungeons,
+    const exportStatus = useMemo(
+      () =>
+        buildExportStatus({
+          characters: includedCharacters,
+          dungeons: visibleDungeons,
+          dungeonToggles,
+          exportSpecSelectionByCharacterId,
+          minGearScore,
+          roleFilter,
+          locale,
+          t,
+        }),
+      [
         dungeonToggles,
         exportSpecSelectionByCharacterId,
+        includedCharacters,
+        locale,
         minGearScore,
         roleFilter,
-        locale,
         t,
-      }),
-    [
-      dungeonToggles,
-      exportSpecSelectionByCharacterId,
-      includedCharacters,
-      locale,
-      minGearScore,
-      roleFilter,
-      t,
-      visibleDungeons,
-    ],
-  );
+        visibleDungeons,
+      ],
+    );
 
-  const setSpecIncluded = (
-    character: CharacterRecord,
-    slot: keyof CharacterExportSpecSelection,
-    included: boolean,
-  ) => {
-    setExportSpecSelectionByCharacterId((previous) => {
-      const resolved = resolveExportSpecSelection(character, previous);
-      return {
-        ...previous,
-        [character.id]: {
-          ...previous[character.id],
-          includeMain:
-            slot === "includeMain" ? included : resolved.includeMain,
-          includeOff: slot === "includeOff" ? included : resolved.includeOff,
-          includeWithoutSpec:
-            slot === "includeWithoutSpec"
-              ? included
-              : resolved.includeWithoutSpec,
-        },
-      };
-    });
-  };
-
-  return (
-    <Stack spacing={1.5}>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "minmax(0, 1fr)",
-            md: getExportFilterGridTemplateColumns(),
+    const setSpecIncluded = (
+      character: CharacterRecord,
+      slot: keyof CharacterExportSpecSelection,
+      included: boolean,
+    ) => {
+      setExportSpecSelectionByCharacterId((previous) => {
+        const resolved = resolveExportSpecSelection(character, previous);
+        return {
+          ...previous,
+          [character.id]: {
+            ...previous[character.id],
+            includeMain:
+              slot === "includeMain" ? included : resolved.includeMain,
+            includeOff: slot === "includeOff" ? included : resolved.includeOff,
+            includeWithoutSpec:
+              slot === "includeWithoutSpec"
+                ? included
+                : resolved.includeWithoutSpec,
           },
-          gridTemplateRows: {
-            xs: "auto",
-            md: getExportFilterGridTemplateRows(),
-          },
-          gridTemplateAreas: {
-            xs: "none",
-            md: getExportFilterGridTemplateAreas(hasDungeonFilter),
-          },
-          gap: 1.5,
-          alignItems: "stretch",
-          width: { xs: "100%", md: "fit-content" },
-          maxWidth: "100%",
-        }}
-      >
-        <ExportFilterBlock gridArea="gearScore">
-          <ExportFilterSection
-            title={t("exportPanel.gearScoreFilterTitle")}
-            description={t("exportPanel.minGearScoreHelper")}
-            contentSx={{ overflow: "visible" }}
-          >
-            <ExportMinGearScoreFilter
-              enabled={minGearScoreFilterEnabled}
-              compactValue={minGearScoreCompact}
-              onEnabledChange={setMinGearScoreFilterEnabled}
-              onCompactValueChange={setMinGearScoreCompact}
-            />
-          </ExportFilterSection>
-        </ExportFilterBlock>
+        };
+      });
+    };
 
-        <ExportFilterBlock gridArea="role">
-          <ExportFilterSection
-            title={t("exportPanel.roleFilterTitle")}
-            description={t("exportPanel.roleFilterHelper")}
-          >
-            <ExportRoleFilterPanel
-              roleFilter={roleFilter}
-              onRoleFilterChange={setRoleFilter}
-            />
-          </ExportFilterSection>
-        </ExportFilterBlock>
-
-        <ExportFilterBlock gridArea="characterSpecs">
-          <ExportFilterSection
-            title={t("exportPanel.characterSpecsFilterTitle")}
-            description={t("exportPanel.characterSpecsFilterHelper")}
-          >
-            <ExportCharacterSpecFilter
-              characters={characters}
-              exportSpecSelectionByCharacterId={exportSpecSelectionByCharacterId}
-              roleFilter={roleFilter}
-              minGearScore={minGearScore}
-              onSpecIncluded={setSpecIncluded}
-            />
-          </ExportFilterSection>
-        </ExportFilterBlock>
-
-        {hasDungeonFilter ? (
-          <ExportFilterBlock gridArea="dungeon">
+    return (
+      <Stack spacing={1.5}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "minmax(0, 1fr)",
+              md: getExportFilterGridTemplateColumns(),
+            },
+            gridTemplateRows: {
+              xs: "auto",
+              md: getExportFilterGridTemplateRows(),
+            },
+            gridTemplateAreas: {
+              xs: "none",
+              md: getExportFilterGridTemplateAreas(hasDungeonFilter),
+            },
+            gap: 1.5,
+            alignItems: "stretch",
+            width: { xs: "100%", md: "fit-content" },
+            maxWidth: "100%",
+          }}
+        >
+          <ExportFilterBlock gridArea="gearScore">
             <ExportFilterSection
-              title={t("exportPanel.dungeonFilterTitle")}
-              description={t("exportPanel.dungeonFilterHelper")}
+              title={t("exportPanel.gearScoreFilterTitle")}
+              description={t("exportPanel.minGearScoreHelper")}
+              contentSx={{ overflow: "visible" }}
             >
-              <ExportDungeonFilter
-                dungeonNameSearch={dungeonNameSearch}
-                visibleDungeons={visibleDungeons}
-                totalDungeonCount={totalDungeonCount}
-                locale={locale}
-                t={t}
+              <ExportMinGearScoreFilter
+                enabled={minGearScoreFilterEnabled}
+                compactValue={minGearScoreCompact}
+                onEnabledChange={setMinGearScoreFilterEnabled}
+                onCompactValueChange={setMinGearScoreCompact}
               />
             </ExportFilterSection>
           </ExportFilterBlock>
-        ) : null}
-      </Box>
 
-      <Box sx={{ width: "100%", minWidth: 0 }}>
-        <ExportResultLines result={exportStatus} />
-      </Box>
-    </Stack>
-  );
-}
+          <ExportFilterBlock gridArea="role">
+            <ExportFilterSection
+              title={t("exportPanel.roleFilterTitle")}
+              description={t("exportPanel.roleFilterHelper")}
+            >
+              <ExportRoleFilterPanel
+                roleFilter={roleFilter}
+                onRoleFilterChange={setRoleFilter}
+              />
+            </ExportFilterSection>
+          </ExportFilterBlock>
+
+          <ExportFilterBlock gridArea="characterSpecs">
+            <ExportFilterSection
+              title={t("exportPanel.characterSpecsFilterTitle")}
+              description={t("exportPanel.characterSpecsFilterHelper")}
+              titleActions={
+                <ExportCharacterSpecFilterActions
+                  disabled={characters.length === 0}
+                  onSelectAll={selectAllCharacterSpecs}
+                  onClearAll={clearAllCharacterSpecs}
+                />
+              }
+            >
+              <ExportCharacterSpecFilter
+                characters={characters}
+                exportSpecSelectionByCharacterId={exportSpecSelectionByCharacterId}
+                roleFilter={roleFilter}
+                minGearScore={minGearScore}
+                onSpecIncluded={setSpecIncluded}
+              />
+            </ExportFilterSection>
+          </ExportFilterBlock>
+
+          {hasDungeonFilter ? (
+            <ExportFilterBlock gridArea="dungeon">
+              <ExportFilterSection
+                title={t("exportPanel.dungeonFilterTitle")}
+                description={t("exportPanel.dungeonFilterHelper")}
+              >
+                <ExportDungeonFilter
+                  dungeonNameSearch={dungeonNameSearch}
+                  visibleDungeons={visibleDungeons}
+                  totalDungeonCount={totalDungeonCount}
+                  locale={locale}
+                  t={t}
+                />
+              </ExportFilterSection>
+            </ExportFilterBlock>
+          ) : null}
+        </Box>
+
+        <Box sx={{ width: "100%", minWidth: 0 }}>
+          <ExportResultLines result={exportStatus} />
+        </Box>
+      </Stack>
+    );
+  },
+);

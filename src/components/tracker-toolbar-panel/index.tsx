@@ -17,6 +17,8 @@ export type TrackerToolbarPanelProps = {
   descriptionTooltip?: string;
   closeAriaLabel: string;
   onClose: () => void;
+  /** Optional controls rendered between the title block and the close button. */
+  headerActions?: ReactNode;
   /** When set, the outlined card hugs narrow content instead of stretching full width. */
   maxWidth?: number;
   children: ReactNode;
@@ -30,6 +32,7 @@ export function TrackerToolbarPanel({
   descriptionTooltip,
   closeAriaLabel,
   onClose,
+  headerActions,
   maxWidth,
   children,
 }: TrackerToolbarPanelProps) {
@@ -77,14 +80,17 @@ export function TrackerToolbarPanel({
               descriptionNode
             )}
           </Box>
-          <IconButton
-            size="small"
-            aria-label={closeAriaLabel}
-            onClick={onClose}
-            sx={{ mt: -0.25, mr: -0.5 }}
-          >
-            <CloseIcon fontSize="small" />
-          </IconButton>
+          <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0, gap: 0.5 }}>
+            {headerActions}
+            <IconButton
+              size="small"
+              aria-label={closeAriaLabel}
+              onClick={onClose}
+              sx={{ mt: -0.25, mr: -0.5 }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
         </Stack>
         {children}
       </Stack>

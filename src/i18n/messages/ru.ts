@@ -183,6 +183,11 @@ export const ruMessages: Messages = {
     characterSpecsFilterTitle: "Фильтр по спекам персонажей",
     characterSpecsFilterHelper:
       "Выбор спеков каждого персонажа для включения в подбор",
+    selectAllSpecs: "Выбрать все",
+    selectAllSpecsAria: "Выбрать все спеки персонажей",
+    clearAllSpecs: "Снять все",
+    clearAllSpecsAria: "Снять все спеки персонажей",
+    resetAllFilters: "Сбросить все фильтры",
     minGearScoreEnable: "Фильтр по мин. GS",
     minGearScoreEnableAria: "Включить фильтр по минимальному GS для подбора",
     minGearScoreHelper:

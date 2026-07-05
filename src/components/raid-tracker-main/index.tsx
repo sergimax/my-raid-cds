@@ -1,5 +1,5 @@
 import { Alert, Stack } from "@mui/material";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useGearHintLegendDismissed } from "../../hooks/use-gear-hint-legend-dismissed.ts";
 import { useRaidTrackerContext } from "../../hooks/use-raid-tracker-context.ts";
 import type { TrackerFormsState } from "../../hooks/use-overlay-panels.ts";
@@ -11,7 +11,8 @@ import { AppIntro } from "../app-intro/index.tsx";
 import { BisListsPanel } from "../bis-lists-panel/index.tsx";
 import { CharacterForm } from "../character-form/index.tsx";
 import { DungeonForm } from "../dungeon-form/index.tsx";
-import { ExportPanel } from "../export-panel/index.tsx";
+import { ExportPanel, type ExportPanelHandle } from "../export-panel/index.tsx";
+import { ExportPanelHeaderActions } from "../export-panel/export-panel-header-actions.tsx";
 import { GearHintLegend } from "../gear-hint-legend/index.tsx";
 import { RaidTrackerTable } from "../raid-tracker-table/index.tsx";
 import { useRaidTrackerTableState } from "../raid-tracker-table/use-raid-tracker-table-state.ts";
@@ -69,6 +70,8 @@ export function RaidTrackerMain({
     onDeleteDungeon: domain.handleDeleteDungeon,
   });
 
+  const exportPanelRef = useRef<ExportPanelHandle>(null);
+
   const toolbarPanelId = resolveToolbarPanelId({
     showCharacterForm: forms.showCharacterForm,
     showDungeonForm: forms.showDungeonForm,
@@ -86,12 +89,25 @@ export function RaidTrackerMain({
       return null;
     }
 
-    return getToolbarPanelMeta(toolbarPanelId, t, {
+    const meta = getToolbarPanelMeta(toolbarPanelId, t, {
       closeCharacterForm: forms.closeCharacterForm,
       closeDungeonForm: forms.closeDungeonForm,
       closeBisListsPanel: closeBisListsPanelWithTooltips,
       closeExportPanel,
     });
+
+    if (toolbarPanelId === "export") {
+      return {
+        ...meta,
+        headerActions: (
+          <ExportPanelHeaderActions
+            onResetAllFilters={() => exportPanelRef.current?.resetAllFilters()}
+          />
+        ),
+      };
+    }
+
+    return meta;
   }, [
     closeBisListsPanelWithTooltips,
     closeExportPanel,
@@ -151,6 +167,7 @@ export function RaidTrackerMain({
 
           {showExportPanel ? (
             <ExportPanel
+              ref={exportPanelRef}
               characters={domain.characters}
               visibleDungeons={tableState.sortedDungeons}
               dungeonToggles={domain.dungeonToggles}
