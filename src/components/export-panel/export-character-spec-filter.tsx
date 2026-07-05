@@ -143,15 +143,18 @@ export function ExportCharacterSpecFilter({
           specPassesExportMinGearScore(character.offSpec, minGearScore);
 
         return (
-          <Stack key={character.id} spacing={0.5} sx={{ minWidth: 0 }}>
-            <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+          <Stack
+            key={character.id}
+            direction="row"
+            spacing={1}
+            sx={{ alignItems: "center", flexWrap: "nowrap", gap: 1, minWidth: 0 }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 600, flexShrink: 0, minWidth: 56 }}
+            >
               {character.name}
             </Typography>
-            <Stack
-              direction="row"
-              spacing={0.5}
-              sx={{ alignItems: "center", flexWrap: "wrap", gap: 0.5, pl: 0.25 }}
-            >
             {character.mainSpec ? (
               <ExportSpecCheckbox
                 character={character}
@@ -198,7 +201,6 @@ export function ExportCharacterSpecFilter({
                 }}
               />
             ) : null}
-            </Stack>
           </Stack>
         );
       })}
