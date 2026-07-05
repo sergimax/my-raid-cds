@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.42.0] - 2026-07-06
+
+### Added
+
+- **Character pick bulk filters:** **Select all** / **Clear all** icon buttons on the character-spec block; **Reset all filters** in the panel header (specs, roles, min GS).
+
+### Changed
+
+- **Character pick copy:** Panel title, result section, and status messages use **Character pick** / **Подбор персонажа** (EN/RU) instead of Export wording.
+- **Role filter layout:** Equal-width 2×2 grid; checkbox stays next to the role icon.
+
 ## [1.41.0] - 2026-07-06
 
 ### Added
