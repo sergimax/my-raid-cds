@@ -7,6 +7,7 @@ type ExportFilterSectionProps = {
   description?: string;
   children: ReactNode;
   sx?: SxProps<Theme>;
+  contentSx?: SxProps<Theme>;
 };
 
 export function ExportFilterSection({
@@ -14,6 +15,7 @@ export function ExportFilterSection({
   description,
   children,
   sx,
+  contentSx,
 }: ExportFilterSectionProps) {
   return (
     <Box
@@ -45,7 +47,18 @@ export function ExportFilterSection({
       ) : (
         <Box sx={{ mb: 0.75 }} />
       )}
-      <Box sx={{ flex: 1, minHeight: 0, minWidth: 0, overflow: "auto" }}>{children}</Box>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          minWidth: 0,
+          overflowX: "hidden",
+          overflowY: "auto",
+          ...contentSx,
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 }
