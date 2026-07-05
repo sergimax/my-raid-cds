@@ -15,7 +15,14 @@ export function ExportFilterBlock({ gridArea, children }: ExportFilterBlockProps
         minWidth: 0,
         minHeight: 0,
         display: "flex",
+        height: { xs: "auto", md: "100%" },
+        overflow: { xs: "visible", md: "hidden" },
         maxWidth: { xs: "100%", md: "none" },
+        "& > *": {
+          flex: 1,
+          minHeight: 0,
+          width: "100%",
+        },
       }}
     >
       {children}

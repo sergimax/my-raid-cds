@@ -25,27 +25,38 @@ export function ExportFilterSection({
         borderRadius: 1,
         p: 1.25,
         minWidth: 0,
+        minHeight: 0,
         maxWidth: "100%",
         height: "100%",
+        overflow: "hidden",
         display: "flex",
         flexDirection: "column",
         boxSizing: "border-box",
         ...sx,
       }}
     >
-      <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
+      <Typography
+        variant="body2"
+        sx={{ fontWeight: 600, lineHeight: 1.3, flexShrink: 0 }}
+      >
         {title}
       </Typography>
       {description ? (
         <Typography
           variant="caption"
           color="text.secondary"
-          sx={{ display: "block", mt: 0.25, mb: 0.75, lineHeight: 1.35 }}
+          sx={{
+            display: "block",
+            mt: 0.25,
+            mb: 0.75,
+            lineHeight: 1.35,
+            flexShrink: 0,
+          }}
         >
           {description}
         </Typography>
       ) : (
-        <Box sx={{ mb: 0.75 }} />
+        <Box sx={{ mb: 0.75, flexShrink: 0 }} />
       )}
       <Box
         sx={{
