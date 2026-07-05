@@ -164,6 +164,7 @@ export function ExportPanel({
           <ExportFilterSection
             title={t("exportPanel.gearScoreFilterTitle")}
             description={t("exportPanel.minGearScoreHelper")}
+            contentSx={{ overflow: "visible" }}
           >
             <ExportMinGearScoreFilter
               enabled={minGearScoreFilterEnabled}
