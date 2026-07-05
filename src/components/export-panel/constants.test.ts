@@ -1,27 +1,30 @@
 import { describe, expect, it } from "vitest";
 import {
   EXPORT_FILTER_BLOCK_SPANS,
+  EXPORT_FILTER_GRID_COLUMN_COUNT,
   getExportFilterGridTemplateAreas,
 } from "./constants.ts";
 
 describe("getExportFilterGridTemplateAreas", () => {
-  it("places raid, gear score, role, and specs on a 5-column grid when dungeons exist", () => {
+  it("places GS, role, and specs on row one; raid spans two columns on row two", () => {
     const areas = getExportFilterGridTemplateAreas(true);
 
-    expect(areas).toContain("dungeon dungeon gearScore characterSpecs characterSpecs");
-    expect(areas).toContain("role role . characterSpecs characterSpecs");
+    expect(areas).toContain("gearScore role characterSpecs");
+    expect(areas).toContain("dungeon dungeon characterSpecs");
   });
 
   it("omits dungeon row when there are no dungeons", () => {
     const areas = getExportFilterGridTemplateAreas(false);
 
     expect(areas).not.toContain("dungeon");
-    expect(areas).toContain("gearScore role role characterSpecs characterSpecs");
+    expect(areas).toContain("gearScore role characterSpecs");
+    expect(areas).toContain(". . characterSpecs");
   });
 });
 
 describe("EXPORT_FILTER_BLOCK_SPANS", () => {
-  it("uses height x width unit spans requested for each filter block", () => {
+  it("uses a three-column grid with specs spanning two rows", () => {
+    expect(EXPORT_FILTER_GRID_COLUMN_COUNT).toBe(3);
     expect(EXPORT_FILTER_BLOCK_SPANS.dungeon).toEqual({
       heightUnits: 1,
       widthUnits: 2,
@@ -32,11 +35,11 @@ describe("EXPORT_FILTER_BLOCK_SPANS", () => {
     });
     expect(EXPORT_FILTER_BLOCK_SPANS.role).toEqual({
       heightUnits: 1,
-      widthUnits: 2,
+      widthUnits: 1,
     });
     expect(EXPORT_FILTER_BLOCK_SPANS.characterSpecs).toEqual({
       heightUnits: 2,
-      widthUnits: 2,
+      widthUnits: 1,
     });
   });
 });
