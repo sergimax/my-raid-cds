@@ -7,8 +7,9 @@ const defaultRaidIconSx: SxProps<Theme> = {
   width: 18,
   height: 18,
   flexShrink: 0,
+  display: "block",
   borderRadius: "4px",
-  objectFit: "cover",
+  objectFit: "contain",
 };
 
 type ExportRaidIconProps = {
