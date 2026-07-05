@@ -1,4 +1,4 @@
-import { Chip, Stack, Typography } from "@mui/material";
+import { Box, Chip, Stack, Typography } from "@mui/material";
 import type { AppLocale } from "../../i18n/types.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import type { DungeonRecord } from "../../types/dungeons.ts";
@@ -53,10 +53,25 @@ export function ExportDungeonFilter({
                 key={dungeon.id}
                 size="small"
                 variant="outlined"
-                icon={
-                  raidIcon ? <ExportRaidIcon raidKey={raidKey} size={16} /> : undefined
+                sx={{
+                  "& .MuiChip-label": {
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    lineHeight: 1,
+                    py: 0,
+                  },
+                }}
+                label={
+                  <>
+                    {raidIcon ? (
+                      <ExportRaidIcon raidKey={raidKey} size={14} />
+                    ) : null}
+                    <Box component="span" sx={{ lineHeight: 1 }}>
+                      {formatDungeonExportLabel(dungeon, locale)}
+                    </Box>
+                  </>
                 }
-                label={formatDungeonExportLabel(dungeon, locale)}
               />
             );
           })}
