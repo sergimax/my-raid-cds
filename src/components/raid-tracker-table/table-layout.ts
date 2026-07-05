@@ -63,7 +63,7 @@ export function pinnedColumnsForLayout(
 
 const PINNED_CELL_BASE_SX = {
   position: "sticky",
-  zIndex: 1,
+  zIndex: 2,
   backgroundColor: "background.paper",
   boxShadow: "1px 0 0 rgba(0,0,0,0.08)",
   boxSizing: "border-box",
@@ -166,6 +166,8 @@ export function pinnedHeaderCellSx(left: number, width: number) {
 }
 
 export const CHARACTER_HEADER_CELL_SX = {
+  position: "relative",
+  zIndex: 0,
   width: CHARACTER_COLUMN_WIDTH,
   minWidth: CHARACTER_COLUMN_WIDTH,
   maxWidth: CHARACTER_COLUMN_WIDTH,
@@ -175,6 +177,8 @@ export const CHARACTER_HEADER_CELL_SX = {
 } as const;
 
 export const CHARACTER_BODY_CELL_SX = {
+  position: "relative",
+  zIndex: 0,
   width: CHARACTER_COLUMN_WIDTH,
   minWidth: CHARACTER_COLUMN_WIDTH,
   maxWidth: CHARACTER_COLUMN_WIDTH,
