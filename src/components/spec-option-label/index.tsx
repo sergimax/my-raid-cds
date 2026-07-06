@@ -14,6 +14,8 @@ type SpecOptionLabelProps = {
   color?: "text.secondary" | "inherit";
   /** When false, shows only the spec icon and optional gear score (for compact table headers). */
   showSpecName?: boolean;
+  /** Hover tooltip with full spec name (+ GS). Off when an outer tooltip owns the row. */
+  showDetailTooltip?: boolean;
 };
 
 export function SpecOptionLabel({
@@ -24,6 +26,7 @@ export function SpecOptionLabel({
   variant = "inherit",
   color = "inherit",
   showSpecName = true,
+  showDetailTooltip = true,
 }: SpecOptionLabelProps) {
   const { locale } = useTranslation();
   const icon = specIconFor(className, spec);
@@ -62,7 +65,7 @@ export function SpecOptionLabel({
     </Stack>
   );
 
-  if (showSpecName) {
+  if (showSpecName || !showDetailTooltip) {
     return content;
   }
 
@@ -77,6 +80,7 @@ type CharacterSpecGearLabelProps = {
   variant?: "body2" | "caption" | "inherit";
   color?: "text.secondary" | "inherit";
   showSpecName?: boolean;
+  showDetailTooltip?: boolean;
 };
 
 export function CharacterSpecGearLabel({
@@ -87,6 +91,7 @@ export function CharacterSpecGearLabel({
   variant,
   color = "text.secondary",
   showSpecName = true,
+  showDetailTooltip = true,
 }: CharacterSpecGearLabelProps) {
   return (
     <SpecOptionLabel
@@ -97,6 +102,7 @@ export function CharacterSpecGearLabel({
       variant={variant}
       color={color}
       showSpecName={showSpecName}
+      showDetailTooltip={showDetailTooltip}
     />
   );
 }

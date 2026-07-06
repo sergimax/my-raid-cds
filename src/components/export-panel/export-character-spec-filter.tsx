@@ -153,6 +153,7 @@ function ExportSpecCheckbox({
           gearScore={specGear.gearScore}
           iconSize={18}
           showSpecName={false}
+          showDetailTooltip={false}
           color={cooldownInactive || specFilteredOut ? "text.secondary" : "inherit"}
         />
       }
