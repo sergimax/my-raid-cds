@@ -183,6 +183,11 @@ export const ruMessages: Messages = {
     characterSpecsFilterTitle: "Фильтр по спекам персонажей",
     characterSpecsFilterHelper:
       "Выбор спеков каждого персонажа для включения в подбор",
+    characterInactiveCooldownHint: "КД на каждом видимом рейде",
+    characterInactiveFiltersHint: "Ни один спек не подходит под фильтры роли или GS",
+    specInactiveRoleFilter: "Не подходит под фильтр роли",
+    specInactiveGearScoreFilter: "Ниже минимального GS",
+    specInactiveRoleAndGearScoreFilter: "Не подходит под фильтры роли или GS",
     selectAllSpecs: "Выбрать все",
     selectAllSpecsAria: "Выбрать все спеки персонажей",
     clearAllSpecs: "Снять все",

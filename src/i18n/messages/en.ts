@@ -180,6 +180,11 @@ export const enMessages = {
     characterSpecsFilterTitle: "Filter by character specs",
     characterSpecsFilterHelper:
       "Choose which specs to include per character in character pick lines",
+    characterInactiveCooldownHint: "On cooldown for every visible raid",
+    characterInactiveFiltersHint: "No specs match role or GS filters",
+    specInactiveRoleFilter: "Doesn't match role filter",
+    specInactiveGearScoreFilter: "Below minimum GS",
+    specInactiveRoleAndGearScoreFilter: "Doesn't match role or GS filter",
     selectAllSpecs: "Select all",
     selectAllSpecsAria: "Select all character specs",
     clearAllSpecs: "Clear all",

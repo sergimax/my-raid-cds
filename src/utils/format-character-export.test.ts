@@ -7,6 +7,7 @@ import {
   clearUnavailableExportSpecSelections,
   defaultExportSpecSelection,
   formatCharacterExportLabel,
+  getCharacterExportInactiveReason,
   isCharacterIncludedInExport,
   resolveEffectiveExportSpecSelection,
   resolveExportSpecSelection,
@@ -293,5 +294,68 @@ describe("bulk export spec selection", () => {
         includeWithoutSpec: false,
       },
     });
+  });
+});
+
+describe("getCharacterExportInactiveReason", () => {
+  it("returns cooldown when every visible raid has CD", () => {
+    const character = createTestCharacter({
+      id: "character-1",
+      class: Classes[0],
+      mainSpec: { spec: "Unholy" },
+    });
+
+    expect(
+      getCharacterExportInactiveReason(character, new Set(), DEFAULT_EXPORT_ROLE_FILTER),
+    ).toBe("cooldown");
+  });
+
+  it("returns filters when no spec passes role or GS filters", () => {
+    const character = createTestCharacter({
+      id: "character-1",
+      class: Classes[5],
+      mainSpec: { spec: "Shadow", gearScore: 5800 },
+      offSpec: { spec: "Discipline", gearScore: 5500 },
+    });
+    const tanksOnly = {
+      ...DEFAULT_EXPORT_ROLE_FILTER,
+      tank: true,
+      healer: false,
+      meleeDps: false,
+      rangedDps: false,
+    };
+
+    expect(
+      getCharacterExportInactiveReason(
+        character,
+        new Set(["character-1"]),
+        tanksOnly,
+      ),
+    ).toBe("filters");
+
+    expect(
+      getCharacterExportInactiveReason(
+        character,
+        new Set(["character-1"]),
+        DEFAULT_EXPORT_ROLE_FILTER,
+        6500,
+      ),
+    ).toBe("filters");
+  });
+
+  it("returns null when at least one spec passes filters on a visible raid", () => {
+    const character = createTestCharacter({
+      id: "character-1",
+      class: Classes[5],
+      mainSpec: { spec: "Shadow", gearScore: 5800 },
+    });
+
+    expect(
+      getCharacterExportInactiveReason(
+        character,
+        new Set(["character-1"]),
+        DEFAULT_EXPORT_ROLE_FILTER,
+      ),
+    ).toBeNull();
   });
 });
