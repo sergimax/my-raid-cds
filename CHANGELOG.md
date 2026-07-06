@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.43.0] - 2026-07-06
+
+### Added
+
+- **Character pick wide layout:** At viewport widths ≥1600px, signup result lines sit to the right of the filter grid; the list scrolls inside a fixed-height block aligned to the grid.
+
+### Changed
+
+- **Copy button label:** Per-raid signup lines use **Copy** / **Скопировать** (was “Copy for PM” / “Скопировать для ЛС”).
+
+### Fixed
+
+- **Tooltip readability (light theme):** App tooltips use a dark high-contrast panel in light mode; gear-hint item links use the bright ilvl palette on that surface.
+
 ## [1.42.0] - 2026-07-06
 
 ### Added
