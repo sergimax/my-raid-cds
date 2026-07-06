@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { Classes } from "../types/characters.ts";
 import { DungeonDifficulty } from "../types/dungeons.ts";
-import { buildExportStatus, buildExportStatusString, formatExportLineCopyText } from "./build-export-status.ts";
+import {
+  buildExportStatus,
+  buildExportStatusString,
+  formatExportLineCopyText,
+  hasCharacterWithoutCdInVisibleDungeons,
+} from "./build-export-status.ts";
 import { testTranslator } from "../test/i18n.ts";
 import {
   createTestCharacter,
@@ -266,5 +271,37 @@ describe("buildExportStatusString", () => {
       },
     ]);
     expect(formatExportLineCopyText(result.lines[0])).toBe("Beta: SP 5.8");
+  });
+});
+
+describe("hasCharacterWithoutCdInVisibleDungeons", () => {
+  it("returns false when every visible raid has cooldown", () => {
+    const dungeons = [
+      createTestDungeon({ id: "dungeon-1" }),
+      createTestDungeon({ id: "dungeon-2" }),
+    ];
+    const toggles = createTestToggles([
+      { characterId: "character-1", dungeonId: "dungeon-1", on: true },
+      { characterId: "character-1", dungeonId: "dungeon-2", on: true },
+    ]);
+
+    expect(
+      hasCharacterWithoutCdInVisibleDungeons("character-1", dungeons, toggles),
+    ).toBe(false);
+  });
+
+  it("returns true when at least one visible raid has no cooldown", () => {
+    const dungeons = [
+      createTestDungeon({ id: "dungeon-1" }),
+      createTestDungeon({ id: "dungeon-2" }),
+    ];
+    const toggles = createTestToggles([
+      { characterId: "character-1", dungeonId: "dungeon-1", on: true },
+      { characterId: "character-1", dungeonId: "dungeon-2", on: false },
+    ]);
+
+    expect(
+      hasCharacterWithoutCdInVisibleDungeons("character-1", dungeons, toggles),
+    ).toBe(true);
   });
 });

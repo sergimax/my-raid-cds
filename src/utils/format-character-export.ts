@@ -37,10 +37,18 @@ export function defaultExportSpecSelection(
 
 export function buildSelectAllExportSpecSelection(
   characters: readonly CharacterRecord[],
+  includedCharacterIds?: ReadonlySet<string>,
 ): ExportSpecSelectionByCharacterId {
   const selection: Record<string, Partial<CharacterExportSpecSelection>> = {};
   for (const character of characters) {
-    selection[character.id] = defaultExportSpecSelection(character);
+    selection[character.id] =
+      includedCharacterIds === undefined || includedCharacterIds.has(character.id)
+        ? defaultExportSpecSelection(character)
+        : {
+            includeMain: false,
+            includeOff: false,
+            includeWithoutSpec: false,
+          };
   }
   return selection;
 }
@@ -57,6 +65,45 @@ export function buildClearAllExportSpecSelection(
     };
   }
   return selection;
+}
+
+export function clearUnavailableExportSpecSelections(
+  characters: readonly CharacterRecord[],
+  exportSpecSelectionByCharacterId: ExportSpecSelectionByCharacterId,
+  includedCharacterIds: ReadonlySet<string>,
+): ExportSpecSelectionByCharacterId {
+  let changed = false;
+  const nextSelection: Record<string, Partial<CharacterExportSpecSelection>> = {
+    ...exportSpecSelectionByCharacterId,
+  };
+
+  for (const character of characters) {
+    if (includedCharacterIds.has(character.id)) {
+      continue;
+    }
+
+    const resolved = resolveExportSpecSelection(
+      character,
+      exportSpecSelectionByCharacterId,
+    );
+    if (
+      !resolved.includeMain &&
+      !resolved.includeOff &&
+      !resolved.includeWithoutSpec
+    ) {
+      continue;
+    }
+
+    nextSelection[character.id] = {
+      ...nextSelection[character.id],
+      includeMain: false,
+      includeOff: false,
+      includeWithoutSpec: false,
+    };
+    changed = true;
+  }
+
+  return changed ? nextSelection : exportSpecSelectionByCharacterId;
 }
 
 export function resolveExportSpecSelection(

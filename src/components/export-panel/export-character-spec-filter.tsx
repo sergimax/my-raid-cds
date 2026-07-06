@@ -17,6 +17,7 @@ import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
 
 type ExportCharacterSpecFilterProps = {
   characters: CharacterRecord[];
+  includedCharacterIds: ReadonlySet<string>;
   exportSpecSelectionByCharacterId: ExportSpecSelectionByCharacterId;
   roleFilter: ExportRoleFilter;
   minGearScore: number | undefined;
@@ -103,6 +104,7 @@ function SpecCell({ children }: { children: ReactNode }) {
 
 export function ExportCharacterSpecFilter({
   characters,
+  includedCharacterIds,
   exportSpecSelectionByCharacterId,
   roleFilter,
   minGearScore,
@@ -130,6 +132,7 @@ export function ExportCharacterSpecFilter({
       }}
     >
       {characters.map((character) => {
+        const isIncludedInVisibleDungeons = includedCharacterIds.has(character.id);
         const selection = resolveEffectiveExportSpecSelection(
           character,
           exportSpecSelectionByCharacterId,
@@ -165,7 +168,14 @@ export function ExportCharacterSpecFilter({
               display: "contents",
             }}
           >
-            <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: "nowrap" }}>
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 600,
+                whiteSpace: "nowrap",
+                color: isIncludedInVisibleDungeons ? "text.primary" : "text.secondary",
+              }}
+            >
               {character.name}
             </Typography>
             <SpecCell>
@@ -175,7 +185,11 @@ export function ExportCharacterSpecFilter({
                   specGear={character.mainSpec}
                   slot="includeMain"
                   checked={selection.includeMain}
-                  disabled={!mainRoleAllowed || !mainGearScoreAllowed}
+                  disabled={
+                    !isIncludedInVisibleDungeons ||
+                    !mainRoleAllowed ||
+                    !mainGearScoreAllowed
+                  }
                   onCheckedChange={(slot, included) => {
                     onSpecIncluded(character, slot, included);
                   }}
@@ -185,6 +199,7 @@ export function ExportCharacterSpecFilter({
                 <Checkbox
                   size="small"
                   checked={selection.includeWithoutSpec}
+                  disabled={!isIncludedInVisibleDungeons}
                   onChange={(event) => {
                     onSpecIncluded(
                       character,
@@ -209,7 +224,11 @@ export function ExportCharacterSpecFilter({
                   specGear={character.offSpec}
                   slot="includeOff"
                   checked={selection.includeOff}
-                  disabled={!offRoleAllowed || !offGearScoreAllowed}
+                  disabled={
+                    !isIncludedInVisibleDungeons ||
+                    !offRoleAllowed ||
+                    !offGearScoreAllowed
+                  }
                   onCheckedChange={(slot, included) => {
                     onSpecIncluded(character, slot, included);
                   }}

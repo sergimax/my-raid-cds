@@ -4,6 +4,7 @@ import { DEFAULT_EXPORT_ROLE_FILTER } from "./export-spec-role.ts";
 import {
   buildClearAllExportSpecSelection,
   buildSelectAllExportSpecSelection,
+  clearUnavailableExportSpecSelections,
   defaultExportSpecSelection,
   formatCharacterExportLabel,
   isCharacterIncludedInExport,
@@ -234,5 +235,63 @@ describe("bulk export spec selection", () => {
         ),
       ).toBe(false);
     }
+  });
+
+  it("select all leaves characters without visible raids unchecked", () => {
+    const available = createTestCharacter({
+      id: "character-1",
+      name: "Elst",
+      class: Classes[0],
+      mainSpec: { spec: "Unholy" },
+      offSpec: { spec: "Blood" },
+    });
+    const unavailable = createTestCharacter({ id: "character-2", name: "Beta" });
+
+    const selection = buildSelectAllExportSpecSelection(
+      [available, unavailable],
+      new Set(["character-1"]),
+    );
+
+    expect(resolveExportSpecSelection(available, selection)).toEqual(
+      defaultExportSpecSelection(available),
+    );
+    expect(resolveExportSpecSelection(unavailable, selection)).toEqual({
+      includeMain: false,
+      includeOff: false,
+      includeWithoutSpec: false,
+    });
+  });
+
+  it("clears stored selections for characters without visible raids", () => {
+    const available = createTestCharacter({
+      id: "character-1",
+      name: "Elst",
+      class: Classes[0],
+      mainSpec: { spec: "Unholy" },
+    });
+    const unavailable = createTestCharacter({
+      id: "character-2",
+      name: "Beta",
+      class: Classes[0],
+      mainSpec: { spec: "Blood" },
+    });
+
+    const nextSelection = clearUnavailableExportSpecSelections(
+      [available, unavailable],
+      {
+        "character-1": { includeMain: false },
+        "character-2": { includeMain: true, includeWithoutSpec: true },
+      },
+      new Set(["character-1"]),
+    );
+
+    expect(nextSelection).toEqual({
+      "character-1": { includeMain: false },
+      "character-2": {
+        includeMain: false,
+        includeOff: false,
+        includeWithoutSpec: false,
+      },
+    });
   });
 });
