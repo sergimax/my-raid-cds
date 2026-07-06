@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.44.0] - 2026-07-06
+
+### Added
+
+- **Character pick spec sync:** Spec checkboxes clear and disable for characters on cooldown for every visible raid; **Select all** skips them. Selection updates when the table raid search or cooldown toggles change.
+- **Inactive spec visuals:** CD rows use italic, muted, grayscale styling; role/GS–blocked specs use strikethrough. Hover tooltips explain CD vs filter reasons (EN/RU).
+
+### Changed
+
+- **Toolbar order:** **Character pick** and **BiS builds** sit before **Add character** / **Add dungeon**.
+- **Character pick spec labels:** Built-in spec icon/GS tooltip is off in the spec filter block so inactive-state tooltips do not conflict.
+
 ## [1.43.0] - 2026-07-06
 
 ### Added
