@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
+import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
 import type { CharacterRecord } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import {
@@ -93,15 +93,15 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
       [characters, dungeonToggles, visibleDungeons],
     );
 
-    useEffect(() => {
-      setExportSpecSelectionByCharacterId((previous) =>
+    const exportSpecSelectionForPanel = useMemo(
+      () =>
         clearUnavailableExportSpecSelections(
           characters,
-          previous,
+          exportSpecSelectionByCharacterId,
           includedCharacterIds,
         ),
-      );
-    }, [characters, includedCharacterIds]);
+      [characters, exportSpecSelectionByCharacterId, includedCharacterIds],
+    );
 
     const resetAllFilters = () => {
       setExportSpecSelectionByCharacterId({});
@@ -129,13 +129,13 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
             character,
             resolveEffectiveExportSpecSelection(
               character,
-              exportSpecSelectionByCharacterId,
+              exportSpecSelectionForPanel,
               roleFilter,
               minGearScore,
             ),
           ),
         ),
-      [characters, exportSpecSelectionByCharacterId, minGearScore, roleFilter],
+      [characters, exportSpecSelectionForPanel, minGearScore, roleFilter],
     );
 
     const exportStatus = useMemo(
@@ -144,7 +144,7 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
           characters: includedCharacters,
           dungeons: visibleDungeons,
           dungeonToggles,
-          exportSpecSelectionByCharacterId,
+          exportSpecSelectionByCharacterId: exportSpecSelectionForPanel,
           minGearScore,
           roleFilter,
           locale,
@@ -152,7 +152,7 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
         }),
       [
         dungeonToggles,
-        exportSpecSelectionByCharacterId,
+        exportSpecSelectionForPanel,
         includedCharacters,
         locale,
         minGearScore,
@@ -262,7 +262,7 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
               <ExportCharacterSpecFilter
                 includedCharacterIds={includedCharacterIds}
                 characters={characters}
-                exportSpecSelectionByCharacterId={exportSpecSelectionByCharacterId}
+                exportSpecSelectionByCharacterId={exportSpecSelectionForPanel}
                 roleFilter={roleFilter}
                 minGearScore={minGearScore}
                 onSpecIncluded={setSpecIncluded}
