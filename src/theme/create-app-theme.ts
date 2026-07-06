@@ -1,4 +1,5 @@
 import { createTheme, type PaletteMode } from "@mui/material/styles";
+import { getTooltipSurface } from "./tooltip-surface.ts";
 
 const fontFamily = [
   "system-ui",
@@ -67,6 +68,19 @@ export function createAppTheme(mode: PaletteMode) {
     },
     shape: { borderRadius: 8 },
     components: {
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: ({ theme }) => {
+            const surface = getTooltipSurface(theme.palette.mode);
+            return {
+              bgcolor: surface.bgcolor,
+              color: surface.color,
+              border: `1px solid ${surface.borderColor}`,
+              boxShadow: theme.shadows[theme.palette.mode === "light" ? 8 : 12],
+            };
+          },
+        },
+      },
       MuiSwitch: {
         styleOverrides: {
           switchBase: ({ theme }) =>
