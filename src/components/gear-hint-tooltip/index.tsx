@@ -18,6 +18,10 @@ import {
 } from "../../utils/tier-set-hint.ts";
 import type { CharacterGearHints, SpecGearHint } from "../../utils/character-gear-hints.ts";
 import type { BossBisLootGroup } from "../../utils/item-drop-sources.ts";
+import {
+  getTooltipSurface,
+  TOOLTIP_ITEM_LINK_COLOR_MODE,
+} from "../../theme/tooltip-surface.ts";
 
 /** Scroll when boss-grouped BiS loot exceeds this height (tooltip stays scannable). */
 const BIS_LOOT_LIST_MAX_HEIGHT = 128;
@@ -71,10 +75,17 @@ function GearHintSectionTitle({
       <Box component="span" sx={{ fontWeight: 700 }}>
         {t(kindLabelKey)}
       </Box>
-      <Box component="span" sx={{ color: "text.secondary" }} aria-hidden>
+      <Box
+        component="span"
+        sx={(theme) => ({ color: getTooltipSurface(theme.palette.mode).mutedColor })}
+        aria-hidden
+      >
         ·
       </Box>
-      <Box component="span" sx={{ color: "text.secondary" }}>
+      <Box
+        component="span"
+        sx={(theme) => ({ color: getTooltipSurface(theme.palette.mode).mutedColor })}
+      >
         {t(titleKey)}
       </Box>
     </Typography>
@@ -124,12 +135,15 @@ function BisBossLootSection({
             }}
           >
             {group.bossName ? (
-              <Box component="span" sx={{ fontWeight: 600, color: "text.secondary" }}>
+              <Box component="span" sx={{ fontWeight: 600 }}>
                 {group.bossName}
                 {": "}
               </Box>
             ) : null}
-            <WowItemAlternatives itemIds={group.itemIds} />
+            <WowItemAlternatives
+              itemIds={group.itemIds}
+              linkColorMode={TOOLTIP_ITEM_LINK_COLOR_MODE}
+            />
           </Typography>
         ))}
       </Box>
@@ -166,7 +180,10 @@ function TierSetTokenSection({
           component="p"
           sx={{ lineHeight: 1.25, mb: 0.25, "&:last-child": { mb: 0 } }}
         >
-          <WowItemLink itemId={row.tokenItemId} />
+          <WowItemLink
+            itemId={row.tokenItemId}
+            linkColorMode={TOOLTIP_ITEM_LINK_COLOR_MODE}
+          />
           {row.count > 1 ? ` ×${row.count}` : null}
         </Typography>
       ))}

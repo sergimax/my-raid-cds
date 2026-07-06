@@ -24,10 +24,11 @@ export function wowItemLinkColor(
 
 export function wowItemLinkSx(
   itemId: number,
+  colorMode?: "light" | "dark",
 ): (theme: Theme) => SystemStyleObject<Theme> {
   return (theme) => ({
     display: "inline",
-    color: wowItemLinkColor(itemId, theme.palette.mode),
+    color: wowItemLinkColor(itemId, colorMode ?? theme.palette.mode),
     fontWeight: 600,
     textDecoration: "underline",
     textDecorationStyle: "dotted",

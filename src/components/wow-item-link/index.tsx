@@ -8,9 +8,11 @@ import { wowItemLinkSx } from "./item-link-styles.ts";
 type WowItemLinkProps = {
   itemId: number;
   children?: ReactNode;
+  /** Override ilvl color palette (e.g. bright colors on dark tooltip surfaces). */
+  linkColorMode?: "light" | "dark";
 };
 
-export function WowItemLink({ itemId, children }: WowItemLinkProps) {
+export function WowItemLink({ itemId, children, linkColorMode }: WowItemLinkProps) {
   const { locale } = useItemTooltipLocale();
   const label = children ?? getWotlkItemName(itemId, locale) ?? `#${itemId}`;
 
@@ -21,7 +23,7 @@ export function WowItemLink({ itemId, children }: WowItemLinkProps) {
       href={buildWowItemUrl(itemId, locale)}
       target="_blank"
       rel="noopener noreferrer"
-      sx={wowItemLinkSx(itemId)}
+      sx={wowItemLinkSx(itemId, linkColorMode)}
     >
       {label}
     </Box>
@@ -31,11 +33,13 @@ export function WowItemLink({ itemId, children }: WowItemLinkProps) {
 type WowItemAlternativesProps = {
   itemIds: readonly number[];
   emptyLabel?: string;
+  linkColorMode?: "light" | "dark";
 };
 
 export function WowItemAlternatives({
   itemIds,
   emptyLabel = "—",
+  linkColorMode,
 }: WowItemAlternativesProps) {
   if (itemIds.length === 0) {
     return <>{emptyLabel}</>;
@@ -46,7 +50,7 @@ export function WowItemAlternatives({
       {itemIds.map((itemId, index) => (
         <Fragment key={`${itemId}-${index}`}>
           {index > 0 ? " / " : null}
-          <WowItemLink itemId={itemId} />
+          <WowItemLink itemId={itemId} linkColorMode={linkColorMode} />
         </Fragment>
       ))}
     </>
