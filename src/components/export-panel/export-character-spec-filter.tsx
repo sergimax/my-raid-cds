@@ -34,6 +34,7 @@ type ExportSpecCheckboxProps = {
   slot: keyof CharacterExportSpecSelection;
   checked: boolean;
   disabled?: boolean;
+  unavailableForRaids?: boolean;
   onCheckedChange: (
     slot: keyof CharacterExportSpecSelection,
     included: boolean,
@@ -47,6 +48,7 @@ function ExportSpecCheckbox({
   slot,
   checked,
   disabled = false,
+  unavailableForRaids = false,
   onCheckedChange,
   t,
 }: ExportSpecCheckboxProps) {
@@ -89,9 +91,17 @@ function ExportSpecCheckbox({
           gearScore={specGear.gearScore}
           iconSize={18}
           showSpecName={false}
+          color={unavailableForRaids ? "text.secondary" : "inherit"}
         />
       }
-      sx={{ mr: 0, width: "100%" }}
+      sx={{
+        mr: 0,
+        width: "100%",
+        ...(unavailableForRaids && {
+          "& .MuiCheckbox-root": { opacity: 0.45 },
+          "& img": { opacity: 0.45, filter: "grayscale(1)" },
+        }),
+      }}
     />
   );
 }
@@ -133,6 +143,7 @@ export function ExportCharacterSpecFilter({
     >
       {characters.map((character) => {
         const isIncludedInVisibleDungeons = includedCharacterIds.has(character.id);
+        const unavailableForRaids = !isIncludedInVisibleDungeons;
         const selection = resolveEffectiveExportSpecSelection(
           character,
           exportSpecSelectionByCharacterId,
@@ -162,18 +173,14 @@ export function ExportCharacterSpecFilter({
           specPassesExportMinGearScore(character.offSpec, minGearScore);
 
         return (
-          <Box
-            key={character.id}
-            sx={{
-              display: "contents",
-            }}
-          >
+          <Box key={character.id} sx={{ display: "contents" }}>
             <Typography
               variant="body2"
               sx={{
-                fontWeight: 600,
+                fontWeight: unavailableForRaids ? 500 : 600,
                 whiteSpace: "nowrap",
-                color: isIncludedInVisibleDungeons ? "text.primary" : "text.secondary",
+                color: unavailableForRaids ? "text.disabled" : "text.primary",
+                fontStyle: unavailableForRaids ? "italic" : "normal",
               }}
             >
               {character.name}
@@ -186,10 +193,11 @@ export function ExportCharacterSpecFilter({
                   slot="includeMain"
                   checked={selection.includeMain}
                   disabled={
-                    !isIncludedInVisibleDungeons ||
+                    unavailableForRaids ||
                     !mainRoleAllowed ||
                     !mainGearScoreAllowed
                   }
+                  unavailableForRaids={unavailableForRaids}
                   onCheckedChange={(slot, included) => {
                     onSpecIncluded(character, slot, included);
                   }}
@@ -199,7 +207,8 @@ export function ExportCharacterSpecFilter({
                 <Checkbox
                   size="small"
                   checked={selection.includeWithoutSpec}
-                  disabled={!isIncludedInVisibleDungeons}
+                  disabled={unavailableForRaids}
+                  sx={unavailableForRaids ? { opacity: 0.45 } : undefined}
                   onChange={(event) => {
                     onSpecIncluded(
                       character,
@@ -225,10 +234,11 @@ export function ExportCharacterSpecFilter({
                   slot="includeOff"
                   checked={selection.includeOff}
                   disabled={
-                    !isIncludedInVisibleDungeons ||
+                    unavailableForRaids ||
                     !offRoleAllowed ||
                     !offGearScoreAllowed
                   }
+                  unavailableForRaids={unavailableForRaids}
                   onCheckedChange={(slot, included) => {
                     onSpecIncluded(character, slot, included);
                   }}
