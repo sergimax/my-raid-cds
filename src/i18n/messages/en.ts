@@ -166,7 +166,7 @@ export const enMessages = {
       "Find the raid you're interested in in the search. Select the specs you want, roles, and GS. If a line appears below, copy it and send it to the raid leader in a private message",
     exportLinesHelperSingle:
       "Characters you can offer for this raid. Copy the line and paste it in a PM to the raid leader",
-    copyLine: "Copy for PM",
+    copyLine: "Copy",
     copyLineAria: "Copy signup line for {{raid}}",
     copied: "Copied",
     dungeonFilterTitle: "Filter by raid",
