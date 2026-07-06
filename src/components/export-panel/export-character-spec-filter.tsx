@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Tooltip, Typography } from "@mui/material";
 import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
@@ -7,9 +7,11 @@ import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.
 import type { ExportRoleFilter } from "../../utils/export-spec-role.ts";
 import {
   characterHasExportSpecs,
+  getCharacterExportInactiveReason,
   isSpecIncludedForExportRole,
   resolveEffectiveExportSpecSelection,
   specPassesExportMinGearScore,
+  type CharacterExportInactiveReason,
   type CharacterExportSpecSelection,
   type ExportSpecSelectionByCharacterId,
 } from "../../utils/format-character-export.ts";
@@ -34,7 +36,9 @@ type ExportSpecCheckboxProps = {
   slot: keyof CharacterExportSpecSelection;
   checked: boolean;
   disabled?: boolean;
-  unavailableForRaids?: boolean;
+  cooldownInactive?: boolean;
+  roleAllowed: boolean;
+  gearScoreAllowed: boolean;
   onCheckedChange: (
     slot: keyof CharacterExportSpecSelection,
     included: boolean,
@@ -42,13 +46,64 @@ type ExportSpecCheckboxProps = {
   t: TranslateFn;
 };
 
+type SpecFilterTooltipKey =
+  | "exportPanel.specInactiveRoleFilter"
+  | "exportPanel.specInactiveGearScoreFilter"
+  | "exportPanel.specInactiveRoleAndGearScoreFilter";
+
+function characterInactiveTooltipKey(
+  inactiveReason: CharacterExportInactiveReason,
+): "exportPanel.characterInactiveCooldownHint" | "exportPanel.characterInactiveFiltersHint" {
+  return inactiveReason === "cooldown"
+    ? "exportPanel.characterInactiveCooldownHint"
+    : "exportPanel.characterInactiveFiltersHint";
+}
+
+function specFilterTooltipKey(
+  roleAllowed: boolean,
+  gearScoreAllowed: boolean,
+): SpecFilterTooltipKey | null {
+  if (roleAllowed && gearScoreAllowed) {
+    return null;
+  }
+  if (!roleAllowed && !gearScoreAllowed) {
+    return "exportPanel.specInactiveRoleAndGearScoreFilter";
+  }
+  if (!roleAllowed) {
+    return "exportPanel.specInactiveRoleFilter";
+  }
+  return "exportPanel.specInactiveGearScoreFilter";
+}
+
+function FilterTooltip({
+  title,
+  children,
+}: {
+  title: string | null;
+  children: ReactNode;
+}) {
+  if (!title) {
+    return <>{children}</>;
+  }
+
+  return (
+    <Tooltip title={title}>
+      <Box component="span" sx={{ display: "inline-flex", minWidth: 0, width: "100%" }}>
+        {children}
+      </Box>
+    </Tooltip>
+  );
+}
+
 function ExportSpecCheckbox({
   character,
   specGear,
   slot,
   checked,
   disabled = false,
-  unavailableForRaids = false,
+  cooldownInactive = false,
+  roleAllowed,
+  gearScoreAllowed,
   onCheckedChange,
   t,
 }: ExportSpecCheckboxProps) {
@@ -63,8 +118,15 @@ function ExportSpecCheckbox({
     specGear.spec,
     locale,
   );
+  const specFilteredOut = !cooldownInactive && (!roleAllowed || !gearScoreAllowed);
+  const filterTooltipKey = specFilterTooltipKey(roleAllowed, gearScoreAllowed);
+  const tooltipTitle = cooldownInactive
+    ? t("exportPanel.characterInactiveCooldownHint")
+    : filterTooltipKey
+      ? t(filterTooltipKey)
+      : null;
 
-  return (
+  const control = (
     <FormControlLabel
       control={
         <Checkbox
@@ -91,19 +153,25 @@ function ExportSpecCheckbox({
           gearScore={specGear.gearScore}
           iconSize={18}
           showSpecName={false}
-          color={unavailableForRaids ? "text.secondary" : "inherit"}
+          color={cooldownInactive || specFilteredOut ? "text.secondary" : "inherit"}
         />
       }
       sx={{
         mr: 0,
         width: "100%",
-        ...(unavailableForRaids && {
+        ...(cooldownInactive && {
           "& .MuiCheckbox-root": { opacity: 0.45 },
           "& img": { opacity: 0.45, filter: "grayscale(1)" },
+        }),
+        ...(specFilteredOut && {
+          "& .MuiCheckbox-root": { opacity: 0.55 },
+          "& .MuiTypography-root": { textDecoration: "line-through" },
         }),
       }}
     />
   );
+
+  return <FilterTooltip title={tooltipTitle}>{control}</FilterTooltip>;
 }
 
 function SpecCell({ children }: { children: ReactNode }) {
@@ -142,8 +210,12 @@ export function ExportCharacterSpecFilter({
       }}
     >
       {characters.map((character) => {
-        const isIncludedInVisibleDungeons = includedCharacterIds.has(character.id);
-        const unavailableForRaids = !isIncludedInVisibleDungeons;
+        const inactiveReason = getCharacterExportInactiveReason(
+          character,
+          includedCharacterIds,
+          roleFilter,
+          minGearScore,
+        );
         const selection = resolveEffectiveExportSpecSelection(
           character,
           exportSpecSelectionByCharacterId,
@@ -171,20 +243,35 @@ export function ExportCharacterSpecFilter({
         const offGearScoreAllowed =
           !character.offSpec ||
           specPassesExportMinGearScore(character.offSpec, minGearScore);
+        const cooldownInactive = inactiveReason === "cooldown";
+        const characterName = (
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: inactiveReason ? 500 : 600,
+              whiteSpace: "nowrap",
+              color:
+                inactiveReason === "cooldown"
+                  ? "text.disabled"
+                  : inactiveReason === "filters"
+                    ? "text.secondary"
+                    : "text.primary",
+              fontStyle: inactiveReason === "cooldown" ? "italic" : "normal",
+            }}
+          >
+            {character.name}
+          </Typography>
+        );
 
         return (
           <Box key={character.id} sx={{ display: "contents" }}>
-            <Typography
-              variant="body2"
-              sx={{
-                fontWeight: unavailableForRaids ? 500 : 600,
-                whiteSpace: "nowrap",
-                color: unavailableForRaids ? "text.disabled" : "text.primary",
-                fontStyle: unavailableForRaids ? "italic" : "normal",
-              }}
-            >
-              {character.name}
-            </Typography>
+            {inactiveReason ? (
+              <FilterTooltip title={t(characterInactiveTooltipKey(inactiveReason))}>
+                {characterName}
+              </FilterTooltip>
+            ) : (
+              characterName
+            )}
             <SpecCell>
               {character.mainSpec ? (
                 <ExportSpecCheckbox
@@ -193,23 +280,32 @@ export function ExportCharacterSpecFilter({
                   slot="includeMain"
                   checked={selection.includeMain}
                   disabled={
-                    unavailableForRaids ||
+                    cooldownInactive ||
                     !mainRoleAllowed ||
                     !mainGearScoreAllowed
                   }
-                  unavailableForRaids={unavailableForRaids}
+                  cooldownInactive={cooldownInactive}
+                  roleAllowed={mainRoleAllowed}
+                  gearScoreAllowed={mainGearScoreAllowed}
                   onCheckedChange={(slot, included) => {
                     onSpecIncluded(character, slot, included);
                   }}
                   t={t}
                 />
               ) : !hasSpecs ? (
-                <Checkbox
-                  size="small"
-                  checked={selection.includeWithoutSpec}
-                  disabled={unavailableForRaids}
-                  sx={unavailableForRaids ? { opacity: 0.45 } : undefined}
-                  onChange={(event) => {
+                <FilterTooltip
+                  title={
+                    cooldownInactive
+                      ? t("exportPanel.characterInactiveCooldownHint")
+                      : null
+                  }
+                >
+                  <Checkbox
+                    size="small"
+                    checked={selection.includeWithoutSpec}
+                    disabled={cooldownInactive}
+                    sx={cooldownInactive ? { opacity: 0.45 } : undefined}
+                    onChange={(event) => {
                     onSpecIncluded(
                       character,
                       "includeWithoutSpec",
@@ -224,6 +320,7 @@ export function ExportCharacterSpecFilter({
                     },
                   }}
                 />
+                </FilterTooltip>
               ) : null}
             </SpecCell>
             <SpecCell>
@@ -234,11 +331,13 @@ export function ExportCharacterSpecFilter({
                   slot="includeOff"
                   checked={selection.includeOff}
                   disabled={
-                    unavailableForRaids ||
+                    cooldownInactive ||
                     !offRoleAllowed ||
                     !offGearScoreAllowed
                   }
-                  unavailableForRaids={unavailableForRaids}
+                  cooldownInactive={cooldownInactive}
+                  roleAllowed={offRoleAllowed}
+                  gearScoreAllowed={offGearScoreAllowed}
                   onCheckedChange={(slot, included) => {
                     onSpecIncluded(character, slot, included);
                   }}

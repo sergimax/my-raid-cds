@@ -181,6 +181,69 @@ export function specPassesExportMinGearScore(
   return specGear.gearScore >= minGearScore;
 }
 
+export type CharacterExportInactiveReason = "cooldown" | "filters";
+
+export function characterSpecPassesExportFilters(
+  character: CharacterRecord,
+  specGear: CharacterSpecGear,
+  roleFilter: ExportRoleFilter = DEFAULT_EXPORT_ROLE_FILTER,
+  minGearScore?: number,
+): boolean {
+  return (
+    isSpecIncludedForExportRole(character, specGear.spec, roleFilter) &&
+    specPassesExportMinGearScore(specGear, minGearScore)
+  );
+}
+
+export function characterHasSpecPassingExportFilters(
+  character: CharacterRecord,
+  roleFilter: ExportRoleFilter = DEFAULT_EXPORT_ROLE_FILTER,
+  minGearScore?: number,
+): boolean {
+  if (!characterHasExportSpecs(character)) {
+    return true;
+  }
+
+  const mainPasses = Boolean(
+    character.mainSpec &&
+      characterSpecPassesExportFilters(
+        character,
+        character.mainSpec,
+        roleFilter,
+        minGearScore,
+      ),
+  );
+  const offPasses = Boolean(
+    character.offSpec &&
+      characterSpecPassesExportFilters(
+        character,
+        character.offSpec,
+        roleFilter,
+        minGearScore,
+      ),
+  );
+  return mainPasses || offPasses;
+}
+
+/** Why a character row is inactive in the spec filter (CD on all visible raids, or filters). */
+export function getCharacterExportInactiveReason(
+  character: CharacterRecord,
+  includedCharacterIds: ReadonlySet<string>,
+  roleFilter: ExportRoleFilter = DEFAULT_EXPORT_ROLE_FILTER,
+  minGearScore?: number,
+): CharacterExportInactiveReason | null {
+  if (!includedCharacterIds.has(character.id)) {
+    return "cooldown";
+  }
+  if (
+    characterHasExportSpecs(character) &&
+    !characterHasSpecPassingExportFilters(character, roleFilter, minGearScore)
+  ) {
+    return "filters";
+  }
+  return null;
+}
+
 function formatSpecExportSegment(
   className: ClassName,
   specGear: CharacterSpecGear,
