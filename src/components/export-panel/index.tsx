@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material";
+import { Box } from "@mui/material";
 import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
 import type { CharacterRecord } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
@@ -24,6 +24,9 @@ import { ExportMinGearScoreFilter } from "./export-min-gear-score-filter.tsx";
 import { ExportRoleFilterPanel } from "./export-role-filter.tsx";
 import { ExportResultLines } from "./export-result-lines.tsx";
 import {
+  EXPORT_FILTER_GRID_GAP_SPACING,
+  EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY,
+  getExportFilterGridHeight,
   getExportFilterGridTemplateAreas,
   getExportFilterGridTemplateColumns,
   getExportFilterGridTemplateRows,
@@ -151,7 +154,18 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
     };
 
     return (
-      <Stack spacing={1.5}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: EXPORT_FILTER_GRID_GAP_SPACING,
+          alignItems: "stretch",
+          width: "100%",
+          [EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY]: {
+            flexDirection: "row",
+          },
+        }}
+      >
         <Box
           sx={{
             display: "grid",
@@ -167,10 +181,11 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
               xs: "none",
               md: getExportFilterGridTemplateAreas(hasDungeonFilter),
             },
-            gap: 1.5,
+            gap: EXPORT_FILTER_GRID_GAP_SPACING,
             alignItems: "stretch",
             width: { xs: "100%", md: "fit-content" },
             maxWidth: "100%",
+            flexShrink: 0,
           }}
         >
           <ExportFilterBlock gridArea="gearScore">
@@ -240,10 +255,25 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
           ) : null}
         </Box>
 
-        <Box sx={{ width: "100%", minWidth: 0 }}>
+        <Box
+          sx={{
+            flex: "none",
+            minWidth: 0,
+            width: "100%",
+            [EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY]: {
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
+              height: getExportFilterGridHeight(),
+              maxHeight: getExportFilterGridHeight(),
+              overflow: "hidden",
+            },
+          }}
+        >
           <ExportResultLines result={exportStatus} />
         </Box>
-      </Stack>
+      </Box>
     );
   },
 );

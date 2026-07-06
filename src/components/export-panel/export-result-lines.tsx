@@ -15,6 +15,7 @@ import {
 import { EXPORT_RESULT_MAX_HEIGHT } from "./constants.ts";
 import { ExportFilterSection } from "./export-filter-section.tsx";
 import { ExportRaidIcon } from "./export-raid-icon.tsx";
+import { useExportPanelSideBySide } from "./use-export-panel-side-by-side.ts";
 
 type ExportResultLinesProps = {
   result: BuildExportStatusResult;
@@ -123,12 +124,23 @@ function ExportResultLineRow({ line, emphasizeCopy }: ExportResultLineRowProps) 
 
 export function ExportResultLines({ result }: ExportResultLinesProps) {
   const { t } = useTranslation();
+  const sideBySide = useExportPanelSideBySide();
+
+  const sectionLayoutSx = sideBySide
+    ? { width: "100%", height: "100%", minHeight: 0, flex: 1 }
+    : { width: "100%", height: "auto" };
+
+  const sectionContentSx = sideBySide
+    ? { flex: 1, minHeight: 0, maxHeight: "none" }
+    : { maxHeight: EXPORT_RESULT_MAX_HEIGHT };
 
   if (result.kind === "message") {
     return (
       <ExportFilterSection
         title={t("exportPanel.exportLinesTitle")}
         description={t("exportPanel.exportLinesHelper")}
+        sx={sectionLayoutSx}
+        contentSx={sectionContentSx}
       >
         <Typography variant="body2" color="text.secondary">
           {result.message}
@@ -147,7 +159,8 @@ export function ExportResultLines({ result }: ExportResultLinesProps) {
           ? t("exportPanel.exportLinesHelperSingle")
           : t("exportPanel.exportLinesHelper")
       }
-      contentSx={{ maxHeight: EXPORT_RESULT_MAX_HEIGHT }}
+      sx={sectionLayoutSx}
+      contentSx={sectionContentSx}
     >
       <Stack spacing={1}>
         {result.lines.map((line) => (
