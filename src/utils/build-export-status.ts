@@ -42,6 +42,15 @@ export function formatExportLineCopyText(line: ExportStatusLine): string {
 }
 
 /** Characters without CD (toggle off) per visible dungeon. */
+export function hasCharacterWithoutCdInVisibleDungeons(
+  characterId: string,
+  dungeons: readonly DungeonRecord[],
+  dungeonToggles: DungeonToggles,
+): boolean {
+  return dungeons.some((dungeon) => !isCooldownOn(dungeonToggles, characterId, dungeon.id));
+}
+
+/** Characters without CD (toggle off) per visible dungeon. */
 export function buildExportStatus({
   characters,
   dungeons,
@@ -66,7 +75,7 @@ export function buildExportStatus({
   for (const dungeon of dungeons) {
     const charactersWithoutCd = characters.filter(
       (character) =>
-        !isCooldownOn(dungeonToggles, character.id, dungeon.id),
+        hasCharacterWithoutCdInVisibleDungeons(character.id, [dungeon], dungeonToggles),
     );
     if (charactersWithoutCd.length === 0) {
       continue;

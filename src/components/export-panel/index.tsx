@@ -1,16 +1,20 @@
 import { Box } from "@mui/material";
-import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import type { CharacterRecord } from "../../types/characters.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import {
   buildClearAllExportSpecSelection,
   buildSelectAllExportSpecSelection,
+  clearUnavailableExportSpecSelections,
   isCharacterIncludedInExport,
   resolveEffectiveExportSpecSelection,
   resolveExportSpecSelection,
   type CharacterExportSpecSelection,
 } from "../../utils/format-character-export.ts";
-import { buildExportStatus } from "../../utils/build-export-status.ts";
+import {
+  buildExportStatus,
+  hasCharacterWithoutCdInVisibleDungeons,
+} from "../../utils/build-export-status.ts";
 import {
   EXPORT_MIN_GS_COMPACT_DEFAULT,
   resolveExportMinGearScoreThreshold,
@@ -73,6 +77,32 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
       [minGearScoreCompact, minGearScoreFilterEnabled],
     );
 
+    const includedCharacterIds = useMemo(
+      () =>
+        new Set(
+          characters
+            .filter((character) =>
+              hasCharacterWithoutCdInVisibleDungeons(
+                character.id,
+                visibleDungeons,
+                dungeonToggles,
+              ),
+            )
+            .map((character) => character.id),
+        ),
+      [characters, dungeonToggles, visibleDungeons],
+    );
+
+    useEffect(() => {
+      setExportSpecSelectionByCharacterId((previous) =>
+        clearUnavailableExportSpecSelections(
+          characters,
+          previous,
+          includedCharacterIds,
+        ),
+      );
+    }, [characters, includedCharacterIds]);
+
     const resetAllFilters = () => {
       setExportSpecSelectionByCharacterId({});
       setMinGearScoreFilterEnabled(false);
@@ -81,7 +111,9 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
     };
 
     const selectAllCharacterSpecs = () => {
-      setExportSpecSelectionByCharacterId(buildSelectAllExportSpecSelection(characters));
+      setExportSpecSelectionByCharacterId(
+        buildSelectAllExportSpecSelection(characters, includedCharacterIds),
+      );
     };
 
     const clearAllCharacterSpecs = () => {
@@ -228,6 +260,7 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
               }
             >
               <ExportCharacterSpecFilter
+                includedCharacterIds={includedCharacterIds}
                 characters={characters}
                 exportSpecSelectionByCharacterId={exportSpecSelectionByCharacterId}
                 roleFilter={roleFilter}
