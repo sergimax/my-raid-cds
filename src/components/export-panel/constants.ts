@@ -1,4 +1,16 @@
-/** Max height of the export result list before it scrolls. */
+/** Min viewport width for filter grid left + result lines right. */
+export const EXPORT_PANEL_SIDE_BY_SIDE_MIN_PX = 1600;
+
+/** `matchMedia` / `useMediaQuery` query (no `@media` prefix). */
+export const EXPORT_PANEL_SIDE_BY_SIDE_MQ = `(min-width:${EXPORT_PANEL_SIDE_BY_SIDE_MIN_PX}px)`;
+
+/** MUI `sx` object key for the side-by-side breakpoint. */
+export const EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY = `@media ${EXPORT_PANEL_SIDE_BY_SIDE_MQ}`;
+
+/** Theme spacing multiplier used for export filter grid gap (`gap: 1.5`). */
+export const EXPORT_FILTER_GRID_GAP_SPACING = 1.5;
+
+/** Max height of the export result list before it scrolls (stacked layout). */
 export const EXPORT_RESULT_MAX_HEIGHT = 320;
 
 /** Width of one grid column unit (export filter blocks use width × height spans). */
@@ -53,6 +65,16 @@ export const EXPORT_FILTER_BLOCK_SPANS = {
   role: { heightUnits: 1, widthUnits: 1 },
   characterSpecs: { heightUnits: 2, widthUnits: 1 },
 } as const satisfies Record<string, ExportFilterBlockSpan>;
+
+/** Total pixel height of the 2-row filter grid (rows + inter-row gaps). */
+export function getExportFilterGridHeight(
+  gridRowGapPx = EXPORT_FILTER_GRID_GAP_SPACING * 8,
+): number {
+  const rowCount = Math.max(
+    ...Object.values(EXPORT_FILTER_BLOCK_SPANS).map((span) => span.heightUnits),
+  );
+  return rowCount * EXPORT_FILTER_UNIT_HEIGHT + (rowCount - 1) * gridRowGapPx;
+}
 
 export type ExportFilterGridAreaId = keyof typeof EXPORT_FILTER_BLOCK_SPANS;
 

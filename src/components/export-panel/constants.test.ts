@@ -2,11 +2,15 @@ import { describe, expect, it } from "vitest";
 import {
   EXPORT_FILTER_BLOCK_SPANS,
   EXPORT_FILTER_GRID_COLUMN_COUNT,
+  EXPORT_PANEL_SIDE_BY_SIDE_MIN_PX,
+  EXPORT_PANEL_SIDE_BY_SIDE_MQ,
+  EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY,
   EXPORT_FILTER_SPECS_UNIT_WIDTH,
   EXPORT_FILTER_SPECS_VISIBLE_ROW_COUNT,
   EXPORT_FILTER_UNIT_HEIGHT,
   EXPORT_FILTER_UNIT_WIDTH,
   getExportFilterBlockHeight,
+  getExportFilterGridHeight,
   getExportFilterGridTemplateAreas,
   getExportFilterGridTemplateRows,
   getExportFilterSpecsListMaxHeight,
@@ -67,5 +71,15 @@ describe("export filter fixed heights", () => {
   it("fits eight character rows in the specs scroll viewport", () => {
     expect(getExportFilterSpecsListMaxHeight()).toBe(346);
     expect(EXPORT_FILTER_SPECS_VISIBLE_ROW_COUNT).toBe(8);
+  });
+
+  it("includes inter-row gap in total filter grid height", () => {
+    expect(getExportFilterGridHeight()).toBe(EXPORT_FILTER_UNIT_HEIGHT * 2 + 12);
+  });
+
+  it("uses 1600px as the side-by-side layout threshold", () => {
+    expect(EXPORT_PANEL_SIDE_BY_SIDE_MIN_PX).toBe(1600);
+    expect(EXPORT_PANEL_SIDE_BY_SIDE_MQ).toBe("(min-width:1600px)");
+    expect(EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY).toBe("@media (min-width:1600px)");
   });
 });
