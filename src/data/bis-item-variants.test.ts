@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   expandItemIdsWithNameVariantsAtSlot,
+  getEquivalentItemIdsAtSlot,
+  getFactionVariantItemIds,
   getNameVariantItemIdsAtSlot,
   getNonListNameVariantItemIdsAtSlot,
   isItemIdOrNameVariantAtSlot,
@@ -24,5 +26,16 @@ describe("bis-item-variants", () => {
   it("returns only non-list name variants for a BiS slot", () => {
     expect(getNonListNameVariantItemIdsAtSlot([50707], 7)).toEqual([50067]);
     expect(getNonListNameVariantItemIdsAtSlot([50067, 50707], 7)).toEqual([]);
+  });
+
+  it("links ICC Solace trinkets across factions and difficulties", () => {
+    expect([...getFactionVariantItemIds(47271, 12)].sort()).toEqual([
+      47041, 47059, 47271, 47432,
+    ]);
+    expect([...getEquivalentItemIdsAtSlot(47041, 12)].sort()).toEqual([
+      47041, 47059, 47271, 47432,
+    ]);
+    expect(isItemIdOrNameVariantAtSlot(47271, [47059], 13)).toBe(true);
+    expect(isItemIdOrNameVariantAtSlot(47271, [47059], 7)).toBe(false);
   });
 });

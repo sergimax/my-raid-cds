@@ -337,6 +337,24 @@ describe("isItemStatUsableForSpec", () => {
         13,
       ),
     ).toBe(true);
+    expect(
+      isItemStatUsableForSpec(
+        47271,
+        { className: ClassName.Druid, spec: "Restoration" },
+        12,
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects Solace healer proc trinkets for Shadow Priest", () => {
+    const shadowPriest = {
+      className: ClassName.Priest,
+      spec: "Shadow",
+    } as const;
+
+    expect(isItemStatUsableForSpec(47271, shadowPriest, 12)).toBe(false);
+    expect(isItemStatUsableForSpec(47041, shadowPriest, 13)).toBe(false);
+    expect(isItemStatUsableForSpec(47432, shadowPriest, 12)).toBe(false);
   });
 
   it("rejects intellect mail armor for Unholy Death Knight ilvl filtering", () => {

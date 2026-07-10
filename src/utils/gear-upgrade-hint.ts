@@ -195,6 +195,28 @@ function equippedItemsInSwappableGroup(
   return gearItems.filter((item) => swappableSlots.includes(item.slot));
 }
 
+/** Skip loot that is a faction/name equivalent already worn in the ring/trinket pair. */
+function filterLootIdsNotEquivalentToEquippedAtSlot(
+  lootIds: readonly number[],
+  gearItems: readonly CharacterGearItem[],
+  slot: number,
+): number[] {
+  const equippedInGroup = equippedItemsInSwappableGroup(gearItems, slot);
+
+  return lootIds.filter((lootId) => {
+    const lootItemLevel = getWotlkItemLevel(lootId) ?? 0;
+
+    return !equippedInGroup.some((equipped) => {
+      if (!isItemIdOrNameVariantAtSlot(equipped.id, [lootId], slot)) {
+        return false;
+      }
+
+      const equippedItemLevel = getWotlkItemLevel(equipped.id) ?? 0;
+      return equippedItemLevel >= lootItemLevel;
+    });
+  });
+}
+
 function isBisExactTargetSatisfied(
   item: CharacterGearItem,
   bisItemIdsForSlot: readonly number[],
@@ -261,8 +283,10 @@ function isSlotUpgradeableWithLoot(
       );
       break;
     case "ilvl":
-      relevantLootIds = raidLootIds.filter(
-        (itemId) => !expandedBisItemIds.includes(itemId),
+      relevantLootIds = filterLootIdsNotEquivalentToEquippedAtSlot(
+        raidLootIds.filter((itemId) => !expandedBisItemIds.includes(itemId)),
+        gearItems,
+        item.slot,
       );
       break;
   }
