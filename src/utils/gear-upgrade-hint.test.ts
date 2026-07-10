@@ -935,4 +935,46 @@ describe("formatGearUpgradeHintTooltip", () => {
     expect(ilvlItemIds).not.toContain(50351);
     expect(ilvlItemIds).not.toContain(50706);
   });
+
+  it("does not suggest role-exclusive proc trinkets outside their intended roles", () => {
+    const shadowHint = evaluateGearUpgradeHint(
+      [
+        { slot: 12, id: 11815 },
+        { slot: 13, id: 11815 },
+      ],
+      {
+        name: "ICC25 HM",
+        raidKey: "icecrownCitadel",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+        itemLevel: [264, 277, 284],
+      },
+      undefined,
+      { className: ClassName.Priest, spec: "Shadow" },
+    );
+    const shadowIlvlItemIds = collectMissingIlvlLootItemIds(shadowHint);
+    expect(shadowIlvlItemIds).not.toContain(50341);
+    expect(shadowIlvlItemIds).not.toContain(54589);
+    expect(shadowIlvlItemIds).not.toContain(50366);
+    expect(shadowIlvlItemIds).not.toContain(50726);
+
+    const retHint = evaluateGearUpgradeHint(
+      [
+        { slot: 12, id: 11815 },
+        { slot: 13, id: 11815 },
+      ],
+      {
+        name: "ICC25 HM",
+        raidKey: "icecrownCitadel",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+        itemLevel: [264, 277],
+      },
+      undefined,
+      { className: ClassName.Paladin, spec: "Retribution" },
+    );
+    const retIlvlItemIds = collectMissingIlvlLootItemIds(retHint);
+    expect(retIlvlItemIds).not.toContain(50341);
+    expect(retIlvlItemIds).not.toContain(54589);
+  });
 });

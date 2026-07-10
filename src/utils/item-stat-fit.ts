@@ -38,14 +38,16 @@ const CasterHasteProcTrinketItemIds = new Set([
   54588, // Charred Twilight Scale (heroic)
 ]);
 
-const TankProcTrinketItemIds = new Set([
+const TankOnlyProcTrinketItemIds = new Set([
   40257, // Defender's Code
   45158, // Heart of Iron
+  50341, // Unidentifiable Organ
+  50344, // Unidentifiable Organ (heroic)
   54571, // Petrified Twilight Scale
   54591, // Petrified Twilight Scale (heroic)
 ]);
 
-const MeleeProcTrinketItemIds = new Set([
+const MeleeOnlyProcTrinketItemIds = new Set([
   50342, // Whispering Fanged Skull
   50343, // Whispering Fanged Skull (heroic)
   50351, // Tiny Abomination in a Jar
@@ -56,12 +58,18 @@ const DamageProcTrinketWithoutStatsItemIds = new Set([
   40431, // Fury of the Five Flights
 ]);
 
-/** Healer mana-on-heal proc trinkets; bundled stats are spell power only. */
-const HealerProcTrinketItemIds = new Set([
+/** Proc trinkets recommended for healers only (bundled stats can look like caster gear). */
+const HealerOnlyProcTrinketItemIds = new Set([
   47041, // Solace of the Defeated
   47059, // Solace of the Defeated (heroic)
   47271, // Solace of the Fallen
   47432, // Solace of the Fallen (heroic)
+  50354, // Bauble of True Blood
+  50726, // Bauble of True Blood (heroic)
+  50359, // Althor's Abacus
+  50366, // Althor's Abacus (heroic)
+  54573, // Glowing Twilight Scale
+  54589, // Glowing Twilight Scale (heroic)
 ]);
 
 type NormalizedGsStats = Partial<Record<GsStatKey, number>>;
@@ -348,14 +356,23 @@ function isRejectedProcTrinketForProfile(
     return false;
   }
 
+  if (TankOnlyProcTrinketItemIds.has(itemId) && profile.role !== "TANK") {
+    return true;
+  }
+
+  if (HealerOnlyProcTrinketItemIds.has(itemId) && profile.role !== "HEALER") {
+    return true;
+  }
+
+  if (MeleeOnlyProcTrinketItemIds.has(itemId) && profile.role !== "MELEE") {
+    return true;
+  }
+
   if (profile.role === "HEALER" || profile.role === "CASTER") {
     return (
-      MeleeProcTrinketItemIds.has(itemId) ||
       CasterHasteProcTrinketItemIds.has(itemId) ||
       CasterCritProcTrinketItemIds.has(itemId) ||
-      TankProcTrinketItemIds.has(itemId) ||
-      DamageProcTrinketWithoutStatsItemIds.has(itemId) ||
-      (profile.role === "CASTER" && HealerProcTrinketItemIds.has(itemId))
+      DamageProcTrinketWithoutStatsItemIds.has(itemId)
     );
   }
 
@@ -365,14 +382,8 @@ function isRejectedProcTrinketForProfile(
   ) {
     return (
       CasterHasteProcTrinketItemIds.has(itemId) ||
-      CasterCritProcTrinketItemIds.has(itemId) ||
-      TankProcTrinketItemIds.has(itemId) ||
-      HealerProcTrinketItemIds.has(itemId)
+      CasterCritProcTrinketItemIds.has(itemId)
     );
-  }
-
-  if (profile.role === "TANK" && HealerProcTrinketItemIds.has(itemId)) {
-    return true;
   }
 
   return false;
@@ -424,6 +435,21 @@ export function isItemStatUsableForSpec(
 
   if (isRejectedProcTrinketForProfile(itemId, profile, gearSlot)) {
     return false;
+  }
+
+  if (
+    gearSlot !== undefined &&
+    TrinketGearSlots.has(gearSlot)
+  ) {
+    if (profile.role === "TANK" && TankOnlyProcTrinketItemIds.has(itemId)) {
+      return true;
+    }
+    if (profile.role === "HEALER" && HealerOnlyProcTrinketItemIds.has(itemId)) {
+      return true;
+    }
+    if (profile.role === "MELEE" && MeleeOnlyProcTrinketItemIds.has(itemId)) {
+      return true;
+    }
   }
 
   const stats = normalizeItemStatsToGs(sparseStats);
