@@ -357,6 +357,16 @@ describe("isItemStatUsableForSpec", () => {
     expect(isItemStatUsableForSpec(47432, shadowPriest, 12)).toBe(false);
   });
 
+  it("rejects Tiny Abomination melee proc trinkets for Demonology Warlock", () => {
+    const demonologyWarlock = {
+      className: ClassName.Warlock,
+      spec: "Demonology",
+    } as const;
+
+    expect(isItemStatUsableForSpec(50351, demonologyWarlock, 12)).toBe(false);
+    expect(isItemStatUsableForSpec(50706, demonologyWarlock, 13)).toBe(false);
+  });
+
   it("rejects intellect mail armor for Unholy Death Knight ilvl filtering", () => {
     const unholyDeathKnight = {
       className: ClassName.DeathKnight,

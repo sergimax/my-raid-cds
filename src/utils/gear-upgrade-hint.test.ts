@@ -913,4 +913,26 @@ describe("formatGearUpgradeHintTooltip", () => {
     expect(ilvlItemIds).not.toContain(47041);
     expect(ilvlItemIds).not.toContain(47271);
   });
+
+  it("does not suggest Tiny Abomination trinkets for Demonology Warlock ilvl upgrades", () => {
+    const hint = evaluateGearUpgradeHint(
+      [
+        { slot: 12, id: 11815 },
+        { slot: 13, id: 11815 },
+      ],
+      {
+        name: "ICC25 HM",
+        raidKey: "icecrownCitadel",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+        itemLevel: [264, 277],
+      },
+      undefined,
+      { className: ClassName.Warlock, spec: "Demonology" },
+    );
+
+    const ilvlItemIds = collectMissingIlvlLootItemIds(hint);
+    expect(ilvlItemIds).not.toContain(50351);
+    expect(ilvlItemIds).not.toContain(50706);
+  });
 });
