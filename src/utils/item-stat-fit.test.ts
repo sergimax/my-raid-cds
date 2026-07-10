@@ -367,6 +367,47 @@ describe("isItemStatUsableForSpec", () => {
     expect(isItemStatUsableForSpec(50706, demonologyWarlock, 13)).toBe(false);
   });
 
+  it("restricts role-exclusive proc trinkets to the intended spec roles", () => {
+    const protectionPaladin = {
+      className: ClassName.Paladin,
+      spec: "Protection",
+    } as const;
+    const retributionPaladin = {
+      className: ClassName.Paladin,
+      spec: "Retribution",
+    } as const;
+    const holyPriest = {
+      className: ClassName.Priest,
+      spec: "Holy",
+    } as const;
+    const shadowPriest = {
+      className: ClassName.Priest,
+      spec: "Shadow",
+    } as const;
+    const marksmanshipHunter = {
+      className: ClassName.Hunter,
+      spec: "Marksmanship",
+    } as const;
+
+    expect(isItemStatUsableForSpec(50341, protectionPaladin, 12)).toBe(true);
+    expect(isItemStatUsableForSpec(50344, protectionPaladin, 13)).toBe(true);
+    expect(isItemStatUsableForSpec(50341, retributionPaladin, 12)).toBe(false);
+    expect(isItemStatUsableForSpec(50341, shadowPriest, 12)).toBe(false);
+
+    expect(isItemStatUsableForSpec(54589, holyPriest, 12)).toBe(true);
+    expect(isItemStatUsableForSpec(50366, holyPriest, 13)).toBe(true);
+    expect(isItemStatUsableForSpec(50726, holyPriest, 12)).toBe(true);
+    expect(isItemStatUsableForSpec(54589, shadowPriest, 12)).toBe(false);
+    expect(isItemStatUsableForSpec(50366, shadowPriest, 13)).toBe(false);
+    expect(isItemStatUsableForSpec(50726, shadowPriest, 12)).toBe(false);
+
+    expect(isItemStatUsableForSpec(50351, retributionPaladin, 12)).toBe(true);
+    expect(isItemStatUsableForSpec(50706, retributionPaladin, 13)).toBe(true);
+    expect(isItemStatUsableForSpec(50351, protectionPaladin, 12)).toBe(false);
+    expect(isItemStatUsableForSpec(50351, marksmanshipHunter, 12)).toBe(false);
+    expect(isItemStatUsableForSpec(50351, shadowPriest, 12)).toBe(false);
+  });
+
   it("rejects intellect mail armor for Unholy Death Knight ilvl filtering", () => {
     const unholyDeathKnight = {
       className: ClassName.DeathKnight,
