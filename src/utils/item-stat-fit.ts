@@ -54,6 +54,14 @@ const DamageProcTrinketWithoutStatsItemIds = new Set([
   40431, // Fury of the Five Flights
 ]);
 
+/** Healer mana-on-heal proc trinkets; bundled stats are spell power only. */
+const HealerProcTrinketItemIds = new Set([
+  47041, // Solace of the Defeated
+  47059, // Solace of the Defeated (heroic)
+  47271, // Solace of the Fallen
+  47432, // Solace of the Fallen (heroic)
+]);
+
 type NormalizedGsStats = Partial<Record<GsStatKey, number>>;
 
 type RoleSignature = "TANK" | "HEALER" | "CASTER" | "RANGED" | "MELEE";
@@ -344,7 +352,8 @@ function isRejectedProcTrinketForProfile(
       CasterHasteProcTrinketItemIds.has(itemId) ||
       CasterCritProcTrinketItemIds.has(itemId) ||
       TankProcTrinketItemIds.has(itemId) ||
-      DamageProcTrinketWithoutStatsItemIds.has(itemId)
+      DamageProcTrinketWithoutStatsItemIds.has(itemId) ||
+      (profile.role === "CASTER" && HealerProcTrinketItemIds.has(itemId))
     );
   }
 
@@ -355,8 +364,13 @@ function isRejectedProcTrinketForProfile(
     return (
       CasterHasteProcTrinketItemIds.has(itemId) ||
       CasterCritProcTrinketItemIds.has(itemId) ||
-      TankProcTrinketItemIds.has(itemId)
+      TankProcTrinketItemIds.has(itemId) ||
+      HealerProcTrinketItemIds.has(itemId)
     );
+  }
+
+  if (profile.role === "TANK" && HealerProcTrinketItemIds.has(itemId)) {
+    return true;
   }
 
   return false;

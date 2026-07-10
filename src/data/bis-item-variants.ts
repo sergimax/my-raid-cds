@@ -40,6 +40,50 @@ function buildVariantIdsByGroupKey(): Map<string, number[]> {
 
 const variantIdsByGroupKey = buildVariantIdsByGroupKey();
 
+/** Alliance/Horde pairs with different English names (e.g. Solace of the Fallen / Defeated). */
+const FactionVariantGroups: readonly (readonly number[])[] = [
+  [47041, 47059, 47271, 47432],
+];
+
+const factionVariantIdsByItemId = new Map<number, readonly number[]>(
+  FactionVariantGroups.flatMap((group) => group.map((itemId) => [itemId, group] as const)),
+);
+
+/** Faction-tied variants of the same item (normal + heroic for both factions). */
+export function getFactionVariantItemIds(
+  itemId: number,
+  gearSlot?: number,
+): readonly number[] {
+  const group = factionVariantIdsByItemId.get(itemId);
+  if (!group) {
+    return [itemId];
+  }
+
+  if (gearSlot === undefined) {
+    return group;
+  }
+
+  return group.filter((variantId) =>
+    getWotlkItemGearSlots(variantId)?.includes(gearSlot),
+  );
+}
+
+/** Name variants plus faction variants at a gear slot. */
+export function getEquivalentItemIdsAtSlot(
+  itemId: number,
+  gearSlot: number,
+): readonly number[] {
+  const equivalentIds = new Set<number>();
+
+  for (const nameVariantId of getNameVariantItemIdsAtSlot(itemId, gearSlot)) {
+    for (const factionVariantId of getFactionVariantItemIds(nameVariantId, gearSlot)) {
+      equivalentIds.add(factionVariantId);
+    }
+  }
+
+  return [...equivalentIds];
+}
+
 /** Same English name + gear slot (e.g. ICC normal/heroic Astrylian's belt). */
 export function getNameVariantItemIdsAtSlot(
   itemId: number,
@@ -60,7 +104,7 @@ export function expandItemIdsWithNameVariantsAtSlot(
   const expandedIds = new Set<number>();
 
   for (const itemId of itemIds) {
-    for (const variantId of getNameVariantItemIdsAtSlot(itemId, gearSlot)) {
+    for (const variantId of getEquivalentItemIdsAtSlot(itemId, gearSlot)) {
       expandedIds.add(variantId);
     }
   }
@@ -89,6 +133,6 @@ export function isItemIdOrNameVariantAtSlot(
   }
 
   return targetItemIds.some((targetItemId) =>
-    getNameVariantItemIdsAtSlot(targetItemId, gearSlot).includes(itemId),
+    getEquivalentItemIdsAtSlot(targetItemId, gearSlot).includes(itemId),
   );
 }

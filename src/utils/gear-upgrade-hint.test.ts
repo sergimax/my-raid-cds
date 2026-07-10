@@ -869,4 +869,48 @@ describe("formatGearUpgradeHintTooltip", () => {
       },
     ]);
   });
+
+  it("does not suggest faction Solace trinket when the other faction version is equipped", () => {
+    const hint = evaluateGearUpgradeHint(
+      [
+        { slot: 12, id: 47271 },
+        { slot: 13, id: 11815 },
+      ],
+      {
+        name: "ICC25",
+        raidKey: "icecrownCitadel",
+        size: 25,
+        difficulty: DungeonDifficulty.NORMAL,
+        itemLevel: [245, 258],
+      },
+      undefined,
+      { className: ClassName.Priest, spec: "Holy" },
+    );
+
+    const ilvlItemIds = collectMissingIlvlLootItemIds(hint);
+    expect(ilvlItemIds).not.toContain(47041);
+    expect(ilvlItemIds).not.toContain(47432);
+  });
+
+  it("does not suggest Solace trinkets for Shadow Priest ilvl upgrades", () => {
+    const hint = evaluateGearUpgradeHint(
+      [
+        { slot: 12, id: 11815 },
+        { slot: 13, id: 11815 },
+      ],
+      {
+        name: "ICC25",
+        raidKey: "icecrownCitadel",
+        size: 25,
+        difficulty: DungeonDifficulty.NORMAL,
+        itemLevel: [245, 258],
+      },
+      undefined,
+      { className: ClassName.Priest, spec: "Shadow" },
+    );
+
+    const ilvlItemIds = collectMissingIlvlLootItemIds(hint);
+    expect(ilvlItemIds).not.toContain(47041);
+    expect(ilvlItemIds).not.toContain(47271);
+  });
 });
