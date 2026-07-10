@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.45.0] - 2026-07-10
+
+### Fixed
+
+- **Gear hint trinket roles:** Ilvl upgrade tooltips no longer suggest proc trinkets outside the intended role — tank (e.g. Unidentifiable Organ), healer (Solace, Glowing Twilight Scale, Althor's Abacus, Bauble of True Blood), or melee DPS (Tiny Abomination, Whispering Fanged Skull).
+- **Faction-equivalent trinkets:** Alliance/Horde Solace variants count as the same item; the other faction's copy is not suggested when one is already equipped (including across the two trinket slots).
+
 ## [1.44.0] - 2026-07-06
 
 ### Added
