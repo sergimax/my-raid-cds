@@ -48,6 +48,8 @@ const TankProcTrinketItemIds = new Set([
 const MeleeProcTrinketItemIds = new Set([
   50342, // Whispering Fanged Skull
   50343, // Whispering Fanged Skull (heroic)
+  50351, // Tiny Abomination in a Jar
+  50706, // Tiny Abomination in a Jar (heroic)
 ]);
 
 const DamageProcTrinketWithoutStatsItemIds = new Set([
