@@ -311,7 +311,7 @@ export function GearPickPanel({
               {emptyItemsMessage}
             </Typography>
           ) : (
-            <Stack spacing={1}>
+            <Stack spacing={0.75}>
               {gearPickItems.map((item) => {
                 const assignment = assignmentsByItemId[item.itemId] ?? {
                   mySofts: 0,
