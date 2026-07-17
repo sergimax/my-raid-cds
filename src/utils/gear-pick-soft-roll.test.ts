@@ -3,7 +3,6 @@ import {
   clampAssignmentsToMaxSofts,
   clampMySofts,
   competingSoftWeight,
-  DEFAULT_SOFT_ROLL_RULES,
   formatGearPickCopyText,
   remainingSoftBudget,
   setMySoftsForItem,
