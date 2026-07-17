@@ -97,6 +97,7 @@ export function getNameVariantItemIdsAtSlot(
   return variantIdsByGroupKey.get(variantGroupKey(gearSlot, englishName)) ?? [itemId];
 }
 
+/** Expands to same-name N/H ids only (not faction pairs). */
 export function expandItemIdsWithNameVariantsAtSlot(
   itemIds: readonly number[],
   gearSlot: number,
@@ -104,8 +105,24 @@ export function expandItemIdsWithNameVariantsAtSlot(
   const expandedIds = new Set<number>();
 
   for (const itemId of itemIds) {
-    for (const variantId of getEquivalentItemIdsAtSlot(itemId, gearSlot)) {
+    for (const variantId of getNameVariantItemIdsAtSlot(itemId, gearSlot)) {
       expandedIds.add(variantId);
+    }
+  }
+
+  return [...expandedIds];
+}
+
+/** Expands to name + faction equivalents at a gear slot (for BiS/ilvl exclusion). */
+export function expandItemIdsWithEquivalentIdsAtSlot(
+  itemIds: readonly number[],
+  gearSlot: number,
+): number[] {
+  const expandedIds = new Set<number>();
+
+  for (const itemId of itemIds) {
+    for (const equivalentId of getEquivalentItemIdsAtSlot(itemId, gearSlot)) {
+      expandedIds.add(equivalentId);
     }
   }
 
