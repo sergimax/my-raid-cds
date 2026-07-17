@@ -1,6 +1,6 @@
 import type { TranslateFn } from "../i18n/translate.ts";
 import {
-  expandItemIdsWithEquivalentIdsAtSlot,
+  expandItemIdsWithNameVariantsAtSlot,
   getNonListNameVariantItemIdsAtSlot,
   isItemIdOrNameVariantAtSlot,
 } from "../data/bis-item-variants.ts";
@@ -257,7 +257,7 @@ function isSlotUpgradeableWithLoot(
 
   const expandedBisItemIds =
     bisItemIdsForSlot !== undefined
-      ? expandItemIdsWithEquivalentIdsAtSlot(bisItemIdsForSlot, item.slot)
+      ? expandItemIdsWithNameVariantsAtSlot(bisItemIdsForSlot, item.slot)
       : [];
   const variantOnlyBisItemIds =
     bisItemIdsForSlot !== undefined
