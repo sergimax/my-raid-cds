@@ -1,0 +1,111 @@
+import {
+  Box,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  IconButton,
+  Radio,
+  RadioGroup,
+  Stack,
+  Typography,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import type { TranslateFn } from "../../i18n/translate.ts";
+import {
+  type SoftRollMax,
+  type SoftRollRules,
+  type SoftRollSystem,
+} from "../../utils/gear-pick-soft-roll.ts";
+
+type GearPickRulesProps = {
+  rules: SoftRollRules;
+  onRulesChange: (next: SoftRollRules) => void;
+  softBudgetUsed: number;
+  t: TranslateFn;
+};
+
+export function GearPickRules({
+  rules,
+  onRulesChange,
+  softBudgetUsed,
+  t,
+}: GearPickRulesProps) {
+  const setMaxSofts = (delta: number) => {
+    const next = Math.min(4, Math.max(1, rules.maxSofts + delta)) as SoftRollMax;
+    if (next === rules.maxSofts) {
+      return;
+    }
+    onRulesChange({ ...rules, maxSofts: next });
+  };
+
+  return (
+    <Stack spacing={1.25}>
+      <Box>
+        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
+          {t("gearPickPanel.maxSoftsLabel")}
+        </Typography>
+        <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+          <IconButton
+            size="small"
+            aria-label={t("gearPickPanel.maxSoftsAria")}
+            disabled={rules.maxSofts <= 1}
+            onClick={() => {
+              setMaxSofts(-1);
+            }}
+          >
+            <RemoveIcon fontSize="small" />
+          </IconButton>
+          <Typography variant="h6" component="span" sx={{ minWidth: 28, textAlign: "center" }}>
+            {rules.maxSofts}
+          </Typography>
+          <IconButton
+            size="small"
+            aria-label={t("gearPickPanel.maxSoftsAria")}
+            disabled={rules.maxSofts >= 4}
+            onClick={() => {
+              setMaxSofts(1);
+            }}
+          >
+            <AddIcon fontSize="small" />
+          </IconButton>
+        </Stack>
+        <Typography variant="caption" color="text.secondary">
+          {t("gearPickPanel.softBudget", {
+            used: softBudgetUsed,
+            max: rules.maxSofts,
+          })}
+        </Typography>
+      </Box>
+
+      <FormControl>
+        <FormLabel id="gear-pick-soft-system-label" sx={{ typography: "caption" }}>
+          {t("gearPickPanel.systemLabel")}
+        </FormLabel>
+        <RadioGroup
+          aria-labelledby="gear-pick-soft-system-label"
+          value={rules.system}
+          onChange={(event) => {
+            onRulesChange({
+              ...rules,
+              system: event.target.value as SoftRollSystem,
+            });
+          }}
+        >
+          <FormControlLabel
+            value="plus100"
+            control={<Radio size="small" />}
+            label={t("gearPickPanel.systemPlus100")}
+            slotProps={{ typography: { variant: "body2" } }}
+          />
+          <FormControlLabel
+            value="reroll"
+            control={<Radio size="small" />}
+            label={t("gearPickPanel.systemReroll")}
+            slotProps={{ typography: { variant: "body2" } }}
+          />
+        </RadioGroup>
+      </FormControl>
+    </Stack>
+  );
+}
