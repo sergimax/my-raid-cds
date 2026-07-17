@@ -207,7 +207,8 @@ function filterLootIdsNotEquivalentToEquippedAtSlot(
     const lootItemLevel = getWotlkItemLevel(lootId) ?? 0;
 
     return !equippedInGroup.some((equipped) => {
-      if (!isItemIdOrNameVariantAtSlot(equipped.id, [lootId], slot)) {
+      // Is this loot id a name/faction equivalent of something already worn?
+      if (!isItemIdOrNameVariantAtSlot(lootId, [equipped.id], slot)) {
         return false;
       }
 
