@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Dungeon table search:** Normal mode can be filtered with `n` / `об` (e.g. `ICC25N`, `ЦЛК25об`), matching heroic `h` / `хм` / `х`. Size-only queries like `ICC25` still match both difficulties.
 
-
 ## [1.45.0] - 2026-07-10
 
 ### Fixed
