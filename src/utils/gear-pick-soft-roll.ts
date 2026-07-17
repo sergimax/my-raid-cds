@@ -159,17 +159,52 @@ export type SoftCompetitionSummary = {
   competingWeight: number;
   competingCallers: number;
   system: SoftRollSystem;
+  /** How many others already put the full soft budget on this item (+100). */
+  maxSoftCallerCount: number;
+  /**
+   * +100: my softs are below max while someone already spent all softs —
+   * lower softs cannot beat a full-soft call.
+   */
+  mySoftsDominated: boolean;
+  /**
+   * Re-roll: rolls you bring (1 default + soft extras when you call softs).
+   * 0 when you have not assigned softs on this item.
+   */
+  myRollCount: number;
+  /**
+   * Re-roll: opposing rolls = one default per caller + each soft roll they called.
+   */
+  othersRollCount: number;
 };
 
+/**
+ * Competition snapshot for UI.
+ * - +100: higher soft weight wins; a full-budget caller dominates lower softs.
+ * - re-roll: each soft caller rolls once by default plus once per soft spent.
+ */
 export function summarizeSoftCompetition(
   assignment: ItemSoftAssignment,
   system: SoftRollSystem,
+  maxSofts: SoftRollMax,
 ): SoftCompetitionSummary {
+  const competingWeight = competingSoftWeight(assignment.othersByWeight);
+  const competingCallers = competingCallerCount(assignment.othersByWeight);
+  const maxSoftCallerCount = assignment.othersByWeight[maxSofts] ?? 0;
+  const mySoftsDominated =
+    system === "plus100" &&
+    maxSoftCallerCount > 0 &&
+    assignment.mySofts > 0 &&
+    assignment.mySofts < maxSofts;
+
   return {
     mySofts: assignment.mySofts,
-    competingWeight: competingSoftWeight(assignment.othersByWeight),
-    competingCallers: competingCallerCount(assignment.othersByWeight),
+    competingWeight,
+    competingCallers,
     system,
+    maxSoftCallerCount,
+    mySoftsDominated,
+    myRollCount: assignment.mySofts > 0 ? 1 + assignment.mySofts : 0,
+    othersRollCount: competingCallers + competingWeight,
   };
 }
 

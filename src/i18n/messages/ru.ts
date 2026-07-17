@@ -231,7 +231,8 @@ export const ruMessages: Messages = {
     systemPlus100: "+100 за софт",
     systemPlus100Aria: "Каждый софт добавляет +100 к роллу",
     systemReroll: "Переролл",
-    systemRerollAria: "Каждый софт даёт доп. /roll; побеждает лучший",
+    systemRerollAria:
+      "Каждый, кто зовёт софт, получает 1 обычный /roll плюс /roll за каждый софт; побеждает лучший",
     characterTitle: "Персонаж и спек",
     characterHelper: "Выберите ровно одного персонажа и один спек для планирования софтов",
     dungeonFilterTitle: "Рейды",
@@ -253,7 +254,12 @@ export const ruMessages: Messages = {
     decreaseOthersAria: "Уменьшить число ×{{weight}} на {{item}}",
     increaseOthersAria: "Увеличить число ×{{weight}} на {{item}}",
     competitionPlus100: "Вы ×{{my}} · вес чужих {{weight}} ({{callers}} чел.)",
-    competitionReroll: "Вы ×{{my}} роллов · {{callers}} чужих (вес {{weight}})",
+    competitionPlus100MaxCaller:
+      "{{count}} уже ×{{max}} — меньшие софты проигрывают",
+    competitionPlus100Dominated:
+      "Ваши ×{{my}} проигрывают ×{{max}} ({{count}} полный софт)",
+    competitionReroll:
+      "Вы {{myRolls}} роллов · чужие {{otherRolls}} ({{callers}} чел.)",
     softBudget: "{{used}} / {{max}} софтов занято",
     kindBis: "BiS",
     kindVariant: "Вариант",

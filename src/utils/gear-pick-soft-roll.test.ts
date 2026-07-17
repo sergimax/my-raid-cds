@@ -47,17 +47,48 @@ describe("gear-pick-soft-roll", () => {
     expect(sumMySofts(clamped)).toBe(2);
   });
 
-  it("summarizes competition for copy/UI", () => {
+  it("summarizes +100 competition and dominated softs", () => {
     expect(
       summarizeSoftCompetition(
         { mySofts: 3, othersByWeight: { 2: 1, 3: 1 } },
         "plus100",
+        3,
       ),
     ).toEqual({
       mySofts: 3,
       competingWeight: 5,
       competingCallers: 2,
       system: "plus100",
+      maxSoftCallerCount: 1,
+      mySoftsDominated: false,
+      myRollCount: 4,
+      othersRollCount: 7,
+    });
+    expect(
+      summarizeSoftCompetition(
+        { mySofts: 2, othersByWeight: { 3: 1 } },
+        "plus100",
+        3,
+      ).mySoftsDominated,
+    ).toBe(true);
+  });
+
+  it("summarizes re-roll rolls as default + soft extras", () => {
+    expect(
+      summarizeSoftCompetition(
+        { mySofts: 2, othersByWeight: { 1: 2, 3: 1 } },
+        "reroll",
+        3,
+      ),
+    ).toEqual({
+      mySofts: 2,
+      competingWeight: 5,
+      competingCallers: 3,
+      system: "reroll",
+      maxSoftCallerCount: 1,
+      mySoftsDominated: false,
+      myRollCount: 3,
+      othersRollCount: 8,
     });
   });
 

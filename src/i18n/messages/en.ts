@@ -228,7 +228,8 @@ export const enMessages = {
     systemPlus100: "+100 per soft",
     systemPlus100Aria: "Each soft adds +100 to the roll",
     systemReroll: "Re-roll",
-    systemRerollAria: "Each soft grants an extra /roll; best roll wins",
+    systemRerollAria:
+      "Each soft caller gets one default /roll plus one /roll per soft; best roll wins",
     characterTitle: "Character & spec",
     characterHelper: "Select exactly one character and one spec for soft-roll planning",
     dungeonFilterTitle: "Raids",
@@ -250,7 +251,12 @@ export const enMessages = {
     decreaseOthersAria: "Decrease ×{{weight}} callers for {{item}}",
     increaseOthersAria: "Increase ×{{weight}} callers for {{item}}",
     competitionPlus100: "You ×{{my}} · others weight {{weight}} ({{callers}} callers)",
-    competitionReroll: "You ×{{my}} rolls · {{callers}} other callers (weight {{weight}})",
+    competitionPlus100MaxCaller:
+      "{{count}} already at ×{{max}} — lower softs lose",
+    competitionPlus100Dominated:
+      "You ×{{my}} loses to ×{{max}} ({{count}} full soft)",
+    competitionReroll:
+      "You {{myRolls}} rolls · others {{otherRolls}} ({{callers}} callers)",
     softBudget: "{{used}} / {{max}} softs used",
     kindBis: "BiS",
     kindVariant: "Variant",

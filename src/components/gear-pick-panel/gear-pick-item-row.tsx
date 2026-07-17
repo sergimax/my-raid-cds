@@ -32,6 +32,7 @@ function SoftStepper({
   decreaseAria,
   increaseAria,
   valueAria,
+  emphasized = false,
 }: {
   value: number;
   min: number;
@@ -40,6 +41,7 @@ function SoftStepper({
   decreaseAria: string;
   increaseAria: string;
   valueAria: string;
+  emphasized?: boolean;
 }) {
   return (
     <Stack direction="row" spacing={0} sx={{ alignItems: "center" }}>
@@ -50,15 +52,20 @@ function SoftStepper({
         onClick={() => {
           onChange(value - 1);
         }}
-        sx={{ p: 0.25 }}
+        sx={{ p: emphasized ? 0.35 : 0.2 }}
       >
-        <RemoveIcon sx={{ fontSize: 16 }} />
+        <RemoveIcon sx={{ fontSize: emphasized ? 18 : 15 }} />
       </IconButton>
       <Typography
-        variant="caption"
+        variant={emphasized ? "body2" : "caption"}
         component="span"
         aria-label={valueAria}
-        sx={{ minWidth: 16, textAlign: "center", fontWeight: 600, lineHeight: 1 }}
+        sx={{
+          minWidth: emphasized ? 22 : 14,
+          textAlign: "center",
+          fontWeight: 700,
+          lineHeight: 1,
+        }}
       >
         {value}
       </Typography>
@@ -69,12 +76,59 @@ function SoftStepper({
         onClick={() => {
           onChange(value + 1);
         }}
-        sx={{ p: 0.25 }}
+        sx={{ p: emphasized ? 0.35 : 0.2 }}
       >
-        <AddIcon sx={{ fontSize: 16 }} />
+        <AddIcon sx={{ fontSize: emphasized ? 18 : 15 }} />
       </IconButton>
     </Stack>
   );
+}
+
+function competitionCaption(
+  competition: ReturnType<typeof summarizeSoftCompetition>,
+  maxSofts: SoftRollMax,
+  t: TranslateFn,
+): { text: string; warn: boolean } {
+  if (competition.system === "reroll") {
+    return {
+      text: t("gearPickPanel.competitionReroll", {
+        myRolls: competition.myRollCount,
+        otherRolls: competition.othersRollCount,
+        callers: competition.competingCallers,
+      }),
+      warn: false,
+    };
+  }
+
+  if (competition.mySoftsDominated) {
+    return {
+      text: t("gearPickPanel.competitionPlus100Dominated", {
+        my: competition.mySofts,
+        max: maxSofts,
+        count: competition.maxSoftCallerCount,
+      }),
+      warn: true,
+    };
+  }
+
+  if (competition.maxSoftCallerCount > 0) {
+    return {
+      text: t("gearPickPanel.competitionPlus100MaxCaller", {
+        max: maxSofts,
+        count: competition.maxSoftCallerCount,
+      }),
+      warn: true,
+    };
+  }
+
+  return {
+    text: t("gearPickPanel.competitionPlus100", {
+      my: competition.mySofts,
+      weight: competition.competingWeight,
+      callers: competition.competingCallers,
+    }),
+    warn: false,
+  };
 }
 
 export function GearPickItemRow({
@@ -88,9 +142,11 @@ export function GearPickItemRow({
   onOthersCountChange,
   t,
 }: GearPickItemRowProps) {
-  const competition = summarizeSoftCompetition(assignment, system);
+  const competition = summarizeSoftCompetition(assignment, system, maxSofts);
   const dropCaption = [item.raidLabel, item.bossName].filter(Boolean).join(" · ");
   const weightKeys = softWeightKeys(maxSofts);
+  const caption = competitionCaption(competition, maxSofts, t);
+  const hasMaxSoftCaller = competition.maxSoftCallerCount > 0;
 
   return (
     <Box
@@ -98,135 +154,136 @@ export function GearPickItemRow({
         border: 1,
         borderColor: "divider",
         borderRadius: 1,
-        px: 1,
-        py: 0.75,
-        display: "grid",
-        gap: 0.5,
+        px: 0.75,
+        py: 0.5,
       }}
     >
       <Stack
         direction="row"
-        spacing={0.75}
-        sx={{ alignItems: "center", flexWrap: "wrap", columnGap: 0.75, rowGap: 0.25 }}
-      >
-        <Chip
-          size="small"
-          label={
-            item.kind === "bis"
-              ? t("gearPickPanel.kindBis")
-              : t("gearPickPanel.kindVariant")
-          }
-          color={item.kind === "bis" ? "warning" : "default"}
-          variant="outlined"
-          sx={{ height: 22, "& .MuiChip-label": { px: 0.75, fontSize: "0.7rem" } }}
-        />
-        <WowItemLink itemId={item.itemId} />
-        {dropCaption ? (
-          <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
-            {dropCaption}
-          </Typography>
-        ) : null}
-      </Stack>
-
-      <Stack
-        direction="row"
-        spacing={1}
         sx={{
           alignItems: "center",
           flexWrap: "wrap",
-          justifyContent: "space-between",
-          columnGap: 1,
-          rowGap: 0.25,
+          columnGap: 0.75,
+          rowGap: 0.5,
         }}
       >
-        <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
-          <Typography variant="caption" color="text.secondary">
-            {t("gearPickPanel.mySoftsLabel")}
-          </Typography>
-          <SoftStepper
-            value={assignment.mySofts}
-            min={0}
-            max={remainingBudgetForItem}
-            onChange={onMySoftsChange}
-            decreaseAria={t("gearPickPanel.decreaseMySoftsAria", { item: itemLabel })}
-            increaseAria={t("gearPickPanel.increaseMySoftsAria", { item: itemLabel })}
-            valueAria={t("gearPickPanel.mySoftsAria", { item: itemLabel })}
+        <Stack
+          direction="row"
+          spacing={0.75}
+          sx={{ alignItems: "center", flexWrap: "wrap", minWidth: 0 }}
+        >
+          <Chip
+            size="small"
+            label={
+              item.kind === "bis"
+                ? t("gearPickPanel.kindBis")
+                : t("gearPickPanel.kindVariant")
+            }
+            color={item.kind === "bis" ? "warning" : "default"}
+            variant="outlined"
+            sx={{ height: 20, "& .MuiChip-label": { px: 0.6, fontSize: "0.65rem" } }}
           />
+          <WowItemLink itemId={item.itemId} />
+          {dropCaption ? (
+            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
+              {dropCaption}
+            </Typography>
+          ) : null}
+          <Stack
+            direction="row"
+            sx={{
+              alignItems: "center",
+              flexShrink: 0,
+              px: 0.5,
+              py: 0.15,
+              border: 1,
+              borderColor: competition.mySoftsDominated ? "warning.main" : "primary.main",
+              borderRadius: 1,
+              bgcolor: "action.selected",
+            }}
+          >
+            <SoftStepper
+              value={assignment.mySofts}
+              min={0}
+              max={remainingBudgetForItem}
+              onChange={onMySoftsChange}
+              decreaseAria={t("gearPickPanel.decreaseMySoftsAria", { item: itemLabel })}
+              increaseAria={t("gearPickPanel.increaseMySoftsAria", { item: itemLabel })}
+              valueAria={t("gearPickPanel.mySoftsAria", { item: itemLabel })}
+              emphasized
+            />
+          </Stack>
         </Stack>
-        <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
-          {system === "plus100"
-            ? t("gearPickPanel.competitionPlus100", {
-                my: competition.mySofts,
-                weight: competition.competingWeight,
-                callers: competition.competingCallers,
-              })
-            : t("gearPickPanel.competitionReroll", {
-                my: competition.mySofts,
-                weight: competition.competingWeight,
-                callers: competition.competingCallers,
-              })}
-        </Typography>
-      </Stack>
 
-      <Stack
-        direction="row"
-        sx={{
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: 0.5,
-          bgcolor: "action.hover",
-          borderRadius: 1,
-          px: 0.75,
-          py: 0.25,
-        }}
-      >
-        <Typography variant="caption" color="text.secondary" sx={{ mr: 0.25 }}>
-          {t("gearPickPanel.othersTitle")}
-        </Typography>
-        {weightKeys.map((weight, index) => {
-          const count = assignment.othersByWeight[weight] ?? 0;
-          return (
-            <Stack
-              key={weight}
-              direction="row"
-              spacing={0.25}
-              sx={{
-                alignItems: "center",
-                ...(index > 0
-                  ? {
-                      pl: 0.75,
-                      borderLeft: 1,
-                      borderColor: "divider",
-                    }
-                  : null),
-              }}
-            >
-              <Typography variant="caption" sx={{ fontWeight: 600, minWidth: 18 }}>
-                {t("gearPickPanel.othersWeightLabel", { weight })}
-              </Typography>
-              <SoftStepper
-                value={count}
-                min={0}
-                max={99}
-                onChange={(next) => {
-                  onOthersCountChange(weight, next);
+        <Stack
+          direction="row"
+          aria-label={t("gearPickPanel.othersTitle")}
+          sx={{ alignItems: "center", flexWrap: "wrap", gap: 0.5 }}
+        >
+          {weightKeys.map((weight) => {
+            const count = assignment.othersByWeight[weight] ?? 0;
+            const isMaxWeight = weight === maxSofts;
+            const dominatedWeight =
+              system === "plus100" && hasMaxSoftCaller && !isMaxWeight;
+            return (
+              <Stack
+                key={weight}
+                direction="row"
+                spacing={0.35}
+                sx={{
+                  alignItems: "center",
+                  px: 0.6,
+                  py: 0.15,
+                  border: 1,
+                  borderColor: isMaxWeight && hasMaxSoftCaller ? "warning.main" : "divider",
+                  borderRadius: 1,
+                  bgcolor: "action.hover",
+                  opacity: dominatedWeight ? 0.55 : 1,
                 }}
-                decreaseAria={t("gearPickPanel.decreaseOthersAria", {
-                  weight,
-                  item: itemLabel,
-                })}
-                increaseAria={t("gearPickPanel.increaseOthersAria", {
-                  weight,
-                  item: itemLabel,
-                })}
-                valueAria={t("gearPickPanel.othersWeightAria", {
-                  weight,
-                  item: itemLabel,
-                })}
-              />
-            </Stack>
-          );
-        })}
+              >
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 700,
+                    minWidth: 18,
+                    lineHeight: 1,
+                    textDecoration: dominatedWeight ? "line-through" : "none",
+                  }}
+                >
+                  {t("gearPickPanel.othersWeightLabel", { weight })}
+                </Typography>
+                <SoftStepper
+                  value={count}
+                  min={0}
+                  max={99}
+                  onChange={(next) => {
+                    onOthersCountChange(weight, next);
+                  }}
+                  decreaseAria={t("gearPickPanel.decreaseOthersAria", {
+                    weight,
+                    item: itemLabel,
+                  })}
+                  increaseAria={t("gearPickPanel.increaseOthersAria", {
+                    weight,
+                    item: itemLabel,
+                  })}
+                  valueAria={t("gearPickPanel.othersWeightAria", {
+                    weight,
+                    item: itemLabel,
+                  })}
+                />
+              </Stack>
+            );
+          })}
+        </Stack>
+
+        <Typography
+          variant="caption"
+          color={caption.warn ? "warning.main" : "text.secondary"}
+          sx={{ lineHeight: 1.2, fontWeight: caption.warn ? 600 : 400 }}
+        >
+          {caption.text}
+        </Typography>
       </Stack>
     </Box>
   );
