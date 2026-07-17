@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Gear pick:** Toolbar panel to plan soft rolls for one character + spec — BiS/variant upgrades from table-filtered raids, soft-roll rules (max softs +100 or re-roll), my softs vs others’ histogram per item, and a copyable soft-call list (session-only).
 
+### Fixed
+
+- **Dungeon table search:** Normal mode can be filtered with `n` / `об` (e.g. `ICC25N`, `ЦЛК25об`), matching heroic `h` / `хм` / `х`. Size-only queries like `ICC25` still match both difficulties.
+
+
 ## [1.45.0] - 2026-07-10
 
 ### Fixed
