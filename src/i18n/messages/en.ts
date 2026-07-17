@@ -255,8 +255,12 @@ export const enMessages = {
       "{{count}} already at ×{{max}} — lower softs lose",
     competitionPlus100Dominated:
       "You ×{{my}} loses to ×{{max}} ({{count}} full soft)",
+    competitionPlus100Hint:
+      "Soft weight = Σ(softs × callers). Higher soft beats lower; anyone at ×{{max}} beats ×1…×{{belowMax}}.",
     competitionReroll:
       "You {{myRolls}} rolls · others {{otherRolls}} ({{callers}} callers)",
+    competitionRerollHint:
+      "Each soft caller: 1 default /roll + 1 /roll per soft. You: {{myRolls}} ({{mySofts}} softs). Others: {{callers}} defaults + {{weight}} soft rolls = {{otherRolls}}.",
     softBudget: "{{used}} / {{max}} softs used",
     kindBis: "BiS",
     kindVariant: "Variant",

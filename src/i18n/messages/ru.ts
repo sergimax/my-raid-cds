@@ -258,8 +258,12 @@ export const ruMessages: Messages = {
       "{{count}} уже ×{{max}} — меньшие софты проигрывают",
     competitionPlus100Dominated:
       "Ваши ×{{my}} проигрывают ×{{max}} ({{count}} полный софт)",
+    competitionPlus100Hint:
+      "Вес софтов = Σ(софты × игроки). Больший софт бьёт меньший; ×{{max}} бьёт ×1…×{{belowMax}}.",
     competitionReroll:
       "Вы {{myRolls}} роллов · чужие {{otherRolls}} ({{callers}} чел.)",
+    competitionRerollHint:
+      "Каждый: 1 обычный /roll + 1 /roll за софт. Вы: {{myRolls}} ({{mySofts}} софтов). Чужие: {{callers}} обычных + {{weight}} софт-роллов = {{otherRolls}}.",
     softBudget: "{{used}} / {{max}} софтов занято",
     kindBis: "BiS",
     kindVariant: "Вариант",

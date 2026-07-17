@@ -1,6 +1,6 @@
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Box, Chip, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import type { GearPickItem } from "../../utils/build-gear-pick-items.ts";
 import {
@@ -88,7 +88,9 @@ function competitionCaption(
   competition: ReturnType<typeof summarizeSoftCompetition>,
   maxSofts: SoftRollMax,
   t: TranslateFn,
-): { text: string; warn: boolean } {
+): { text: string; hint: string; warn: boolean } {
+  const belowMax = Math.max(1, maxSofts - 1);
+
   if (competition.system === "reroll") {
     return {
       text: t("gearPickPanel.competitionReroll", {
@@ -96,9 +98,21 @@ function competitionCaption(
         otherRolls: competition.othersRollCount,
         callers: competition.competingCallers,
       }),
+      hint: t("gearPickPanel.competitionRerollHint", {
+        myRolls: competition.myRollCount,
+        mySofts: competition.mySofts,
+        callers: competition.competingCallers,
+        weight: competition.competingWeight,
+        otherRolls: competition.othersRollCount,
+      }),
       warn: false,
     };
   }
+
+  const plus100Hint = t("gearPickPanel.competitionPlus100Hint", {
+    max: maxSofts,
+    belowMax,
+  });
 
   if (competition.mySoftsDominated) {
     return {
@@ -107,6 +121,7 @@ function competitionCaption(
         max: maxSofts,
         count: competition.maxSoftCallerCount,
       }),
+      hint: plus100Hint,
       warn: true,
     };
   }
@@ -117,6 +132,7 @@ function competitionCaption(
         max: maxSofts,
         count: competition.maxSoftCallerCount,
       }),
+      hint: plus100Hint,
       warn: true,
     };
   }
@@ -127,6 +143,7 @@ function competitionCaption(
       weight: competition.competingWeight,
       callers: competition.competingCallers,
     }),
+    hint: plus100Hint,
     warn: false,
   };
 }
@@ -277,13 +294,21 @@ export function GearPickItemRow({
           })}
         </Stack>
 
-        <Typography
-          variant="caption"
-          color={caption.warn ? "warning.main" : "text.secondary"}
-          sx={{ lineHeight: 1.2, fontWeight: caption.warn ? 600 : 400 }}
-        >
-          {caption.text}
-        </Typography>
+        <Tooltip title={caption.hint}>
+          <Typography
+            variant="caption"
+            color={caption.warn ? "warning.main" : "text.secondary"}
+            sx={{
+              lineHeight: 1.2,
+              fontWeight: caption.warn ? 600 : 400,
+              borderBottom: "1px dotted",
+              borderColor: "currentColor",
+              cursor: "help",
+            }}
+          >
+            {caption.text}
+          </Typography>
+        </Tooltip>
       </Stack>
     </Box>
   );
