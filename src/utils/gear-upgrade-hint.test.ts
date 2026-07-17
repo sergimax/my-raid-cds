@@ -870,26 +870,97 @@ describe("formatGearUpgradeHintTooltip", () => {
     ]);
   });
 
-  it("does not suggest faction Solace trinket when the other faction version is equipped", () => {
+  it("keeps faction Solace on ilvl when the other faction version is equipped", () => {
+    // Ilvl exclusion is name-variant only: wearing Horde Fallen H must not hide Alliance Solace H.
     const hint = evaluateGearUpgradeHint(
       [
-        { slot: 12, id: 47271 },
+        { slot: 12, id: 47432 },
         { slot: 13, id: 11815 },
       ],
       {
-        name: "ICC25",
-        raidKey: "icecrownCitadel",
+        name: "ToC25H",
+        raidKey: "trialOfTheCrusader",
         size: 25,
-        difficulty: DungeonDifficulty.NORMAL,
-        itemLevel: [245, 258],
+        difficulty: DungeonDifficulty.HEROIC,
+        itemLevel: [258],
       },
       undefined,
       { className: ClassName.Priest, spec: "Holy" },
     );
 
     const ilvlItemIds = collectMissingIlvlLootItemIds(hint);
-    expect(ilvlItemIds).not.toContain(47041);
+    expect(ilvlItemIds).toContain(47059);
     expect(ilvlItemIds).not.toContain(47432);
+  });
+
+  it("treats same-ilvl faction Solace as satisfying BiS exact target", () => {
+    const bisSlotMap = buildBisSlotMap({
+      id: "solace-faction-bis-satisfied",
+      name: "Solace faction BiS satisfied",
+      slots: [
+        { slot: 12, itemIds: [47432] },
+        { slot: 13, itemIds: [47432] },
+      ],
+    });
+
+    const hint = evaluateGearUpgradeHint(
+      [
+        { slot: 12, id: 47059 },
+        { slot: 13, id: 11815 },
+      ],
+      {
+        name: "ToC25H",
+        raidKey: "trialOfTheCrusader",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+        itemLevel: [258],
+      },
+      bisSlotMap,
+      { className: ClassName.Priest, spec: "Holy" },
+    );
+
+    expect(hint.bis.upgradeSlots.map((slotHint) => slotHint.bestLootItemId)).not.toContain(
+      47432,
+    );
+  });
+
+  it("keeps faction Solace on ilvl track when BiS lists the other faction id", () => {
+    // Horde Fallen H is on the BiS list; Alliance Defeated must not be scrubbed
+    // from ilvl just because they are faction-equivalent.
+    const bisSlotMap = buildBisSlotMap({
+      id: "solace-faction-ilvl-test",
+      name: "Solace faction ilvl test",
+      slots: [
+        { slot: 12, itemIds: [47432] },
+        { slot: 13, itemIds: [47432] },
+      ],
+    });
+
+    const hint = evaluateGearUpgradeHint(
+      [
+        { slot: 12, id: 11815 },
+        { slot: 13, id: 11815 },
+      ],
+      {
+        name: "ToC25H",
+        raidKey: "trialOfTheCrusader",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+        itemLevel: [258],
+      },
+      bisSlotMap,
+      { className: ClassName.Priest, spec: "Holy" },
+    );
+
+    // BiS track owns Horde Fallen H; name-variant track is N-only (not in this row).
+    expect(hint.bis.upgradeSlots.map((slotHint) => slotHint.bestLootItemId)).toContain(
+      47432,
+    );
+
+    // Ilvl exclusion uses name variants only, so Alliance Solace H stays eligible.
+    const ilvlItemIds = collectMissingIlvlLootItemIds(hint);
+    expect(ilvlItemIds).not.toContain(47432);
+    expect(ilvlItemIds).toContain(47059);
   });
 
   it("does not suggest Solace trinkets for Shadow Priest ilvl upgrades", () => {
