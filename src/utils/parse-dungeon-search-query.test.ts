@@ -24,7 +24,7 @@ describe("parseDungeonSearchQuery", () => {
     });
   });
 
-  it("parses name with size and Latin heroic suffix", () => {
+  it("parses name with size and Latin mode suffixes", () => {
     expect(parseDungeonSearchQuery("ICC25H")).toEqual({
       nameQuery: "icc",
       size: 25,
@@ -35,9 +35,19 @@ describe("parseDungeonSearchQuery", () => {
       size: 25,
       difficulty: DungeonDifficulty.HEROIC,
     });
+    expect(parseDungeonSearchQuery("ICC25N")).toEqual({
+      nameQuery: "icc",
+      size: 25,
+      difficulty: DungeonDifficulty.NORMAL,
+    });
+    expect(parseDungeonSearchQuery("icc25n")).toEqual({
+      nameQuery: "icc",
+      size: 25,
+      difficulty: DungeonDifficulty.NORMAL,
+    });
   });
 
-  it("parses Russian heroic suffixes", () => {
+  it("parses Russian mode suffixes", () => {
     expect(parseDungeonSearchQuery("ЦЛК25хм")).toEqual({
       nameQuery: "цлк",
       size: 25,
@@ -48,14 +58,29 @@ describe("parseDungeonSearchQuery", () => {
       size: 25,
       difficulty: DungeonDifficulty.HEROIC,
     });
+    expect(parseDungeonSearchQuery("ЦЛК25об")).toEqual({
+      nameQuery: "цлк",
+      size: 25,
+      difficulty: DungeonDifficulty.NORMAL,
+    });
+    expect(parseDungeonSearchQuery("цлк25об")).toEqual({
+      nameQuery: "цлк",
+      size: 25,
+      difficulty: DungeonDifficulty.NORMAL,
+    });
   });
 
-  it("parses size-only and size with heroic suffix", () => {
+  it("parses size-only and size with mode suffix", () => {
     expect(parseDungeonSearchQuery("25")).toEqual({ nameQuery: "", size: 25 });
     expect(parseDungeonSearchQuery("25h")).toEqual({
       nameQuery: "",
       size: 25,
       difficulty: DungeonDifficulty.HEROIC,
+    });
+    expect(parseDungeonSearchQuery("25n")).toEqual({
+      nameQuery: "",
+      size: 25,
+      difficulty: DungeonDifficulty.NORMAL,
     });
   });
 
