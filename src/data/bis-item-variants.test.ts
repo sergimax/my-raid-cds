@@ -6,7 +6,9 @@ import {
   getFactionVariantItemIds,
   getNameVariantItemIdsAtSlot,
   getNonListNameVariantItemIdsAtSlot,
+  isItemIdOrEquivalentAtSlot,
   isItemIdOrNameVariantAtSlot,
+  isItemIdOrSameIlvlFactionVariantAtSlot,
 } from "./bis-item-variants.ts";
 
 describe("bis-item-variants", () => {
@@ -39,16 +41,23 @@ describe("bis-item-variants", () => {
     expect(expandItemIdsWithEquivalentIdsAtSlot([47041], 12).sort()).toEqual([
       47041, 47059, 47271, 47432,
     ]);
-    expect(isItemIdOrNameVariantAtSlot(47271, [47059], 13)).toBe(true);
-    expect(isItemIdOrNameVariantAtSlot(47271, [47059], 7)).toBe(false);
+    expect(isItemIdOrEquivalentAtSlot(47271, [47059], 13)).toBe(true);
+    expect(isItemIdOrEquivalentAtSlot(47271, [47059], 7)).toBe(false);
   });
 
-  it("does not treat faction Solace pairs as name-variant BiS upgrades", () => {
+  it("does not treat faction Solace pairs as name variants", () => {
     // Alliance Solace N/H share a name; Horde Fallen is faction-equivalent, not a name variant.
     expect([...getNameVariantItemIdsAtSlot(47041, 12)].sort()).toEqual([47041, 47059]);
     expect(expandItemIdsWithNameVariantsAtSlot([47059], 12).sort()).toEqual([47041, 47059]);
     expect(getNonListNameVariantItemIdsAtSlot([47059], 12)).toEqual([47041]);
     expect(getNonListNameVariantItemIdsAtSlot([47059], 12)).not.toContain(47271);
     expect(getNonListNameVariantItemIdsAtSlot([47059], 12)).not.toContain(47432);
+    expect(isItemIdOrNameVariantAtSlot(47271, [47059], 13)).toBe(false);
+  });
+
+  it("treats same-ilvl faction Solace twins as BiS matches without collapsing N/H", () => {
+    expect(isItemIdOrSameIlvlFactionVariantAtSlot(47059, [47432], 12)).toBe(true);
+    expect(isItemIdOrSameIlvlFactionVariantAtSlot(47041, [47432], 12)).toBe(false);
+    expect(isItemIdOrSameIlvlFactionVariantAtSlot(47271, [47432], 12)).toBe(false);
   });
 });

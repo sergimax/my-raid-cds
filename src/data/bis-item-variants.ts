@@ -1,6 +1,7 @@
 import itemNamesJson from "./wotlk-item-names.json";
 import itemGearSlotsJson from "./wotlk-item-gear-slots.json";
 import { getWotlkItemGearSlots } from "./wotlk-item-gear-slots.ts";
+import { getWotlkItemLevel } from "./wotlk-item-levels.ts";
 import { getWotlkItemName } from "./wotlk-item-names.ts";
 
 const itemNamesEn = itemNamesJson as Record<string, string>;
@@ -113,7 +114,7 @@ export function expandItemIdsWithNameVariantsAtSlot(
   return [...expandedIds];
 }
 
-/** Expands to name + faction equivalents at a gear slot (for BiS/ilvl exclusion). */
+/** Expands to name + faction equivalents at a gear slot (BiS satisfaction helpers). */
 export function expandItemIdsWithEquivalentIdsAtSlot(
   itemIds: readonly number[],
   gearSlot: number,
@@ -140,7 +141,49 @@ export function getNonListNameVariantItemIdsAtSlot(
   );
 }
 
+/** Same-name N/H only (not faction pairs). Used for ilvl equipped exclusion. */
 export function isItemIdOrNameVariantAtSlot(
+  itemId: number,
+  targetItemIds: readonly number[],
+  gearSlot: number,
+): boolean {
+  if (targetItemIds.includes(itemId)) {
+    return true;
+  }
+
+  return targetItemIds.some((targetItemId) =>
+    getNameVariantItemIdsAtSlot(targetItemId, gearSlot).includes(itemId),
+  );
+}
+
+/**
+ * Exact BiS id or a same-ilvl faction twin (e.g. Alliance Solace H ↔ Horde Fallen H).
+ * Does not collapse normal/heroic.
+ */
+export function isItemIdOrSameIlvlFactionVariantAtSlot(
+  itemId: number,
+  targetItemIds: readonly number[],
+  gearSlot: number,
+): boolean {
+  if (targetItemIds.includes(itemId)) {
+    return true;
+  }
+
+  const itemLevel = getWotlkItemLevel(itemId);
+  if (itemLevel === undefined) {
+    return false;
+  }
+
+  return targetItemIds.some((targetItemId) => {
+    if (!getFactionVariantItemIds(targetItemId, gearSlot).includes(itemId)) {
+      return false;
+    }
+    return getWotlkItemLevel(targetItemId) === itemLevel;
+  });
+}
+
+/** Name variants plus faction variants (any difficulty). Prefer track-specific helpers above. */
+export function isItemIdOrEquivalentAtSlot(
   itemId: number,
   targetItemIds: readonly number[],
   gearSlot: number,

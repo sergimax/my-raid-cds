@@ -3,6 +3,7 @@ import {
   expandItemIdsWithNameVariantsAtSlot,
   getNonListNameVariantItemIdsAtSlot,
   isItemIdOrNameVariantAtSlot,
+  isItemIdOrSameIlvlFactionVariantAtSlot,
 } from "../data/bis-item-variants.ts";
 import { getRaidLootItemIdsForTier } from "../data/raid-loot.ts";
 import { getWotlkItemLevel } from "../data/wotlk-item-levels.ts";
@@ -195,8 +196,11 @@ function equippedItemsInSwappableGroup(
   return gearItems.filter((item) => swappableSlots.includes(item.slot));
 }
 
-/** Skip loot that is a faction/name equivalent already worn in the ring/trinket pair. */
-function filterLootIdsNotEquivalentToEquippedAtSlot(
+/**
+ * Skip loot that is a same-name N/H variant already worn in the ring/trinket pair.
+ * Faction twins stay eligible on the ilvl track so the user can pick a faction variant.
+ */
+function filterLootIdsNotNameVariantOfEquippedAtSlot(
   lootIds: readonly number[],
   gearItems: readonly CharacterGearItem[],
   slot: number,
@@ -207,7 +211,6 @@ function filterLootIdsNotEquivalentToEquippedAtSlot(
     const lootItemLevel = getWotlkItemLevel(lootId) ?? 0;
 
     return !equippedInGroup.some((equipped) => {
-      // Is this loot id a name/faction equivalent of something already worn?
       if (!isItemIdOrNameVariantAtSlot(lootId, [equipped.id], slot)) {
         return false;
       }
@@ -224,7 +227,11 @@ function isBisExactTargetSatisfied(
   gearItems: readonly CharacterGearItem[],
 ): boolean {
   return equippedItemsInSwappableGroup(gearItems, item.slot).some((equipped) =>
-    bisItemIdsForSlot.includes(equipped.id),
+    isItemIdOrSameIlvlFactionVariantAtSlot(
+      equipped.id,
+      bisItemIdsForSlot,
+      item.slot,
+    ),
   );
 }
 
@@ -233,8 +240,19 @@ function isBisVariantTargetSatisfied(
   bisItemIdsForSlot: readonly number[],
   gearItems: readonly CharacterGearItem[],
 ): boolean {
-  return equippedItemsInSwappableGroup(gearItems, item.slot).some((equipped) =>
-    isItemIdOrNameVariantAtSlot(equipped.id, bisItemIdsForSlot, item.slot),
+  const nameVariantBisIds = expandItemIdsWithNameVariantsAtSlot(
+    bisItemIdsForSlot,
+    item.slot,
+  );
+
+  return equippedItemsInSwappableGroup(gearItems, item.slot).some(
+    (equipped) =>
+      isItemIdOrNameVariantAtSlot(equipped.id, bisItemIdsForSlot, item.slot) ||
+      isItemIdOrSameIlvlFactionVariantAtSlot(
+        equipped.id,
+        nameVariantBisIds,
+        item.slot,
+      ),
   );
 }
 
@@ -284,7 +302,7 @@ function isSlotUpgradeableWithLoot(
       );
       break;
     case "ilvl":
-      relevantLootIds = filterLootIdsNotEquivalentToEquippedAtSlot(
+      relevantLootIds = filterLootIdsNotNameVariantOfEquippedAtSlot(
         raidLootIds.filter((itemId) => !expandedBisItemIds.includes(itemId)),
         gearItems,
         item.slot,
