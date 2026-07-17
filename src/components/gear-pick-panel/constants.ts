@@ -1,10 +1,16 @@
-/** Min viewport width for filters left + items/copy right. */
-export const GEAR_PICK_SIDE_BY_SIDE_MIN_PX = 1600;
+/** Reuses Character pick side-by-side breakpoint for filters left + items/copy right. */
+export {
+  EXPORT_PANEL_SIDE_BY_SIDE_MIN_PX as GEAR_PICK_SIDE_BY_SIDE_MIN_PX,
+  EXPORT_PANEL_SIDE_BY_SIDE_MQ as GEAR_PICK_SIDE_BY_SIDE_MQ,
+  EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY as GEAR_PICK_SIDE_BY_SIDE_MQ_KEY,
+} from "../export-panel/constants.ts";
 
-export const GEAR_PICK_SIDE_BY_SIDE_MQ = `(min-width:${GEAR_PICK_SIDE_BY_SIDE_MIN_PX}px)`;
+/** Gear pick filter grid areas (same cell sizes as Character pick). */
+export type GearPickFilterGridAreaId = "rules" | "characterSpecs" | "dungeon";
 
-export const GEAR_PICK_SIDE_BY_SIDE_MQ_KEY = `@media ${GEAR_PICK_SIDE_BY_SIDE_MQ}`;
-
-export const GEAR_PICK_FILTER_COLUMN_MAX_WIDTH = 420;
-
-export const GEAR_PICK_ITEMS_MAX_HEIGHT = 480;
+export function getGearPickFilterGridTemplateAreas(): string {
+  return [
+    '"rules . characterSpecs"',
+    '"dungeon dungeon characterSpecs"',
+  ].join(" ");
+}

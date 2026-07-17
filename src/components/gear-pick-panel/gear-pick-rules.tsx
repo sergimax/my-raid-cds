@@ -40,7 +40,7 @@ export function GearPickRules({
   };
 
   return (
-    <Stack spacing={1.25}>
+    <Stack spacing={1} sx={{ height: "100%", justifyContent: "space-between" }}>
       <Box>
         <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
           {t("gearPickPanel.maxSoftsLabel")}
@@ -78,11 +78,12 @@ export function GearPickRules({
         </Typography>
       </Box>
 
-      <FormControl>
-        <FormLabel id="gear-pick-soft-system-label" sx={{ typography: "caption" }}>
+      <FormControl sx={{ minWidth: 0 }}>
+        <FormLabel id="gear-pick-soft-system-label" sx={{ typography: "caption", mb: 0.25 }}>
           {t("gearPickPanel.systemLabel")}
         </FormLabel>
         <RadioGroup
+          row
           aria-labelledby="gear-pick-soft-system-label"
           value={rules.system}
           onChange={(event) => {
@@ -91,18 +92,26 @@ export function GearPickRules({
               system: event.target.value as SoftRollSystem,
             });
           }}
+          sx={{
+            flexWrap: "nowrap",
+            columnGap: 0.5,
+            "& .MuiFormControlLabel-root": {
+              mr: 0.5,
+              ml: 0,
+            },
+          }}
         >
           <FormControlLabel
             value="plus100"
             control={<Radio size="small" />}
             label={t("gearPickPanel.systemPlus100")}
-            slotProps={{ typography: { variant: "body2" } }}
+            slotProps={{ typography: { variant: "body2", noWrap: true } }}
           />
           <FormControlLabel
             value="reroll"
             control={<Radio size="small" />}
             label={t("gearPickPanel.systemReroll")}
-            slotProps={{ typography: { variant: "body2" } }}
+            slotProps={{ typography: { variant: "body2", noWrap: true } }}
           />
         </RadioGroup>
       </FormControl>

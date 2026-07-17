@@ -22,18 +22,23 @@ import {
 import { ExportDungeonFilter } from "../export-panel/export-dungeon-filter.tsx";
 import { ExportFilterSection } from "../export-panel/export-filter-section.tsx";
 import {
-  GEAR_PICK_FILTER_COLUMN_MAX_WIDTH,
-  GEAR_PICK_ITEMS_MAX_HEIGHT,
+  EXPORT_FILTER_GRID_GAP_SPACING,
+  getExportFilterGridHeight,
+  getExportFilterGridTemplateColumns,
+  getExportFilterGridTemplateRows,
+} from "../export-panel/constants.ts";
+import {
   GEAR_PICK_SIDE_BY_SIDE_MQ_KEY,
+  getGearPickFilterGridTemplateAreas,
 } from "./constants.ts";
 import {
   GearPickCharacterSelect,
   type GearPickCharacterSelection,
 } from "./gear-pick-character-select.tsx";
 import { GearPickCopyBlock } from "./gear-pick-copy-block.tsx";
+import { GearPickFilterBlock } from "./gear-pick-filter-block.tsx";
 import { GearPickItemRow } from "./gear-pick-item-row.tsx";
 import { GearPickRules } from "./gear-pick-rules.tsx";
-import { useGearPickPanelSideBySide } from "./use-gear-pick-panel-side-by-side.ts";
 
 export type GearPickPanelProps = {
   characters: readonly CharacterRecord[];
@@ -51,7 +56,6 @@ export function GearPickPanel({
   const { t, locale } = useTranslation();
   const { locale: itemLocale } = useItemTooltipLocale();
   const { getBisSlotMapForSpec } = useBisListsContext();
-  const sideBySide = useGearPickPanelSideBySide();
 
   const [selection, setSelection] = useState<GearPickCharacterSelection | null>(
     null,
@@ -189,148 +193,182 @@ export function GearPickPanel({
     }
   };
 
-  const filtersColumn = (
-    <Stack spacing={1.5} sx={{ minWidth: 0, width: "100%" }}>
-      <ExportFilterSection
-        title={t("gearPickPanel.rulesTitle")}
-        description={t("gearPickPanel.rulesHelper")}
-      >
-        <GearPickRules
-          rules={rules}
-          onRulesChange={handleRulesChange}
-          softBudgetUsed={softBudgetUsed}
-          t={t}
-        />
-      </ExportFilterSection>
-
-      <ExportFilterSection
-        title={t("gearPickPanel.characterTitle")}
-        description={t("gearPickPanel.characterHelper")}
-      >
-        <GearPickCharacterSelect
-          characters={characters}
-          selection={selection}
-          onSelectionChange={handleSelectionChange}
-          t={t}
-        />
-      </ExportFilterSection>
-
-      <ExportFilterSection
-        title={t("gearPickPanel.dungeonFilterTitle")}
-        description={t("gearPickPanel.dungeonFilterHelper")}
-      >
-        <ExportDungeonFilter
-          dungeonNameSearch={dungeonNameSearch}
-          visibleDungeons={visibleDungeons}
-          totalDungeonCount={totalDungeonCount}
-          locale={locale}
-          t={t}
-        />
-      </ExportFilterSection>
-    </Stack>
-  );
-
-  const itemsColumn = (
-    <Stack spacing={1.5} sx={{ minWidth: 0, width: "100%", minHeight: 0 }}>
-      <ExportFilterSection
-        title={t("gearPickPanel.itemsTitle")}
-        description={t("gearPickPanel.itemsHelper")}
-        contentSx={{
-          maxHeight: sideBySide ? GEAR_PICK_ITEMS_MAX_HEIGHT : undefined,
-          overflowY: "auto",
-        }}
-      >
-        {emptyItemsMessage ? (
-          <Typography variant="body2" color="text.secondary">
-            {emptyItemsMessage}
-          </Typography>
-        ) : (
-          <Stack spacing={1}>
-            {gearPickItems.map((item) => {
-              const assignment = assignmentsByItemId[item.itemId] ?? {
-                mySofts: 0,
-                othersByWeight: {},
-              };
-              const itemLabel =
-                getWotlkItemName(item.itemId, itemLocale) ?? `#${item.itemId}`;
-              const budgetForItem = remainingSoftBudget(
-                assignmentsByItemId,
-                rules.maxSofts,
-                item.itemId,
-              );
-
-              return (
-                <GearPickItemRow
-                  key={item.itemId}
-                  item={item}
-                  assignment={assignment}
-                  maxSofts={rules.maxSofts}
-                  system={rules.system}
-                  remainingBudgetForItem={budgetForItem}
-                  itemLabel={itemLabel}
-                  onMySoftsChange={(mySofts) => {
-                    setAssignmentsByItemId((previous) =>
-                      setMySoftsForItem(
-                        previous,
-                        item.itemId,
-                        mySofts,
-                        rules.maxSofts,
-                      ),
-                    );
-                  }}
-                  onOthersCountChange={(weight, count) => {
-                    setAssignmentsByItemId((previous) =>
-                      setOthersCountForWeight(
-                        previous,
-                        item.itemId,
-                        weight,
-                        count,
-                        rules.maxSofts,
-                      ),
-                    );
-                  }}
-                  t={t}
-                />
-              );
-            })}
-          </Stack>
-        )}
-      </ExportFilterSection>
-
-      <GearPickCopyBlock
-        copyText={copyText}
-        hasSoftCalls={copyItems.length > 0}
-        t={t}
-      />
-    </Stack>
-  );
+  const filterGridHeight = getExportFilterGridHeight();
 
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
-        gap: 1.5,
+        gap: EXPORT_FILTER_GRID_GAP_SPACING,
+        alignItems: "stretch",
         width: "100%",
         [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: {
           flexDirection: "row",
-          alignItems: "stretch",
         },
       }}
     >
       <Box
         sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "minmax(0, 1fr)",
+            md: getExportFilterGridTemplateColumns(),
+          },
+          gridTemplateRows: {
+            xs: "auto",
+            md: getExportFilterGridTemplateRows(),
+          },
+          gridTemplateAreas: {
+            xs: "none",
+            md: getGearPickFilterGridTemplateAreas(),
+          },
+          gap: EXPORT_FILTER_GRID_GAP_SPACING,
+          alignItems: "stretch",
+          width: { xs: "100%", md: "fit-content" },
+          maxWidth: "100%",
+          flexShrink: 0,
+        }}
+      >
+        <GearPickFilterBlock gridArea="rules">
+          <ExportFilterSection
+            title={t("gearPickPanel.rulesTitle")}
+            description={t("gearPickPanel.rulesHelper")}
+            contentSx={{ overflow: "visible" }}
+          >
+            <GearPickRules
+              rules={rules}
+              onRulesChange={handleRulesChange}
+              softBudgetUsed={softBudgetUsed}
+              t={t}
+            />
+          </ExportFilterSection>
+        </GearPickFilterBlock>
+
+        <GearPickFilterBlock gridArea="characterSpecs">
+          <ExportFilterSection
+            title={t("gearPickPanel.characterTitle")}
+            description={t("gearPickPanel.characterHelper")}
+          >
+            <GearPickCharacterSelect
+              characters={characters}
+              selection={selection}
+              onSelectionChange={handleSelectionChange}
+              t={t}
+            />
+          </ExportFilterSection>
+        </GearPickFilterBlock>
+
+        <GearPickFilterBlock gridArea="dungeon">
+          <ExportFilterSection
+            title={t("gearPickPanel.dungeonFilterTitle")}
+            description={t("gearPickPanel.dungeonFilterHelper")}
+          >
+            <ExportDungeonFilter
+              dungeonNameSearch={dungeonNameSearch}
+              visibleDungeons={visibleDungeons}
+              totalDungeonCount={totalDungeonCount}
+              locale={locale}
+              t={t}
+            />
+          </ExportFilterSection>
+        </GearPickFilterBlock>
+      </Box>
+
+      <Box
+        sx={{
+          flex: "none",
           minWidth: 0,
           width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: 1.5,
           [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: {
-            maxWidth: GEAR_PICK_FILTER_COLUMN_MAX_WIDTH,
-            flex: `0 0 ${GEAR_PICK_FILTER_COLUMN_MAX_WIDTH}px`,
+            flex: 1,
+            minHeight: 0,
+            height: filterGridHeight,
+            maxHeight: filterGridHeight,
+            overflow: "hidden",
           },
         }}
       >
-        {filtersColumn}
+        <ExportFilterSection
+          title={t("gearPickPanel.itemsTitle")}
+          description={t("gearPickPanel.itemsHelper")}
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: {
+              overflow: "hidden",
+            },
+          }}
+          contentSx={{
+            overflowY: "auto",
+          }}
+        >
+          {emptyItemsMessage ? (
+            <Typography variant="body2" color="text.secondary">
+              {emptyItemsMessage}
+            </Typography>
+          ) : (
+            <Stack spacing={1}>
+              {gearPickItems.map((item) => {
+                const assignment = assignmentsByItemId[item.itemId] ?? {
+                  mySofts: 0,
+                  othersByWeight: {},
+                };
+                const itemLabel =
+                  getWotlkItemName(item.itemId, itemLocale) ?? `#${item.itemId}`;
+                const budgetForItem = remainingSoftBudget(
+                  assignmentsByItemId,
+                  rules.maxSofts,
+                  item.itemId,
+                );
+
+                return (
+                  <GearPickItemRow
+                    key={item.itemId}
+                    item={item}
+                    assignment={assignment}
+                    maxSofts={rules.maxSofts}
+                    system={rules.system}
+                    remainingBudgetForItem={budgetForItem}
+                    itemLabel={itemLabel}
+                    onMySoftsChange={(mySofts) => {
+                      setAssignmentsByItemId((previous) =>
+                        setMySoftsForItem(
+                          previous,
+                          item.itemId,
+                          mySofts,
+                          rules.maxSofts,
+                        ),
+                      );
+                    }}
+                    onOthersCountChange={(weight, count) => {
+                      setAssignmentsByItemId((previous) =>
+                        setOthersCountForWeight(
+                          previous,
+                          item.itemId,
+                          weight,
+                          count,
+                          rules.maxSofts,
+                        ),
+                      );
+                    }}
+                    t={t}
+                  />
+                );
+              })}
+            </Stack>
+          )}
+        </ExportFilterSection>
+
+        <GearPickCopyBlock
+          copyText={copyText}
+          hasSoftCalls={copyItems.length > 0}
+          t={t}
+        />
       </Box>
-      <Box sx={{ minWidth: 0, flex: 1 }}>{itemsColumn}</Box>
     </Box>
   );
 }
