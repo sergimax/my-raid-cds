@@ -160,7 +160,6 @@ export function GearPickItemRow({
   t,
 }: GearPickItemRowProps) {
   const competition = summarizeSoftCompetition(assignment, system, maxSofts);
-  const dropCaption = [item.raidLabel, item.bossName].filter(Boolean).join(" · ");
   const weightKeys = softWeightKeys(maxSofts);
   const caption = competitionCaption(competition, maxSofts, t);
   const hasMaxSoftCaller = competition.maxSoftCallerCount > 0;
@@ -168,70 +167,86 @@ export function GearPickItemRow({
   return (
     <Box
       sx={{
-        border: 1,
+        display: "grid",
+        gridTemplateColumns: "auto minmax(0, 1fr)",
+        columnGap: 1,
+        rowGap: 0.35,
+        alignItems: "stretch",
+        px: 0.25,
+        py: 0.75,
+        borderBottom: 1,
         borderColor: "divider",
-        borderRadius: 1,
-        px: 0.75,
-        py: 0.5,
+        "&:last-child": {
+          borderBottom: 0,
+        },
       }}
     >
+      {/* Player softs — full-height left column */}
+      <Stack
+        direction="row"
+        sx={{
+          gridRow: "1 / span 2",
+          alignSelf: "stretch",
+          alignItems: "center",
+          justifyContent: "center",
+          px: 0.5,
+          minHeight: "100%",
+          color: competition.mySoftsDominated ? "warning.main" : "inherit",
+        }}
+      >
+        <SoftStepper
+          value={assignment.mySofts}
+          min={0}
+          max={remainingBudgetForItem}
+          onChange={onMySoftsChange}
+          decreaseAria={t("gearPickPanel.decreaseMySoftsAria", { item: itemLabel })}
+          increaseAria={t("gearPickPanel.increaseMySoftsAria", { item: itemLabel })}
+          valueAria={t("gearPickPanel.mySoftsAria", { item: itemLabel })}
+          emphasized
+        />
+      </Stack>
+
+      {/* Line 1: type · item · raid short · boss */}
+      <Stack
+        direction="row"
+        spacing={0.75}
+        sx={{ alignItems: "center", flexWrap: "wrap", minWidth: 0 }}
+      >
+        <Chip
+          size="small"
+          label={
+            item.kind === "bis"
+              ? t("gearPickPanel.kindBis")
+              : t("gearPickPanel.kindVariant")
+          }
+          color={item.kind === "bis" ? "warning" : "default"}
+          variant="outlined"
+          sx={{ height: 20, "& .MuiChip-label": { px: 0.6, fontSize: "0.65rem" } }}
+        />
+        <WowItemLink itemId={item.itemId} />
+        {item.raidLabel ? (
+          <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
+            {item.raidLabel}
+          </Typography>
+        ) : null}
+        {item.bossName ? (
+          <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
+            {item.bossName}
+          </Typography>
+        ) : null}
+      </Stack>
+
+      {/* Line 2: others softs · competition */}
       <Stack
         direction="row"
         sx={{
           alignItems: "center",
           flexWrap: "wrap",
           columnGap: 0.75,
-          rowGap: 0.5,
+          rowGap: 0.35,
+          minWidth: 0,
         }}
       >
-        <Stack
-          direction="row"
-          spacing={0.75}
-          sx={{ alignItems: "center", flexWrap: "wrap", minWidth: 0 }}
-        >
-          <Chip
-            size="small"
-            label={
-              item.kind === "bis"
-                ? t("gearPickPanel.kindBis")
-                : t("gearPickPanel.kindVariant")
-            }
-            color={item.kind === "bis" ? "warning" : "default"}
-            variant="outlined"
-            sx={{ height: 20, "& .MuiChip-label": { px: 0.6, fontSize: "0.65rem" } }}
-          />
-          <WowItemLink itemId={item.itemId} />
-          {dropCaption ? (
-            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
-              {dropCaption}
-            </Typography>
-          ) : null}
-          <Stack
-            direction="row"
-            sx={{
-              alignItems: "center",
-              flexShrink: 0,
-              px: 0.5,
-              py: 0.15,
-              border: 1,
-              borderColor: competition.mySoftsDominated ? "warning.main" : "primary.main",
-              borderRadius: 1,
-              bgcolor: "action.selected",
-            }}
-          >
-            <SoftStepper
-              value={assignment.mySofts}
-              min={0}
-              max={remainingBudgetForItem}
-              onChange={onMySoftsChange}
-              decreaseAria={t("gearPickPanel.decreaseMySoftsAria", { item: itemLabel })}
-              increaseAria={t("gearPickPanel.increaseMySoftsAria", { item: itemLabel })}
-              valueAria={t("gearPickPanel.mySoftsAria", { item: itemLabel })}
-              emphasized
-            />
-          </Stack>
-        </Stack>
-
         <Stack
           direction="row"
           aria-label={t("gearPickPanel.othersTitle")}
@@ -246,49 +261,59 @@ export function GearPickItemRow({
               <Stack
                 key={weight}
                 direction="row"
-                spacing={0.35}
+                spacing={0}
                 sx={{
-                  alignItems: "center",
-                  px: 0.6,
-                  py: 0.15,
+                  alignItems: "stretch",
                   border: 1,
-                  borderColor: isMaxWeight && hasMaxSoftCaller ? "warning.main" : "divider",
+                  borderColor:
+                    isMaxWeight && hasMaxSoftCaller ? "warning.main" : "divider",
                   borderRadius: 1,
-                  bgcolor: "action.hover",
+                  overflow: "hidden",
                   opacity: dominatedWeight ? 0.55 : 1,
                 }}
               >
                 <Typography
                   variant="caption"
                   sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    px: 0.75,
                     fontWeight: 700,
-                    minWidth: 18,
                     lineHeight: 1,
+                    bgcolor: "action.selected",
+                    borderRight: 1,
+                    borderColor: "divider",
                     textDecoration: dominatedWeight ? "line-through" : "none",
                   }}
                 >
                   {t("gearPickPanel.othersWeightLabel", { weight })}
                 </Typography>
-                <SoftStepper
-                  value={count}
-                  min={0}
-                  max={99}
-                  onChange={(next) => {
-                    onOthersCountChange(weight, next);
-                  }}
-                  decreaseAria={t("gearPickPanel.decreaseOthersAria", {
-                    weight,
-                    item: itemLabel,
-                  })}
-                  increaseAria={t("gearPickPanel.increaseOthersAria", {
-                    weight,
-                    item: itemLabel,
-                  })}
-                  valueAria={t("gearPickPanel.othersWeightAria", {
-                    weight,
-                    item: itemLabel,
-                  })}
-                />
+                <Stack
+                  direction="row"
+                  sx={{ alignItems: "center", px: 0.25, bgcolor: "background.paper" }}
+                >
+                  <SoftStepper
+                    value={count}
+                    min={0}
+                    max={99}
+                    onChange={(next) => {
+                      onOthersCountChange(weight, next);
+                    }}
+                    decreaseAria={t("gearPickPanel.decreaseOthersAria", {
+                      weight,
+                      item: itemLabel,
+                    })}
+                    increaseAria={t("gearPickPanel.increaseOthersAria", {
+                      weight,
+                      item: itemLabel,
+                    })}
+                    valueAria={t("gearPickPanel.othersWeightAria", {
+                      weight,
+                      item: itemLabel,
+                    })}
+                  />
+                </Stack>
               </Stack>
             );
           })}
