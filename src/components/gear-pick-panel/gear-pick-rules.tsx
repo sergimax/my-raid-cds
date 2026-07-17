@@ -102,15 +102,15 @@ export function GearPickRules({
           }}
         >
           <FormControlLabel
-            value="plus100"
-            control={<Radio size="small" />}
-            label={t("gearPickPanel.systemPlus100")}
-            slotProps={{ typography: { variant: "body2", noWrap: true } }}
-          />
-          <FormControlLabel
             value="reroll"
             control={<Radio size="small" />}
             label={t("gearPickPanel.systemReroll")}
+            slotProps={{ typography: { variant: "body2", noWrap: true } }}
+          />
+          <FormControlLabel
+            value="plus100"
+            control={<Radio size="small" />}
+            label={t("gearPickPanel.systemPlus100")}
             slotProps={{ typography: { variant: "body2", noWrap: true } }}
           />
         </RadioGroup>

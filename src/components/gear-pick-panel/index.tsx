@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { getWotlkItemName } from "../../data/wotlk-item-names.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useItemTooltipLocale } from "../../hooks/use-item-tooltip-locale.ts";
-import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
@@ -180,35 +179,10 @@ export function GearPickPanel({
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
   }, [assignmentsByItemId, gearPickItems, itemLocale]);
 
-  const copyText = useMemo(() => {
-    if (!selectedCharacter || !selectedSpecGear || !selectedCharacter.class) {
-      return "";
-    }
-    return formatGearPickCopyText({
-      characterName: selectedCharacter.name,
-      specLabel: getLocalizedSpecName(
-        selectedCharacter.class.name,
-        selectedSpecGear.spec,
-        locale,
-        true,
-      ),
-      system: rules.system,
-      maxSofts: rules.maxSofts,
-      systemLabel:
-        rules.system === "plus100"
-          ? t("gearPickPanel.systemLabelPlus100")
-          : t("gearPickPanel.systemLabelReroll"),
-      items: copyItems,
-    });
-  }, [
-    copyItems,
-    locale,
-    rules.maxSofts,
-    rules.system,
-    selectedCharacter,
-    selectedSpecGear,
-    t,
-  ]);
+  const copyText = useMemo(
+    () => formatGearPickCopyText({ items: copyItems }),
+    [copyItems],
+  );
 
   const handleRulesChange = (next: SoftRollRules) => {
     setRules(next);

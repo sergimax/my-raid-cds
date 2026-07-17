@@ -10,7 +10,7 @@ export type SoftRollRules = {
 
 export const DEFAULT_SOFT_ROLL_RULES: SoftRollRules = {
   maxSofts: 3,
-  system: "plus100",
+  system: "reroll",
 };
 
 /** Count of other players who called exactly `weight` softs on an item. */
@@ -215,19 +215,12 @@ export type GearPickCopyItem = {
 };
 
 export type FormatGearPickCopyOptions = {
-  characterName: string;
-  specLabel: string;
-  system: SoftRollSystem;
-  maxSofts: SoftRollMax;
   items: readonly GearPickCopyItem[];
-  systemLabel: string;
 };
 
+/** Pasteable soft-call lines only (no rules/character preamble). */
 export function formatGearPickCopyText(options: FormatGearPickCopyOptions): string {
-  const lines = [
-    `Soft: ${options.systemLabel} · ${options.maxSofts}`,
-    `${options.characterName}: ${options.specLabel}`,
-  ];
+  const lines: string[] = [];
 
   for (const item of options.items) {
     if (item.mySofts <= 0) {

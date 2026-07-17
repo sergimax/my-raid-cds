@@ -94,19 +94,14 @@ describe("gear-pick-soft-roll", () => {
 
   it("formats copy text for called softs only", () => {
     const text = formatGearPickCopyText({
-      characterName: "Elst",
-      specLabel: "Unholy",
-      system: DEFAULT_SOFT_ROLL_RULES.system,
-      maxSofts: 3,
-      systemLabel: "+100",
       items: [
         { itemName: "Belt", bossName: "Putricide", mySofts: 3 },
         { itemName: "Ring", bossName: "", mySofts: 0 },
-        { itemName: "Trinket", bossName: "Halion", mySofts: 0 },
+        { itemName: "Trinket", bossName: "Halion", mySofts: 1 },
       ],
     });
     expect(text).toBe(
-      ["Soft: +100 · 3", "Elst: Unholy", "• Belt (Putricide) ×3"].join("\n"),
+      ["• Belt (Putricide) ×3", "• Trinket (Halion) ×1"].join("\n"),
     );
   });
 });
