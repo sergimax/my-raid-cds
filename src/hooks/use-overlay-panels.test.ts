@@ -24,6 +24,7 @@ describe("useOverlayPanels", () => {
     });
     expect(result.current.showExportPanel).toBe(true);
     expect(result.current.showBisListsPanel).toBe(false);
+    expect(result.current.showGearPickPanel).toBe(false);
     expect(result.current.showCharacterForm).toBe(false);
 
     act(() => {
@@ -33,9 +34,16 @@ describe("useOverlayPanels", () => {
     expect(result.current.showCharacterForm).toBe(true);
 
     act(() => {
-      result.current.toggleBisListsPanel();
+      result.current.toggleGearPickPanel();
     });
     expect(result.current.showCharacterForm).toBe(false);
+    expect(result.current.showGearPickPanel).toBe(true);
+    expect(result.current.showBisListsPanel).toBe(false);
+
+    act(() => {
+      result.current.toggleBisListsPanel();
+    });
+    expect(result.current.showGearPickPanel).toBe(false);
     expect(result.current.showBisListsPanel).toBe(true);
   });
 
@@ -67,6 +75,7 @@ describe("useOverlayPanels", () => {
       result.current.closeAllOverlayPanels();
     });
     expect(result.current.showExportPanel).toBe(false);
+    expect(result.current.showGearPickPanel).toBe(false);
     expect(result.current.showBisListsPanel).toBe(false);
     expect(result.current.showCharacterForm).toBe(false);
     expect(result.current.showDungeonForm).toBe(false);

@@ -11,13 +11,14 @@ type UseOverlayPanelsOptions = {
   onDungeonAdded: (dungeon: DungeonRecord) => void;
 };
 
-/** Mutually exclusive toolbar overlay panels (forms, export, BiS lists). */
+/** Mutually exclusive toolbar overlay panels (forms, export, gear pick, BiS lists). */
 export function useOverlayPanels({
   characters,
   onCharacterAdded,
   onDungeonAdded,
 }: UseOverlayPanelsOptions) {
   const [showExportPanel, setShowExportPanel] = useState(false);
+  const [showGearPickPanel, setShowGearPickPanel] = useState(false);
   const [showBisListsPanel, setShowBisListsPanel] = useState(false);
   const characterForm = useCharacterFormState({ characters, onCharacterAdded });
   const dungeonForm = useDungeonFormState({ onDungeonAdded });
@@ -25,6 +26,9 @@ export function useOverlayPanels({
   const closeExcept = useCallback((except: OverlayPanelId | null) => {
     if (except !== "export") {
       setShowExportPanel(false);
+    }
+    if (except !== "gear") {
+      setShowGearPickPanel(false);
     }
     if (except !== "bis") {
       setShowBisListsPanel(false);
@@ -49,6 +53,15 @@ export function useOverlayPanels({
     closeExcept("export");
     setShowExportPanel(true);
   }, [closeExcept, showExportPanel]);
+
+  const toggleGearPickPanel = useCallback(() => {
+    if (showGearPickPanel) {
+      setShowGearPickPanel(false);
+      return;
+    }
+    closeExcept("gear");
+    setShowGearPickPanel(true);
+  }, [closeExcept, showGearPickPanel]);
 
   const toggleBisListsPanel = useCallback(() => {
     if (showBisListsPanel) {
@@ -81,6 +94,10 @@ export function useOverlayPanels({
     setShowExportPanel(false);
   }, []);
 
+  const closeGearPickPanel = useCallback(() => {
+    setShowGearPickPanel(false);
+  }, []);
+
   const closeBisListsPanel = useCallback(() => {
     setShowBisListsPanel(false);
   }, []);
@@ -89,6 +106,9 @@ export function useOverlayPanels({
     showExportPanel,
     closeExportPanel,
     toggleExportPanel,
+    showGearPickPanel,
+    closeGearPickPanel,
+    toggleGearPickPanel,
     showBisListsPanel,
     closeBisListsPanel,
     toggleBisListsPanel,

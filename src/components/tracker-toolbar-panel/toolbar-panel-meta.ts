@@ -21,6 +21,7 @@ type MainToolbarPanelHandlers = {
 
 type ToolbarPanelHandlers = MainToolbarPanelHandlers & {
   closeExportPanel: () => void;
+  closeGearPickPanel: () => void;
 };
 
 export function getToolbarPanelMeta(
@@ -30,6 +31,9 @@ export function getToolbarPanelMeta(
 ): ToolbarPanelMeta {
   if (panelId === "export") {
     return getExportToolbarPanelMeta(t, handlers.closeExportPanel);
+  }
+  if (panelId === "gear") {
+    return getGearPickToolbarPanelMeta(t, handlers.closeGearPickPanel);
   }
   return getMainToolbarPanelMeta(panelId, t, handlers);
 }
@@ -73,6 +77,18 @@ function getExportToolbarPanelMeta(
     title: t("exportPanel.title"),
     description: t("exportPanel.instructions"),
     closeAriaLabel: t("exportPanel.closeAria"),
+    onClose,
+  };
+}
+
+function getGearPickToolbarPanelMeta(
+  t: TranslateFn,
+  onClose: () => void,
+): ToolbarPanelMeta {
+  return {
+    title: t("gearPickPanel.title"),
+    description: t("gearPickPanel.instructions"),
+    closeAriaLabel: t("gearPickPanel.closeAria"),
     onClose,
   };
 }

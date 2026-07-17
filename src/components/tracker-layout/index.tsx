@@ -39,10 +39,12 @@ export function TrackerLayout() {
       showCharacterForm: overlayPanels.showCharacterForm,
       showDungeonForm: overlayPanels.showDungeonForm,
       showExportPanel: overlayPanels.showExportPanel,
+      showGearPickPanel: overlayPanels.showGearPickPanel,
       showBisListsPanel: overlayPanels.showBisListsPanel,
       toggleCharacterForm: overlayPanels.toggleCharacterForm,
       toggleDungeonForm: overlayPanels.toggleDungeonForm,
       toggleExportPanel: overlayPanels.toggleExportPanel,
+      toggleGearPickPanel: overlayPanels.toggleGearPickPanel,
       toggleBisListsPanel: overlayPanels.toggleBisListsPanel,
     }),
     [
@@ -55,10 +57,12 @@ export function TrackerLayout() {
       overlayPanels.showCharacterForm,
       overlayPanels.showDungeonForm,
       overlayPanels.showExportPanel,
+      overlayPanels.showGearPickPanel,
       overlayPanels.toggleBisListsPanel,
       overlayPanels.toggleCharacterForm,
       overlayPanels.toggleDungeonForm,
       overlayPanels.toggleExportPanel,
+      overlayPanels.toggleGearPickPanel,
     ],
   );
 
@@ -75,6 +79,8 @@ export function TrackerLayout() {
           forms={forms}
           showExportPanel={overlayPanels.showExportPanel}
           closeExportPanel={overlayPanels.closeExportPanel}
+          showGearPickPanel={overlayPanels.showGearPickPanel}
+          closeGearPickPanel={overlayPanels.closeGearPickPanel}
           showBisListsPanel={overlayPanels.showBisListsPanel}
           closeBisListsPanel={overlayPanels.closeBisListsPanel}
         />

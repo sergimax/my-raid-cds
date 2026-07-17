@@ -11,6 +11,7 @@ export type TrackerActionId =
   | "addDungeon"
   | "bisLists"
   | "exportStatus"
+  | "gearPick"
   | "resetAllToggles";
 
 export type TrackerAction = {
@@ -50,6 +51,16 @@ export function buildTrackerActions(
       buttonVariant: source.showExportPanel ? "contained" : "outlined",
       buttonColor: "inherit",
       ariaExpanded: source.showExportPanel,
+      disabled: source.charactersCount === 0 || source.dungeonsCount === 0,
+    },
+    {
+      id: "gearPick",
+      label: t("toolbar.gearPick"),
+      onClick: source.toggleGearPickPanel,
+      selected: source.showGearPickPanel,
+      buttonVariant: source.showGearPickPanel ? "contained" : "outlined",
+      buttonColor: "inherit",
+      ariaExpanded: source.showGearPickPanel,
       disabled: source.charactersCount === 0 || source.dungeonsCount === 0,
     },
     {
