@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { getWotlkItemName } from "../../data/wotlk-item-names.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useItemTooltipLocale } from "../../hooks/use-item-tooltip-locale.ts";
@@ -82,12 +82,11 @@ export function GearPickPanel({
     [characters, dungeonToggles, visibleDungeons],
   );
 
-  useEffect(() => {
-    if (selection && !includedCharacterIds.has(selection.characterId)) {
-      setSelection(null);
-      setAssignmentsByItemId({});
-    }
-  }, [includedCharacterIds, selection]);
+  /** Ignore a stored pick when that character is on CD for every visible raid. */
+  const activeSelection =
+    selection !== null && includedCharacterIds.has(selection.characterId)
+      ? selection
+      : null;
 
   const handleSelectionChange = (next: GearPickCharacterSelection) => {
     setSelection(next);
@@ -96,26 +95,26 @@ export function GearPickPanel({
 
   const selectedCharacter = useMemo(
     () =>
-      selection
-        ? characters.find((character) => character.id === selection.characterId)
+      activeSelection
+        ? characters.find((character) => character.id === activeSelection.characterId)
         : undefined,
-    [characters, selection],
+    [characters, activeSelection],
   );
 
   const selectedSpecGear =
-    selection && selectedCharacter
-      ? selection.side === "main"
+    activeSelection && selectedCharacter
+      ? activeSelection.side === "main"
         ? selectedCharacter.mainSpec
         : selectedCharacter.offSpec
       : undefined;
 
   const gearPickItems = useMemo(() => {
-    if (!selectedCharacter || !selection || !selectedSpecGear) {
+    if (!selectedCharacter || !activeSelection || !selectedSpecGear) {
       return [];
     }
     return buildGearPickItems({
       character: selectedCharacter,
-      specSide: selection.side,
+      specSide: activeSelection.side,
       dungeons: visibleDungeons,
       getBisSlotMapForSpec,
       locale,
@@ -125,14 +124,14 @@ export function GearPickPanel({
     locale,
     selectedCharacter,
     selectedSpecGear,
-    selection,
+    activeSelection,
     visibleDungeons,
   ]);
 
   const softBudgetUsed = sumMySofts(assignmentsByItemId);
 
   const emptyItemsMessage = useMemo(() => {
-    if (!selection || !selectedCharacter) {
+    if (!activeSelection || !selectedCharacter) {
       return t("gearPickPanel.itemsEmptyNoSelection");
     }
     if (!selectedSpecGear) {
@@ -154,11 +153,11 @@ export function GearPickPanel({
     }
     return null;
   }, [
+    activeSelection,
     gearPickItems.length,
     getBisSlotMapForSpec,
     selectedCharacter,
     selectedSpecGear,
-    selection,
     t,
   ]);
 
@@ -253,7 +252,7 @@ export function GearPickPanel({
             <GearPickCharacterSelect
               characters={characters}
               includedCharacterIds={includedCharacterIds}
-              selection={selection}
+              selection={activeSelection}
               onSelectionChange={handleSelectionChange}
               t={t}
             />
