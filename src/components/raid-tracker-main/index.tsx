@@ -193,6 +193,7 @@ export function RaidTrackerMain({
             <GearPickPanel
               characters={domain.characters}
               visibleDungeons={tableState.sortedDungeons}
+              dungeonToggles={domain.dungeonToggles}
               dungeonNameSearch={tableState.dungeonNameSearch}
               totalDungeonCount={tableState.dungeonCount}
             />

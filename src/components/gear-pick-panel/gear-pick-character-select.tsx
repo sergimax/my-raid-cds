@@ -1,4 +1,4 @@
-import { Box, FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
+import { Box, FormControlLabel, Radio, RadioGroup, Tooltip, Typography } from "@mui/material";
 import type { ReactNode } from "react";
 import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
@@ -15,6 +15,7 @@ export type GearPickCharacterSelection = {
 
 type GearPickCharacterSelectProps = {
   characters: readonly CharacterRecord[];
+  includedCharacterIds: ReadonlySet<string>;
   selection: GearPickCharacterSelection | null;
   onSelectionChange: (selection: GearPickCharacterSelection) => void;
   t: TranslateFn;
@@ -38,15 +39,37 @@ function SpecCell({ children }: { children: ReactNode }) {
   );
 }
 
+function CooldownTooltip({
+  title,
+  children,
+}: {
+  title: string | null;
+  children: ReactNode;
+}) {
+  if (!title) {
+    return <>{children}</>;
+  }
+
+  return (
+    <Tooltip title={title}>
+      <Box component="span" sx={{ display: "inline-flex", minWidth: 0, width: "100%" }}>
+        {children}
+      </Box>
+    </Tooltip>
+  );
+}
+
 function GearPickSpecRadio({
   character,
   specGear,
   side,
+  cooldownInactive,
   t,
 }: {
   character: CharacterRecord;
   specGear: CharacterSpecGear;
   side: GearPickSpecSide;
+  cooldownInactive: boolean;
   t: TranslateFn;
 }) {
   const { locale } = useTranslation();
@@ -55,10 +78,10 @@ function GearPickSpecRadio({
     return null;
   }
 
-  return (
+  const control = (
     <FormControlLabel
       value={selectionValue({ characterId: character.id, side })}
-      control={<Radio size="small" />}
+      control={<Radio size="small" disabled={cooldownInactive} />}
       aria-label={t("gearPickPanel.selectSpecAria", {
         name: character.name,
         spec: getLocalizedSpecName(character.class.name, specGear.spec, locale),
@@ -71,15 +94,34 @@ function GearPickSpecRadio({
           iconSize={18}
           showSpecName={false}
           showDetailTooltip={false}
+          color={cooldownInactive ? "text.secondary" : "inherit"}
         />
       }
-      sx={{ mr: 0, width: "100%" }}
+      sx={{
+        mr: 0,
+        width: "100%",
+        ...(cooldownInactive && {
+          "& .MuiRadio-root": { opacity: 0.45 },
+          "& img": { opacity: 0.45, filter: "grayscale(1)" },
+        }),
+      }}
     />
+  );
+
+  return (
+    <CooldownTooltip
+      title={
+        cooldownInactive ? t("exportPanel.characterInactiveCooldownHint") : null
+      }
+    >
+      {control}
+    </CooldownTooltip>
   );
 }
 
 export function GearPickCharacterSelect({
   characters,
+  includedCharacterIds,
   selection,
   onSelectionChange,
   t,
@@ -99,7 +141,7 @@ export function GearPickCharacterSelect({
       value={selection ? selectionValue(selection) : ""}
       onChange={(event) => {
         const next = parseSelectionValue(event.target.value);
-        if (next) {
+        if (next && includedCharacterIds.has(next.characterId)) {
           onSelectionChange(next);
         }
       }}
@@ -123,21 +165,39 @@ export function GearPickCharacterSelect({
         const hasMain = Boolean(character.mainSpec);
         const hasOff = Boolean(character.offSpec);
         const hasNoSpecs = !hasMain && !hasOff;
+        const cooldownInactive = !includedCharacterIds.has(character.id);
+        const characterName = (
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: cooldownInactive ? 500 : 600,
+              whiteSpace: "nowrap",
+              color: cooldownInactive ? "text.disabled" : "text.primary",
+              fontStyle: cooldownInactive ? "italic" : "normal",
+            }}
+          >
+            {character.name}
+          </Typography>
+        );
 
         return (
           <Box key={character.id} sx={{ display: "contents" }}>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 600, whiteSpace: "nowrap" }}
+            <CooldownTooltip
+              title={
+                cooldownInactive
+                  ? t("exportPanel.characterInactiveCooldownHint")
+                  : null
+              }
             >
-              {character.name}
-            </Typography>
+              {characterName}
+            </CooldownTooltip>
             <SpecCell>
               {hasMain && character.mainSpec ? (
                 <GearPickSpecRadio
                   character={character}
                   specGear={character.mainSpec}
                   side="main"
+                  cooldownInactive={cooldownInactive}
                   t={t}
                 />
               ) : hasNoSpecs ? (
@@ -152,6 +212,7 @@ export function GearPickCharacterSelect({
                   character={character}
                   specGear={character.offSpec}
                   side="off"
+                  cooldownInactive={cooldownInactive}
                   t={t}
                 />
               ) : null}

@@ -1,12 +1,13 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getWotlkItemName } from "../../data/wotlk-item-names.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useItemTooltipLocale } from "../../hooks/use-item-tooltip-locale.ts";
 import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import type { CharacterRecord } from "../../types/characters.ts";
-import type { DungeonRecord } from "../../types/dungeons.ts";
+import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
+import { hasCharacterWithoutCdInVisibleDungeons } from "../../utils/build-export-status.ts";
 import { buildGearPickItems } from "../../utils/build-gear-pick-items.ts";
 import {
   clampAssignmentsToMaxSofts,
@@ -43,6 +44,7 @@ import { GearPickRules } from "./gear-pick-rules.tsx";
 export type GearPickPanelProps = {
   characters: readonly CharacterRecord[];
   visibleDungeons: readonly DungeonRecord[];
+  dungeonToggles: DungeonToggles;
   dungeonNameSearch: string;
   totalDungeonCount: number;
 };
@@ -50,6 +52,7 @@ export type GearPickPanelProps = {
 export function GearPickPanel({
   characters,
   visibleDungeons,
+  dungeonToggles,
   dungeonNameSearch,
   totalDungeonCount,
 }: GearPickPanelProps) {
@@ -63,6 +66,29 @@ export function GearPickPanel({
   const [rules, setRules] = useState<SoftRollRules>(DEFAULT_SOFT_ROLL_RULES);
   const [assignmentsByItemId, setAssignmentsByItemId] =
     useState<SoftAssignmentByItemId>({});
+
+  const includedCharacterIds = useMemo(
+    () =>
+      new Set(
+        characters
+          .filter((character) =>
+            hasCharacterWithoutCdInVisibleDungeons(
+              character.id,
+              visibleDungeons,
+              dungeonToggles,
+            ),
+          )
+          .map((character) => character.id),
+      ),
+    [characters, dungeonToggles, visibleDungeons],
+  );
+
+  useEffect(() => {
+    if (selection && !includedCharacterIds.has(selection.characterId)) {
+      setSelection(null);
+      setAssignmentsByItemId({});
+    }
+  }, [includedCharacterIds, selection]);
 
   const handleSelectionChange = (next: GearPickCharacterSelection) => {
     setSelection(next);
@@ -252,6 +278,7 @@ export function GearPickPanel({
           >
             <GearPickCharacterSelect
               characters={characters}
+              includedCharacterIds={includedCharacterIds}
               selection={selection}
               onSelectionChange={handleSelectionChange}
               t={t}
