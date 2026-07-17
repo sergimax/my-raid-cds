@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.46.0] - 2026-07-18
+
 ### Added
 
-- **Gear pick:** Toolbar panel to plan soft rolls for one character + spec — BiS/variant upgrades from table-filtered raids, soft-roll rules (max softs +100 or re-roll), my softs vs others’ histogram per item, and a copyable soft-call list (session-only).
+- **Soft pick:** Toolbar panel to plan soft reserves for one character + spec — BiS/variant upgrades from table-filtered raids, soft-reserve rules (max softs; re-roll or +100), my softs vs others’ histogram per item, and a copyable soft-reserve call list (session-only).
 
 ### Fixed
 
