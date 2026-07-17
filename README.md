@@ -2,7 +2,8 @@
 
 Web app to track which raid cooldowns each character has used per dungeon (WotLK-focused). Data persists in `localStorage`.
 
-![Version](https://img.shields.io/badge/version-1.46.0-purple)
+![App version](https://img.shields.io/badge/App_version-1.46.0-purple)
+![Game version](https://img.shields.io/badge/WoW-3.3.5a-brown)
 
 ## Features
 
