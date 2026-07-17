@@ -93,13 +93,16 @@ describe("filterDungeonsByName", () => {
     ]);
   });
 
-  it("filters by short name, size, and heroic suffix", () => {
+  it("filters by short name, size, and mode suffix", () => {
     expect(filterDungeonsByName(iccRaids, "ICC25H")).toEqual([iccRaids[3]]);
     expect(filterDungeonsByName(iccRaids, "ICC25h")).toEqual([iccRaids[3]]);
     expect(filterDungeonsByName(iccRaids, "ICC10H")).toEqual([iccRaids[1]]);
+    expect(filterDungeonsByName(iccRaids, "ICC25N")).toEqual([iccRaids[2]]);
+    expect(filterDungeonsByName(iccRaids, "ICC25n")).toEqual([iccRaids[2]]);
+    expect(filterDungeonsByName(iccRaids, "ICC10n")).toEqual([iccRaids[0]]);
   });
 
-  it("filters Russian rows with Cyrillic heroic suffix", () => {
+  it("filters Russian rows with Cyrillic mode suffixes", () => {
     const russianIccRaids = iccRaids.map((dungeon) =>
       createTestDungeon({
         ...dungeon,
@@ -112,6 +115,12 @@ describe("filterDungeonsByName", () => {
     ]);
     expect(filterDungeonsByName(russianIccRaids, "цлк25х")).toEqual([
       russianIccRaids[3],
+    ]);
+    expect(filterDungeonsByName(russianIccRaids, "ЦЛК25об")).toEqual([
+      russianIccRaids[2],
+    ]);
+    expect(filterDungeonsByName(russianIccRaids, "цлк25об")).toEqual([
+      russianIccRaids[2],
     ]);
   });
 });
