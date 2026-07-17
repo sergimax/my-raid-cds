@@ -1,8 +1,9 @@
 import { Box, FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
+import type { ReactNode } from "react";
 import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
-import type { CharacterRecord } from "../../types/characters.ts";
+import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
 import type { GearPickSpecSide } from "../../utils/build-gear-pick-items.ts";
 import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
 import { getExportFilterSpecsListMaxHeight } from "../export-panel/constants.ts";
@@ -31,14 +32,67 @@ function parseSelectionValue(value: string): GearPickCharacterSelection | null {
   return { characterId, side };
 }
 
+function SpecCell({ children }: { children: ReactNode }) {
+  return (
+    <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>{children}</Box>
+  );
+}
+
+function GearPickSpecRadio({
+  character,
+  specGear,
+  side,
+  t,
+}: {
+  character: CharacterRecord;
+  specGear: CharacterSpecGear;
+  side: GearPickSpecSide;
+  t: TranslateFn;
+}) {
+  const { locale } = useTranslation();
+
+  if (!character.class) {
+    return null;
+  }
+
+  return (
+    <FormControlLabel
+      value={selectionValue({ characterId: character.id, side })}
+      control={<Radio size="small" />}
+      aria-label={t("gearPickPanel.selectSpecAria", {
+        name: character.name,
+        spec: getLocalizedSpecName(character.class.name, specGear.spec, locale),
+      })}
+      label={
+        <CharacterSpecGearLabel
+          characterClass={character.class}
+          spec={specGear.spec}
+          gearScore={specGear.gearScore}
+          iconSize={18}
+          showSpecName={false}
+          showDetailTooltip={false}
+        />
+      }
+      sx={{ mr: 0, width: "100%" }}
+    />
+  );
+}
+
 export function GearPickCharacterSelect({
   characters,
   selection,
   onSelectionChange,
   t,
 }: GearPickCharacterSelectProps) {
-  const { locale } = useTranslation();
   const listMaxHeight = getExportFilterSpecsListMaxHeight();
+
+  if (characters.length === 0) {
+    return (
+      <Typography variant="body2" color="text.secondary">
+        {t("common.none")}
+      </Typography>
+    );
+  }
 
   return (
     <RadioGroup
@@ -50,9 +104,12 @@ export function GearPickCharacterSelect({
         }
       }}
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 0.75,
+        display: "grid",
+        gridTemplateColumns: "max-content minmax(6rem, 1fr) minmax(6rem, 1fr)",
+        columnGap: 1,
+        rowGap: 0.75,
+        alignItems: "center",
+        minWidth: 0,
         maxHeight: listMaxHeight,
         overflowY: "auto",
         pr: 0.5,
@@ -68,65 +125,37 @@ export function GearPickCharacterSelect({
         const hasNoSpecs = !hasMain && !hasOff;
 
         return (
-          <Box key={character.id} sx={{ display: "grid", gap: 0.25 }}>
-            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+          <Box key={character.id} sx={{ display: "contents" }}>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 600, whiteSpace: "nowrap" }}
+            >
               {character.name}
             </Typography>
-            {hasMain && character.mainSpec ? (
-              <FormControlLabel
-                value={selectionValue({ characterId: character.id, side: "main" })}
-                control={<Radio size="small" />}
-                aria-label={t("gearPickPanel.selectSpecAria", {
-                  name: character.name,
-                  spec: getLocalizedSpecName(
-                    character.class.name,
-                    character.mainSpec.spec,
-                    locale,
-                  ),
-                })}
-                label={
-                  <CharacterSpecGearLabel
-                    characterClass={character.class}
-                    spec={character.mainSpec.spec}
-                    gearScore={character.mainSpec.gearScore}
-                    iconSize={18}
-                    showSpecName={false}
-                    showDetailTooltip={false}
-                  />
-                }
-                sx={{ mr: 0, ml: 0 }}
-              />
-            ) : null}
-            {hasOff && character.offSpec ? (
-              <FormControlLabel
-                value={selectionValue({ characterId: character.id, side: "off" })}
-                control={<Radio size="small" />}
-                aria-label={t("gearPickPanel.selectSpecAria", {
-                  name: character.name,
-                  spec: getLocalizedSpecName(
-                    character.class.name,
-                    character.offSpec.spec,
-                    locale,
-                  ),
-                })}
-                label={
-                  <CharacterSpecGearLabel
-                    characterClass={character.class}
-                    spec={character.offSpec.spec}
-                    gearScore={character.offSpec.gearScore}
-                    iconSize={18}
-                    showSpecName={false}
-                    showDetailTooltip={false}
-                  />
-                }
-                sx={{ mr: 0, ml: 0 }}
-              />
-            ) : null}
-            {hasNoSpecs ? (
-              <Typography variant="caption" color="text.secondary">
-                {t("common.none")}
-              </Typography>
-            ) : null}
+            <SpecCell>
+              {hasMain && character.mainSpec ? (
+                <GearPickSpecRadio
+                  character={character}
+                  specGear={character.mainSpec}
+                  side="main"
+                  t={t}
+                />
+              ) : hasNoSpecs ? (
+                <Typography variant="caption" color="text.secondary">
+                  {t("common.none")}
+                </Typography>
+              ) : null}
+            </SpecCell>
+            <SpecCell>
+              {hasOff && character.offSpec ? (
+                <GearPickSpecRadio
+                  character={character}
+                  specGear={character.offSpec}
+                  side="off"
+                  t={t}
+                />
+              ) : null}
+            </SpecCell>
           </Box>
         );
       })}
