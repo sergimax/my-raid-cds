@@ -14,6 +14,7 @@ import { DungeonForm } from "../dungeon-form/index.tsx";
 import { ExportPanel, type ExportPanelHandle } from "../export-panel/index.tsx";
 import { ExportPanelHeaderActions } from "../export-panel/export-panel-header-actions.tsx";
 import { GearHintLegend } from "../gear-hint-legend/index.tsx";
+import { GearPickPanel } from "../gear-pick-panel/index.tsx";
 import { RaidTrackerTable } from "../raid-tracker-table/index.tsx";
 import { useRaidTrackerTableState } from "../raid-tracker-table/use-raid-tracker-table-state.ts";
 import { TrackerToolbarPanel } from "../tracker-toolbar-panel/index.tsx";
@@ -24,6 +25,8 @@ type RaidTrackerMainProps = {
   forms: TrackerFormsState;
   showExportPanel: boolean;
   closeExportPanel: () => void;
+  showGearPickPanel: boolean;
+  closeGearPickPanel: () => void;
   showBisListsPanel: boolean;
   closeBisListsPanel: () => void;
 };
@@ -48,6 +51,8 @@ export function RaidTrackerMain({
   forms,
   showExportPanel,
   closeExportPanel,
+  showGearPickPanel,
+  closeGearPickPanel,
   showBisListsPanel,
   closeBisListsPanel,
 }: RaidTrackerMainProps) {
@@ -77,12 +82,18 @@ export function RaidTrackerMain({
     showDungeonForm: forms.showDungeonForm,
     showBisListsPanel,
     showExportPanel,
+    showGearPickPanel,
   });
 
   const closeBisListsPanelWithTooltips = useCallback(() => {
     hideExternalWowTooltips();
     closeBisListsPanel();
   }, [closeBisListsPanel]);
+
+  const closeGearPickPanelWithTooltips = useCallback(() => {
+    hideExternalWowTooltips();
+    closeGearPickPanel();
+  }, [closeGearPickPanel]);
 
   const toolbarPanelMeta = useMemo(() => {
     if (!toolbarPanelId) {
@@ -94,6 +105,7 @@ export function RaidTrackerMain({
       closeDungeonForm: forms.closeDungeonForm,
       closeBisListsPanel: closeBisListsPanelWithTooltips,
       closeExportPanel,
+      closeGearPickPanel: closeGearPickPanelWithTooltips,
     });
 
     if (toolbarPanelId === "export") {
@@ -111,6 +123,7 @@ export function RaidTrackerMain({
   }, [
     closeBisListsPanelWithTooltips,
     closeExportPanel,
+    closeGearPickPanelWithTooltips,
     forms.closeCharacterForm,
     forms.closeDungeonForm,
     t,
@@ -168,6 +181,16 @@ export function RaidTrackerMain({
           {showExportPanel ? (
             <ExportPanel
               ref={exportPanelRef}
+              characters={domain.characters}
+              visibleDungeons={tableState.sortedDungeons}
+              dungeonToggles={domain.dungeonToggles}
+              dungeonNameSearch={tableState.dungeonNameSearch}
+              totalDungeonCount={tableState.dungeonCount}
+            />
+          ) : null}
+
+          {showGearPickPanel ? (
+            <GearPickPanel
               characters={domain.characters}
               visibleDungeons={tableState.sortedDungeons}
               dungeonToggles={domain.dungeonToggles}

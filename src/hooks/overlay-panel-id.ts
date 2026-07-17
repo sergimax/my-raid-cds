@@ -1,1 +1,6 @@
-export type OverlayPanelId = "character" | "dungeon" | "export" | "bis";
+export type OverlayPanelId =
+  | "character"
+  | "dungeon"
+  | "export"
+  | "gear"
+  | "bis";
