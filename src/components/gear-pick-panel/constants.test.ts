@@ -31,12 +31,15 @@ describe("getGearPickGridTemplateAreas", () => {
 });
 
 describe("GEAR_PICK_COPY_BLOCK_SPAN", () => {
-  it("is a 1×2 filter unit", () => {
+  it("is a 1×2 filter unit including the inter-column gap", () => {
     expect(GEAR_PICK_COPY_BLOCK_SPAN).toEqual({
       heightUnits: 1,
       widthUnits: 2,
     });
-    expect(getGearPickCopyBlockMaxWidth()).toBe(EXPORT_FILTER_UNIT_WIDTH * 2);
+    // Two unit columns + one 12px gap — same footprint as rules + character specs.
+    expect(getGearPickCopyBlockMaxWidth()).toBe(
+      EXPORT_FILTER_UNIT_WIDTH * 2 + 12,
+    );
     expect(getGearPickCopyBlockMaxHeight()).toBe(EXPORT_FILTER_UNIT_HEIGHT);
   });
 });
@@ -52,7 +55,7 @@ describe("getGearPickGridTemplateColumns", () => {
   it("keeps equal unit columns and a 1×2 copy column on wide", () => {
     const unitColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
     expect(getGearPickGridTemplateColumns("wide")).toBe(
-      `${unitColumn} ${unitColumn} minmax(0, 1fr) minmax(0, ${EXPORT_FILTER_UNIT_WIDTH * 2}px)`,
+      `${unitColumn} ${unitColumn} minmax(0, 1fr) minmax(0, ${EXPORT_FILTER_UNIT_WIDTH * 2 + 12}px)`,
     );
   });
 });
