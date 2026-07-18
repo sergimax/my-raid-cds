@@ -8,7 +8,8 @@ import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
 import {
-  evaluateCharacterGearHints,
+  evaluateCharacterGearHintsFromTints,
+  evaluateCharacterGearHintTints,
   hasAnyGearHint,
 } from "../../utils/character-gear-hints.ts";
 import { getGearHintCellDisplay } from "../../utils/gear-upgrade-hint.ts";
@@ -67,15 +68,14 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
 }: CharacterToggleCellProps) {
   const { t } = useTranslation();
 
-  const gearHints = useMemo(
+  const gearHintTints = useMemo(
     () =>
-      evaluateCharacterGearHints(
+      evaluateCharacterGearHintTints(
         character,
         dungeon,
         getBisSlotMapForSpec,
-        locale,
       ),
-    [character, dungeon, getBisSlotMapForSpec, locale],
+    [character, dungeon, getBisSlotMapForSpec],
   );
 
   const isDungeonMarkedComplete = isCooldownOn(
@@ -84,31 +84,46 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
     dungeon.id,
   );
 
-  const hasGearHints = hasAnyGearHint(gearHints);
+  const hasGearHints = hasAnyGearHint(gearHintTints);
   const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
 
-  const mainDisplay = gearHints.main
-    ? getGearHintCellDisplay(gearHints.main.gearHint)
+  const mainDisplay = gearHintTints.main
+    ? getGearHintCellDisplay(gearHintTints.main.gearHint)
     : null;
-  const offDisplay = gearHints.off
-    ? getGearHintCellDisplay(gearHints.off.gearHint)
+  const offDisplay = gearHintTints.off
+    ? getGearHintCellDisplay(gearHintTints.off.gearHint)
     : null;
   const hasDualSpecGear = Boolean(character.mainSpec && character.offSpec);
+
+  const mainKind = mainDisplay?.kind;
+  const mainLevel = mainDisplay?.level;
+  const offKind = offDisplay?.kind;
+  const offLevel = offDisplay?.level;
 
   const cellHintSx = useMemo(() => {
     if (isDungeonMarkedComplete) {
       return {};
     }
+    const main =
+      mainKind !== undefined && mainLevel !== undefined
+        ? { kind: mainKind, level: mainLevel }
+        : null;
+    const off =
+      offKind !== undefined && offLevel !== undefined
+        ? { kind: offKind, level: offLevel }
+        : null;
     if (hasDualSpecGear) {
-      return gearUpgradeHintDualCellSx(mainDisplay, offDisplay, dungeon.itemLevel);
+      return gearUpgradeHintDualCellSx(main, off, dungeon.itemLevel);
     }
-    return gearUpgradeHintCellSx(mainDisplay ?? offDisplay, dungeon.itemLevel);
+    return gearUpgradeHintCellSx(main ?? off, dungeon.itemLevel);
   }, [
     dungeon.itemLevel,
     hasDualSpecGear,
     isDungeonMarkedComplete,
-    mainDisplay,
-    offDisplay,
+    mainKind,
+    mainLevel,
+    offKind,
+    offLevel,
   ]);
 
   const [gearHintTooltipOpen, setGearHintTooltipOpen] = useState(false);
@@ -128,17 +143,34 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
     setGearHintTooltipOpen(false);
   }, []);
 
-  const tooltipTitle = useMemo(
-    () => (
+  const tooltipTitle = useMemo(() => {
+    if (!gearHintTooltipOpen || isDungeonMarkedComplete) {
+      return null;
+    }
+
+    const gearHints = evaluateCharacterGearHintsFromTints(
+      gearHintTints,
+      dungeon,
+      locale,
+    );
+
+    return (
       <GearHintTooltipContent
         gearHints={gearHints}
         characterClassName={character.class?.name}
         locale={locale}
         t={t}
       />
-    ),
-    [character.class?.name, gearHints, locale, t],
-  );
+    );
+  }, [
+    character.class?.name,
+    dungeon,
+    gearHintTints,
+    gearHintTooltipOpen,
+    isDungeonMarkedComplete,
+    locale,
+    t,
+  ]);
 
   const toggleSwitch = (
     <Switch
@@ -185,7 +217,7 @@ export const CharacterToggleCell = memo(function CharacterToggleCell({
                 sx: { maxWidth: "none", p: 1 },
               },
             }}
-            title={tooltipTitle}
+            title={tooltipTitle ?? ""}
           >
             <span>{toggleSwitch}</span>
           </Tooltip>

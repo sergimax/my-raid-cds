@@ -1,7 +1,7 @@
 import type { AppLocale } from "../i18n/types.ts";
 import type { CharacterRecord, ClassName } from "../types/characters.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
-import { evaluateCharacterGearHints } from "./character-gear-hints.ts";
+import { evaluateSpecGearHint } from "./character-gear-hints.ts";
 import { formatDungeonExportLabel } from "./format-dungeon-label.ts";
 import type { BisSlotMap } from "./bis-lists.ts";
 
@@ -79,16 +79,13 @@ export function buildGearPickItems({
   const byItemId = new Map<number, GearPickItem>();
 
   for (const dungeon of dungeons) {
-    const hints = evaluateCharacterGearHints(
-      character,
+    const specHint = evaluateSpecGearHint(
+      specGear,
+      className,
       dungeon,
       getBisSlotMapForSpec,
       locale,
     );
-    const specHint = specSide === "main" ? hints.main : hints.off;
-    if (!specHint) {
-      continue;
-    }
 
     const raidLabel = formatDungeonExportLabel(dungeon, locale);
 

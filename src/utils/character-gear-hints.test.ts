@@ -5,6 +5,7 @@ import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts
 import { buildBisSlotMap } from "./bis-lists.ts";
 import {
   evaluateCharacterGearHints,
+  evaluateCharacterGearHintTints,
   hasAnyGearHint,
   type CharacterGearHints,
 } from "./character-gear-hints.ts";
@@ -90,6 +91,22 @@ describe("hasAnyGearHint", () => {
 
     expect(hasAnyGearHint(hints)).toBe(true);
     expect(getGearHintCellDisplay(hints.main!.gearHint)).toBeNull();
+  });
+});
+
+describe("evaluateCharacterGearHintTints", () => {
+  it("skips boss loot grouping on the tint path", () => {
+    const tints = evaluateCharacterGearHintTints(
+      createTestCharacter({
+        class: deathKnightClass,
+        mainSpec: { spec: "Unholy", gearItems: [{ slot: 1, id: 37646 }] },
+      }),
+      icc25Heroic,
+      getUnholyBisSlotMap,
+    );
+
+    expect(tints.main?.gearHint).toBeDefined();
+    expect(tints.main).not.toHaveProperty("bisBossLootGroups");
   });
 });
 
