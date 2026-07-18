@@ -1,16 +1,25 @@
 import { Box } from "@mui/material";
 import type { ReactNode } from "react";
-import type { GearPickFilterGridAreaId } from "./constants.ts";
+import {
+  GEAR_PICK_SIDE_BY_SIDE_MQ_KEY,
+  type GearPickGridAreaId,
+} from "./constants.ts";
 
 type GearPickFilterBlockProps = {
-  gridArea: GearPickFilterGridAreaId;
+  gridArea: GearPickGridAreaId;
   children: ReactNode;
+  /**
+   * Size to content from md until the wide breakpoint (copy row under softs).
+   * At ≥1600px still fills the 2-row grid area.
+   */
+  contentSizedUntilWide?: boolean;
 };
 
-/** Same sizing behavior as Character pick `ExportFilterBlock`. */
+/** Positions a Soft pick panel region in the responsive grid. */
 export function GearPickFilterBlock({
   gridArea,
   children,
+  contentSizedUntilWide = false,
 }: GearPickFilterBlockProps) {
   return (
     <Box
@@ -19,8 +28,20 @@ export function GearPickFilterBlock({
         minWidth: 0,
         minHeight: 0,
         display: "flex",
-        height: { xs: "auto", md: "100%" },
-        overflow: { xs: "visible", md: "hidden" },
+        height: contentSizedUntilWide
+          ? {
+              xs: "auto",
+              md: "auto",
+              [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: "100%",
+            }
+          : { xs: "auto", md: "100%" },
+        overflow: contentSizedUntilWide
+          ? {
+              xs: "visible",
+              md: "visible",
+              [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: "hidden",
+            }
+          : { xs: "visible", md: "hidden" },
         maxWidth: { xs: "100%", md: "none" },
         "& > *": {
           flex: 1,
