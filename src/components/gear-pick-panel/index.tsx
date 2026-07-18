@@ -326,7 +326,7 @@ export function GearPickPanel({
         </ExportFilterSection>
       </GearPickFilterBlock>
 
-      <GearPickFilterBlock gridArea="copy" contentSizedUntilWide>
+      <GearPickFilterBlock gridArea="copy" copyBlockSized>
         <GearPickCopyBlock
           copyText={copyText}
           hasSoftCalls={copyItems.length > 0}
