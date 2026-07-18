@@ -39,10 +39,27 @@ export function useBisListsDomain() {
     [localState],
   );
 
+  /** Rebuild cache when local BiS state changes; reuse Maps across cell evaluations. */
+  const bisSlotMapCache = useMemo(() => {
+    const cache = new Map<string, BisSlotMap>();
+    return {
+      get(className: ClassName, spec: string): BisSlotMap {
+        const storageKey = specBisStorageKey(className, spec);
+        const cached = cache.get(storageKey);
+        if (cached) {
+          return cached;
+        }
+        const resolved = resolveBisSlotMap(className, spec, localState);
+        cache.set(storageKey, resolved);
+        return resolved;
+      },
+    };
+  }, [localState]);
+
   const getBisSlotMapForSpec = useCallback(
     (className: ClassName, spec: string): BisSlotMap =>
-      resolveBisSlotMap(className, spec, localState),
-    [localState],
+      bisSlotMapCache.get(className, spec),
+    [bisSlotMapCache],
   );
 
   const selectPreset = useCallback(

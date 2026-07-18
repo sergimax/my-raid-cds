@@ -155,23 +155,42 @@ export function useTrackerDomain() {
     [dungeonToggles],
   );
 
-  return {
-    characters,
-    dungeons,
-    dungeonToggles,
-    storageError,
-    addCharacter,
-    updateCharacter,
-    addDungeon,
-    updateDungeon,
-    handleDungeonToggle,
-    handleDeleteCharacter,
-    handleDeleteDungeon,
-    handleAddFromTemplate,
-    handleResetAllToggles,
-    handleResetCharacterToggles,
-    canResetAllToggles,
-  };
+  return useMemo(
+    () => ({
+      characters,
+      dungeons,
+      dungeonToggles,
+      storageError,
+      addCharacter,
+      updateCharacter,
+      addDungeon,
+      updateDungeon,
+      handleDungeonToggle,
+      handleDeleteCharacter,
+      handleDeleteDungeon,
+      handleAddFromTemplate,
+      handleResetAllToggles,
+      handleResetCharacterToggles,
+      canResetAllToggles,
+    }),
+    [
+      addCharacter,
+      addDungeon,
+      canResetAllToggles,
+      characters,
+      dungeonToggles,
+      dungeons,
+      handleAddFromTemplate,
+      handleDeleteCharacter,
+      handleDeleteDungeon,
+      handleDungeonToggle,
+      handleResetAllToggles,
+      handleResetCharacterToggles,
+      storageError,
+      updateCharacter,
+      updateDungeon,
+    ],
+  );
 }
 
 export type TrackerDomainStore = ReturnType<typeof useTrackerDomain>;

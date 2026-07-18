@@ -15,16 +15,25 @@ import {
   type BossBisLootGroup,
 } from "./item-drop-sources.ts";
 
-export type SpecGearHint = {
+export type SpecGearHintCore = {
   specGear: CharacterSpecGear;
   gearHint: GearUpgradeHint;
+  /** Evaluated with tint (needed for tooltip eligibility when only tokens apply). */
   tierSetHint: TierSetHint;
+};
+
+export type SpecGearHint = SpecGearHintCore & {
   /** Tier 1: exact BiS list items that drop in this raid row. */
   bisBossLootGroups: BossBisLootGroup[];
   /** Tier 2: normal (non-list) name variants of BiS items that drop here. */
   bisVariantBossLootGroups: BossBisLootGroup[];
   /** Tier 3: spec-relevant raid loot upgrades excluding BiS targets. */
   ilvlBossLootGroups: BossBisLootGroup[];
+};
+
+export type CharacterGearHintTints = {
+  main?: SpecGearHintCore;
+  off?: SpecGearHintCore;
 };
 
 export type CharacterGearHints = {
@@ -37,16 +46,18 @@ type GetBisSlotMapForSpec = (
   spec: string,
 ) => BisSlotMap;
 
-function evaluateSpecGearHint(
+type GearHintDungeon = Pick<
+  DungeonRecord,
+  "name" | "shortName" | "raidKey" | "itemLevel" | "size" | "difficulty"
+>;
+
+/** Tint-level evaluation: gear hint tracks + tier tokens (no boss grouping). */
+export function evaluateSpecGearHintCore(
   specGear: CharacterSpecGear,
   className: ClassName,
-  dungeon: Pick<
-    DungeonRecord,
-    "name" | "shortName" | "raidKey" | "itemLevel" | "size" | "difficulty"
-  >,
+  dungeon: GearHintDungeon,
   getBisSlotMapForSpec: GetBisSlotMapForSpec,
-  locale: AppLocale,
-): SpecGearHint {
+): SpecGearHintCore {
   const slotMap = getBisSlotMapForSpec(className, specGear.spec);
   const bisSlotMap = slotMap.size > 0 ? slotMap : undefined;
   const equipContext = { className, spec: specGear.spec };
@@ -57,8 +68,26 @@ function evaluateSpecGearHint(
     equipContext,
   );
 
+  return {
+    specGear,
+    gearHint,
+    tierSetHint: evaluateTierSetHint(
+      specGear.gearItems,
+      dungeon,
+      bisSlotMap,
+      className,
+    ),
+  };
+}
+
+/** Attach boss-grouped loot lists for tooltip / Soft pick display. */
+export function withBossLootGroups(
+  core: SpecGearHintCore,
+  dungeon: GearHintDungeon,
+  locale: AppLocale,
+): SpecGearHint {
   const { exact: missingExactBisItemIds, variant: missingVariantBisItemIds } =
-    collectMissingBisLootItemIds(gearHint);
+    collectMissingBisLootItemIds(core.gearHint);
 
   const bisBossLootGroups =
     missingExactBisItemIds.length > 0
@@ -78,7 +107,7 @@ function evaluateSpecGearHint(
         )
       : [];
 
-  const missingIlvlLootItemIds = collectMissingIlvlLootItemIds(gearHint);
+  const missingIlvlLootItemIds = collectMissingIlvlLootItemIds(core.gearHint);
   const ilvlBossLootGroups =
     missingIlvlLootItemIds.length > 0
       ? groupBisItemIdsByBossForDungeonWithFallback(
@@ -89,77 +118,118 @@ function evaluateSpecGearHint(
       : [];
 
   return {
-    specGear,
-    gearHint,
-    tierSetHint: evaluateTierSetHint(
-      specGear.gearItems,
-      dungeon,
-      bisSlotMap,
-      className,
-    ),
+    ...core,
     bisBossLootGroups,
     bisVariantBossLootGroups,
     ilvlBossLootGroups,
   };
 }
 
-export function evaluateCharacterGearHints(
-  character: CharacterRecord,
-  dungeon: Pick<
-    DungeonRecord,
-    "name" | "shortName" | "raidKey" | "itemLevel" | "size" | "difficulty"
-  >,
+/** Full single-spec evaluation (tint + boss groups). */
+export function evaluateSpecGearHint(
+  specGear: CharacterSpecGear,
+  className: ClassName,
+  dungeon: GearHintDungeon,
   getBisSlotMapForSpec: GetBisSlotMapForSpec,
   locale: AppLocale,
-): CharacterGearHints {
+): SpecGearHint {
+  return withBossLootGroups(
+    evaluateSpecGearHintCore(specGear, className, dungeon, getBisSlotMapForSpec),
+    dungeon,
+    locale,
+  );
+}
+
+/** Per-cell tint path: both specs, no boss grouping. */
+export function evaluateCharacterGearHintTints(
+  character: CharacterRecord,
+  dungeon: GearHintDungeon,
+  getBisSlotMapForSpec: GetBisSlotMapForSpec,
+): CharacterGearHintTints {
   const className = character.class?.name;
   if (!className) {
     return {};
   }
 
-  const hints: CharacterGearHints = {};
+  const tints: CharacterGearHintTints = {};
 
   if (character.mainSpec) {
-    hints.main = evaluateSpecGearHint(
+    tints.main = evaluateSpecGearHintCore(
       character.mainSpec,
       className,
       dungeon,
       getBisSlotMapForSpec,
-      locale,
     );
   }
 
   if (character.offSpec) {
-    hints.off = evaluateSpecGearHint(
+    tints.off = evaluateSpecGearHintCore(
       character.offSpec,
       className,
       dungeon,
       getBisSlotMapForSpec,
-      locale,
     );
   }
 
+  return tints;
+}
+
+/** Enrich tint cores with boss loot for tooltip content. */
+export function evaluateCharacterGearHintsFromTints(
+  tints: CharacterGearHintTints,
+  dungeon: GearHintDungeon,
+  locale: AppLocale,
+): CharacterGearHints {
+  const hints: CharacterGearHints = {};
+  if (tints.main) {
+    hints.main = withBossLootGroups(tints.main, dungeon, locale);
+  }
+  if (tints.off) {
+    hints.off = withBossLootGroups(tints.off, dungeon, locale);
+  }
   return hints;
 }
 
-export function hasAnyGearHint(hints: CharacterGearHints): boolean {
-  const mainActive =
-    hints.main &&
-    (hints.main.gearHint.bis.level > 0 ||
-      hints.main.gearHint.bisVariant.level > 0 ||
-      hints.main.gearHint.ilvl.level > 0 ||
-      hints.main.tierSetHint.tokenNeeds.length > 0 ||
-      hints.main.bisBossLootGroups.length > 0 ||
-      hints.main.bisVariantBossLootGroups.length > 0 ||
-      hints.main.ilvlBossLootGroups.length > 0);
-  const offActive =
-    hints.off &&
-    (hints.off.gearHint.bis.level > 0 ||
-      hints.off.gearHint.bisVariant.level > 0 ||
-      hints.off.gearHint.ilvl.level > 0 ||
-      hints.off.tierSetHint.tokenNeeds.length > 0 ||
-      hints.off.bisBossLootGroups.length > 0 ||
-      hints.off.bisVariantBossLootGroups.length > 0 ||
-      hints.off.ilvlBossLootGroups.length > 0);
-  return Boolean(mainActive || offActive);
+export function evaluateCharacterGearHints(
+  character: CharacterRecord,
+  dungeon: GearHintDungeon,
+  getBisSlotMapForSpec: GetBisSlotMapForSpec,
+  locale: AppLocale,
+): CharacterGearHints {
+  return evaluateCharacterGearHintsFromTints(
+    evaluateCharacterGearHintTints(character, dungeon, getBisSlotMapForSpec),
+    dungeon,
+    locale,
+  );
+}
+
+function specHintIsActive(
+  hint:
+    | SpecGearHintCore
+    | SpecGearHint
+    | undefined,
+): boolean {
+  if (!hint) {
+    return false;
+  }
+
+  const hasBossGroups =
+    "bisBossLootGroups" in hint &&
+    (hint.bisBossLootGroups.length > 0 ||
+      hint.bisVariantBossLootGroups.length > 0 ||
+      hint.ilvlBossLootGroups.length > 0);
+
+  return (
+    hint.gearHint.bis.level > 0 ||
+    hint.gearHint.bisVariant.level > 0 ||
+    hint.gearHint.ilvl.level > 0 ||
+    hint.tierSetHint.tokenNeeds.length > 0 ||
+    hasBossGroups
+  );
+}
+
+export function hasAnyGearHint(
+  hints: CharacterGearHints | CharacterGearHintTints,
+): boolean {
+  return Boolean(specHintIsActive(hints.main) || specHintIsActive(hints.off));
 }

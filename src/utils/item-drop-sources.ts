@@ -23,13 +23,16 @@ type DungeonSourceMatch = Pick<
   "name" | "shortName" | "raidKey" | "size" | "difficulty"
 >;
 
-function dungeonTemplateHasHeroic(raidKey: RaidKey, size: DungeonSize): boolean {
-  return DungeonList.some(
+const heroicDungeonTemplateKeys = new Set(
+  DungeonList.filter(
     (row) =>
-      row.raidKey === raidKey &&
-      row.size === size &&
+      row.raidKey !== undefined &&
       row.difficulty === DungeonDifficulty.HEROIC,
-  );
+  ).map((row) => `${row.raidKey}:${row.size}`),
+);
+
+function dungeonTemplateHasHeroic(raidKey: RaidKey, size: DungeonSize): boolean {
+  return heroicDungeonTemplateKeys.has(`${raidKey}:${size}`);
 }
 
 export function dungeonMatchesDropSource(

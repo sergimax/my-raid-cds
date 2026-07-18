@@ -23,6 +23,8 @@ export type ItemDropSource = {
 
 const dropSourcesByItemId = dropSourcesJson as Record<string, BundledItemDropSourceRow[]>;
 
+const mappedDropSourcesByItemId = new Map<number, readonly ItemDropSource[]>();
+
 function toItemDropSource(row: BundledItemDropSourceRow): ItemDropSource {
   return {
     bossName: row.b,
@@ -34,9 +36,19 @@ function toItemDropSource(row: BundledItemDropSourceRow): ItemDropSource {
 
 /** Boss / raid drop sources for a bundled item id (empty when unknown or non-raid). */
 export function getItemDropSources(itemId: number): readonly ItemDropSource[] {
+  const cached = mappedDropSourcesByItemId.get(itemId);
+  if (cached !== undefined) {
+    return cached;
+  }
+
   const rows = dropSourcesByItemId[String(itemId)];
   if (!rows || rows.length === 0) {
-    return [];
+    const empty: readonly ItemDropSource[] = [];
+    mappedDropSourcesByItemId.set(itemId, empty);
+    return empty;
   }
-  return rows.map(toItemDropSource);
+
+  const mapped = rows.map(toItemDropSource);
+  mappedDropSourcesByItemId.set(itemId, mapped);
+  return mapped;
 }
