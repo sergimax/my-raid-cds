@@ -196,21 +196,23 @@ export function GearPickPanel({
         gridTemplateColumns: {
           xs: "minmax(0, 1fr)",
           md: getGearPickGridTemplateColumns("md"),
-          [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: getGearPickGridTemplateColumns("wide"),
         },
         gridTemplateRows: {
           xs: "auto",
           md: getGearPickGridTemplateRows("md"),
-          [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: getGearPickGridTemplateRows("wide"),
         },
         gridTemplateAreas: {
           xs: "none",
           md: getGearPickGridTemplateAreas("md"),
-          [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: getGearPickGridTemplateAreas("wide"),
         },
         gap: EXPORT_FILTER_GRID_GAP_SPACING,
         alignItems: "stretch",
         width: "100%",
+        [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: {
+          gridTemplateColumns: getGearPickGridTemplateColumns("wide"),
+          gridTemplateRows: getGearPickGridTemplateRows("wide"),
+          gridTemplateAreas: getGearPickGridTemplateAreas("wide"),
+        },
       }}
     >
       <GearPickFilterBlock gridArea="rules">

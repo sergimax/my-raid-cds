@@ -29,18 +29,10 @@ export function GearPickFilterBlock({
         minHeight: 0,
         display: "flex",
         height: contentSizedUntilWide
-          ? {
-              xs: "auto",
-              md: "auto",
-              [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: "100%",
-            }
+          ? { xs: "auto", md: "auto" }
           : { xs: "auto", md: "100%" },
         overflow: contentSizedUntilWide
-          ? {
-              xs: "visible",
-              md: "visible",
-              [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: "hidden",
-            }
+          ? { xs: "visible", md: "visible" }
           : { xs: "visible", md: "hidden" },
         maxWidth: { xs: "100%", md: "none" },
         "& > *": {
@@ -48,6 +40,14 @@ export function GearPickFilterBlock({
           minHeight: 0,
           width: "100%",
         },
+        ...(contentSizedUntilWide
+          ? {
+              [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: {
+                height: "100%",
+                overflow: "hidden",
+              },
+            }
+          : null),
       }}
     >
       {children}
