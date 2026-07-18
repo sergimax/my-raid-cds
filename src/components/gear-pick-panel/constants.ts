@@ -38,7 +38,10 @@ export const GEAR_PICK_COPY_BLOCK_SPAN = {
   widthUnits: 2,
 } as const;
 
-/** Width of a copy span = unit columns + gaps between them (matches two 1×1 blocks). */
+/**
+ * Width of a 1×2 copy span: `widthUnits × unit + (widthUnits − 1) × gap`.
+ * For the default 1×2 this is 600 + 12 = 612 (not 600).
+ */
 export function getGearPickCopyBlockMaxWidth(
   gridColumnGapPx = GEAR_PICK_GRID_GAP_PX,
 ): number {
