@@ -3,6 +3,7 @@ import {
   EXPORT_FILTER_UNIT_HEIGHT,
   EXPORT_FILTER_UNIT_WIDTH,
   getExportFilterGridTemplateRows,
+  getFilterUnitColumnTemplate,
 } from "../export-panel/constants.ts";
 
 /** Pixel gap between Soft pick grid tracks (`gap: 1.5` → 12px at default spacing). */
@@ -74,8 +75,8 @@ export function getGearPickGridTemplateAreas(layout: GearPickGridLayout): string
 export function getGearPickGridTemplateColumns(
   layout: GearPickGridLayout,
 ): string {
-  /** Same unit width as rules / raids — Character & spec is a true 2×1. */
-  const unitColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
+  /** Same unit column as Character pick (rules / raids / character specs). */
+  const unitColumn = getFilterUnitColumnTemplate();
   const flexibleColumn = "minmax(0, 1fr)";
   const copyColumn = `minmax(0, ${getGearPickCopyBlockMaxWidth()}px)`;
 

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   EXPORT_FILTER_UNIT_HEIGHT,
   EXPORT_FILTER_UNIT_WIDTH,
+  getFilterUnitColumnTemplate,
 } from "../export-panel/constants.ts";
 import {
   GEAR_PICK_COPY_BLOCK_SPAN,
@@ -45,15 +46,15 @@ describe("GEAR_PICK_COPY_BLOCK_SPAN", () => {
 });
 
 describe("getGearPickGridTemplateColumns", () => {
-  it("uses equal unit-width columns for rules and character specs on medium", () => {
-    const unitColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
+  it("uses the shared unit column for rules and character specs on medium", () => {
+    const unitColumn = getFilterUnitColumnTemplate();
     expect(getGearPickGridTemplateColumns("md")).toBe(
       `${unitColumn} ${unitColumn} minmax(0, 1fr)`,
     );
   });
 
-  it("keeps equal unit columns and a 1×2 copy column on wide", () => {
-    const unitColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
+  it("keeps shared unit columns and a 1×2 copy column on wide", () => {
+    const unitColumn = getFilterUnitColumnTemplate();
     expect(getGearPickGridTemplateColumns("wide")).toBe(
       `${unitColumn} ${unitColumn} minmax(0, 1fr) minmax(0, ${EXPORT_FILTER_UNIT_WIDTH * 2 + 12}px)`,
     );

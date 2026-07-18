@@ -5,15 +5,17 @@ import {
   EXPORT_PANEL_SIDE_BY_SIDE_MIN_PX,
   EXPORT_PANEL_SIDE_BY_SIDE_MQ,
   EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY,
-  EXPORT_FILTER_SPECS_UNIT_WIDTH,
   EXPORT_FILTER_SPECS_VISIBLE_ROW_COUNT,
   EXPORT_FILTER_UNIT_HEIGHT,
   EXPORT_FILTER_UNIT_WIDTH,
   getExportFilterBlockHeight,
   getExportFilterGridHeight,
+  getExportFilterGridMaxWidth,
   getExportFilterGridTemplateAreas,
+  getExportFilterGridTemplateColumns,
   getExportFilterGridTemplateRows,
   getExportFilterSpecsListMaxHeight,
+  getFilterUnitColumnTemplate,
 } from "./constants.ts";
 
 describe("getExportFilterGridTemplateAreas", () => {
@@ -34,7 +36,7 @@ describe("getExportFilterGridTemplateAreas", () => {
 });
 
 describe("EXPORT_FILTER_BLOCK_SPANS", () => {
-  it("uses a three-column grid with specs spanning two rows", () => {
+  it("uses equal unit-width columns with specs as a 2×1 block", () => {
     expect(EXPORT_FILTER_GRID_COLUMN_COUNT).toBe(3);
     expect(EXPORT_FILTER_BLOCK_SPANS.dungeon).toEqual({
       heightUnits: 1,
@@ -52,7 +54,11 @@ describe("EXPORT_FILTER_BLOCK_SPANS", () => {
       heightUnits: 2,
       widthUnits: 1,
     });
-    expect(EXPORT_FILTER_SPECS_UNIT_WIDTH).toBeGreaterThan(EXPORT_FILTER_UNIT_WIDTH);
+    const unitColumn = getFilterUnitColumnTemplate();
+    expect(getExportFilterGridTemplateColumns()).toBe(
+      `${unitColumn} ${unitColumn} ${unitColumn}`,
+    );
+    expect(getExportFilterGridMaxWidth()).toBe(EXPORT_FILTER_UNIT_WIDTH * 3);
   });
 });
 

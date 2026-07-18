@@ -5,8 +5,13 @@ import type { TranslateFn } from "../../i18n/translate.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
 import type { GearPickSpecSide } from "../../utils/build-gear-pick-items.ts";
+import { CharacterSpecListName } from "../export-panel/character-spec-list-name.tsx";
+import {
+  CHARACTER_SPEC_LIST_ICON_SIZE,
+  getCharacterSpecListGridSx,
+  getExportFilterSpecsListMaxHeight,
+} from "../export-panel/constants.ts";
 import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
-import { getExportFilterSpecsListMaxHeight } from "../export-panel/constants.ts";
 
 export type GearPickCharacterSelection = {
   characterId: string;
@@ -91,7 +96,7 @@ function GearPickSpecRadio({
           characterClass={character.class}
           spec={specGear.spec}
           gearScore={specGear.gearScore}
-          iconSize={16}
+          iconSize={CHARACTER_SPEC_LIST_ICON_SIZE}
           variant="caption"
           showSpecName={false}
           showDetailTooltip={false}
@@ -151,18 +156,7 @@ export function GearPickCharacterSelect({
           onSelectionChange(next);
         }
       }}
-      sx={{
-        display: "grid",
-        // Fits a standard 1× unit column (name truncates; spec+GS stay compact).
-        gridTemplateColumns: "minmax(0, 1fr) auto auto",
-        columnGap: 0.5,
-        rowGap: 0.75,
-        alignItems: "center",
-        minWidth: 0,
-        maxHeight: listMaxHeight,
-        overflowY: "auto",
-        pr: 0.25,
-      }}
+      sx={getCharacterSpecListGridSx({ maxHeight: listMaxHeight })}
     >
       {characters.map((character) => {
         if (!character.class) {
@@ -173,23 +167,6 @@ export function GearPickCharacterSelect({
         const hasOff = Boolean(character.offSpec);
         const hasNoSpecs = !hasMain && !hasOff;
         const cooldownInactive = !includedCharacterIds.has(character.id);
-        const characterName = (
-          <Typography
-            variant="body2"
-            title={character.name}
-            sx={{
-              fontWeight: cooldownInactive ? 500 : 600,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              minWidth: 0,
-              color: cooldownInactive ? "text.disabled" : "text.primary",
-              fontStyle: cooldownInactive ? "italic" : "normal",
-            }}
-          >
-            {character.name}
-          </Typography>
-        );
 
         return (
           <Box key={character.id} sx={{ display: "contents" }}>
@@ -200,7 +177,10 @@ export function GearPickCharacterSelect({
                   : null
               }
             >
-              {characterName}
+              <CharacterSpecListName
+                name={character.name}
+                inactive={cooldownInactive}
+              />
             </CooldownTooltip>
             <SpecCell>
               {hasMain && character.mainSpec ? (
