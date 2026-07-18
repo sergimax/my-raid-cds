@@ -56,7 +56,7 @@ describe("getGearPickGridTemplateColumns", () => {
   it("keeps shared unit columns and a 1×2 copy column on wide", () => {
     const unitColumn = getFilterUnitColumnTemplate();
     expect(getGearPickGridTemplateColumns("wide")).toBe(
-      `${unitColumn} ${unitColumn} minmax(0, 1fr) minmax(0, ${EXPORT_FILTER_UNIT_WIDTH * 2 + 12}px)`,
+      `${unitColumn} ${unitColumn} minmax(0, 1fr) minmax(0, ${getGearPickCopyBlockMaxWidth()}px)`,
     );
   });
 });
