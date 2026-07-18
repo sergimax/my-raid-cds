@@ -1,5 +1,5 @@
 import type { SubmitEvent } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "../i18n/use-translation.ts";
 import type { CharacterClass, CharacterRecord } from "../types/characters.ts";
 import { isSpecValidForClass } from "../data/class-specs.ts";
@@ -9,6 +9,8 @@ import { generateUUID } from "../uuid.ts";
 type UseCharacterFormStateOptions = {
   characters: CharacterRecord[];
   onCharacterAdded: (character: CharacterRecord) => void;
+  /** Called after a successful submit closes the form. */
+  onSubmitted?: () => void;
 };
 
 const EMPTY_SPEC_GEAR_FIELDS = {
@@ -21,6 +23,7 @@ const EMPTY_SPEC_GEAR_FIELDS = {
 export function useCharacterFormState({
   characters,
   onCharacterAdded,
+  onSubmitted,
 }: UseCharacterFormStateOptions) {
   const { locale } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -123,6 +126,7 @@ export function useCharacterFormState({
       });
       setIsOpen(false);
       resetFields();
+      onSubmitted?.();
     },
     [
       characterClass,
@@ -134,28 +138,51 @@ export function useCharacterFormState({
       offSpec,
       locale,
       onCharacterAdded,
+      onSubmitted,
       resetFields,
     ],
   );
 
-  return {
-    isOpen,
-    open,
-    close,
-    resetFields,
-    name,
-    setName,
-    characterClass,
-    setCharacterClass,
-    mainSpec,
-    setMainSpec,
-    mainGearScoreText,
-    setMainGearScoreText,
-    offSpec,
-    setOffSpec,
-    offGearScoreText,
-    setOffGearScoreText,
-    error,
-    handleSubmit,
-  };
+  return useMemo(
+    () => ({
+      isOpen,
+      open,
+      close,
+      resetFields,
+      name,
+      setName,
+      characterClass,
+      setCharacterClass,
+      mainSpec,
+      setMainSpec,
+      mainGearScoreText,
+      setMainGearScoreText,
+      offSpec,
+      setOffSpec,
+      offGearScoreText,
+      setOffGearScoreText,
+      error,
+      handleSubmit,
+    }),
+    [
+      characterClass,
+      close,
+      error,
+      handleSubmit,
+      isOpen,
+      mainGearScoreText,
+      mainSpec,
+      name,
+      offGearScoreText,
+      offSpec,
+      open,
+      resetFields,
+      setCharacterClass,
+      setMainGearScoreText,
+      setMainSpec,
+      setName,
+      setOffGearScoreText,
+      setOffSpec,
+    ],
+  );
 }

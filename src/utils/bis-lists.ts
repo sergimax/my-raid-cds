@@ -332,6 +332,20 @@ export function resolveItemNamesToIds(itemsText: string): {
   return { itemIds, unknownNames };
 }
 
+/**
+ * Local-only presets for a class|spec entry (`id` starts with `local-`).
+ * Used by BiS domain mutations so select/save/delete share one filter.
+ */
+export function getLocalPresetsForSpec(
+  localState: LocalBisListsState,
+  className: ClassName,
+  spec: string,
+): BisListPreset[] {
+  const storageKey = specBisStorageKey(className, spec);
+  const existingEntry = localState.entries[storageKey];
+  return existingEntry?.presets.filter((preset) => isLocalBisPreset(preset)) ?? [];
+}
+
 export function upsertLocalSpecEntry(
   localState: LocalBisListsState,
   className: ClassName,

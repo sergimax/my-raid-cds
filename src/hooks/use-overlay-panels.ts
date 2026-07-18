@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { OverlayPanelId } from "./overlay-panel-id.ts";
@@ -11,145 +11,174 @@ type UseOverlayPanelsOptions = {
   onDungeonAdded: (dungeon: DungeonRecord) => void;
 };
 
-/** Mutually exclusive toolbar overlay panels (forms, export, gear pick, BiS lists). */
+/**
+ * Toolbar overlays share one `activePanel` id (character | dungeon | export | gear | bis).
+ * Derived `show*` flags keep the existing TrackerControls / RaidTrackerMain API.
+ * Form field state still lives in the form hooks; `onSubmitted` clears the panel
+ * after a successful add so submit does not leave a stale active id.
+ */
 export function useOverlayPanels({
   characters,
   onCharacterAdded,
   onDungeonAdded,
 }: UseOverlayPanelsOptions) {
-  const [showExportPanel, setShowExportPanel] = useState(false);
-  const [showGearPickPanel, setShowGearPickPanel] = useState(false);
-  const [showBisListsPanel, setShowBisListsPanel] = useState(false);
-  const characterForm = useCharacterFormState({ characters, onCharacterAdded });
-  const dungeonForm = useDungeonFormState({ onDungeonAdded });
+  const [activePanel, setActivePanel] = useState<OverlayPanelId | null>(null);
+  /** Latest panel id for toggles without re-creating callbacks every open/close. */
+  const activePanelRef = useRef<OverlayPanelId | null>(null);
 
-  const closeExcept = useCallback((except: OverlayPanelId | null) => {
-    if (except !== "export") {
-      setShowExportPanel(false);
-    }
-    if (except !== "gear") {
-      setShowGearPickPanel(false);
-    }
-    if (except !== "bis") {
-      setShowBisListsPanel(false);
-    }
-    if (except !== "character") {
-      characterForm.close();
-    }
-    if (except !== "dungeon") {
-      dungeonForm.close();
-    }
-  }, [characterForm, dungeonForm]);
+  useEffect(() => {
+    activePanelRef.current = activePanel;
+  }, [activePanel]);
+
+  const clearActivePanel = useCallback(() => {
+    setActivePanel(null);
+  }, []);
+
+  const characterForm = useCharacterFormState({
+    characters,
+    onCharacterAdded,
+    onSubmitted: clearActivePanel,
+  });
+  const dungeonForm = useDungeonFormState({
+    onDungeonAdded,
+    onSubmitted: clearActivePanel,
+  });
 
   const closeAllOverlayPanels = useCallback(() => {
-    closeExcept(null);
-  }, [closeExcept]);
+    setActivePanel(null);
+    characterForm.close();
+    dungeonForm.close();
+  }, [characterForm, dungeonForm]);
+
+  /** Open `panelId`, or close it if already active. Always closes the other form. */
+  const togglePanel = useCallback(
+    (panelId: OverlayPanelId) => {
+      const current = activePanelRef.current;
+      if (current === panelId) {
+        setActivePanel(null);
+        if (panelId === "character") {
+          characterForm.close();
+        } else if (panelId === "dungeon") {
+          dungeonForm.close();
+        }
+        return;
+      }
+
+      if (panelId === "character") {
+        dungeonForm.close();
+        characterForm.open();
+      } else if (panelId === "dungeon") {
+        characterForm.close();
+        dungeonForm.open();
+      } else {
+        characterForm.close();
+        dungeonForm.close();
+      }
+      setActivePanel(panelId);
+    },
+    [characterForm, dungeonForm],
+  );
+
+  const showExportPanel = activePanel === "export";
+  const showGearPickPanel = activePanel === "gear";
+  const showBisListsPanel = activePanel === "bis";
+  const showCharacterForm = activePanel === "character";
+  const showDungeonForm = activePanel === "dungeon";
 
   const toggleExportPanel = useCallback(() => {
-    if (showExportPanel) {
-      setShowExportPanel(false);
-      return;
-    }
-    closeExcept("export");
-    setShowExportPanel(true);
-  }, [closeExcept, showExportPanel]);
+    togglePanel("export");
+  }, [togglePanel]);
 
   const toggleGearPickPanel = useCallback(() => {
-    if (showGearPickPanel) {
-      setShowGearPickPanel(false);
-      return;
-    }
-    closeExcept("gear");
-    setShowGearPickPanel(true);
-  }, [closeExcept, showGearPickPanel]);
+    togglePanel("gear");
+  }, [togglePanel]);
 
   const toggleBisListsPanel = useCallback(() => {
-    if (showBisListsPanel) {
-      setShowBisListsPanel(false);
-      return;
-    }
-    closeExcept("bis");
-    setShowBisListsPanel(true);
-  }, [closeExcept, showBisListsPanel]);
+    togglePanel("bis");
+  }, [togglePanel]);
 
   const toggleCharacterForm = useCallback(() => {
-    if (characterForm.isOpen) {
-      characterForm.close();
-      return;
-    }
-    closeExcept("character");
-    characterForm.open();
-  }, [characterForm, closeExcept]);
+    togglePanel("character");
+  }, [togglePanel]);
 
   const toggleDungeonForm = useCallback(() => {
-    if (dungeonForm.isOpen) {
-      dungeonForm.close();
-      return;
-    }
-    closeExcept("dungeon");
-    dungeonForm.open();
-  }, [closeExcept, dungeonForm]);
+    togglePanel("dungeon");
+  }, [togglePanel]);
 
   const closeExportPanel = useCallback(() => {
-    setShowExportPanel(false);
+    if (activePanelRef.current === "export") {
+      setActivePanel(null);
+    }
   }, []);
 
   const closeGearPickPanel = useCallback(() => {
-    setShowGearPickPanel(false);
+    if (activePanelRef.current === "gear") {
+      setActivePanel(null);
+    }
   }, []);
 
   const closeBisListsPanel = useCallback(() => {
-    setShowBisListsPanel(false);
+    if (activePanelRef.current === "bis") {
+      setActivePanel(null);
+    }
   }, []);
 
-  return {
-    showExportPanel,
-    closeExportPanel,
-    toggleExportPanel,
-    showGearPickPanel,
-    closeGearPickPanel,
-    toggleGearPickPanel,
-    showBisListsPanel,
-    closeBisListsPanel,
-    toggleBisListsPanel,
-    closeAllOverlayPanels,
-    showCharacterForm: characterForm.isOpen,
-    showDungeonForm: dungeonForm.isOpen,
-    closeCharacterForm: characterForm.close,
-    closeDungeonForm: dungeonForm.close,
-    toggleCharacterForm,
-    toggleDungeonForm,
-    characterForm: {
-      name: characterForm.name,
-      setName: characterForm.setName,
-      characterClass: characterForm.characterClass,
-      setCharacterClass: characterForm.setCharacterClass,
-      mainSpec: characterForm.mainSpec,
-      setMainSpec: characterForm.setMainSpec,
-      mainGearScoreText: characterForm.mainGearScoreText,
-      setMainGearScoreText: characterForm.setMainGearScoreText,
-      offSpec: characterForm.offSpec,
-      setOffSpec: characterForm.setOffSpec,
-      offGearScoreText: characterForm.offGearScoreText,
-      setOffGearScoreText: characterForm.setOffGearScoreText,
-      error: characterForm.error,
-      handleSubmit: characterForm.handleSubmit,
-    },
-    dungeonForm: {
-      name: dungeonForm.name,
-      setName: dungeonForm.setName,
-      shortName: dungeonForm.shortName,
-      setShortName: dungeonForm.setShortName,
-      size: dungeonForm.size,
-      setSize: dungeonForm.setSize,
-      itemLevelText: dungeonForm.itemLevelText,
-      setItemLevelText: dungeonForm.setItemLevelText,
-      difficulty: dungeonForm.difficulty,
-      setDifficulty: dungeonForm.setDifficulty,
-      error: dungeonForm.error,
-      handleSubmit: dungeonForm.handleSubmit,
-    },
-  };
+  const closeCharacterForm = useCallback(() => {
+    if (activePanelRef.current === "character") {
+      setActivePanel(null);
+    }
+    characterForm.close();
+  }, [characterForm]);
+
+  const closeDungeonForm = useCallback(() => {
+    if (activePanelRef.current === "dungeon") {
+      setActivePanel(null);
+    }
+    dungeonForm.close();
+  }, [dungeonForm]);
+
+  return useMemo(
+    () => ({
+      showExportPanel,
+      closeExportPanel,
+      toggleExportPanel,
+      showGearPickPanel,
+      closeGearPickPanel,
+      toggleGearPickPanel,
+      showBisListsPanel,
+      closeBisListsPanel,
+      toggleBisListsPanel,
+      closeAllOverlayPanels,
+      showCharacterForm,
+      showDungeonForm,
+      closeCharacterForm,
+      closeDungeonForm,
+      toggleCharacterForm,
+      toggleDungeonForm,
+      characterForm,
+      dungeonForm,
+    }),
+    [
+      characterForm,
+      closeAllOverlayPanels,
+      closeBisListsPanel,
+      closeCharacterForm,
+      closeDungeonForm,
+      closeExportPanel,
+      closeGearPickPanel,
+      dungeonForm,
+      showBisListsPanel,
+      showCharacterForm,
+      showDungeonForm,
+      showExportPanel,
+      showGearPickPanel,
+      toggleBisListsPanel,
+      toggleCharacterForm,
+      toggleDungeonForm,
+      toggleExportPanel,
+      toggleGearPickPanel,
+    ],
+  );
 }
 
 export type OverlayPanelsState = ReturnType<typeof useOverlayPanels>;
