@@ -1,9 +1,9 @@
 import type { AppLocale } from "../i18n/types.ts";
-import type { CharacterRecord, ClassName } from "../types/characters.ts";
+import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import { evaluateSpecGearHint } from "./character-gear-hints.ts";
 import { formatDungeonExportLabel } from "./format-dungeon-label.ts";
-import type { BisSlotMap } from "./bis-lists.ts";
+import type { GetBisSlotMapForSpec } from "./bis-lists.ts";
 
 export type GearPickItemKind = "bis" | "variant";
 
@@ -15,11 +15,6 @@ export type GearPickItem = {
   bossName: string;
   raidLabel: string;
 };
-
-type GetBisSlotMapForSpec = (
-  className: ClassName,
-  spec: string,
-) => BisSlotMap;
 
 type BuildGearPickItemsOptions = {
   character: CharacterRecord;

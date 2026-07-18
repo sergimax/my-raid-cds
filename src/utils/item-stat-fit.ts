@@ -124,6 +124,23 @@ function normalizeItemStatsToGs(sparse: WotlkItemStatsSparse): NormalizedGsStats
   return normalized;
 }
 
+/** Cached GS-normalized stats by item id (sparse JSON is immutable at runtime). */
+const normalizedGsStatsByItemId = new Map<number, NormalizedGsStats>();
+
+function getNormalizedItemStatsToGs(
+  itemId: number,
+  sparse: WotlkItemStatsSparse,
+): NormalizedGsStats {
+  const cached = normalizedGsStatsByItemId.get(itemId);
+  if (cached) {
+    return cached;
+  }
+
+  const normalized = normalizeItemStatsToGs(sparse);
+  normalizedGsStatsByItemId.set(itemId, normalized);
+  return normalized;
+}
+
 /** Mirrors GearScore2 `GS_GetRoleSignatureKind` (stat-only subset). */
 function getRoleSignatureKind(stats: NormalizedGsStats): RoleSignature | undefined {
   const hasTank =
@@ -452,7 +469,7 @@ export function isItemStatUsableForSpec(
     }
   }
 
-  const stats = normalizeItemStatsToGs(sparseStats);
+  const stats = getNormalizedItemStatsToGs(itemId, sparseStats);
 
   if (
     gearSlot !== undefined &&
