@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef } from "react";
+import { memo, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedGearSlotLabel } from "../../i18n/localized-domain.ts";
 import { validateBisSlotItemsText } from "../../utils/bis-lists.ts";
@@ -43,19 +43,40 @@ const slotViewContentSx = {
 } as const;
 
 export type BisSlotRowProps = {
+  slotIndex: number;
   slotDraft: BisSlotDraft;
   validationError?: string;
   isEditing: boolean;
   readOnly: boolean;
   equipContext: CharacterEquipContext;
-  onItemsTextChange: (nextValue: string) => void;
-  onItemsTextBlur: (itemsText: string) => void;
-  onConfirm: () => void;
-  onStartEdit: () => void;
-  onCancelEdit: () => void;
+  onItemsTextChange: (slotIndex: number, slot: number, nextValue: string) => void;
+  onItemsTextBlur: (slot: number, itemsText: string) => void;
+  onConfirm: (slotIndex: number) => void;
+  onStartEdit: (slot: number) => void;
+  onCancelEdit: (slotIndex: number) => void;
 };
 
-export function BisSlotRow({
+function areBisSlotRowPropsEqual(
+  previous: BisSlotRowProps,
+  next: BisSlotRowProps,
+): boolean {
+  return (
+    previous.slotIndex === next.slotIndex &&
+    previous.slotDraft === next.slotDraft &&
+    previous.validationError === next.validationError &&
+    previous.isEditing === next.isEditing &&
+    previous.readOnly === next.readOnly &&
+    previous.equipContext === next.equipContext &&
+    previous.onItemsTextChange === next.onItemsTextChange &&
+    previous.onItemsTextBlur === next.onItemsTextBlur &&
+    previous.onConfirm === next.onConfirm &&
+    previous.onStartEdit === next.onStartEdit &&
+    previous.onCancelEdit === next.onCancelEdit
+  );
+}
+
+export const BisSlotRow = memo(function BisSlotRow({
+  slotIndex,
   slotDraft,
   validationError,
   isEditing,
@@ -70,12 +91,23 @@ export function BisSlotRow({
   const { t, locale } = useTranslation();
   const slotLabel = getLocalizedGearSlotLabel(slotDraft.slot, locale);
   const inputRef = useRef<HTMLInputElement>(null);
-  const canConfirm =
-    isEditing &&
-    !validationError &&
-    validateBisSlotItemsText(slotDraft.slot, slotDraft.itemsText, "strict", equipContext)
-      .error === undefined &&
-    isSlotDraftDirty(slotDraft);
+
+  const canConfirm = useMemo(() => {
+    if (!isEditing || validationError) {
+      return false;
+    }
+    if (!isSlotDraftDirty(slotDraft)) {
+      return false;
+    }
+    return (
+      validateBisSlotItemsText(
+        slotDraft.slot,
+        slotDraft.itemsText,
+        "strict",
+        equipContext,
+      ).error === undefined
+    );
+  }, [equipContext, isEditing, slotDraft, validationError]);
 
   useEffect(() => {
     if (isEditing) {
@@ -112,16 +144,20 @@ export function BisSlotRow({
           size="small"
           fullWidth
           value={slotDraft.itemsText}
-          onChange={(event) => onItemsTextChange(event.target.value)}
-          onBlur={(event) => onItemsTextBlur(event.target.value)}
+          onChange={(event) => {
+            onItemsTextChange(slotIndex, slotDraft.slot, event.target.value);
+          }}
+          onBlur={(event) => {
+            onItemsTextBlur(slotDraft.slot, event.target.value);
+          }}
           onKeyDown={(event) => {
             if (event.key === "Enter" && canConfirm) {
               event.preventDefault();
-              onConfirm();
+              onConfirm(slotIndex);
             }
             if (event.key === "Escape") {
               event.preventDefault();
-              onCancelEdit();
+              onCancelEdit(slotIndex);
             }
           }}
           placeholder={t("bisPanel.itemSearchPlaceholder")}
@@ -154,7 +190,9 @@ export function BisSlotRow({
             <IconButton
               size="small"
               aria-label={t("bisPanel.cancelEditingAria", { slot: slotLabel })}
-              onClick={onCancelEdit}
+              onClick={() => {
+                onCancelEdit(slotIndex);
+              }}
             >
               <CloseIcon fontSize="small" />
             </IconButton>
@@ -164,7 +202,9 @@ export function BisSlotRow({
               <IconButton
                 size="small"
                 aria-label={t("bisPanel.confirmItemAria", { slot: slotLabel })}
-                onClick={onConfirm}
+                onClick={() => {
+                  onConfirm(slotIndex);
+                }}
                 disabled={!canConfirm}
                 color="primary"
               >
@@ -179,7 +219,9 @@ export function BisSlotRow({
             <IconButton
               size="small"
               aria-label={t("bisPanel.editSlotAria", { slot: slotLabel })}
-              onClick={onStartEdit}
+              onClick={() => {
+                onStartEdit(slotDraft.slot);
+              }}
               sx={{ alignSelf: "center" }}
             >
               <EditIcon fontSize="small" />
@@ -189,4 +231,4 @@ export function BisSlotRow({
       )}
     </Box>
   );
-}
+}, areBisSlotRowPropsEqual);

@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getWotlkItemName } from "../../data/wotlk-item-names.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useItemTooltipLocale } from "../../hooks/use-item-tooltip-locale.ts";
@@ -11,6 +11,7 @@ import { buildGearPickItems } from "../../utils/build-gear-pick-items.ts";
 import {
   clampAssignmentsToMaxSofts,
   DEFAULT_SOFT_ROLL_RULES,
+  emptySoftAssignment,
   formatGearPickCopyText,
   remainingSoftBudget,
   setMySoftsForItem,
@@ -189,6 +190,26 @@ export function GearPickPanel({
     }
   };
 
+  const handleMySoftsChange = useCallback(
+    (itemId: number, mySofts: number) => {
+      setAssignmentsByItemId((previous) =>
+        setMySoftsForItem(previous, itemId, mySofts, rules.maxSofts),
+      );
+    },
+    [rules.maxSofts],
+  );
+
+  const handleOthersCountChange = useCallback(
+    (itemId: number, weight: number, count: number) => {
+      setAssignmentsByItemId((previous) =>
+        setOthersCountForWeight(previous, itemId, weight, count, rules.maxSofts),
+      );
+    },
+    [rules.maxSofts],
+  );
+
+  const defaultAssignment = useMemo(() => emptySoftAssignment(), []);
+
   return (
     <Box
       sx={{
@@ -275,10 +296,8 @@ export function GearPickPanel({
           ) : (
             <Stack spacing={0}>
               {gearPickItems.map((item) => {
-                const assignment = assignmentsByItemId[item.itemId] ?? {
-                  mySofts: 0,
-                  othersByWeight: {},
-                };
+                const assignment =
+                  assignmentsByItemId[item.itemId] ?? defaultAssignment;
                 const itemLabel =
                   getWotlkItemName(item.itemId, itemLocale) ?? `#${item.itemId}`;
                 const budgetForItem = remainingSoftBudget(
@@ -296,28 +315,8 @@ export function GearPickPanel({
                     system={rules.system}
                     remainingBudgetForItem={budgetForItem}
                     itemLabel={itemLabel}
-                    onMySoftsChange={(mySofts) => {
-                      setAssignmentsByItemId((previous) =>
-                        setMySoftsForItem(
-                          previous,
-                          item.itemId,
-                          mySofts,
-                          rules.maxSofts,
-                        ),
-                      );
-                    }}
-                    onOthersCountChange={(weight, count) => {
-                      setAssignmentsByItemId((previous) =>
-                        setOthersCountForWeight(
-                          previous,
-                          item.itemId,
-                          weight,
-                          count,
-                          rules.maxSofts,
-                        ),
-                      );
-                    }}
-                    t={t}
+                    onMySoftsChange={handleMySoftsChange}
+                    onOthersCountChange={handleOthersCountChange}
                   />
                 );
               })}

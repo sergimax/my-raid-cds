@@ -97,7 +97,7 @@ export function BisListsPanel() {
     handleCancelEditSlot,
     handleSaveList,
     handleItemsTextChange,
-    updateSlotValidation,
+    handleItemsTextBlur,
   } = editor;
 
   const handleSelectPreset = useCallback(
@@ -165,6 +165,7 @@ export function BisListsPanel() {
         {slotDrafts.map((slotDraft, index) => (
           <BisSlotRow
             key={slotDraft.slot}
+            slotIndex={index}
             slotDraft={slotDraft}
             validationError={slotErrors[slotDraft.slot]}
             isEditing={isSlotEditing(
@@ -174,15 +175,11 @@ export function BisListsPanel() {
             )}
             readOnly={isBuiltInPresetSelected}
             equipContext={equipContext}
-            onItemsTextChange={(nextValue) => {
-              handleItemsTextChange(index, slotDraft.slot, nextValue);
-            }}
-            onItemsTextBlur={(itemsText) => {
-              updateSlotValidation(slotDraft.slot, itemsText, "strict");
-            }}
-            onConfirm={() => handleConfirmSlot(index)}
-            onStartEdit={() => handleStartEditSlot(slotDraft.slot)}
-            onCancelEdit={() => handleCancelEditSlot(index)}
+            onItemsTextChange={handleItemsTextChange}
+            onItemsTextBlur={handleItemsTextBlur}
+            onConfirm={handleConfirmSlot}
+            onStartEdit={handleStartEditSlot}
+            onCancelEdit={handleCancelEditSlot}
           />
         ))}
       </Box>

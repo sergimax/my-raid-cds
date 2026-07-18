@@ -1,11 +1,14 @@
-import { Box, FormControlLabel, Radio, RadioGroup, Tooltip, Typography } from "@mui/material";
-import type { ReactNode } from "react";
+import { Box, FormControlLabel, Radio, RadioGroup, Typography } from "@mui/material";
 import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import type { CharacterRecord, CharacterSpecGear } from "../../types/characters.ts";
 import type { GearPickSpecSide } from "../../utils/build-gear-pick-items.ts";
-import { CharacterSpecListName } from "../export-panel/character-spec-list-name.tsx";
+import {
+  CharacterSpecListName,
+  InactiveSpecTooltip,
+  SpecCell,
+} from "../character-spec-list/index.ts";
 import {
   CHARACTER_SPEC_LIST_ICON_SIZE,
   getCharacterSpecListGridSx,
@@ -36,32 +39,6 @@ function parseSelectionValue(value: string): GearPickCharacterSelection | null {
     return null;
   }
   return { characterId, side };
-}
-
-function SpecCell({ children }: { children: ReactNode }) {
-  return (
-    <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>{children}</Box>
-  );
-}
-
-function CooldownTooltip({
-  title,
-  children,
-}: {
-  title: string | null;
-  children: ReactNode;
-}) {
-  if (!title) {
-    return <>{children}</>;
-  }
-
-  return (
-    <Tooltip title={title}>
-      <Box component="span" sx={{ display: "inline-flex", minWidth: 0, width: "100%" }}>
-        {children}
-      </Box>
-    </Tooltip>
-  );
 }
 
 function GearPickSpecRadio({
@@ -120,13 +97,13 @@ function GearPickSpecRadio({
   );
 
   return (
-    <CooldownTooltip
+    <InactiveSpecTooltip
       title={
         cooldownInactive ? t("exportPanel.characterInactiveCooldownHint") : null
       }
     >
       {control}
-    </CooldownTooltip>
+    </InactiveSpecTooltip>
   );
 }
 
@@ -170,7 +147,7 @@ export function GearPickCharacterSelect({
 
         return (
           <Box key={character.id} sx={{ display: "contents" }}>
-            <CooldownTooltip
+            <InactiveSpecTooltip
               title={
                 cooldownInactive
                   ? t("exportPanel.characterInactiveCooldownHint")
@@ -181,7 +158,7 @@ export function GearPickCharacterSelect({
                 name={character.name}
                 inactive={cooldownInactive}
               />
-            </CooldownTooltip>
+            </InactiveSpecTooltip>
             <SpecCell>
               {hasMain && character.mainSpec ? (
                 <GearPickSpecRadio

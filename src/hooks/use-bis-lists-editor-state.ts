@@ -245,6 +245,13 @@ export function useBisListsEditorState({
     [updateSlotValidation],
   );
 
+  const handleItemsTextBlur = useCallback(
+    (slot: number, itemsText: string) => {
+      updateSlotValidation(slot, itemsText, "strict");
+    },
+    [updateSlotValidation],
+  );
+
   return useMemo(
     () => ({
       slotDrafts,
@@ -261,7 +268,7 @@ export function useBisListsEditorState({
       handleCancelEditSlot,
       handleSaveList,
       handleItemsTextChange,
-      updateSlotValidation,
+      handleItemsTextBlur,
     }),
     [
       clearError,
@@ -269,6 +276,7 @@ export function useBisListsEditorState({
       error,
       handleCancelEditSlot,
       handleConfirmSlot,
+      handleItemsTextBlur,
       handleItemsTextChange,
       handleSaveList,
       handleStartEditSlot,
@@ -277,7 +285,6 @@ export function useBisListsEditorState({
       saveListName,
       slotDrafts,
       slotErrors,
-      updateSlotValidation,
     ],
   );
 }

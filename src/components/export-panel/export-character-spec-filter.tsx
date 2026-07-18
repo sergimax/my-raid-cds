@@ -1,5 +1,4 @@
-import type { ReactNode } from "react";
-import { Box, Checkbox, FormControlLabel, Tooltip, Typography } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import { getLocalizedSpecName } from "../../i18n/localized-domain.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
@@ -15,8 +14,12 @@ import {
   type CharacterExportSpecSelection,
   type ExportSpecSelectionByCharacterId,
 } from "../../utils/format-character-export.ts";
+import {
+  CharacterSpecListName,
+  InactiveSpecTooltip,
+  SpecCell,
+} from "../character-spec-list/index.ts";
 import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
-import { CharacterSpecListName } from "./character-spec-list-name.tsx";
 import {
   CHARACTER_SPEC_LIST_ICON_SIZE,
   getCharacterSpecListGridSx,
@@ -78,26 +81,6 @@ function specFilterTooltipKey(
     return "exportPanel.specInactiveRoleFilter";
   }
   return "exportPanel.specInactiveGearScoreFilter";
-}
-
-function FilterTooltip({
-  title,
-  children,
-}: {
-  title: string | null;
-  children: ReactNode;
-}) {
-  if (!title) {
-    return <>{children}</>;
-  }
-
-  return (
-    <Tooltip title={title}>
-      <Box component="span" sx={{ display: "inline-flex", minWidth: 0, width: "100%" }}>
-        {children}
-      </Box>
-    </Tooltip>
-  );
 }
 
 function ExportSpecCheckbox({
@@ -186,13 +169,7 @@ function ExportSpecCheckbox({
     />
   );
 
-  return <FilterTooltip title={tooltipTitle}>{control}</FilterTooltip>;
-}
-
-function SpecCell({ children }: { children: ReactNode }) {
-  return (
-    <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>{children}</Box>
-  );
+  return <InactiveSpecTooltip title={tooltipTitle}>{control}</InactiveSpecTooltip>;
 }
 
 export function ExportCharacterSpecFilter({
@@ -263,9 +240,9 @@ export function ExportCharacterSpecFilter({
         return (
           <Box key={character.id} sx={{ display: "contents" }}>
             {inactiveReason ? (
-              <FilterTooltip title={t(characterInactiveTooltipKey(inactiveReason))}>
+              <InactiveSpecTooltip title={t(characterInactiveTooltipKey(inactiveReason))}>
                 {characterName}
-              </FilterTooltip>
+              </InactiveSpecTooltip>
             ) : (
               characterName
             )}
@@ -290,7 +267,7 @@ export function ExportCharacterSpecFilter({
                   t={t}
                 />
               ) : !hasSpecs ? (
-                <FilterTooltip
+                <InactiveSpecTooltip
                   title={
                     cooldownInactive
                       ? t("exportPanel.characterInactiveCooldownHint")
@@ -317,7 +294,7 @@ export function ExportCharacterSpecFilter({
                     },
                   }}
                 />
-                </FilterTooltip>
+                </InactiveSpecTooltip>
               ) : null}
             </SpecCell>
             <SpecCell>
