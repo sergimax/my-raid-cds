@@ -21,15 +21,12 @@ import {
 } from "../../utils/gear-pick-soft-roll.ts";
 import { ExportDungeonFilter } from "../export-panel/export-dungeon-filter.tsx";
 import { ExportFilterSection } from "../export-panel/export-filter-section.tsx";
-import {
-  EXPORT_FILTER_GRID_GAP_SPACING,
-  getExportFilterGridHeight,
-  getExportFilterGridTemplateColumns,
-  getExportFilterGridTemplateRows,
-} from "../export-panel/constants.ts";
+import { EXPORT_FILTER_GRID_GAP_SPACING } from "../export-panel/constants.ts";
 import {
   GEAR_PICK_SIDE_BY_SIDE_MQ_KEY,
-  getGearPickFilterGridTemplateAreas,
+  getGearPickGridTemplateAreas,
+  getGearPickGridTemplateColumns,
+  getGearPickGridTemplateRows,
 } from "./constants.ts";
 import {
   GearPickCharacterSelect,
@@ -192,116 +189,79 @@ export function GearPickPanel({
     }
   };
 
-  const filterGridHeight = getExportFilterGridHeight();
-
   return (
     <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
+        display: "grid",
+        gridTemplateColumns: {
+          xs: "minmax(0, 1fr)",
+          md: getGearPickGridTemplateColumns("md"),
+          [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: getGearPickGridTemplateColumns("wide"),
+        },
+        gridTemplateRows: {
+          xs: "auto",
+          md: getGearPickGridTemplateRows("md"),
+          [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: getGearPickGridTemplateRows("wide"),
+        },
+        gridTemplateAreas: {
+          xs: "none",
+          md: getGearPickGridTemplateAreas("md"),
+          [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: getGearPickGridTemplateAreas("wide"),
+        },
         gap: EXPORT_FILTER_GRID_GAP_SPACING,
         alignItems: "stretch",
         width: "100%",
-        [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: {
-          flexDirection: "row",
-        },
       }}
     >
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "minmax(0, 1fr)",
-            md: getExportFilterGridTemplateColumns(),
-          },
-          gridTemplateRows: {
-            xs: "auto",
-            md: getExportFilterGridTemplateRows(),
-          },
-          gridTemplateAreas: {
-            xs: "none",
-            md: getGearPickFilterGridTemplateAreas(),
-          },
-          gap: EXPORT_FILTER_GRID_GAP_SPACING,
-          alignItems: "stretch",
-          width: { xs: "100%", md: "fit-content" },
-          maxWidth: "100%",
-          flexShrink: 0,
-        }}
-      >
-        <GearPickFilterBlock gridArea="rules">
-          <ExportFilterSection
-            title={t("gearPickPanel.rulesTitle")}
-            description={t("gearPickPanel.rulesHelper")}
-            contentSx={{ overflow: "visible" }}
-          >
-            <GearPickRules
-              rules={rules}
-              onRulesChange={handleRulesChange}
-              softBudgetUsed={softBudgetUsed}
-              t={t}
-            />
-          </ExportFilterSection>
-        </GearPickFilterBlock>
+      <GearPickFilterBlock gridArea="rules">
+        <ExportFilterSection
+          title={t("gearPickPanel.rulesTitle")}
+          description={t("gearPickPanel.rulesHelper")}
+          contentSx={{ overflow: "visible" }}
+        >
+          <GearPickRules
+            rules={rules}
+            onRulesChange={handleRulesChange}
+            softBudgetUsed={softBudgetUsed}
+            t={t}
+          />
+        </ExportFilterSection>
+      </GearPickFilterBlock>
 
-        <GearPickFilterBlock gridArea="characterSpecs">
-          <ExportFilterSection
-            title={t("gearPickPanel.characterTitle")}
-            description={t("gearPickPanel.characterHelper")}
-          >
-            <GearPickCharacterSelect
-              characters={characters}
-              includedCharacterIds={includedCharacterIds}
-              selection={activeSelection}
-              onSelectionChange={handleSelectionChange}
-              t={t}
-            />
-          </ExportFilterSection>
-        </GearPickFilterBlock>
+      <GearPickFilterBlock gridArea="characterSpecs">
+        <ExportFilterSection
+          title={t("gearPickPanel.characterTitle")}
+          description={t("gearPickPanel.characterHelper")}
+        >
+          <GearPickCharacterSelect
+            characters={characters}
+            includedCharacterIds={includedCharacterIds}
+            selection={activeSelection}
+            onSelectionChange={handleSelectionChange}
+            t={t}
+          />
+        </ExportFilterSection>
+      </GearPickFilterBlock>
 
-        <GearPickFilterBlock gridArea="dungeon">
-          <ExportFilterSection
-            title={t("gearPickPanel.dungeonFilterTitle")}
-            description={t("gearPickPanel.dungeonFilterHelper")}
-          >
-            <ExportDungeonFilter
-              dungeonNameSearch={dungeonNameSearch}
-              visibleDungeons={visibleDungeons}
-              totalDungeonCount={totalDungeonCount}
-              locale={locale}
-              t={t}
-            />
-          </ExportFilterSection>
-        </GearPickFilterBlock>
-      </Box>
+      <GearPickFilterBlock gridArea="dungeon">
+        <ExportFilterSection
+          title={t("gearPickPanel.dungeonFilterTitle")}
+          description={t("gearPickPanel.dungeonFilterHelper")}
+        >
+          <ExportDungeonFilter
+            dungeonNameSearch={dungeonNameSearch}
+            visibleDungeons={visibleDungeons}
+            totalDungeonCount={totalDungeonCount}
+            locale={locale}
+            t={t}
+          />
+        </ExportFilterSection>
+      </GearPickFilterBlock>
 
-      <Box
-        sx={{
-          flex: "none",
-          minWidth: 0,
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: 1.5,
-          [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: {
-            flex: 1,
-            minHeight: 0,
-            height: filterGridHeight,
-            maxHeight: filterGridHeight,
-            overflow: "hidden",
-          },
-        }}
-      >
+      <GearPickFilterBlock gridArea="softs">
         <ExportFilterSection
           title={t("gearPickPanel.itemsTitle")}
           description={t("gearPickPanel.itemsHelper")}
-          sx={{
-            flex: 1,
-            minHeight: 0,
-            [GEAR_PICK_SIDE_BY_SIDE_MQ_KEY]: {
-              overflow: "hidden",
-            },
-          }}
           contentSx={{
             overflowY: "auto",
           }}
@@ -362,13 +322,15 @@ export function GearPickPanel({
             </Stack>
           )}
         </ExportFilterSection>
+      </GearPickFilterBlock>
 
+      <GearPickFilterBlock gridArea="copy" contentSizedUntilWide>
         <GearPickCopyBlock
           copyText={copyText}
           hasSoftCalls={copyItems.length > 0}
           t={t}
         />
-      </Box>
+      </GearPickFilterBlock>
     </Box>
   );
 }
