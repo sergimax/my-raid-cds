@@ -37,7 +37,7 @@ describe("GEAR_PICK_COPY_BLOCK_SPAN", () => {
       heightUnits: 1,
       widthUnits: 2,
     });
-    // Two unit columns + one 12px gap — same footprint as rules + character specs.
+    // Must include gap: 2×UNIT + 1×gap (not 2×UNIT alone). Matches rules + character specs.
     expect(getGearPickCopyBlockMaxWidth()).toBe(
       EXPORT_FILTER_UNIT_WIDTH * 2 + 12,
     );
@@ -55,6 +55,7 @@ describe("getGearPickGridTemplateColumns", () => {
 
   it("keeps shared unit columns and a 1×2 copy column on wide", () => {
     const unitColumn = getFilterUnitColumnTemplate();
+    // Copy column max uses getGearPickCopyBlockMaxWidth() (gap-inclusive) — keep in sync.
     expect(getGearPickGridTemplateColumns("wide")).toBe(
       `${unitColumn} ${unitColumn} minmax(0, 1fr) minmax(0, ${getGearPickCopyBlockMaxWidth()}px)`,
     );
