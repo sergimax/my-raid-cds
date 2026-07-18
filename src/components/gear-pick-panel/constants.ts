@@ -1,8 +1,12 @@
 import {
+  EXPORT_FILTER_GRID_GAP_SPACING,
   EXPORT_FILTER_UNIT_HEIGHT,
   EXPORT_FILTER_UNIT_WIDTH,
   getExportFilterGridTemplateRows,
 } from "../export-panel/constants.ts";
+
+/** Pixel gap between Soft pick grid tracks (`gap: 1.5` → 12px at default spacing). */
+const GEAR_PICK_GRID_GAP_PX = EXPORT_FILTER_GRID_GAP_SPACING * 8;
 
 /** Reuses Character pick side-by-side breakpoint (≥1600px) for the wide Soft pick layout. */
 export {
@@ -33,12 +37,18 @@ export const GEAR_PICK_COPY_BLOCK_SPAN = {
   widthUnits: 2,
 } as const;
 
-export function getGearPickCopyBlockMaxWidth(): number {
-  return GEAR_PICK_COPY_BLOCK_SPAN.widthUnits * EXPORT_FILTER_UNIT_WIDTH;
+/** Width of a copy span = unit columns + gaps between them (matches two 1×1 blocks). */
+export function getGearPickCopyBlockMaxWidth(
+  gridColumnGapPx = GEAR_PICK_GRID_GAP_PX,
+): number {
+  const { widthUnits } = GEAR_PICK_COPY_BLOCK_SPAN;
+  return (
+    widthUnits * EXPORT_FILTER_UNIT_WIDTH + (widthUnits - 1) * gridColumnGapPx
+  );
 }
 
 export function getGearPickCopyBlockMaxHeight(
-  gridRowGapPx = 1.5 * 8,
+  gridRowGapPx = GEAR_PICK_GRID_GAP_PX,
 ): number {
   const { heightUnits } = GEAR_PICK_COPY_BLOCK_SPAN;
   return (
