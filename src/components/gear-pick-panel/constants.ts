@@ -5,12 +5,12 @@ export {
   EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY as GEAR_PICK_SIDE_BY_SIDE_MQ_KEY,
 } from "../export-panel/constants.ts";
 
-/** Gear pick filter grid areas (same cell sizes as Character pick). */
+/** Gear pick filter grid areas: rules/raids 1×1, character specs 2×2. */
 export type GearPickFilterGridAreaId = "rules" | "characterSpecs" | "dungeon";
 
 export function getGearPickFilterGridTemplateAreas(): string {
   return [
-    '"rules . characterSpecs"',
-    '"dungeon dungeon characterSpecs"',
+    '"rules characterSpecs characterSpecs"',
+    '"dungeon characterSpecs characterSpecs"',
   ].join(" ");
 }
