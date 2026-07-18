@@ -5,11 +5,13 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { IconButton, Stack, TableCell, TableRow, Tooltip } from "@mui/material";
+import { memo, useCallback } from "react";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
 import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
+import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
 import { CharacterToggleCell } from "./character-toggle-cell.tsx";
 import {
   pinnedColumnBodyAlign,
@@ -34,7 +36,66 @@ type DungeonTableRowProps = {
   onRequestDeleteDungeon: (dungeon: DungeonRecord) => void;
 };
 
-export function DungeonTableRow({
+function dungeonRowTogglesEqual(
+  previous: DungeonToggles,
+  next: DungeonToggles,
+  dungeonId: string,
+  characters: readonly CharacterRecord[],
+): boolean {
+  for (const character of characters) {
+    if (
+      isCooldownOn(previous, character.id, dungeonId) !==
+      isCooldownOn(next, character.id, dungeonId)
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function areDungeonTableRowPropsEqual(
+  previous: DungeonTableRowProps,
+  next: DungeonTableRowProps,
+): boolean {
+  if (previous.dungeon !== next.dungeon) {
+    return false;
+  }
+  if (previous.characters !== next.characters) {
+    return false;
+  }
+  if (previous.compactTable !== next.compactTable) {
+    return false;
+  }
+  if (previous.visiblePinnedColumns !== next.visiblePinnedColumns) {
+    return false;
+  }
+  if (previous.characterCount !== next.characterCount) {
+    return false;
+  }
+  if (previous.onDungeonToggle !== next.onDungeonToggle) {
+    return false;
+  }
+  if (previous.onEditDungeon !== next.onEditDungeon) {
+    return false;
+  }
+  if (previous.onRequestDeleteDungeon !== next.onRequestDeleteDungeon) {
+    return false;
+  }
+  if (
+    previous.completionsByDungeonId[previous.dungeon.id] !==
+    next.completionsByDungeonId[next.dungeon.id]
+  ) {
+    return false;
+  }
+  return dungeonRowTogglesEqual(
+    previous.dungeonToggles,
+    next.dungeonToggles,
+    previous.dungeon.id,
+    previous.characters,
+  );
+}
+
+export const DungeonTableRow = memo(function DungeonTableRow({
   dungeon,
   characters,
   compactTable,
@@ -50,6 +111,14 @@ export function DungeonTableRow({
   const { getBisSlotMapForSpec } = useBisListsContext();
   const dungeonDisplayName = getLocalizedDungeonDisplayName(dungeon, locale, false);
 
+  const handleEdit = useCallback(() => {
+    onEditDungeon(dungeon.id);
+  }, [dungeon.id, onEditDungeon]);
+
+  const handleRequestDelete = useCallback(() => {
+    onRequestDeleteDungeon(dungeon);
+  }, [dungeon, onRequestDeleteDungeon]);
+
   return (
     <TableRow hover>
       <TableCell sx={pinnedActionsColumnSx(compactTable, false)}>
@@ -58,26 +127,22 @@ export function DungeonTableRow({
             <IconButton
               size="small"
               color="default"
-              onClick={() => {
-                onEditDungeon(dungeon.id);
-              }}
+              onClick={handleEdit}
               aria-label={t("table.editDungeon", { name: dungeonDisplayName })}
             >
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title={t("table.deleteDungeon", { name: dungeonDisplayName })}>
-          <IconButton
-            size="small"
-            color="error"
-            onClick={() => {
-              onRequestDeleteDungeon(dungeon);
-            }}
-            aria-label={t("table.deleteDungeon", { name: dungeonDisplayName })}
-          >
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+            <IconButton
+              size="small"
+              color="error"
+              onClick={handleRequestDelete}
+              aria-label={t("table.deleteDungeon", { name: dungeonDisplayName })}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Stack>
       </TableCell>
       {visiblePinnedColumns.map((column) => (
@@ -108,4 +173,4 @@ export function DungeonTableRow({
       ))}
     </TableRow>
   );
-}
+}, areDungeonTableRowPropsEqual);

@@ -1,7 +1,9 @@
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { Box, Chip, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { memo, useCallback } from "react";
 import type { TranslateFn } from "../../i18n/translate.ts";
+import { useTranslation } from "../../i18n/use-translation.ts";
 import type { GearPickItem } from "../../utils/build-gear-pick-items.ts";
 import {
   softWeightKeys,
@@ -19,10 +21,25 @@ type GearPickItemRowProps = {
   system: SoftRollSystem;
   remainingBudgetForItem: number;
   itemLabel: string;
-  onMySoftsChange: (mySofts: number) => void;
-  onOthersCountChange: (weight: number, count: number) => void;
-  t: TranslateFn;
+  onMySoftsChange: (itemId: number, mySofts: number) => void;
+  onOthersCountChange: (itemId: number, weight: number, count: number) => void;
 };
+
+function areGearPickItemRowPropsEqual(
+  previous: GearPickItemRowProps,
+  next: GearPickItemRowProps,
+): boolean {
+  return (
+    previous.item === next.item &&
+    previous.assignment === next.assignment &&
+    previous.maxSofts === next.maxSofts &&
+    previous.system === next.system &&
+    previous.remainingBudgetForItem === next.remainingBudgetForItem &&
+    previous.itemLabel === next.itemLabel &&
+    previous.onMySoftsChange === next.onMySoftsChange &&
+    previous.onOthersCountChange === next.onOthersCountChange
+  );
+}
 
 function SoftStepper({
   value,
@@ -148,7 +165,7 @@ function competitionCaption(
   };
 }
 
-export function GearPickItemRow({
+export const GearPickItemRow = memo(function GearPickItemRow({
   item,
   assignment,
   maxSofts,
@@ -157,12 +174,26 @@ export function GearPickItemRow({
   itemLabel,
   onMySoftsChange,
   onOthersCountChange,
-  t,
 }: GearPickItemRowProps) {
+  const { t } = useTranslation();
   const competition = summarizeSoftCompetition(assignment, system, maxSofts);
   const weightKeys = softWeightKeys(maxSofts);
   const caption = competitionCaption(competition, maxSofts, t);
   const hasMaxSoftCaller = competition.maxSoftCallerCount > 0;
+
+  const handleMySoftsChange = useCallback(
+    (mySofts: number) => {
+      onMySoftsChange(item.itemId, mySofts);
+    },
+    [item.itemId, onMySoftsChange],
+  );
+
+  const handleOthersCountChange = useCallback(
+    (weight: number, count: number) => {
+      onOthersCountChange(item.itemId, weight, count);
+    },
+    [item.itemId, onOthersCountChange],
+  );
 
   return (
     <Box
@@ -198,7 +229,7 @@ export function GearPickItemRow({
           value={assignment.mySofts}
           min={0}
           max={remainingBudgetForItem}
-          onChange={onMySoftsChange}
+          onChange={handleMySoftsChange}
           decreaseAria={t("gearPickPanel.decreaseMySoftsAria", { item: itemLabel })}
           increaseAria={t("gearPickPanel.increaseMySoftsAria", { item: itemLabel })}
           valueAria={t("gearPickPanel.mySoftsAria", { item: itemLabel })}
@@ -298,7 +329,7 @@ export function GearPickItemRow({
                     min={0}
                     max={99}
                     onChange={(next) => {
-                      onOthersCountChange(weight, next);
+                      handleOthersCountChange(weight, next);
                     }}
                     decreaseAria={t("gearPickPanel.decreaseOthersAria", {
                       weight,
@@ -337,4 +368,4 @@ export function GearPickItemRow({
       </Stack>
     </Box>
   );
-}
+}, areGearPickItemRowPropsEqual);
