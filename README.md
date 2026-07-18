@@ -2,7 +2,7 @@
 
 Web app to track which raid cooldowns each character has used per dungeon (WotLK-focused). Data persists in `localStorage`.
 
-![App version](https://img.shields.io/badge/App_version-1.47.0-purple)
+![App version](https://img.shields.io/badge/App_version-1.48.0-purple)
 ![Game version](https://img.shields.io/badge/WoW-3.3.5a-brown)
 
 ## Features
@@ -31,7 +31,7 @@ Plan soft reserves for one character + spec. Open via toolbar **Soft pick** (EN)
 
 ### BiS builds
 
-Built-in presets per spec (Titans + community sources); toolbar **BiS builds** (EN) / **BIS сборки** (RU). Save editable local copies; drives gear upgrade hints. Slot rows show WoW paper-doll placeholder icons beside localized labels (Back uses the Chest icon); read-only presets use a compact layout with truncated slot names.
+Built-in presets per spec (Titans + community sources); toolbar **BiS builds** (EN) / **BIS сборки** (RU). Save editable local copies; drives gear upgrade hints. Slot rows show WoW paper-doll placeholder icons beside localized labels (Back uses the Chest icon); read-only presets use a compact layout with truncated slot names. Save failures (e.g. storage quota) show an alert; malformed local entries are skipped on load rather than wiping the store.
 
 ### Gear hints
 
@@ -85,7 +85,7 @@ Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spe
 | Key | Contents |
 |-----|----------|
 | `my-raid-cds` | Characters, dungeons, toggles (`schemaVersion` 5) |
-| `my-raid-cds-bis-lists` | BiS preset selections and local lists |
+| `my-raid-cds-bis-lists` | BiS preset selections and local lists (malformed entries skipped on load) |
 | `my-raid-cds-item-tooltip-locale` | `en` or `ru` |
 | `my-raid-cds-color-mode` | Light/dark preference |
 

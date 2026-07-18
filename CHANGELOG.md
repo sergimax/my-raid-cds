@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.48.0] - 2026-07-19
+
+### Added
+
+- **BiS save errors:** BiS builds panel shows a localized alert when localStorage save fails (quota exceeded or generic failure).
+
+### Fixed
+
+- **BiS local lists load:** Malformed entries or slots in saved BiS data are skipped instead of wiping the whole BiS store.
+
+### Changed
+
+- **Gear hints performance:** Table cell tints use a cheaper evaluation path; boss-grouped loot for tooltips and Soft pick is built when needed. Bundled item lookups use numeric ID maps for faster access.
+
 ## [1.47.0] - 2026-07-18
 
 ### Changed
