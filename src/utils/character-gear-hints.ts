@@ -51,7 +51,11 @@ type GearHintDungeon = Pick<
   "name" | "shortName" | "raidKey" | "itemLevel" | "size" | "difficulty"
 >;
 
-/** Tint-level evaluation: gear hint tracks + tier tokens (no boss grouping). */
+/**
+ * Cheap per-spec path for table cell tints: upgrade tracks + tier tokens only.
+ * Skip boss grouping here — that work belongs in {@link withBossLootGroups}
+ * when a tooltip opens or Soft pick builds item lists.
+ */
 export function evaluateSpecGearHintCore(
   specGear: CharacterSpecGear,
   className: ClassName,
@@ -80,7 +84,10 @@ export function evaluateSpecGearHintCore(
   };
 }
 
-/** Attach boss-grouped loot lists for tooltip / Soft pick display. */
+/**
+ * Enrich a tint core with boss-grouped loot for tooltips / Soft pick.
+ * Call only when the UI needs item lists (not on every cell paint).
+ */
 export function withBossLootGroups(
   core: SpecGearHintCore,
   dungeon: GearHintDungeon,
@@ -125,7 +132,7 @@ export function withBossLootGroups(
   };
 }
 
-/** Full single-spec evaluation (tint + boss groups). */
+/** One spec, full details — Soft pick and any caller that needs boss groups up front. */
 export function evaluateSpecGearHint(
   specGear: CharacterSpecGear,
   className: ClassName,
@@ -140,7 +147,7 @@ export function evaluateSpecGearHint(
   );
 }
 
-/** Per-cell tint path: both specs, no boss grouping. */
+/** Both specs for one character–dungeon cell (tint only). */
 export function evaluateCharacterGearHintTints(
   character: CharacterRecord,
   dungeon: GearHintDungeon,
@@ -174,7 +181,7 @@ export function evaluateCharacterGearHintTints(
   return tints;
 }
 
-/** Enrich tint cores with boss loot for tooltip content. */
+/** Lazy tooltip path: reuse tint cores, add boss groups once the tooltip opens. */
 export function evaluateCharacterGearHintsFromTints(
   tints: CharacterGearHintTints,
   dungeon: GearHintDungeon,

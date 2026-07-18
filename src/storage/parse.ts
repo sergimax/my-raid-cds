@@ -12,10 +12,10 @@ import {
   type DungeonToggles,
 } from "../types/dungeons.ts";
 import {
-  CURRENT_SCHEMA_VERSION,
   LOAD_WARNING_CORRUPTED_SAVE,
   STORAGE_KEY,
 } from "./constants.ts";
+import { migrateStoredPayload } from "./migrate.ts";
 import {
   EMPTY_STATE,
   type LoadRaidTrackerResult,
@@ -74,14 +74,6 @@ function readRawPayload(): { payload: StoredPayload | null; corrupted: boolean }
     },
     corrupted: false,
   };
-}
-
-/** Reserved for future shape changes; v1 is the first versioned save format. */
-function migrateStoredPayload(payload: StoredPayload): StoredPayload {
-  if (payload.schemaVersion === undefined || payload.schemaVersion < 1) {
-    return { ...payload, schemaVersion: CURRENT_SCHEMA_VERSION };
-  }
-  return payload;
 }
 
 function toDungeonRecord(stored: StoredDungeon): DungeonRecord | null {

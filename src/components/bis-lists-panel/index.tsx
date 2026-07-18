@@ -1,6 +1,7 @@
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import SaveIcon from "@mui/icons-material/Save";
 import {
+  Alert,
   Box,
   Button,
   Chip,
@@ -15,6 +16,7 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { specsForClass } from "../../data/class-specs.ts";
+import type { TranslateFn } from "../../i18n/translate.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import {
   getLocalizedClassName,
@@ -22,6 +24,10 @@ import {
 } from "../../i18n/localized-domain.ts";
 import { useBisListsContext } from "../../hooks/use-bis-lists-context.ts";
 import { useBisListsEditorState } from "../../hooks/use-bis-lists-editor-state.ts";
+import {
+  BIS_LISTS_STORAGE_QUOTA_MESSAGE,
+  BIS_LISTS_STORAGE_SAVE_FAILED_MESSAGE,
+} from "../../storage/bis-lists/index.ts";
 import { Classes, ClassName, type ClassName as ClassNameType } from "../../types/characters.ts";
 import {
   hasBuiltInBisForSpec,
@@ -34,6 +40,16 @@ import { BisSlotRow } from "../bis-slot-row/index.tsx";
 import { ClassOptionLabel } from "../class-option-label/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 import { SpecOptionLabel } from "../spec-option-label/index.tsx";
+
+function localizeBisStorageMessage(message: string, t: TranslateFn): string {
+  if (message === BIS_LISTS_STORAGE_QUOTA_MESSAGE) {
+    return t("storage.quotaExceeded");
+  }
+  if (message === BIS_LISTS_STORAGE_SAVE_FAILED_MESSAGE) {
+    return t("storage.saveFailed");
+  }
+  return message;
+}
 
 const bisClassSpecSelectSx = {
   "& .MuiSelect-select": {
@@ -248,6 +264,11 @@ export function BisListsPanel() {
 
   return (
     <Stack spacing={1.25}>
+      {bisLists.storageError ? (
+        <Alert severity="error">
+          {localizeBisStorageMessage(bisLists.storageError, t)}
+        </Alert>
+      ) : null}
       <Box
         sx={{
           display: "grid",

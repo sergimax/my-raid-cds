@@ -1,5 +1,5 @@
 import type { SubmitEvent } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { defaultDungeonFormValues } from "../constants/dungeon-form-defaults.ts";
 import { useTranslation } from "../i18n/use-translation.ts";
 import type {
@@ -12,10 +12,13 @@ import { generateUUID } from "../uuid.ts";
 
 type UseDungeonFormStateOptions = {
   onDungeonAdded: (dungeon: DungeonRecord) => void;
+  /** Called after a successful submit closes the form. */
+  onSubmitted?: () => void;
 };
 
 export function useDungeonFormState({
   onDungeonAdded,
+  onSubmitted,
 }: UseDungeonFormStateOptions) {
   const { locale } = useTranslation();
   const defaults = defaultDungeonFormValues();
@@ -97,26 +100,57 @@ export function useDungeonFormState({
       });
       setIsOpen(false);
       resetFields();
+      onSubmitted?.();
     },
-    [difficulty, itemLevelText, locale, name, onDungeonAdded, resetFields, shortName, size],
+    [
+      difficulty,
+      itemLevelText,
+      locale,
+      name,
+      onDungeonAdded,
+      onSubmitted,
+      resetFields,
+      shortName,
+      size,
+    ],
   );
 
-  return {
-    isOpen,
-    open,
-    close,
-    resetFields,
-    name,
-    setName,
-    shortName,
-    setShortName,
-    size,
-    setSize,
-    itemLevelText,
-    setItemLevelText,
-    difficulty,
-    setDifficulty,
-    error,
-    handleSubmit,
-  };
+  return useMemo(
+    () => ({
+      isOpen,
+      open,
+      close,
+      resetFields,
+      name,
+      setName,
+      shortName,
+      setShortName,
+      size,
+      setSize,
+      itemLevelText,
+      setItemLevelText,
+      difficulty,
+      setDifficulty,
+      error,
+      handleSubmit,
+    }),
+    [
+      close,
+      difficulty,
+      error,
+      handleSubmit,
+      isOpen,
+      itemLevelText,
+      name,
+      open,
+      resetFields,
+      setDifficulty,
+      setItemLevelText,
+      setName,
+      setShortName,
+      setSize,
+      shortName,
+      size,
+    ],
+  );
 }

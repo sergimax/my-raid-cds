@@ -63,6 +63,48 @@ describe("loadLocalBisListsState", () => {
     localStorage.setItem(BIS_LISTS_STORAGE_KEY, JSON.stringify(persisted));
     expect(loadLocalBisListsState()).toEqual(persisted);
   });
+
+  it("drops malformed entries and presets while keeping valid ones", () => {
+    const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
+    writeRawBisListsStorage(
+      JSON.stringify({
+        schemaVersion: BIS_LISTS_SCHEMA_VERSION,
+        entries: {
+          [storageKey]: {
+            selectedPresetId: "local-1",
+            presets: [
+              {
+                id: "local-1",
+                name: "Mine",
+                slots: [{ slot: 0, itemIds: [51312, "bad", 0, 51127] }],
+              },
+              { id: "", name: "Broken", slots: [] },
+            ],
+          },
+          "not-a-key": {
+            selectedPresetId: "x",
+            presets: [],
+          },
+        },
+      }),
+    );
+
+    expect(loadLocalBisListsState()).toEqual({
+      schemaVersion: BIS_LISTS_SCHEMA_VERSION,
+      entries: {
+        [storageKey]: {
+          selectedPresetId: "local-1",
+          presets: [
+            {
+              id: "local-1",
+              name: "Mine",
+              slots: [{ slot: 0, itemIds: [51312, 51127] }],
+            },
+          ],
+        },
+      },
+    });
+  });
 });
 
 describe("saveLocalBisListsState", () => {

@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
 import {
   BIS_LISTS_SCHEMA_VERSION,
@@ -7,7 +7,10 @@ import {
 } from "../storage/bis-lists/constants.ts";
 import { ClassName } from "../types/characters.ts";
 import { specBisStorageKey } from "../utils/bis-lists.ts";
-import { useBisListsDomain } from "./use-bis-lists-domain.ts";
+import {
+  BIS_LISTS_SAVE_DEBOUNCE_MS,
+  useBisListsDomain,
+} from "./use-bis-lists-domain.ts";
 
 const builtInPresetId = unholyDeathKnightBis.presets[0]!.id;
 const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
@@ -17,9 +20,20 @@ function readPersistedBisLists() {
   return raw ? JSON.parse(raw) : null;
 }
 
+function flushBisListsSave() {
+  act(() => {
+    vi.advanceTimersByTime(BIS_LISTS_SAVE_DEBOUNCE_MS);
+  });
+}
+
 describe("useBisListsDomain", () => {
   beforeEach(() => {
     localStorage.clear();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("selectPreset persists the selection and keeps local presets", () => {
@@ -48,6 +62,7 @@ describe("useBisListsDomain", () => {
     );
     expect(presets.some((preset) => preset.id.startsWith("local-"))).toBe(true);
 
+    flushBisListsSave();
     const persisted = readPersistedBisLists();
     expect(persisted.entries[storageKey].selectedPresetId).toBe(builtInPresetId);
     expect(persisted.entries[storageKey].presets).toHaveLength(1);
@@ -74,6 +89,7 @@ describe("useBisListsDomain", () => {
       51312,
     ]);
 
+    flushBisListsSave();
     const persisted = readPersistedBisLists();
     expect(persisted.schemaVersion).toBe(BIS_LISTS_SCHEMA_VERSION);
     expect(persisted.entries[storageKey].presets[0].name).toBe("My list");
@@ -139,6 +155,7 @@ describe("useBisListsDomain", () => {
     expect(
       result.current.getBisSlotMapForSpec(ClassName.DeathKnight, "Unholy").get(0),
     ).toEqual([51312]);
+    flushBisListsSave();
     expect(readPersistedBisLists().entries[storageKey].presets).toEqual([]);
   });
 

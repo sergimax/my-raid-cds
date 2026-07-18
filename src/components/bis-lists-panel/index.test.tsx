@@ -6,7 +6,12 @@ import {
   BIS_LISTS_STORAGE_KEY,
 } from "../../storage/bis-lists/constants.ts";
 import { ClassName } from "../../types/characters.ts";
-import { renderWithTheme, screen, within } from "../../test/render-with-theme.tsx";
+import {
+  renderWithTheme,
+  screen,
+  waitFor,
+  within,
+} from "../../test/render-with-theme.tsx";
 import { specBisStorageKey } from "../../utils/bis-lists.ts";
 
 function seedLocalUnholyPreset(presetName: string, presetId = "local-test") {
@@ -77,9 +82,11 @@ describe("BisListsPanel", () => {
 
     expect(screen.getByRole("button", { name: /My DK copy/i })).toBeInTheDocument();
 
-    const persisted = JSON.parse(localStorage.getItem(BIS_LISTS_STORAGE_KEY)!);
     const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
-    expect(persisted.entries[storageKey].presets[0].name).toBe("My DK copy");
+    await waitFor(() => {
+      const persisted = JSON.parse(localStorage.getItem(BIS_LISTS_STORAGE_KEY)!);
+      expect(persisted.entries[storageKey].presets[0].name).toBe("My DK copy");
+    });
   });
 
   it("disables save while edited slots are unconfirmed", async () => {
@@ -127,11 +134,13 @@ describe("BisListsPanel", () => {
       screen.getByRole("link", { name: /Sanctified Scourgelord Helmet/i }),
     ).toBeInTheDocument();
 
-    const persisted = JSON.parse(localStorage.getItem(BIS_LISTS_STORAGE_KEY)!);
     const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
-    expect(persisted.entries[storageKey].presets[0].slots).toEqual([
-      { slot: 0, itemIds: [51312] },
-    ]);
+    await waitFor(() => {
+      const persisted = JSON.parse(localStorage.getItem(BIS_LISTS_STORAGE_KEY)!);
+      expect(persisted.entries[storageKey].presets[0].slots).toEqual([
+        { slot: 0, itemIds: [51312] },
+      ]);
+    });
   });
 
   it("deletes a local preset from the sidebar", async () => {
@@ -145,8 +154,10 @@ describe("BisListsPanel", () => {
     expect(screen.queryByRole("button", { name: /Deletable list/i })).not.toBeInTheDocument();
     expect(screen.getByText(/Udk-STR \(Warmane/i)).toBeInTheDocument();
 
-    const persisted = JSON.parse(localStorage.getItem(BIS_LISTS_STORAGE_KEY)!);
     const storageKey = specBisStorageKey(ClassName.DeathKnight, "Unholy");
-    expect(persisted.entries[storageKey].presets).toHaveLength(0);
+    await waitFor(() => {
+      const persisted = JSON.parse(localStorage.getItem(BIS_LISTS_STORAGE_KEY)!);
+      expect(persisted.entries[storageKey].presets).toHaveLength(0);
+    });
   });
 });
