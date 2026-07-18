@@ -1,9 +1,9 @@
+import { buildItemIdMap } from "./build-item-id-map.ts";
 import itemLevelsJson from "./wotlk-item-levels.json";
 
-const itemLevels = itemLevelsJson as Record<string, number>;
+const itemLevelsById = buildItemIdMap(itemLevelsJson as Record<string, number>);
 
 /** WotLK item level for a game item id, when known in the bundled WowSims database. */
 export function getWotlkItemLevel(itemId: number): number | undefined {
-  const level = itemLevels[String(itemId)];
-  return typeof level === "number" ? level : undefined;
+  return itemLevelsById.get(itemId);
 }

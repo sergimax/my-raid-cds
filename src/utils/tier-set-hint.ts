@@ -1,40 +1,21 @@
 import type { ItemTooltipLocale } from "../constants/item-tooltips.ts";
 import { getWotlkItemName } from "../data/wotlk-item-names.ts";
-import tierSetsByItemIdJson from "../data/tier-sets-by-item-id.json";
 import {
   dungeonDropsTierSetToken,
   getTierSetTokenName,
   canClassUseTierSetToken,
 } from "../data/tier-set-tokens.ts";
-import { getTierSetItemEntry, isTierSetGearSlot } from "../data/tier-sets.ts";
+import {
+  findTierSetPieceItemIdAtStep,
+  getTierSetItemEntry,
+  isTierSetGearSlot,
+} from "../data/tier-sets.ts";
 import type { ClassName } from "../types/characters.ts";
 import type { CharacterGearItem } from "../types/character-gear.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { TierSetHint, TierSetItemEntry, TierSetTokenNeed } from "../types/tier-sets.ts";
 import type { BisSlotMap } from "./bis-lists.ts";
 import { resolveDungeonRaidKey } from "./resolve-dungeon-raid-key.ts";
-
-const tierSetsByItemId = tierSetsByItemIdJson as Record<string, TierSetItemEntry>;
-
-const setPieceIdsCache = new Map<string, number[]>();
-
-function findSetPieceIds(setName: string, slot: number): readonly number[] {
-  const cacheKey = `${setName}|${slot}`;
-  const cached = setPieceIdsCache.get(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
-  const itemIds: number[] = [];
-  for (const [itemIdText, entry] of Object.entries(tierSetsByItemId)) {
-    if (entry.setName === setName && entry.slot === slot) {
-      itemIds.push(Number(itemIdText));
-    }
-  }
-
-  setPieceIdsCache.set(cacheKey, itemIds);
-  return itemIds;
-}
 
 function equippedItemIdForSlot(
   gearItems: readonly CharacterGearItem[],
@@ -69,13 +50,17 @@ function findSetEntryAtStep(
   slot: number,
   step: number,
 ): { itemId: number; entry: TierSetItemEntry } | undefined {
-  for (const itemId of findSetPieceIds(setName, slot)) {
-    const entry = getTierSetItemEntry(itemId);
-    if (entry?.step === step) {
-      return { itemId, entry };
-    }
+  if (step !== 1 && step !== 2 && step !== 3) {
+    return undefined;
   }
-  return undefined;
+
+  const itemId = findTierSetPieceItemIdAtStep(setName, slot, step);
+  if (itemId === undefined) {
+    return undefined;
+  }
+
+  const entry = getTierSetItemEntry(itemId);
+  return entry ? { itemId, entry } : undefined;
 }
 
 function isEquippedBisTarget(

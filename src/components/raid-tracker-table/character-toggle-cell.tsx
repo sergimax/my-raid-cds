@@ -1,9 +1,9 @@
 import { Switch, TableCell, Tooltip, Box } from "@mui/material";
 import { useCallback, useMemo, useState, memo } from "react";
 import type { AppLocale } from "../../i18n/types.ts";
-import type { CharacterRecord, ClassName } from "../../types/characters.ts";
+import type { CharacterRecord } from "../../types/characters.ts";
 import type { DungeonRecord, DungeonToggles } from "../../types/dungeons.ts";
-import type { BisSlotMap } from "../../utils/bis-lists.ts";
+import type { GetBisSlotMapForSpec } from "../../utils/bis-lists.ts";
 import { isCooldownOn } from "../../utils/dungeon-toggles.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import { getLocalizedDungeonDisplayName } from "../../i18n/localized-domain.ts";
@@ -19,8 +19,6 @@ import {
 } from "../../utils/gear-hint-display.ts";
 import { GearHintTooltipContent } from "../gear-hint-tooltip/index.tsx";
 import { CHARACTER_BODY_CELL_SX } from "./table-layout.ts";
-
-type GetBisSlotMapForSpec = (className: ClassName, spec: string) => BisSlotMap;
 
 type CharacterToggleCellProps = {
   character: CharacterRecord;

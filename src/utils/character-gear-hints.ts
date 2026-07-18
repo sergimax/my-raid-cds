@@ -2,7 +2,7 @@ import type { AppLocale } from "../i18n/types.ts";
 import type { ClassName, CharacterRecord, CharacterSpecGear } from "../types/characters.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
 import type { TierSetHint } from "../types/tier-sets.ts";
-import type { BisSlotMap } from "./bis-lists.ts";
+import type { GetBisSlotMapForSpec } from "./bis-lists.ts";
 import {
   evaluateGearUpgradeHint,
   collectMissingBisLootItemIds,
@@ -40,11 +40,6 @@ export type CharacterGearHints = {
   main?: SpecGearHint;
   off?: SpecGearHint;
 };
-
-type GetBisSlotMapForSpec = (
-  className: ClassName,
-  spec: string,
-) => BisSlotMap;
 
 type GearHintDungeon = Pick<
   DungeonRecord,

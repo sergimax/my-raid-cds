@@ -1,6 +1,7 @@
 import dropSourcesJson from "./wotlk-item-drop-sources.json";
 import type { RaidKey } from "./raid-names.ts";
 import { DungeonDifficulty, type DungeonSize } from "../types/dungeons.ts";
+import { buildItemIdMap } from "./build-item-id-map.ts";
 
 /** Compact drop source row from bundled WowSims data (`wotlk-item-drop-sources.json`). */
 export type BundledItemDropSourceRow = {
@@ -21,10 +22,6 @@ export type ItemDropSource = {
   difficulty: (typeof DungeonDifficulty)[keyof typeof DungeonDifficulty];
 };
 
-const dropSourcesByItemId = dropSourcesJson as Record<string, BundledItemDropSourceRow[]>;
-
-const mappedDropSourcesByItemId = new Map<number, readonly ItemDropSource[]>();
-
 function toItemDropSource(row: BundledItemDropSourceRow): ItemDropSource {
   return {
     bossName: row.b,
@@ -34,21 +31,22 @@ function toItemDropSource(row: BundledItemDropSourceRow): ItemDropSource {
   };
 }
 
+const bundledRowsByItemId = buildItemIdMap(
+  dropSourcesJson as Record<string, BundledItemDropSourceRow[]>,
+);
+
+/** Eagerly mapped drop sources (empty array when the item has no raid drops). */
+const dropSourcesByItemId = new Map<number, readonly ItemDropSource[]>();
+for (const [itemId, rows] of bundledRowsByItemId) {
+  dropSourcesByItemId.set(
+    itemId,
+    rows.length > 0 ? rows.map(toItemDropSource) : [],
+  );
+}
+
+const EMPTY_DROP_SOURCES: readonly ItemDropSource[] = [];
+
 /** Boss / raid drop sources for a bundled item id (empty when unknown or non-raid). */
 export function getItemDropSources(itemId: number): readonly ItemDropSource[] {
-  const cached = mappedDropSourcesByItemId.get(itemId);
-  if (cached !== undefined) {
-    return cached;
-  }
-
-  const rows = dropSourcesByItemId[String(itemId)];
-  if (!rows || rows.length === 0) {
-    const empty: readonly ItemDropSource[] = [];
-    mappedDropSourcesByItemId.set(itemId, empty);
-    return empty;
-  }
-
-  const mapped = rows.map(toItemDropSource);
-  mappedDropSourcesByItemId.set(itemId, mapped);
-  return mapped;
+  return dropSourcesByItemId.get(itemId) ?? EMPTY_DROP_SOURCES;
 }

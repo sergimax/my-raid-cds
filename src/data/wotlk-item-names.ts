@@ -1,12 +1,13 @@
 import type { ItemTooltipLocale } from "../constants/item-tooltips.ts";
+import { buildItemIdMap } from "./build-item-id-map.ts";
 import itemNamesJson from "./wotlk-item-names.json";
 import itemNamesRuJson from "./wotlk-item-names-ru.json";
 
-const itemNamesEn = itemNamesJson as Record<string, string>;
-const itemNamesRu = itemNamesRuJson as Record<string, string>;
+const itemNamesEnById = buildItemIdMap(itemNamesJson as Record<string, string>);
+const itemNamesRuById = buildItemIdMap(itemNamesRuJson as Record<string, string>);
 
-function readName(map: Record<string, string>, itemId: number): string | undefined {
-  const name = map[String(itemId)];
+function readName(map: Map<number, string>, itemId: number): string | undefined {
+  const name = map.get(itemId);
   return typeof name === "string" && name.length > 0 ? name : undefined;
 }
 
@@ -16,8 +17,8 @@ export function getWotlkItemName(
   locale: ItemTooltipLocale = "en",
 ): string | undefined {
   if (locale === "ru") {
-    return readName(itemNamesRu, itemId) ?? readName(itemNamesEn, itemId);
+    return readName(itemNamesRuById, itemId) ?? readName(itemNamesEnById, itemId);
   }
 
-  return readName(itemNamesEn, itemId);
+  return readName(itemNamesEnById, itemId);
 }

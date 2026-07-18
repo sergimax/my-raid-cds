@@ -54,6 +54,12 @@ function resolveBisSegmentItemId(
 
 export type BisSlotMap = ReadonlyMap<number, readonly number[]>;
 
+/** Lookup selected BiS slot map for a class/spec (domain callback shape). */
+export type GetBisSlotMapForSpec = (
+  className: ClassName,
+  spec: string,
+) => BisSlotMap;
+
 export function specBisStorageKey(className: ClassName, spec: string): string {
   return `${className}|${spec}`;
 }
