@@ -13,11 +13,8 @@ export const EXPORT_FILTER_GRID_GAP_SPACING = 1.5;
 /** Max height of the export result list before it scrolls (stacked layout). */
 export const EXPORT_RESULT_MAX_HEIGHT = 320;
 
-/** Width of one grid column unit (export filter blocks use width × height spans). */
+/** Width of one grid column unit (export / Soft pick filter blocks share this). */
 export const EXPORT_FILTER_UNIT_WIDTH = 300;
-
-/** Specs column is wider — two spec checkboxes + gear scores need more room. */
-export const EXPORT_FILTER_SPECS_UNIT_WIDTH = 380;
 
 /**
  * Fixed height of one grid row unit (1× block).
@@ -25,13 +22,23 @@ export const EXPORT_FILTER_SPECS_UNIT_WIDTH = 380;
  */
 export const EXPORT_FILTER_UNIT_HEIGHT = 224;
 
+/**
+ * Character-spec list (Character pick + Soft pick) — fits a 2×1 unit column.
+ * Shared so both panels stay equal in size.
+ */
+export const CHARACTER_SPEC_LIST_GRID_TEMPLATE_COLUMNS =
+  "minmax(0, 1fr) auto auto";
+export const CHARACTER_SPEC_LIST_COLUMN_GAP = 0.5;
+export const CHARACTER_SPEC_LIST_ROW_GAP = 0.75;
+export const CHARACTER_SPEC_LIST_ICON_SIZE = 16;
+
 /** Character spec rows visible before the list scrolls (2× block content). */
 export const EXPORT_FILTER_SPECS_VISIBLE_ROW_COUNT = 8;
 
 /** Spec row height — small FormControlLabel with spec icon + gear score. */
 export const EXPORT_FILTER_SPECS_ROW_HEIGHT_PX = 38;
 
-/** Matches `rowGap: 0.75` in export-character-spec-filter (8px theme spacing). */
+/** Matches `CHARACTER_SPEC_LIST_ROW_GAP` (0.75 → 6px at default spacing). */
 export const EXPORT_FILTER_SPECS_ROW_GAP_PX = 6;
 
 /** Max scroll viewport height for the character specs list (8 rows). */
@@ -78,10 +85,34 @@ export function getExportFilterGridHeight(
 
 export type ExportFilterGridAreaId = keyof typeof EXPORT_FILTER_BLOCK_SPANS;
 
+export function getFilterUnitColumnTemplate(): string {
+  return `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
+}
+
 export function getExportFilterGridTemplateColumns(): string {
-  const standardColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
-  const specsColumn = `minmax(0, ${EXPORT_FILTER_SPECS_UNIT_WIDTH}px)`;
-  return `${standardColumn} ${standardColumn} ${specsColumn}`;
+  const unitColumn = getFilterUnitColumnTemplate();
+  return `${unitColumn} ${unitColumn} ${unitColumn}`;
+}
+
+/** Shared grid sx for Character pick / Soft pick character-spec lists. */
+export function getCharacterSpecListGridSx(options?: {
+  maxHeight?: number;
+}): Record<string, unknown> {
+  return {
+    display: "grid",
+    gridTemplateColumns: CHARACTER_SPEC_LIST_GRID_TEMPLATE_COLUMNS,
+    columnGap: CHARACTER_SPEC_LIST_COLUMN_GAP,
+    rowGap: CHARACTER_SPEC_LIST_ROW_GAP,
+    alignItems: "center",
+    minWidth: 0,
+    ...(options?.maxHeight != null
+      ? {
+          maxHeight: options.maxHeight,
+          overflowY: "auto",
+          pr: 0.25,
+        }
+      : null),
+  };
 }
 
 export function getExportFilterGridTemplateRows(): string {
@@ -106,8 +137,5 @@ export function getExportFilterGridTemplateAreas(hasDungeon: boolean): string {
 }
 
 export function getExportFilterGridMaxWidth(): number {
-  return (
-    EXPORT_FILTER_UNIT_WIDTH * (EXPORT_FILTER_GRID_COLUMN_COUNT - 1) +
-    EXPORT_FILTER_SPECS_UNIT_WIDTH
-  );
+  return EXPORT_FILTER_UNIT_WIDTH * EXPORT_FILTER_GRID_COLUMN_COUNT;
 }

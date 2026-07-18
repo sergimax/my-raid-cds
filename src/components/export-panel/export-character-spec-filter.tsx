@@ -16,6 +16,11 @@ import {
   type ExportSpecSelectionByCharacterId,
 } from "../../utils/format-character-export.ts";
 import { CharacterSpecGearLabel } from "../spec-option-label/index.tsx";
+import { CharacterSpecListName } from "./character-spec-list-name.tsx";
+import {
+  CHARACTER_SPEC_LIST_ICON_SIZE,
+  getCharacterSpecListGridSx,
+} from "./constants.ts";
 
 type ExportCharacterSpecFilterProps = {
   characters: CharacterRecord[];
@@ -151,23 +156,32 @@ function ExportSpecCheckbox({
           characterClass={character.class}
           spec={specGear.spec}
           gearScore={specGear.gearScore}
-          iconSize={18}
+          iconSize={CHARACTER_SPEC_LIST_ICON_SIZE}
+          variant="caption"
           showSpecName={false}
           showDetailTooltip={false}
           color={cooldownInactive || specFilteredOut ? "text.secondary" : "inherit"}
         />
       }
       sx={{
-        mr: 0,
-        width: "100%",
-        ...(cooldownInactive && {
-          "& .MuiCheckbox-root": { opacity: 0.45 },
-          "& img": { opacity: 0.45, filter: "grayscale(1)" },
-        }),
-        ...(specFilteredOut && {
-          "& .MuiCheckbox-root": { opacity: 0.55 },
-          "& .MuiTypography-root": { textDecoration: "line-through" },
-        }),
+        m: 0,
+        gap: 0.25,
+        minWidth: 0,
+        "& .MuiCheckbox-root": {
+          p: 0.25,
+          ...(cooldownInactive
+            ? { opacity: 0.45 }
+            : specFilteredOut
+              ? { opacity: 0.55 }
+              : null),
+        },
+        "& .MuiFormControlLabel-label": { ml: 0, minWidth: 0 },
+        ...(cooldownInactive
+          ? { "& img": { opacity: 0.45, filter: "grayscale(1)" } }
+          : null),
+        ...(specFilteredOut
+          ? { "& .MuiTypography-root": { textDecoration: "line-through" } }
+          : null),
       }}
     />
   );
@@ -200,16 +214,7 @@ export function ExportCharacterSpecFilter({
   }
 
   return (
-    <Box
-      sx={{
-        display: "grid",
-        gridTemplateColumns: "max-content minmax(6rem, 1fr) minmax(6rem, 1fr)",
-        columnGap: 1,
-        rowGap: 0.75,
-        alignItems: "center",
-        minWidth: 0,
-      }}
-    >
+    <Box sx={getCharacterSpecListGridSx()}>
       {characters.map((character) => {
         const inactiveReason = getCharacterExportInactiveReason(
           character,
@@ -246,22 +251,13 @@ export function ExportCharacterSpecFilter({
           specPassesExportMinGearScore(character.offSpec, minGearScore);
         const cooldownInactive = inactiveReason === "cooldown";
         const characterName = (
-          <Typography
-            variant="body2"
-            sx={{
-              fontWeight: inactiveReason ? 500 : 600,
-              whiteSpace: "nowrap",
-              color:
-                inactiveReason === "cooldown"
-                  ? "text.disabled"
-                  : inactiveReason === "filters"
-                    ? "text.secondary"
-                    : "text.primary",
-              fontStyle: inactiveReason === "cooldown" ? "italic" : "normal",
-            }}
-          >
-            {character.name}
-          </Typography>
+          <CharacterSpecListName
+            name={character.name}
+            inactive={Boolean(inactiveReason)}
+            inactiveTone={
+              inactiveReason === "filters" ? "filters" : "cooldown"
+            }
+          />
         );
 
         return (
