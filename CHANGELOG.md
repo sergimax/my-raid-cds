@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.47.0] - 2026-07-18
+
+### Changed
+
+- **Soft pick layout:** Three breakpoints — stacked on small screens; medium puts softs beside filters with the soft-reserve call (1×2) below; wide (≥1600px) puts the call beside softs. Filter columns share one unit width so Rules, Raids, and Character & spec align as 1×1 / 2×1 blocks.
+- **Character pick specs column:** Same unit width as min GS / role (was wider); character-spec rows use the shared compact list layout with Soft pick (truncating names, denser radio/checkbox + GS).
+
 ## [1.46.0] - 2026-07-18
 
 ### Added
