@@ -91,19 +91,25 @@ function GearPickSpecRadio({
           characterClass={character.class}
           spec={specGear.spec}
           gearScore={specGear.gearScore}
-          iconSize={18}
+          iconSize={16}
+          variant="caption"
           showSpecName={false}
           showDetailTooltip={false}
           color={cooldownInactive ? "text.secondary" : "inherit"}
         />
       }
       sx={{
-        mr: 0,
-        width: "100%",
-        ...(cooldownInactive && {
-          "& .MuiRadio-root": { opacity: 0.45 },
-          "& img": { opacity: 0.45, filter: "grayscale(1)" },
-        }),
+        m: 0,
+        gap: 0.25,
+        minWidth: 0,
+        "& .MuiRadio-root": {
+          p: 0.25,
+          ...(cooldownInactive ? { opacity: 0.45 } : null),
+        },
+        "& .MuiFormControlLabel-label": { ml: 0, minWidth: 0 },
+        ...(cooldownInactive
+          ? { "& img": { opacity: 0.45, filter: "grayscale(1)" } }
+          : null),
       }}
     />
   );
@@ -147,14 +153,15 @@ export function GearPickCharacterSelect({
       }}
       sx={{
         display: "grid",
-        gridTemplateColumns: "max-content minmax(6rem, 1fr) minmax(6rem, 1fr)",
-        columnGap: 1,
+        // Fits a standard 1× unit column (name truncates; spec+GS stay compact).
+        gridTemplateColumns: "minmax(0, 1fr) auto auto",
+        columnGap: 0.5,
         rowGap: 0.75,
         alignItems: "center",
         minWidth: 0,
         maxHeight: listMaxHeight,
         overflowY: "auto",
-        pr: 0.5,
+        pr: 0.25,
       }}
     >
       {characters.map((character) => {
@@ -169,9 +176,13 @@ export function GearPickCharacterSelect({
         const characterName = (
           <Typography
             variant="body2"
+            title={character.name}
             sx={{
               fontWeight: cooldownInactive ? 500 : 600,
               whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              minWidth: 0,
               color: cooldownInactive ? "text.disabled" : "text.primary",
               fontStyle: cooldownInactive ? "italic" : "normal",
             }}

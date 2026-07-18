@@ -1,52 +1,66 @@
 import { describe, expect, it } from "vitest";
 import {
-  EXPORT_FILTER_SPECS_UNIT_WIDTH,
   EXPORT_FILTER_UNIT_HEIGHT,
   EXPORT_FILTER_UNIT_WIDTH,
 } from "../export-panel/constants.ts";
 import {
+  GEAR_PICK_COPY_BLOCK_SPAN,
   GEAR_PICK_SIDE_BY_SIDE_MIN_PX,
+  getGearPickCopyBlockMaxHeight,
+  getGearPickCopyBlockMaxWidth,
   getGearPickGridTemplateAreas,
   getGearPickGridTemplateColumns,
   getGearPickGridTemplateRows,
 } from "./constants.ts";
 
 describe("getGearPickGridTemplateAreas", () => {
-  it("places softs beside filters and copy full-width on medium", () => {
+  it("places softs beside filters and copy as 1×2 below on medium", () => {
     const areas = getGearPickGridTemplateAreas("md");
 
     expect(areas).toContain("rules characterSpecs softs");
     expect(areas).toContain("dungeon characterSpecs softs");
-    expect(areas).toContain("copy copy copy");
+    expect(areas).toContain("copy copy .");
   });
 
-  it("places copy as a fourth column on wide", () => {
+  it("places copy as a 1×2 top-right cell on wide", () => {
     const areas = getGearPickGridTemplateAreas("wide");
 
     expect(areas).toContain("rules characterSpecs softs copy");
-    expect(areas).toContain("dungeon characterSpecs softs copy");
-    expect(areas).not.toContain("copy copy copy");
+    expect(areas).toContain("dungeon characterSpecs softs .");
+  });
+});
+
+describe("GEAR_PICK_COPY_BLOCK_SPAN", () => {
+  it("is a 1×2 filter unit", () => {
+    expect(GEAR_PICK_COPY_BLOCK_SPAN).toEqual({
+      heightUnits: 1,
+      widthUnits: 2,
+    });
+    expect(getGearPickCopyBlockMaxWidth()).toBe(EXPORT_FILTER_UNIT_WIDTH * 2);
+    expect(getGearPickCopyBlockMaxHeight()).toBe(EXPORT_FILTER_UNIT_HEIGHT);
   });
 });
 
 describe("getGearPickGridTemplateColumns", () => {
-  it("uses fixed filter columns plus a flexible softs column on medium", () => {
+  it("uses equal unit-width columns for rules and character specs on medium", () => {
+    const unitColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
     expect(getGearPickGridTemplateColumns("md")).toBe(
-      `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px) minmax(0, ${EXPORT_FILTER_SPECS_UNIT_WIDTH}px) minmax(0, 1fr)`,
+      `${unitColumn} ${unitColumn} minmax(0, 1fr)`,
     );
   });
 
-  it("adds a flexible copy column on wide", () => {
+  it("keeps equal unit columns and a 1×2 copy column on wide", () => {
+    const unitColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
     expect(getGearPickGridTemplateColumns("wide")).toBe(
-      `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px) minmax(0, ${EXPORT_FILTER_SPECS_UNIT_WIDTH}px) minmax(0, 1fr) minmax(0, 1fr)`,
+      `${unitColumn} ${unitColumn} minmax(0, 1fr) minmax(0, ${EXPORT_FILTER_UNIT_WIDTH * 2}px)`,
     );
   });
 });
 
 describe("getGearPickGridTemplateRows", () => {
-  it("keeps two fixed filter rows plus an auto copy row on medium", () => {
+  it("keeps two fixed filter rows plus a 1× copy row on medium", () => {
     expect(getGearPickGridTemplateRows("md")).toBe(
-      `repeat(2, ${EXPORT_FILTER_UNIT_HEIGHT}px) auto`,
+      `repeat(2, ${EXPORT_FILTER_UNIT_HEIGHT}px) ${EXPORT_FILTER_UNIT_HEIGHT}px`,
     );
   });
 

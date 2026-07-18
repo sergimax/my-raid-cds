@@ -1,5 +1,5 @@
 import {
-  EXPORT_FILTER_SPECS_UNIT_WIDTH,
+  EXPORT_FILTER_UNIT_HEIGHT,
   EXPORT_FILTER_UNIT_WIDTH,
   getExportFilterGridTemplateRows,
 } from "../export-panel/constants.ts";
@@ -13,9 +13,10 @@ export {
 
 /**
  * Soft pick panel grid areas.
+ * Filter columns share one unit width so 1×1 / 2×1 blocks align visually.
  * - xs: stacked (DOM order)
- * - md: filters + softs; copy full-width below
- * - wide (≥1600): filters + softs + copy in one 2-row grid
+ * - md: filters + softs; copy 1×2 below
+ * - wide (≥1600): filters + softs; copy 1×2 top-right
  */
 export type GearPickGridAreaId =
   | "rules"
@@ -26,33 +27,53 @@ export type GearPickGridAreaId =
 
 export type GearPickGridLayout = "md" | "wide";
 
+/** Soft-reserve call (copy) block span — 1 row × 2 column units. */
+export const GEAR_PICK_COPY_BLOCK_SPAN = {
+  heightUnits: 1,
+  widthUnits: 2,
+} as const;
+
+export function getGearPickCopyBlockMaxWidth(): number {
+  return GEAR_PICK_COPY_BLOCK_SPAN.widthUnits * EXPORT_FILTER_UNIT_WIDTH;
+}
+
+export function getGearPickCopyBlockMaxHeight(
+  gridRowGapPx = 1.5 * 8,
+): number {
+  const { heightUnits } = GEAR_PICK_COPY_BLOCK_SPAN;
+  return (
+    heightUnits * EXPORT_FILTER_UNIT_HEIGHT + (heightUnits - 1) * gridRowGapPx
+  );
+}
+
 export function getGearPickGridTemplateAreas(layout: GearPickGridLayout): string {
   if (layout === "wide") {
     return [
       '"rules characterSpecs softs copy"',
-      '"dungeon characterSpecs softs copy"',
+      '"dungeon characterSpecs softs ."',
     ].join(" ");
   }
 
   return [
     '"rules characterSpecs softs"',
     '"dungeon characterSpecs softs"',
-    '"copy copy copy"',
+    '"copy copy ."',
   ].join(" ");
 }
 
 export function getGearPickGridTemplateColumns(
   layout: GearPickGridLayout,
 ): string {
-  const standardColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
-  const specsColumn = `minmax(0, ${EXPORT_FILTER_SPECS_UNIT_WIDTH}px)`;
+  /** Same unit width as rules / raids — Character & spec is a true 2×1. */
+  const unitColumn = `minmax(0, ${EXPORT_FILTER_UNIT_WIDTH}px)`;
   const flexibleColumn = "minmax(0, 1fr)";
+  const copyColumn = `minmax(0, ${getGearPickCopyBlockMaxWidth()}px)`;
 
   if (layout === "wide") {
-    return `${standardColumn} ${specsColumn} ${flexibleColumn} ${flexibleColumn}`;
+    return `${unitColumn} ${unitColumn} ${flexibleColumn} ${copyColumn}`;
   }
 
-  return `${standardColumn} ${specsColumn} ${flexibleColumn}`;
+  return `${unitColumn} ${unitColumn} ${flexibleColumn}`;
 }
 
 export function getGearPickGridTemplateRows(layout: GearPickGridLayout): string {
@@ -60,5 +81,5 @@ export function getGearPickGridTemplateRows(layout: GearPickGridLayout): string 
   if (layout === "wide") {
     return filterRows;
   }
-  return `${filterRows} auto`;
+  return `${filterRows} ${getGearPickCopyBlockMaxHeight()}px`;
 }
