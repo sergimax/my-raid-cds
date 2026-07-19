@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.48.1] - 2026-07-19
+
+### Fixed
+
+- **BiS save validation:** Saving a list with an invalid name (empty or a built-in list name) now returns the error to the BiS panel instead of reporting success.
+
 ## [1.48.0] - 2026-07-19
 
 ### Added
