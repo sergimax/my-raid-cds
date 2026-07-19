@@ -56,7 +56,11 @@ export function useBisListsDomain() {
   /** Prefer this over reading `localState` inside mutation callbacks. */
   const applyLocalUpdate = useCallback(
     (updater: (previous: LocalBisListsState) => LocalBisListsState) => {
-      setLocalState((previous) => updater(previous));
+      setLocalState((previous) => {
+        const next = updater(previous);
+        localStateRef.current = next;
+        return next;
+      });
     },
     [],
   );
@@ -115,30 +119,38 @@ export function useBisListsDomain() {
       name: string,
       slots: BisListSlot[],
     ): { ok: true } | { ok: false; error: string } => {
-      let result: { ok: true } | { ok: false; error: string } = { ok: true };
+      const builtInPresets = getBuiltInPresetsForSpec(className, spec);
+      // Validate before scheduling state work. Do not capture the return value
+      // inside a `setState` updater — those run later and must stay pure.
+      const preview = resolveSaveLocalPresetByName(
+        getLocalPresetsForSpec(localStateRef.current, className, spec),
+        builtInPresets,
+        name,
+        slots,
+      );
+      if ("error" in preview) {
+        return { ok: false, error: preview.error };
+      }
 
-      setLocalState((current) => {
+      applyLocalUpdate((previous) => {
         const resolved = resolveSaveLocalPresetByName(
-          getLocalPresetsForSpec(current, className, spec),
-          getBuiltInPresetsForSpec(className, spec),
+          getLocalPresetsForSpec(previous, className, spec),
+          builtInPresets,
           name,
           slots,
         );
         if ("error" in resolved) {
-          result = { ok: false, error: resolved.error };
-          return current;
+          return previous;
         }
-
-        result = { ok: true };
-        return upsertLocalSpecEntry(current, className, spec, {
+        return upsertLocalSpecEntry(previous, className, spec, {
           selectedPresetId: resolved.preset.id,
           presets: resolved.presets,
         });
       });
 
-      return result;
+      return { ok: true };
     },
-    [],
+    [applyLocalUpdate],
   );
 
   const deleteLocalPreset = useCallback(
