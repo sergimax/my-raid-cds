@@ -26,6 +26,7 @@ export const enMessages = {
     authorHint: "by sergimax via cursor",
   },
   intro: {
+    title: "Get started",
     body:
       "Add characters and dungeons, then mark cooldown usage per cell. Data is saved automatically in your browser. When the dungeon list is empty, use",
     addFromTemplate: "Add from template",

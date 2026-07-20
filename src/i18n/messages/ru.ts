@@ -28,6 +28,7 @@ export const ruMessages: Messages = {
     authorHint: "by sergimax via cursor",
   },
   intro: {
+    title: "С чего начать",
     body:
       "Добавьте персонажей и подземелья, отмечайте использование КД в ячейках. Данные сохраняются в браузере. Если список пуст, используйте",
     addFromTemplate: "Добавить из шаблона",
