@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.49.0] - 2026-07-21
+
+### Changed
+
+- **UI chrome:** Slate light/dark palette, frosted sticky header, card-style table and toolbar panels, subtler page background wash, and button labels without uppercase.
+- **Empty state:** Intro copy sits in a short titled card (EN/RU).
+- **App logo:** New crest for the header and favicon (paths respect the Vite base URL).
+
 ## [1.48.1] - 2026-07-19
 
 ### Fixed

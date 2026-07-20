@@ -2,7 +2,7 @@
 
 Web app to track which raid cooldowns each character has used per dungeon (WotLK-focused). Data persists in `localStorage`.
 
-![App version](https://img.shields.io/badge/App_version-1.48.1-purple)
+![App version](https://img.shields.io/badge/App_version-1.49.0-purple)
 ![Game version](https://img.shields.io/badge/WoW-3.3.5a-brown)
 
 ## Features
@@ -43,7 +43,7 @@ Full UI + item tooltips (Cavern of Time / WoWRoad).
 
 ### Theme
 
-Light/dark mode, saved locally.
+Light/dark mode with a slate UI chrome (frosted header, card-style table and panels), saved locally. App crest in the header and as the favicon.
 
 ## Development
 
