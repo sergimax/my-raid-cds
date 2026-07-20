@@ -1,18 +1,18 @@
 /* Ilvl / dungeon name tier colors: item-level-tier.ts (MUI sx). */
 
 .raid-tracker-table .raid-tracker-table__ilvl-separator {
-  color: var(--mui-palette-text-secondary, #71717a);
+  color: var(--mui-palette-text-secondary, #64748b);
   font-weight: 400;
 }
 
 /* Compact table density */
 .raid-tracker-table .MuiTableCell-sizeSmall {
-  padding: 4px 8px;
+  padding: 6px 10px;
 }
 
 .raid-tracker-table .MuiTableCell-head {
-  padding-top: 6px;
-  padding-bottom: 6px;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .raid-tracker-table .MuiTableSortLabel-root {
@@ -26,10 +26,11 @@
 
 .raid-tracker-table__dungeon-search .MuiInputBase-root {
   font-size: 0.8rem;
+  border-radius: 8px;
 }
 
 .raid-tracker-table__dungeon-search .MuiInputBase-input {
-  padding: 4px 8px;
+  padding: 5px 8px;
 }
 
 .raid-tracker-table--compact .raid-tracker-table__dungeon-name-header .MuiTableSortLabel-root {

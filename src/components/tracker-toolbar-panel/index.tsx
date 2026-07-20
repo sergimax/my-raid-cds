@@ -57,19 +57,19 @@ export function TrackerToolbarPanel({
       variant="outlined"
       data-toolbar-panel={panelId}
       sx={{
-        p: { xs: 1.25, sm: 1.5 },
+        p: { xs: 1.5, sm: 2 },
         width: maxWidth ? "100%" : undefined,
         maxWidth,
       }}
     >
-      <Stack spacing={1.25}>
+      <Stack spacing={1.5}>
         <Stack
           direction="row"
           spacing={1}
           sx={{ alignItems: "flex-start", justifyContent: "space-between" }}
         >
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, lineHeight: 1.3 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.3 }}>
               {title}
             </Typography>
             {descriptionNode && descriptionTooltip ? (
