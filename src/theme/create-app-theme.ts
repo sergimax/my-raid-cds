@@ -139,18 +139,23 @@ export function createAppTheme(mode: PaletteMode) {
               backgroundColor: theme.palette.action.hover,
             },
           }),
-          containedInherit: ({ theme }) => ({
-            backgroundColor: isLight
-              ? alpha(theme.palette.common.black, 0.06)
-              : alpha(theme.palette.common.white, 0.1),
-            color: theme.palette.text.primary,
-            "&:hover": {
-              backgroundColor: isLight
-                ? alpha(theme.palette.common.black, 0.1)
-                : alpha(theme.palette.common.white, 0.16),
-            },
-          }),
         },
+        variants: [
+          {
+            props: { variant: "contained", color: "inherit" },
+            style: ({ theme }) => ({
+              backgroundColor: isLight
+                ? alpha(theme.palette.common.black, 0.06)
+                : alpha(theme.palette.common.white, 0.1),
+              color: theme.palette.text.primary,
+              "&:hover": {
+                backgroundColor: isLight
+                  ? alpha(theme.palette.common.black, 0.1)
+                  : alpha(theme.palette.common.white, 0.16),
+              },
+            }),
+          },
+        ],
       },
       MuiIconButton: {
         styleOverrides: {

@@ -47,17 +47,14 @@ export function AppHeader({ center }: AppHeaderProps) {
           >
             <Box
               component="img"
-              src="/logo.svg"
+              src={`${import.meta.env.BASE_URL}logo.svg`}
               alt=""
               aria-hidden
-              sx={(theme) => ({
-                width: 22,
-                height: 22,
+              sx={{
+                width: 28,
+                height: 28,
                 flexShrink: 0,
-                opacity: 0.9,
-                filter:
-                  theme.palette.mode === "dark" ? "invert(1)" : "none",
-              })}
+              }}
             />
             <Typography
               component="h1"
