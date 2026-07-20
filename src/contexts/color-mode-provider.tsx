@@ -27,7 +27,7 @@ export function ColorModeProvider({ children }: { children: ReactNode }) {
     document.documentElement.dataset.colorMode = mode;
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", mode === "dark" ? "#18181b" : "#f4f4f5");
+      ?.setAttribute("content", mode === "dark" ? "#0f172a" : "#f1f5f9");
     try {
       localStorage.setItem(COLOR_MODE_STORAGE_KEY, mode);
     } catch {
