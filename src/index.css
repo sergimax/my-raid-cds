@@ -11,11 +11,11 @@
 }
 
 :root {
-  --text: #18181b;
-  --text-muted: #52525b;
-  --border: #e4e4e7;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
   --surface: #ffffff;
-  --page-bg: #f4f4f5;
+  --page-bg: #f1f5f9;
   --link: #2563eb;
   --link-hover: #1d4ed8;
 
@@ -32,11 +32,11 @@
 }
 
 :root[data-color-mode="dark"] {
-  --text: #fafafa;
-  --text-muted: #a1a1aa;
-  --border: #3f3f46;
-  --surface: #27272a;
-  --page-bg: #18181b;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --surface: #1e293b;
+  --page-bg: #0f172a;
   --link: #60a5fa;
   --link-hover: #93c5fd;
   color-scheme: dark;
