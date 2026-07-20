@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Empty state:** Intro copy sits in a short titled card (EN/RU).
 - **App logo:** New crest for the header and favicon (paths respect the Vite base URL).
 
+### Security
+
+- **Dev tooling:** Upgraded Vite to 7.3.6 so the lockfile can resolve `esbuild` 0.28.1, clearing the Windows development-server file-read advisory ([GHSA-g7r4-m6w7-qqqr](https://github.com/advisories/GHSA-g7r4-m6w7-qqqr)).
+
 ## [1.48.1] - 2026-07-19
 
 ### Fixed
