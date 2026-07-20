@@ -1,4 +1,5 @@
 import { AppBar, Box, Container, Toolbar, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { AppMetaInfo, AppVersionLabel } from "../app-meta-info/index.tsx";
 import { ItemTooltipLocaleToggle } from "../item-tooltip-locale-toggle/index.tsx";
 import { ThemeModeToggle } from "../theme-mode-toggle/index.tsx";
@@ -15,11 +16,16 @@ export function AppHeader({ center }: AppHeaderProps) {
       position="sticky"
       color="inherit"
       elevation={0}
-      sx={{
-        bgcolor: "background.default",
+      sx={(theme) => ({
+        bgcolor: alpha(
+          theme.palette.background.paper,
+          theme.palette.mode === "light" ? 0.82 : 0.72,
+        ),
+        backdropFilter: "saturate(1.2) blur(12px)",
+        WebkitBackdropFilter: "saturate(1.2) blur(12px)",
         borderBottom: 1,
         borderColor: "divider",
-      }}
+      })}
     >
       <Container maxWidth={false} disableGutters sx={{ px: { xs: 2, sm: 3 } }}>
         <Toolbar
@@ -39,11 +45,25 @@ export function AppHeader({ center }: AppHeaderProps) {
               mr: 1,
             }}
           >
+            <Box
+              component="img"
+              src="/logo.svg"
+              alt=""
+              aria-hidden
+              sx={(theme) => ({
+                width: 22,
+                height: 22,
+                flexShrink: 0,
+                opacity: 0.9,
+                filter:
+                  theme.palette.mode === "dark" ? "invert(1)" : "none",
+              })}
+            />
             <Typography
               component="h1"
               variant="h6"
               noWrap
-              sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}
+              sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }}
             >
               {t("header.appTitle")}
             </Typography>
@@ -71,7 +91,7 @@ export function AppHeader({ center }: AppHeaderProps) {
               display: "flex",
               alignItems: "center",
               flexShrink: 0,
-              gap: 0.5,
+              gap: 0.25,
             }}
           >
             <ItemTooltipLocaleToggle />

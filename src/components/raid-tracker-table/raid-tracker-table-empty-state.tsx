@@ -28,7 +28,15 @@ export function RaidTrackerTableEmptyState({
 
   return (
     <TableRow>
-      <TableCell colSpan={columnCount} align="center" sx={{ py: 3 }}>
+      <TableCell
+        colSpan={columnCount}
+        align="center"
+        sx={{
+          py: 4,
+          color: "text.secondary",
+          borderBottom: 0,
+        }}
+      >
         <Typography
           variant="body2"
           color="text.secondary"

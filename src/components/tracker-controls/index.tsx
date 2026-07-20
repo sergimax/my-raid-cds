@@ -66,7 +66,7 @@ export const TrackerControls = memo(function TrackerControls({
         display: "flex",
         alignItems: "center",
         flexWrap: "nowrap",
-        gap: 1,
+        gap: 0.75,
         minWidth: 0,
       }}
     >
