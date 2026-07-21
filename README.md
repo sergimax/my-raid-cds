@@ -5,6 +5,8 @@ Web app to track which raid cooldowns each character has used per dungeon (WotLK
 ![App version](https://img.shields.io/badge/App_version-1.50.0-purple)
 ![Game version](https://img.shields.io/badge/WoW-3.3.5a-brown)
 
+<img src="./public/logo.svg" width="148" height="148">
+
 ## Features
 
 Toolbar panels (character pick, soft pick, BiS builds, add character, add dungeon, data) are mutually exclusive and share the same outlined panel shell. Add character / dungeon stay narrow (480px); Data controls use a 2×2 unit grid (680px); BiS lists cap at 1280px; Character pick and Soft pick cap at 1920px so the unit-grid layouts do not stretch edge-to-edge on ultrawide screens.
