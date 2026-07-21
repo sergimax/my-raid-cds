@@ -11,6 +11,10 @@ import {
   MenuItem,
   Select,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -18,8 +22,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { specsForClass } from "../../data/class-specs.ts";
 import {
   BIS_PAPER_DOLL_BOTTOM_SLOTS,
-  BIS_PAPER_DOLL_LEFT_ROWS,
-  BIS_PAPER_DOLL_RIGHT_ROWS,
+  getBisPaperDollArmorPairs,
   type BisPaperDollRow,
 } from "../../data/bis-paper-doll-slots.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
@@ -190,17 +193,17 @@ export function BisListsPanel() {
     ],
   );
 
-  const renderPaperDollColumn = useCallback(
-    (rows: readonly BisPaperDollRow[]) =>
-      rows.map((row) =>
-        row.kind === "cosmetic" ? (
-          <BisCosmeticSlotRow key={row.id} cosmeticId={row.id} />
-        ) : (
-          renderGearSlotRow(row.slot)
-        ),
+  const renderPaperDollCell = useCallback(
+    (row: BisPaperDollRow) =>
+      row.kind === "cosmetic" ? (
+        <BisCosmeticSlotRow cosmeticId={row.id} />
+      ) : (
+        renderGearSlotRow(row.slot)
       ),
     [renderGearSlotRow],
   );
+
+  const armorPairs = useMemo(() => getBisPaperDollArmorPairs(), []);
 
   const saveListForm = (
     <Stack spacing={1}>
@@ -239,33 +242,43 @@ export function BisListsPanel() {
           maxHeight: { xs: 420, md: 560 },
           overflowY: "auto",
           pr: 0.5,
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
-          gridTemplateAreas: {
-            xs: `
-              "left"
-              "right"
-              "weapons"
-            `,
-            sm: `
-              "left right"
-              "weapons weapons"
-            `,
-          },
-          columnGap: 2,
-          rowGap: 1,
-          alignContent: "start",
+          minWidth: 0,
         }}
       >
-        <Stack spacing={0} sx={{ gridArea: "left", minWidth: 0 }}>
-          {renderPaperDollColumn(BIS_PAPER_DOLL_LEFT_ROWS)}
-        </Stack>
-        <Stack spacing={0} sx={{ gridArea: "right", minWidth: 0 }}>
-          {renderPaperDollColumn(BIS_PAPER_DOLL_RIGHT_ROWS)}
-        </Stack>
+        <Table
+          size="small"
+          sx={{
+            width: "100%",
+            tableLayout: "fixed",
+            borderCollapse: "separate",
+            borderSpacing: 0,
+            "& .MuiTableCell-root": {
+              borderBottom: "none",
+              verticalAlign: "top",
+              px: { xs: 0.5, sm: 1 },
+              py: 0,
+              width: "50%",
+            },
+          }}
+        >
+          <TableBody>
+            {armorPairs.map((pair) => (
+              <TableRow
+                key={
+                  pair.left.kind === "cosmetic"
+                    ? `cosmetic-${pair.left.id}`
+                    : `gear-${pair.left.slot}`
+                }
+              >
+                <TableCell>{renderPaperDollCell(pair.left)}</TableCell>
+                <TableCell>{renderPaperDollCell(pair.right)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
         <Box
           sx={{
-            gridArea: "weapons",
             display: "grid",
             gridTemplateColumns: {
               xs: "1fr",
@@ -273,7 +286,8 @@ export function BisListsPanel() {
             },
             columnGap: 2,
             rowGap: 0,
-            pt: { sm: 0.5 },
+            mt: 1,
+            pt: 0.5,
             borderTop: 1,
             borderColor: "divider",
             minWidth: 0,
