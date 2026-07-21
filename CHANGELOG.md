@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.50.0] - 2026-07-21
+
 ### Added
 
 - **Data controls:** Toolbar **Data** panel replaces the lone Reset all toggles button — reset toggles, delete all characters, delete all dungeons (or add from template when empty), and delete all custom BiS lists, each with a short description and confirm dialog.
