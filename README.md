@@ -2,7 +2,7 @@
 
 Web app to track which raid cooldowns each character has used per dungeon (WotLK-focused). Data persists in `localStorage`.
 
-![App version](https://img.shields.io/badge/App_version-1.50.0-purple)
+![App version](https://img.shields.io/badge/App_version-1.51.0-purple)
 ![Game version](https://img.shields.io/badge/WoW-3.3.5a-brown)
 
 <img src="./public/logo.svg" width="148" height="148">
@@ -33,7 +33,7 @@ Copy a raid roster of characters still missing CD for visible (filtered) rows. O
 
 ### Soft pick
 
-Plan soft reserves for one character + spec. Open via toolbar **Soft pick** (EN) / **Подбор софтов** (RU). Set raid soft-reserve rules (max softs 1–4; **re-roll** or **+100**), pick a single main/off spec (same compact character-spec list as Character pick), then assign your softs and competing calls (histogram by soft weight) on BiS / BiS-variant upgrades from table-filtered raids. Layout: stacked on small screens; medium puts softs beside filters with the soft-reserve call below; wide (≥1600px) puts the call beside softs (softs column keeps a one-unit minimum so it does not collapse). Session-only (not persisted).
+Plan soft reserves for one character + spec. Open via toolbar **Soft pick** (EN) / **Подбор софтов** (RU). Set raid soft-reserve rules (max softs 1–4; **re-roll** or **+100**), pick a single main/off spec (same compact character-spec list as Character pick), then assign your softs and competing calls (histogram by soft weight) on BiS / BiS-variant upgrades from table-filtered raids. ICC and ToC targets list bosses in encounter order; the pasteable call uses `- Item (Boss) xN ` lines. Layout: stacked on small screens; medium puts softs beside filters with the soft-reserve call below; wide (≥1600px) puts the call beside softs (softs column keeps a one-unit minimum so it does not collapse). Session-only (not persisted).
 
 ### BiS builds
 
@@ -41,7 +41,7 @@ Built-in presets per spec (Titans + community sources); toolbar **BiS builds** (
 
 ### Gear hints
 
-Amber = missing BiS targets from the selected list; blue = stat-filtered ilvl upgrades (darker tint = more slots). Dual-spec characters split the toggle cell left (main) / right (off). Rings and trinkets count as satisfied when equipped in either slot of the pair. Normal/heroic same-name variants count as the same item for BiS and ilvl. Same-ilvl faction twins (e.g. Alliance/Horde Solace) satisfy BiS, but the other faction id can still appear on the ilvl track so you can pick a variant. Ilvl hints filter proc trinkets by role (tank / healer / melee DPS) when bundled stats are misleading. Ruby Sanctum rows filter loot by size and difficulty (10N/10H/25N/25H). Dismissible legend above the table explains colors. Tooltips label boss-loot sections **BiS** / **Upgrades**, omit wrong-mode drops, and list tier tokens (including Vault of Archavon tier hands/legs); light theme uses a dark high-contrast tooltip panel with bright item-name colors. Tank ilvl hints require defense, dodge, or parry (BiS list overrides).
+Amber = missing BiS targets from the selected list; blue = stat-filtered ilvl upgrades (darker tint = more slots). Dual-spec characters split the toggle cell left (main) / right (off). Rings and trinkets count as satisfied when equipped in either slot of the pair. Normal/heroic same-name variants count as the same item for BiS and ilvl. Same-ilvl faction twins (e.g. Alliance/Horde Solace) satisfy BiS, but the other faction id can still appear on the ilvl track so you can pick a variant. Ilvl hints filter proc trinkets by role (tank / healer / melee DPS) when bundled stats are misleading. Ruby Sanctum rows filter loot by size and difficulty (10N/10H/25N/25H). Dismissible legend above the table explains colors. Tooltips label boss-loot sections **BiS** / **Upgrades**, omit wrong-mode drops, and list tier tokens (including Vault of Archavon tier hands/legs); ICC and ToC boss groups follow encounter order; light theme uses a dark high-contrast tooltip panel with bright item-name colors. Tank ilvl hints require defense, dodge, or parry (BiS list overrides).
 
 ### EN / RU
 
@@ -49,7 +49,7 @@ Full UI + item tooltips (Cavern of Time / WoWRoad).
 
 ### Theme
 
-Light/dark mode with a slate UI chrome (frosted header, card-style table and panels), saved locally. App crest in the header and as the favicon.
+Light/dark mode with a slate UI chrome (frosted header, card-style table and panels), saved locally. App crest in the header (`logo.svg`); favicon uses `logo-as-icon.svg`.
 
 ## Development
 

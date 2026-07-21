@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.51.0] - 2026-07-21
+
 ### Changed
 
 - **BiS armor slots:** Left/right paper-doll slots sit in a paired table so rows stay aligned; weapon slots stay in the bottom three-column row.
 - **Soft pick copy lines:** Pasteable soft-reserve lines use `- Item (Boss) xN ` format.
 - **Boss order:** Soft pick targets and table gear-hint boss groups follow ICC / ToC encounter order (not alphabetical).
+- **Favicon:** Browser tab icon uses a dedicated `logo-as-icon.svg` (header crest remains `logo.svg`).
 
 ## [1.50.0] - 2026-07-21
 
