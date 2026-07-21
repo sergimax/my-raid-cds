@@ -175,6 +175,9 @@ export const enMessages = {
       "Built-in list (read-only). Save under a custom name to create an editable copy.",
     editHint:
       "Hover item names for tooltips. Edit a slot, then confirm with ✓ or cancel with ✕.",
+    shirtSlot: "Shirt",
+    tabardSlot: "Tabard",
+    cosmeticSlotHint: "Cosmetic (not in BiS)",
     createCustomListHint:
       "No built-in BiS list for {{class}} {{spec}}. Add items below and save under a custom name.",
     listName: "List name",
