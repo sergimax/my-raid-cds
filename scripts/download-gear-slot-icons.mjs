@@ -30,6 +30,8 @@ const VANILLA_ICONS = {
   "main-hand": "UI-PaperDoll-Slot-MainHand.png",
   "off-hand": "UI-PaperDoll-Slot-SecondaryHand.png",
   ranged: "UI-PaperDoll-Slot-Ranged.png",
+  shirt: "UI-PaperDoll-Slot-Shirt.png",
+  tabard: "UI-PaperDoll-Slot-Tabard.png",
 };
 
 async function downloadFile(url, destinationPath) {
