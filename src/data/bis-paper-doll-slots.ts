@@ -35,3 +35,17 @@ export const BIS_PAPER_DOLL_RIGHT_ROWS: readonly BisPaperDollRow[] = [
 
 /** Bottom row: main hand, off hand, ranged/special (relic / wand / ranged weapon). */
 export const BIS_PAPER_DOLL_BOTTOM_SLOTS: readonly number[] = [14, 15, 16];
+
+/** Paired left|right paper-doll rows for table alignment (same length columns). */
+export function getBisPaperDollArmorPairs(): readonly {
+  left: BisPaperDollRow;
+  right: BisPaperDollRow;
+}[] {
+  if (BIS_PAPER_DOLL_LEFT_ROWS.length !== BIS_PAPER_DOLL_RIGHT_ROWS.length) {
+    throw new Error("BiS paper-doll armor columns must have equal length");
+  }
+  return BIS_PAPER_DOLL_LEFT_ROWS.map((left, index) => ({
+    left,
+    right: BIS_PAPER_DOLL_RIGHT_ROWS[index]!,
+  }));
+}
