@@ -16,6 +16,12 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { specsForClass } from "../../data/class-specs.ts";
+import {
+  BIS_PAPER_DOLL_BOTTOM_SLOTS,
+  BIS_PAPER_DOLL_LEFT_ROWS,
+  BIS_PAPER_DOLL_RIGHT_ROWS,
+  type BisPaperDollRow,
+} from "../../data/bis-paper-doll-slots.ts";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import { useTranslation } from "../../i18n/use-translation.ts";
 import {
@@ -33,13 +39,14 @@ import {
   hasBuiltInBisForSpec,
   isLocalBisPreset,
 } from "../../utils/bis-lists.ts";
-import { isSlotEditing } from "../../utils/bis-list-editor.ts";
+import { isSlotEditing, type BisSlotDraft } from "../../utils/bis-list-editor.ts";
 import type { CharacterEquipContext } from "../../utils/item-equip-restrictions.ts";
 import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.ts";
 import { BisSlotRow } from "../bis-slot-row/index.tsx";
 import { ClassOptionLabel } from "../class-option-label/index.tsx";
 import { FormErrorMessage } from "../form-error-message/index.tsx";
 import { SpecOptionLabel } from "../spec-option-label/index.tsx";
+import { BisCosmeticSlotRow } from "./bis-cosmetic-slot-row.tsx";
 
 function localizeBisStorageMessage(message: string, t: TranslateFn): string {
   if (message === BIS_LISTS_STORAGE_QUOTA_MESSAGE) {
@@ -134,6 +141,67 @@ export function BisListsPanel() {
 
   useEffect(() => () => hideExternalWowTooltips(), []);
 
+  const slotDraftBySlot = useMemo(() => {
+    const bySlot = new Map<number, { draft: BisSlotDraft; index: number }>();
+    for (const [index, draft] of slotDrafts.entries()) {
+      bySlot.set(draft.slot, { draft, index });
+    }
+    return bySlot;
+  }, [slotDrafts]);
+
+  const renderGearSlotRow = useCallback(
+    (slot: number) => {
+      const entry = slotDraftBySlot.get(slot);
+      if (!entry) {
+        return null;
+      }
+      return (
+        <BisSlotRow
+          key={slot}
+          slotIndex={entry.index}
+          slotDraft={entry.draft}
+          validationError={slotErrors[entry.draft.slot]}
+          isEditing={isSlotEditing(
+            entry.draft,
+            editingSlots,
+            isBuiltInPresetSelected,
+          )}
+          readOnly={isBuiltInPresetSelected}
+          equipContext={equipContext}
+          onItemsTextChange={handleItemsTextChange}
+          onItemsTextBlur={handleItemsTextBlur}
+          onConfirm={handleConfirmSlot}
+          onStartEdit={handleStartEditSlot}
+          onCancelEdit={handleCancelEditSlot}
+        />
+      );
+    },
+    [
+      editingSlots,
+      equipContext,
+      handleCancelEditSlot,
+      handleConfirmSlot,
+      handleItemsTextBlur,
+      handleItemsTextChange,
+      handleStartEditSlot,
+      isBuiltInPresetSelected,
+      slotDraftBySlot,
+      slotErrors,
+    ],
+  );
+
+  const renderPaperDollColumn = useCallback(
+    (rows: readonly BisPaperDollRow[]) =>
+      rows.map((row) =>
+        row.kind === "cosmetic" ? (
+          <BisCosmeticSlotRow key={row.id} cosmeticId={row.id} />
+        ) : (
+          renderGearSlotRow(row.slot)
+        ),
+      ),
+    [renderGearSlotRow],
+  );
+
   const saveListForm = (
     <Stack spacing={1}>
       <TextField
@@ -168,36 +236,51 @@ export function BisListsPanel() {
       </Typography>
       <Box
         sx={{
-          maxHeight: { xs: 360, md: 480 },
+          maxHeight: { xs: 420, md: 560 },
           overflowY: "auto",
           pr: 0.5,
           display: "grid",
           gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+          gridTemplateAreas: {
+            xs: `
+              "left"
+              "right"
+              "weapons"
+            `,
+            sm: `
+              "left right"
+              "weapons weapons"
+            `,
+          },
           columnGap: 2,
-          rowGap: 0,
+          rowGap: 1,
           alignContent: "start",
         }}
       >
-        {slotDrafts.map((slotDraft, index) => (
-          <BisSlotRow
-            key={slotDraft.slot}
-            slotIndex={index}
-            slotDraft={slotDraft}
-            validationError={slotErrors[slotDraft.slot]}
-            isEditing={isSlotEditing(
-              slotDraft,
-              editingSlots,
-              isBuiltInPresetSelected,
-            )}
-            readOnly={isBuiltInPresetSelected}
-            equipContext={equipContext}
-            onItemsTextChange={handleItemsTextChange}
-            onItemsTextBlur={handleItemsTextBlur}
-            onConfirm={handleConfirmSlot}
-            onStartEdit={handleStartEditSlot}
-            onCancelEdit={handleCancelEditSlot}
-          />
-        ))}
+        <Stack spacing={0} sx={{ gridArea: "left", minWidth: 0 }}>
+          {renderPaperDollColumn(BIS_PAPER_DOLL_LEFT_ROWS)}
+        </Stack>
+        <Stack spacing={0} sx={{ gridArea: "right", minWidth: 0 }}>
+          {renderPaperDollColumn(BIS_PAPER_DOLL_RIGHT_ROWS)}
+        </Stack>
+        <Box
+          sx={{
+            gridArea: "weapons",
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(3, minmax(0, 1fr))",
+            },
+            columnGap: 2,
+            rowGap: 0,
+            pt: { sm: 0.5 },
+            borderTop: 1,
+            borderColor: "divider",
+            minWidth: 0,
+          }}
+        >
+          {BIS_PAPER_DOLL_BOTTOM_SLOTS.map((slot) => renderGearSlotRow(slot))}
+        </Box>
       </Box>
     </>
   );
