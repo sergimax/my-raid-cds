@@ -19,7 +19,7 @@ export type TrackerToolbarPanelProps = {
   onClose: () => void;
   /** Optional controls rendered between the title block and the close button. */
   headerActions?: ReactNode;
-  /** When set, the outlined card hugs narrow content instead of stretching full width. */
+  /** Caps panel width (narrow forms or wide multi-column panels). */
   maxWidth?: number;
   children: ReactNode;
 };
