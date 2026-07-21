@@ -34,6 +34,7 @@ import {
   getExportFilterGridTemplateAreas,
   getExportFilterGridTemplateColumns,
   getExportFilterGridTemplateRows,
+  getExportResultColumnMinWidth,
 } from "./constants.ts";
 import type { ExportPanelProps } from "./types.ts";
 import {
@@ -294,9 +295,10 @@ export const ExportPanel = forwardRef<ExportPanelHandle, ExportPanelProps>(
             minWidth: 0,
             width: "100%",
             [EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY]: {
-              flex: 1,
+              flex: "1 1 auto",
               display: "flex",
               flexDirection: "column",
+              minWidth: getExportResultColumnMinWidth(),
               minHeight: 0,
               height: getExportFilterGridHeight(),
               maxHeight: getExportFilterGridHeight(),

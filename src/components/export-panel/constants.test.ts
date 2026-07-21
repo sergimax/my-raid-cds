@@ -15,6 +15,7 @@ import {
   getExportFilterGridTemplateColumns,
   getExportFilterGridTemplateRows,
   getExportFilterSpecsListMaxHeight,
+  getExportResultColumnMinWidth,
   getFilterUnitColumnTemplate,
 } from "./constants.ts";
 
@@ -87,5 +88,11 @@ describe("export filter fixed heights", () => {
     expect(EXPORT_PANEL_SIDE_BY_SIDE_MIN_PX).toBe(1600);
     expect(EXPORT_PANEL_SIDE_BY_SIDE_MQ).toBe("(min-width:1600px)");
     expect(EXPORT_PANEL_SIDE_BY_SIDE_MQ_KEY).toBe("@media (min-width:1600px)");
+  });
+
+  it("sizes the results column as a 2-unit span including gap", () => {
+    expect(getExportResultColumnMinWidth()).toBe(
+      EXPORT_FILTER_UNIT_WIDTH * 2 + 12,
+    );
   });
 });
