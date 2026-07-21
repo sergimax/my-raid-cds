@@ -40,6 +40,7 @@ export const enMessages = {
     bisLists: "BiS builds",
     export: "Character pick",
     gearPick: "Soft pick",
+    dataControls: "Data",
     resetAllToggles: "Reset all toggles",
   },
   table: {
@@ -124,6 +125,42 @@ export const enMessages = {
     deleteDungeonTitle: "Delete dungeon?",
     deleteDungeonMessage:
       'Delete "{{name}}" and all cooldown toggles for this dungeon? This cannot be undone.',
+  },
+  dataControlsPanel: {
+    title: "Data controls",
+    description:
+      "Reset cooldown marks or clear characters, dungeons, and custom BiS lists. Destructive actions ask for confirmation.",
+    closeAria: "Close data controls panel",
+    resetTogglesTitle: "Reset toggles",
+    resetTogglesDescription:
+      "Clear every character–dungeon cooldown mark. Characters and dungeons stay.",
+    deleteCharactersTitle: "Characters",
+    deleteCharactersDescription:
+      "Remove every character and their cooldown toggles.",
+    deleteCharactersAction: "Delete all characters",
+    deleteDungeonsTitle: "Dungeons",
+    deleteDungeonsDescription:
+      "Remove every dungeon and related cooldown toggles.",
+    deleteDungeonsAction: "Delete all dungeons",
+    addFromTemplateDescription:
+      "Load the WotLK raid template (Russian names) when the dungeon list is empty.",
+    deleteBisTitle: "Custom BiS lists",
+    deleteBisDescription:
+      "Delete saved local BiS lists. Built-in presets stay.",
+    deleteBisAction: "Delete all custom lists",
+    resetTogglesConfirmTitle: "Reset all toggles?",
+    resetTogglesConfirmMessage:
+      "Clear every cooldown mark? This cannot be undone.",
+    deleteCharactersConfirmTitle: "Delete all characters?",
+    deleteCharactersConfirmMessage:
+      "Remove all characters and their cooldown toggles? This cannot be undone.",
+    deleteDungeonsConfirmTitle: "Delete all dungeons?",
+    deleteDungeonsConfirmMessage:
+      "Remove all dungeons and related cooldown toggles? This cannot be undone.",
+    deleteBisConfirmTitle: "Delete all custom BiS lists?",
+    deleteBisConfirmMessage:
+      "Remove every saved local BiS list? Built-in presets stay. This cannot be undone.",
+    resetConfirm: "Reset",
   },
   bisPanel: {
     title: "BiS lists",
