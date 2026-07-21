@@ -10,6 +10,7 @@ import { hideExternalWowTooltips } from "../../utils/hide-external-wow-tooltips.
 import { AppIntro } from "../app-intro/index.tsx";
 import { BisListsPanel } from "../bis-lists-panel/index.tsx";
 import { CharacterForm } from "../character-form/index.tsx";
+import { DataControlsPanel } from "../data-controls-panel/index.tsx";
 import { DungeonForm } from "../dungeon-form/index.tsx";
 import { ExportPanel, type ExportPanelHandle } from "../export-panel/index.tsx";
 import { ExportPanelHeaderActions } from "../export-panel/export-panel-header-actions.tsx";
@@ -29,6 +30,8 @@ type RaidTrackerMainProps = {
   closeGearPickPanel: () => void;
   showBisListsPanel: boolean;
   closeBisListsPanel: () => void;
+  showDataControlsPanel: boolean;
+  closeDataControlsPanel: () => void;
 };
 
 const STORAGE_QUOTA_MESSAGE = "Storage quota exceeded. Please free up space.";
@@ -55,6 +58,8 @@ export function RaidTrackerMain({
   closeGearPickPanel,
   showBisListsPanel,
   closeBisListsPanel,
+  showDataControlsPanel,
+  closeDataControlsPanel,
 }: RaidTrackerMainProps) {
   const { t } = useTranslation();
   const domain = useRaidTrackerContext();
@@ -83,6 +88,7 @@ export function RaidTrackerMain({
     showBisListsPanel,
     showExportPanel,
     showGearPickPanel,
+    showDataControlsPanel,
   });
 
   const closeBisListsPanelWithTooltips = useCallback(() => {
@@ -104,6 +110,7 @@ export function RaidTrackerMain({
       closeCharacterForm: forms.closeCharacterForm,
       closeDungeonForm: forms.closeDungeonForm,
       closeBisListsPanel: closeBisListsPanelWithTooltips,
+      closeDataControlsPanel,
       closeExportPanel,
       closeGearPickPanel: closeGearPickPanelWithTooltips,
     });
@@ -122,6 +129,7 @@ export function RaidTrackerMain({
     return meta;
   }, [
     closeBisListsPanelWithTooltips,
+    closeDataControlsPanel,
     closeExportPanel,
     closeGearPickPanelWithTooltips,
     forms.closeCharacterForm,
@@ -200,6 +208,8 @@ export function RaidTrackerMain({
           ) : null}
 
           {showBisListsPanel ? <BisListsPanel /> : null}
+
+          {showDataControlsPanel ? <DataControlsPanel /> : null}
         </TrackerToolbarPanel>
       ) : null}
 

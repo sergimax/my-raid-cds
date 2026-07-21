@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { TranslateFn } from "../../i18n/translate.ts";
 import {
+  TRACKER_DATA_CONTROLS_PANEL_MAX_WIDTH,
   TRACKER_NARROW_PANEL_MAX_WIDTH,
   TRACKER_UNIT_GRID_PANEL_MAX_WIDTH,
   TRACKER_WIDE_PANEL_MAX_WIDTH,
@@ -21,6 +22,7 @@ type MainToolbarPanelHandlers = {
   closeCharacterForm: () => void;
   closeDungeonForm: () => void;
   closeBisListsPanel: () => void;
+  closeDataControlsPanel: () => void;
 };
 
 type ToolbarPanelHandlers = MainToolbarPanelHandlers & {
@@ -70,6 +72,14 @@ function getMainToolbarPanelMeta(
         closeAriaLabel: t("bisPanel.closeAria"),
         onClose: handlers.closeBisListsPanel,
         maxWidth: TRACKER_WIDE_PANEL_MAX_WIDTH,
+      };
+    case "data":
+      return {
+        title: t("dataControlsPanel.title"),
+        description: t("dataControlsPanel.description"),
+        closeAriaLabel: t("dataControlsPanel.closeAria"),
+        onClose: handlers.closeDataControlsPanel,
+        maxWidth: TRACKER_DATA_CONTROLS_PANEL_MAX_WIDTH,
       };
   }
 }

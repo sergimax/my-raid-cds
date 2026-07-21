@@ -24,42 +24,37 @@ export function TrackerLayout() {
     domain.handleAddFromTemplate();
   }, [domain, overlayPanels]);
 
-  const handleResetAllToggles = useCallback(() => {
-    overlayPanels.closeAllOverlayPanels();
-    domain.handleResetAllToggles();
-  }, [domain, overlayPanels]);
-
   const controlsSource = useMemo(
     (): TrackerControlsSource => ({
       charactersCount: domain.characters.length,
       dungeonsCount: domain.dungeons.length,
-      canResetAllToggles: domain.canResetAllToggles,
       handleAddFromTemplate,
-      handleResetAllToggles,
       showCharacterForm: overlayPanels.showCharacterForm,
       showDungeonForm: overlayPanels.showDungeonForm,
       showExportPanel: overlayPanels.showExportPanel,
       showGearPickPanel: overlayPanels.showGearPickPanel,
       showBisListsPanel: overlayPanels.showBisListsPanel,
+      showDataControlsPanel: overlayPanels.showDataControlsPanel,
       toggleCharacterForm: overlayPanels.toggleCharacterForm,
       toggleDungeonForm: overlayPanels.toggleDungeonForm,
       toggleExportPanel: overlayPanels.toggleExportPanel,
       toggleGearPickPanel: overlayPanels.toggleGearPickPanel,
       toggleBisListsPanel: overlayPanels.toggleBisListsPanel,
+      toggleDataControlsPanel: overlayPanels.toggleDataControlsPanel,
     }),
     [
-      domain.canResetAllToggles,
       domain.characters.length,
       domain.dungeons.length,
       handleAddFromTemplate,
-      handleResetAllToggles,
       overlayPanels.showBisListsPanel,
       overlayPanels.showCharacterForm,
+      overlayPanels.showDataControlsPanel,
       overlayPanels.showDungeonForm,
       overlayPanels.showExportPanel,
       overlayPanels.showGearPickPanel,
       overlayPanels.toggleBisListsPanel,
       overlayPanels.toggleCharacterForm,
+      overlayPanels.toggleDataControlsPanel,
       overlayPanels.toggleDungeonForm,
       overlayPanels.toggleExportPanel,
       overlayPanels.toggleGearPickPanel,
@@ -83,6 +78,8 @@ export function TrackerLayout() {
           closeGearPickPanel={overlayPanels.closeGearPickPanel}
           showBisListsPanel={overlayPanels.showBisListsPanel}
           closeBisListsPanel={overlayPanels.closeBisListsPanel}
+          showDataControlsPanel={overlayPanels.showDataControlsPanel}
+          closeDataControlsPanel={overlayPanels.closeDataControlsPanel}
         />
       </Container>
     </div>

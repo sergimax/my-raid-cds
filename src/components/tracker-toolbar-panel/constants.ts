@@ -13,3 +13,9 @@ export const TRACKER_WIDE_PANEL_MAX_WIDTH = 1280;
  * collapsing the Soft reserve targets block on wide layouts.
  */
 export const TRACKER_UNIT_GRID_PANEL_MAX_WIDTH = 1920;
+
+/**
+ * Cap for Data controls (2×2 unit blocks + panel padding).
+ * Content grid is 612px; padding keeps the outlined card from clipping.
+ */
+export const TRACKER_DATA_CONTROLS_PANEL_MAX_WIDTH = 680;
