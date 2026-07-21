@@ -35,7 +35,7 @@ Plan soft reserves for one character + spec. Open via toolbar **Soft pick** (EN)
 
 ### BiS builds
 
-Built-in presets per spec (Titans + community sources); toolbar **BiS builds** (EN) / **BIS сборки** (RU). Save editable local copies; drives gear upgrade hints. Slot rows show WoW paper-doll placeholder icons beside localized labels (Back uses the Chest icon); read-only presets use a compact layout with truncated slot names. Save failures (e.g. storage quota) show an alert; malformed local entries are skipped on load rather than wiping the store.
+Built-in presets per spec (Titans + community sources); toolbar **BiS builds** (EN) / **BIS сборки** (RU). Save editable local copies; drives gear upgrade hints. Slot rows use an in-game paper-doll layout (left/right armor columns + bottom weapons) with WoW empty-slot icons (Back uses the Chest icon; shirt/tabard shown as cosmetic placeholders only). Read-only presets use a compact layout with truncated slot names. Save failures (e.g. storage quota) show an alert; malformed local entries are skipped on load rather than wiping the store.
 
 ### Gear hints
 

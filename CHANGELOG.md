@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Data controls:** Toolbar **Data** panel replaces the lone Reset all toggles button — reset toggles, delete all characters, delete all dungeons (or add from template when empty), and delete all custom BiS lists, each with a short description and confirm dialog.
 
+### Changed
+
+- **BiS items layout:** Slot editor uses an in-game paper-doll arrangement (left armor column, right armor column, bottom main/off/ranged), with non-editable shirt and tabard placeholders.
+
 ## [1.49.1] - 2026-07-21
 
 ### Changed
