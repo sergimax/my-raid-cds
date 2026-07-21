@@ -352,6 +352,60 @@ export function getLocalPresetsForSpec(
   return existingEntry?.presets.filter((preset) => isLocalBisPreset(preset)) ?? [];
 }
 
+/** Total local (`local-*`) presets across every class|spec bucket. */
+export function countLocalBisPresets(localState: LocalBisListsState): number {
+  let count = 0;
+  for (const entry of Object.values(localState.entries)) {
+    count += entry.presets.filter((preset) => isLocalBisPreset(preset)).length;
+  }
+  return count;
+}
+
+/**
+ * Strip every local preset. Entries that only held locals (or a local selection)
+ * are removed so built-in defaults apply again.
+ */
+export function clearAllLocalBisPresets(
+  localState: LocalBisListsState,
+): LocalBisListsState {
+  let changed = false;
+  const nextEntries: LocalBisListsState["entries"] = {};
+
+  for (const [storageKey, entry] of Object.entries(localState.entries)) {
+    const nextPresets = entry.presets.filter(
+      (preset) => !isLocalBisPreset(preset),
+    );
+    const removedLocal = nextPresets.length !== entry.presets.length;
+    const selectedWasLocal = entry.selectedPresetId.startsWith("local-");
+
+    if (!removedLocal && !selectedWasLocal) {
+      nextEntries[storageKey] = entry;
+      continue;
+    }
+
+    changed = true;
+    const nextSelectedPresetId = selectedWasLocal
+      ? (nextPresets[0]?.id ?? "default")
+      : entry.selectedPresetId;
+
+    if (
+      nextPresets.length === 0 &&
+      (selectedWasLocal || nextSelectedPresetId === "default")
+    ) {
+      continue;
+    }
+
+    nextEntries[storageKey] = {
+      selectedPresetId: nextSelectedPresetId,
+      presets: nextPresets,
+    };
+  }
+
+  return changed
+    ? { schemaVersion: localState.schemaVersion, entries: nextEntries }
+    : localState;
+}
+
 export function upsertLocalSpecEntry(
   localState: LocalBisListsState,
   className: ClassName,

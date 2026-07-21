@@ -3,7 +3,9 @@ import { ClassName } from "../types/characters.ts";
 import { unholyDeathKnightBis } from "../data/bis-presets/unholy-death-knight.ts";
 import {
   buildBisSlotMap,
+  clearAllLocalBisPresets,
   confirmBisSlotItemsText,
+  countLocalBisPresets,
   getSelectedPresetForSpec,
   isLocalBisPreset,
   parseBisSlotItemId,
@@ -128,6 +130,48 @@ describe("isLocalBisPreset", () => {
       true,
     );
     expect(isLocalBisPreset(unholyDeathKnightBis.presets[0])).toBe(false);
+  });
+});
+
+describe("countLocalBisPresets / clearAllLocalBisPresets", () => {
+  const localState = {
+    schemaVersion: 1 as const,
+    entries: {
+      "Death Knight|Unholy": {
+        selectedPresetId: "local-1",
+        presets: [
+          { id: "local-1", name: "Mine", slots: [] },
+          { id: "local-2", name: "Alt", slots: [] },
+        ],
+      },
+      "Mage|Fire": {
+        selectedPresetId: "default",
+        presets: [{ id: "local-fire", name: "Fire custom", slots: [] }],
+      },
+    },
+  };
+
+  it("counts local presets across specs", () => {
+    expect(countLocalBisPresets(localState)).toBe(3);
+  });
+
+  it("removes all local presets and drops emptied buckets", () => {
+    const cleared = clearAllLocalBisPresets(localState);
+    expect(countLocalBisPresets(cleared)).toBe(0);
+    expect(cleared.entries).toEqual({});
+  });
+
+  it("keeps built-in selection entries that have no local presets", () => {
+    const withBuiltinOnly = {
+      schemaVersion: 1 as const,
+      entries: {
+        "Mage|Frost": {
+          selectedPresetId: "community-1",
+          presets: [],
+        },
+      },
+    };
+    expect(clearAllLocalBisPresets(withBuiltinOnly)).toBe(withBuiltinOnly);
   });
 });
 
