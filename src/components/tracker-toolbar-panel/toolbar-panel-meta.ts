@@ -1,6 +1,9 @@
 import type { ReactNode } from "react";
 import type { TranslateFn } from "../../i18n/translate.ts";
-import { TRACKER_NARROW_PANEL_MAX_WIDTH } from "./constants.ts";
+import {
+  TRACKER_NARROW_PANEL_MAX_WIDTH,
+  TRACKER_WIDE_PANEL_MAX_WIDTH,
+} from "./constants.ts";
 import type { MainToolbarPanelId, ToolbarPanelId } from "./resolve-toolbar-panel-id.ts";
 
 export type ToolbarPanelMeta = {
@@ -65,6 +68,7 @@ function getMainToolbarPanelMeta(
         descriptionTooltip: t("bisPanel.helpTooltip"),
         closeAriaLabel: t("bisPanel.closeAria"),
         onClose: handlers.closeBisListsPanel,
+        maxWidth: TRACKER_WIDE_PANEL_MAX_WIDTH,
       };
   }
 }
@@ -78,6 +82,7 @@ function getExportToolbarPanelMeta(
     description: t("exportPanel.instructions"),
     closeAriaLabel: t("exportPanel.closeAria"),
     onClose,
+    maxWidth: TRACKER_WIDE_PANEL_MAX_WIDTH,
   };
 }
 
@@ -90,5 +95,6 @@ function getGearPickToolbarPanelMeta(
     description: t("gearPickPanel.instructions"),
     closeAriaLabel: t("gearPickPanel.closeAria"),
     onClose,
+    maxWidth: TRACKER_WIDE_PANEL_MAX_WIDTH,
   };
 }
