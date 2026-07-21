@@ -7,7 +7,7 @@ Web app to track which raid cooldowns each character has used per dungeon (WotLK
 
 ## Features
 
-Toolbar panels (character pick, soft pick, BiS builds, add character, add dungeon) are mutually exclusive and share the same outlined panel shell. Add character / dungeon stay narrow (480px); BiS lists cap at 1280px; Character pick and Soft pick cap at 1920px so the unit-grid layouts do not stretch edge-to-edge on ultrawide screens.
+Toolbar panels (character pick, soft pick, BiS builds, add character, add dungeon, data) are mutually exclusive and share the same outlined panel shell. Add character / dungeon stay narrow (480px); Data controls use a 2×2 unit grid (680px); BiS lists cap at 1280px; Character pick and Soft pick cap at 1920px so the unit-grid layouts do not stretch edge-to-edge on ultrawide screens.
 
 ### Characters & dungeons
 
@@ -15,7 +15,11 @@ Add manually or load a WotLK raid template when the list is empty. The new-dunge
 
 ### Cooldown toggles
 
-Per character–dungeon switches; reset per character or all at once.
+Per character–dungeon switches; reset per character from the table header, or reset all from the **Data** panel.
+
+### Data controls
+
+Toolbar **Data** (EN) / **Данные** (RU). Unit-sized action blocks to reset all cooldown toggles, delete all characters, delete all dungeons (or **Add from template** when the list is empty), and delete all custom BiS lists. Destructive actions ask for confirmation.
 
 ### Table
 
