@@ -12,7 +12,7 @@ type UseOverlayPanelsOptions = {
 };
 
 /**
- * Toolbar overlays share one `activePanel` id (character | dungeon | export | gear | bis).
+ * Toolbar overlays share one `activePanel` id (character | dungeon | export | gear | bis | data).
  * Derived `show*` flags keep the existing TrackerControls / RaidTrackerMain API.
  * Form field state still lives in the form hooks; `onSubmitted` clears the panel
  * after a successful add so submit does not leave a stale active id.
@@ -82,6 +82,7 @@ export function useOverlayPanels({
   const showExportPanel = activePanel === "export";
   const showGearPickPanel = activePanel === "gear";
   const showBisListsPanel = activePanel === "bis";
+  const showDataControlsPanel = activePanel === "data";
   const showCharacterForm = activePanel === "character";
   const showDungeonForm = activePanel === "dungeon";
 
@@ -95,6 +96,10 @@ export function useOverlayPanels({
 
   const toggleBisListsPanel = useCallback(() => {
     togglePanel("bis");
+  }, [togglePanel]);
+
+  const toggleDataControlsPanel = useCallback(() => {
+    togglePanel("data");
   }, [togglePanel]);
 
   const toggleCharacterForm = useCallback(() => {
@@ -119,6 +124,12 @@ export function useOverlayPanels({
 
   const closeBisListsPanel = useCallback(() => {
     if (activePanelRef.current === "bis") {
+      setActivePanel(null);
+    }
+  }, []);
+
+  const closeDataControlsPanel = useCallback(() => {
+    if (activePanelRef.current === "data") {
       setActivePanel(null);
     }
   }, []);
@@ -148,6 +159,9 @@ export function useOverlayPanels({
       showBisListsPanel,
       closeBisListsPanel,
       toggleBisListsPanel,
+      showDataControlsPanel,
+      closeDataControlsPanel,
+      toggleDataControlsPanel,
       closeAllOverlayPanels,
       showCharacterForm,
       showDungeonForm,
@@ -163,17 +177,20 @@ export function useOverlayPanels({
       closeAllOverlayPanels,
       closeBisListsPanel,
       closeCharacterForm,
+      closeDataControlsPanel,
       closeDungeonForm,
       closeExportPanel,
       closeGearPickPanel,
       dungeonForm,
       showBisListsPanel,
       showCharacterForm,
+      showDataControlsPanel,
       showDungeonForm,
       showExportPanel,
       showGearPickPanel,
       toggleBisListsPanel,
       toggleCharacterForm,
+      toggleDataControlsPanel,
       toggleDungeonForm,
       toggleExportPanel,
       toggleGearPickPanel,

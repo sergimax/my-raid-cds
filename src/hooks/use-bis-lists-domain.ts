@@ -7,6 +7,8 @@ import {
 } from "../storage/bis-lists/index.ts";
 import { getBuiltInPresetsForSpec } from "../data/bis-presets/index.ts";
 import {
+  clearAllLocalBisPresets,
+  countLocalBisPresets,
   getLocalPresetsForSpec,
   getMergedPresetsForSpec,
   getSelectedPresetForSpec,
@@ -215,6 +217,15 @@ export function useBisListsDomain() {
     [applyLocalUpdate],
   );
 
+  const clearAllLocalPresets = useCallback(() => {
+    applyLocalUpdate(clearAllLocalBisPresets);
+  }, [applyLocalUpdate]);
+
+  const hasAnyLocalBisPresets = useMemo(
+    () => countLocalBisPresets(localState) > 0,
+    [localState],
+  );
+
   return useMemo(
     () => ({
       getPresetsForSpec,
@@ -224,13 +235,17 @@ export function useBisListsDomain() {
       savePresetByName,
       deleteLocalPreset,
       updateSelectedLocalPresetSlots,
+      clearAllLocalPresets,
+      hasAnyLocalBisPresets,
       storageError,
     }),
     [
+      clearAllLocalPresets,
       deleteLocalPreset,
       getBisSlotMapForSpec,
       getPresetsForSpec,
       getSelectedPreset,
+      hasAnyLocalBisPresets,
       savePresetByName,
       selectPreset,
       storageError,

@@ -3,4 +3,5 @@ export type OverlayPanelId =
   | "dungeon"
   | "export"
   | "gear"
-  | "bis";
+  | "bis"
+  | "data";

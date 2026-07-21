@@ -140,6 +140,16 @@ export function useTrackerDomain() {
     );
   }, []);
 
+  const handleDeleteAllCharacters = useCallback(() => {
+    setCharacters([]);
+    setDungeonToggles({});
+  }, []);
+
+  const handleDeleteAllDungeons = useCallback(() => {
+    setDungeons([]);
+    setDungeonToggles({});
+  }, []);
+
   const handleResetAllToggles = useCallback(() => {
     setDungeonToggles({});
   }, []);
@@ -168,6 +178,8 @@ export function useTrackerDomain() {
       handleDungeonToggle,
       handleDeleteCharacter,
       handleDeleteDungeon,
+      handleDeleteAllCharacters,
+      handleDeleteAllDungeons,
       handleAddFromTemplate,
       handleResetAllToggles,
       handleResetCharacterToggles,
@@ -181,6 +193,8 @@ export function useTrackerDomain() {
       dungeonToggles,
       dungeons,
       handleAddFromTemplate,
+      handleDeleteAllCharacters,
+      handleDeleteAllDungeons,
       handleDeleteCharacter,
       handleDeleteDungeon,
       handleDungeonToggle,
