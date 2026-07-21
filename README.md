@@ -7,7 +7,7 @@ Web app to track which raid cooldowns each character has used per dungeon (WotLK
 
 ## Features
 
-Toolbar panels (character pick, soft pick, BiS builds, add character, add dungeon) are mutually exclusive and share the same outlined panel shell.
+Toolbar panels (character pick, soft pick, BiS builds, add character, add dungeon) are mutually exclusive and share the same outlined panel shell. Add character / dungeon stay narrow (480px); BiS lists cap at 1280px; Character pick and Soft pick cap at 1920px so the unit-grid layouts do not stretch edge-to-edge on ultrawide screens.
 
 ### Characters & dungeons
 
@@ -23,11 +23,11 @@ Sort by name, type (size + Heroic), ilvl, or completions; mixed dungeon search b
 
 ### Character pick
 
-Copy a raid roster of characters still missing CD for visible (filtered) rows. Open via toolbar **Character pick** (EN) / **Подбор персонажа** (RU). The panel uses a bordered filter grid of equal unit-width columns: **min GS**, **role** (WoW LFG icons in an equal 2×2 grid), **character specs** (2×1; **Select all** / **Clear all**), and **raids** (table search, chips with raid icons). **Reset all filters** in the panel header clears specs, roles, and min GS. Spec checkboxes sync with the table raid search: characters on CD for every visible raid are cleared and disabled; **Select all** skips them. Inactive rows show CD styling (italic, muted, grayscale) or per-spec strikethrough when role/GS filters block a spec; hover tooltips explain why. At viewport widths ≥1600px, signup result lines sit to the right of the filter grid (scroll inside the block). Per-raid lines include a **Copy** button.
+Copy a raid roster of characters still missing CD for visible (filtered) rows. Open via toolbar **Character pick** (EN) / **Подбор персонажа** (RU). The panel uses a bordered filter grid of equal unit-width columns: **min GS**, **role** (WoW LFG icons in an equal 2×2 grid), **character specs** (2×1; **Select all** / **Clear all**), and **raids** (table search, chips with raid icons). **Reset all filters** in the panel header clears specs, roles, and min GS. Spec checkboxes sync with the table raid search: characters on CD for every visible raid are cleared and disabled; **Select all** skips them. Inactive rows show CD styling (italic, muted, grayscale) or per-spec strikethrough when role/GS filters block a spec; hover tooltips explain why. At viewport widths ≥1600px, signup result lines sit to the right of the filter grid (at least two unit columns wide; scroll inside the block). Per-raid lines include a **Copy** button.
 
 ### Soft pick
 
-Plan soft reserves for one character + spec. Open via toolbar **Soft pick** (EN) / **Подбор софтов** (RU). Set raid soft-reserve rules (max softs 1–4; **re-roll** or **+100**), pick a single main/off spec (same compact character-spec list as Character pick), then assign your softs and competing calls (histogram by soft weight) on BiS / BiS-variant upgrades from table-filtered raids. Layout: stacked on small screens; medium puts softs beside filters with the soft-reserve call below; wide (≥1600px) puts the call beside softs. Session-only (not persisted).
+Plan soft reserves for one character + spec. Open via toolbar **Soft pick** (EN) / **Подбор софтов** (RU). Set raid soft-reserve rules (max softs 1–4; **re-roll** or **+100**), pick a single main/off spec (same compact character-spec list as Character pick), then assign your softs and competing calls (histogram by soft weight) on BiS / BiS-variant upgrades from table-filtered raids. Layout: stacked on small screens; medium puts softs beside filters with the soft-reserve call below; wide (≥1600px) puts the call beside softs (softs column keeps a one-unit minimum so it does not collapse). Session-only (not persisted).
 
 ### BiS builds
 
