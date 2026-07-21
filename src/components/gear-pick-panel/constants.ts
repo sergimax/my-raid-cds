@@ -80,14 +80,15 @@ export function getGearPickGridTemplateColumns(
 ): string {
   /** Same unit column as Character pick (rules / raids / character specs). */
   const unitColumn = getFilterUnitColumnTemplate();
-  const flexibleColumn = "minmax(0, 1fr)";
+  /** Softs stay at least one unit wide so the block cannot collapse away. */
+  const softsColumn = `minmax(${EXPORT_FILTER_UNIT_WIDTH}px, 1fr)`;
   const copyColumn = `minmax(0, ${getGearPickCopyBlockMaxWidth()}px)`;
 
   if (layout === "wide") {
-    return `${unitColumn} ${unitColumn} ${flexibleColumn} ${copyColumn}`;
+    return `${unitColumn} ${unitColumn} ${softsColumn} ${copyColumn}`;
   }
 
-  return `${unitColumn} ${unitColumn} ${flexibleColumn}`;
+  return `${unitColumn} ${unitColumn} ${softsColumn}`;
 }
 
 export function getGearPickGridTemplateRows(layout: GearPickGridLayout): string {

@@ -48,16 +48,18 @@ describe("GEAR_PICK_COPY_BLOCK_SPAN", () => {
 describe("getGearPickGridTemplateColumns", () => {
   it("uses the shared unit column for rules and character specs on medium", () => {
     const unitColumn = getFilterUnitColumnTemplate();
+    const softsColumn = `minmax(${EXPORT_FILTER_UNIT_WIDTH}px, 1fr)`;
     expect(getGearPickGridTemplateColumns("md")).toBe(
-      `${unitColumn} ${unitColumn} minmax(0, 1fr)`,
+      `${unitColumn} ${unitColumn} ${softsColumn}`,
     );
   });
 
   it("keeps shared unit columns and a 1×2 copy column on wide", () => {
     const unitColumn = getFilterUnitColumnTemplate();
+    const softsColumn = `minmax(${EXPORT_FILTER_UNIT_WIDTH}px, 1fr)`;
     // Copy column max uses getGearPickCopyBlockMaxWidth() (gap-inclusive) — keep in sync.
     expect(getGearPickGridTemplateColumns("wide")).toBe(
-      `${unitColumn} ${unitColumn} minmax(0, 1fr) minmax(0, ${getGearPickCopyBlockMaxWidth()}px)`,
+      `${unitColumn} ${unitColumn} ${softsColumn} minmax(0, ${getGearPickCopyBlockMaxWidth()}px)`,
     );
   });
 });
