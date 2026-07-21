@@ -49,6 +49,48 @@ describe("item-drop-sources", () => {
     ]);
   });
 
+  it("orders ICC boss groups by encounter progression, not name", () => {
+    const groups = groupBisItemIdsByBossForDungeon(
+      // Lana'thel, Marrowgar, Putricide, Rotface (alphabetically Lana'thel first)
+      [50724, 50604, 50704, 50348],
+      {
+        name: "Icecrown Citadel",
+        shortName: "ICC",
+        raidKey: "icecrownCitadel",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+      },
+      "en",
+    );
+
+    expect(groups.map((group) => group.bossName)).toEqual([
+      "Lord Marrowgar",
+      "Rotface",
+      "Professor Putricide",
+      "Blood-Queen Lana'thel",
+    ]);
+  });
+
+  it("orders ToC boss groups by encounter progression", () => {
+    const groups = groupBisItemIdsByBossForDungeon(
+      [47153, 46964, 46995],
+      {
+        name: "Trial of the Crusader",
+        shortName: "ToC",
+        raidKey: "trialOfTheCrusader",
+        size: 25,
+        difficulty: DungeonDifficulty.HEROIC,
+      },
+      "en",
+    );
+
+    expect(groups.map((group) => group.bossName)).toEqual([
+      "The Beasts of Northrend",
+      "Lord Jaraxxus",
+      "Anub'arak",
+    ]);
+  });
+
   it("formats EN raid labels from English raid metadata", () => {
     expect(formatItemDropSourceLine(
       getFormattedItemDropSources(54581, "en")[0]!.source,

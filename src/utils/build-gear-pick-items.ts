@@ -1,9 +1,12 @@
 import type { AppLocale } from "../i18n/types.ts";
+import type { RaidKey } from "../data/raid-names.ts";
 import type { CharacterRecord } from "../types/characters.ts";
 import type { DungeonRecord } from "../types/dungeons.ts";
+import { compareBossNamesByEncounterOrder } from "../data/raid-boss-encounter-order.ts";
 import { evaluateSpecGearHint } from "./character-gear-hints.ts";
 import { formatDungeonExportLabel } from "./format-dungeon-label.ts";
 import type { GetBisSlotMapForSpec } from "./bis-lists.ts";
+import { resolveDungeonRaidKey } from "./resolve-dungeon-raid-key.ts";
 
 export type GearPickItemKind = "bis" | "variant";
 
@@ -14,6 +17,7 @@ export type GearPickItem = {
   kind: GearPickItemKind;
   bossName: string;
   raidLabel: string;
+  raidKey?: RaidKey;
 };
 
 type BuildGearPickItemsOptions = {
@@ -30,10 +34,11 @@ function mergeGearPickItem(
   kind: GearPickItemKind,
   bossName: string,
   raidLabel: string,
+  raidKey: RaidKey | undefined,
 ): void {
   const existing = byItemId.get(itemId);
   if (!existing) {
-    byItemId.set(itemId, { itemId, kind, bossName, raidLabel });
+    byItemId.set(itemId, { itemId, kind, bossName, raidLabel, raidKey });
     return;
   }
 
@@ -46,6 +51,9 @@ function mergeGearPickItem(
   }
   if (!existing.raidLabel && raidLabel) {
     existing.raidLabel = raidLabel;
+  }
+  if (!existing.raidKey && raidKey) {
+    existing.raidKey = raidKey;
   }
 }
 
@@ -83,10 +91,18 @@ export function buildGearPickItems({
     );
 
     const raidLabel = formatDungeonExportLabel(dungeon, locale);
+    const raidKey = resolveDungeonRaidKey(dungeon);
 
     for (const group of specHint.bisBossLootGroups) {
       for (const itemId of group.itemIds) {
-        mergeGearPickItem(byItemId, itemId, "bis", group.bossName, raidLabel);
+        mergeGearPickItem(
+          byItemId,
+          itemId,
+          "bis",
+          group.bossName,
+          raidLabel,
+          raidKey,
+        );
       }
     }
 
@@ -98,6 +114,7 @@ export function buildGearPickItems({
           "variant",
           group.bossName,
           raidLabel,
+          raidKey,
         );
       }
     }
@@ -108,7 +125,12 @@ export function buildGearPickItems({
     if (raidCompare !== 0) {
       return raidCompare;
     }
-    const bossCompare = left.bossName.localeCompare(right.bossName, locale);
+    const bossCompare = compareBossNamesByEncounterOrder(
+      left.raidKey ?? right.raidKey,
+      left.bossName,
+      right.bossName,
+      locale,
+    );
     if (bossCompare !== 0) {
       return bossCompare;
     }

@@ -1,5 +1,6 @@
 import type { ItemDropSource } from "../data/item-drop-sources.ts";
 import { getItemDropSources } from "../data/item-drop-sources.ts";
+import { compareBossNamesByEncounterOrder } from "../data/raid-boss-encounter-order.ts";
 import { DungeonList } from "../data/dungeon-list.ts";
 import { RaidNames, type RaidKey } from "../data/raid-names.ts";
 import type { AppLocale } from "../i18n/types.ts";
@@ -174,7 +175,12 @@ export function groupBisItemIdsByBossForDungeon(
       itemIds: [...group.itemIds].sort((leftId, rightId) => leftId - rightId),
     }))
     .sort((leftGroup, rightGroup) =>
-      leftGroup.bossName.localeCompare(rightGroup.bossName, locale),
+      compareBossNamesByEncounterOrder(
+        raidKey,
+        leftGroup.bossName,
+        rightGroup.bossName,
+        locale,
+      ),
     );
 }
 
