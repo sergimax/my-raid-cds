@@ -42,6 +42,7 @@ export const ruMessages: Messages = {
     bisLists: "BIS сборки",
     export: "Подбор персонажа",
     gearPick: "Подбор софтов",
+    dataControls: "Данные",
     resetAllToggles: "Сброс статистики",
   },
   table: {
@@ -127,6 +128,42 @@ export const ruMessages: Messages = {
     deleteDungeonTitle: "Удалить подземелье?",
     deleteDungeonMessage:
       'Удалить «{{name}}» и все переключатели КД? Это нельзя отменить.',
+  },
+  dataControlsPanel: {
+    title: "Управление данными",
+    description:
+      "Сброс отметок КД или очистка персонажей, рейдов и своих BIS списков. Опасные действия требуют подтверждения.",
+    closeAria: "Закрыть панель управления данными",
+    resetTogglesTitle: "Сброс статистики",
+    resetTogglesDescription:
+      "Снять все отметки КД персонаж–рейд. Персонажи и рейды остаются.",
+    deleteCharactersTitle: "Персонажи",
+    deleteCharactersDescription:
+      "Удалить всех персонажей и их переключатели КД.",
+    deleteCharactersAction: "Удалить всех персонажей",
+    deleteDungeonsTitle: "Рейды",
+    deleteDungeonsDescription:
+      "Удалить все рейды и связанные переключатели КД.",
+    deleteDungeonsAction: "Удалить все рейды",
+    addFromTemplateDescription:
+      "Загрузить шаблон рейдов WotLK (русские названия), когда список рейдов пуст.",
+    deleteBisTitle: "Свои BIS списки",
+    deleteBisDescription:
+      "Удалить сохранённые локальные BIS списки. Встроенные пресеты остаются.",
+    deleteBisAction: "Удалить все свои списки",
+    resetTogglesConfirmTitle: "Сбросить всю статистику?",
+    resetTogglesConfirmMessage:
+      "Снять все отметки КД? Это нельзя отменить.",
+    deleteCharactersConfirmTitle: "Удалить всех персонажей?",
+    deleteCharactersConfirmMessage:
+      "Удалить всех персонажей и их переключатели КД? Это нельзя отменить.",
+    deleteDungeonsConfirmTitle: "Удалить все рейды?",
+    deleteDungeonsConfirmMessage:
+      "Удалить все рейды и связанные переключатели КД? Это нельзя отменить.",
+    deleteBisConfirmTitle: "Удалить все свои BIS списки?",
+    deleteBisConfirmMessage:
+      "Удалить все сохранённые локальные BIS списки? Встроенные пресеты остаются. Это нельзя отменить.",
+    resetConfirm: "Сбросить",
   },
   bisPanel: {
     title: "BIS листы",
