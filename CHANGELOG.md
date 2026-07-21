@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.49.1] - 2026-07-21
+
 ### Changed
 
 - **Toolbar panels:** Cap width on large screens so panels stay usable — BiS lists at 1280px; Character pick and Soft pick at 1920px (unit-grid side-by-side keeps a 2-unit results / softs column).
