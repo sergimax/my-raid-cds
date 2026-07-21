@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **BiS armor slots:** Left/right paper-doll slots sit in a paired table so rows stay aligned; weapon slots stay in the bottom three-column row.
+
 ## [1.50.0] - 2026-07-21
 
 ### Added
