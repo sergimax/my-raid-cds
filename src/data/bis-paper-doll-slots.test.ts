@@ -34,7 +34,7 @@ describe("bis paper-doll slot layout", () => {
       .map((row) => row.slot)
       .concat([...BIS_PAPER_DOLL_BOTTOM_SLOTS]);
 
-    expect(gearSlots.toSorted((a, b) => a - b)).toEqual([
+    expect([...gearSlots].sort((left, right) => left - right)).toEqual([
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
     ]);
   });
