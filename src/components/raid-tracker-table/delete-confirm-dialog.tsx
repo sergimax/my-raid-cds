@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
+import type { ButtonProps } from "@mui/material";
 import { useTranslation } from "../../i18n/use-translation.ts";
 
 type DeleteConfirmDialogProps = {
@@ -13,6 +14,7 @@ type DeleteConfirmDialogProps = {
   title: string;
   message: string;
   confirmLabel?: string;
+  confirmColor?: ButtonProps["color"];
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -22,6 +24,7 @@ export function DeleteConfirmDialog({
   title,
   message,
   confirmLabel,
+  confirmColor = "error",
   onConfirm,
   onCancel,
 }: DeleteConfirmDialogProps) {
@@ -37,7 +40,12 @@ export function DeleteConfirmDialog({
       </DialogContent>
       <DialogActions>
         <Button onClick={onCancel}>{t("common.cancel")}</Button>
-        <Button onClick={onConfirm} color="error" variant="contained" autoFocus>
+        <Button
+          onClick={onConfirm}
+          color={confirmColor}
+          variant="contained"
+          autoFocus
+        >
           {resolvedConfirmLabel}
         </Button>
       </DialogActions>

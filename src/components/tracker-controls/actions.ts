@@ -12,7 +12,7 @@ export type TrackerActionId =
   | "bisLists"
   | "exportStatus"
   | "gearPick"
-  | "resetAllToggles";
+  | "dataControls";
 
 export type TrackerAction = {
   id: TrackerActionId;
@@ -32,7 +32,6 @@ export function buildTrackerActions(
   t: TranslateFn,
 ): TrackerAction[] {
   const showAddFromTemplate = source.dungeonsCount === 0;
-  const resetAllTogglesDisabled = !source.canResetAllToggles;
 
   return [
     {
@@ -91,13 +90,13 @@ export function buildTrackerActions(
       ariaExpanded: source.showDungeonForm,
     },
     {
-      id: "resetAllToggles",
-      label: t("toolbar.resetAllToggles"),
-      onClick: source.handleResetAllToggles,
-      disabled: resetAllTogglesDisabled,
-      buttonVariant: "text",
-      buttonColor: "warning",
-      menuItemSx: resetAllTogglesDisabled ? undefined : { color: "warning.main" },
+      id: "dataControls",
+      label: t("toolbar.dataControls"),
+      onClick: source.toggleDataControlsPanel,
+      selected: source.showDataControlsPanel,
+      buttonVariant: source.showDataControlsPanel ? "contained" : "outlined",
+      buttonColor: "inherit",
+      ariaExpanded: source.showDataControlsPanel,
     },
   ];
 }
