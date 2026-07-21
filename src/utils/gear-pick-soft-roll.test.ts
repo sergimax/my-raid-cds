@@ -100,7 +100,7 @@ describe("gear-pick-soft-roll", () => {
       ],
     });
     expect(text).toBe(
-      ["• Belt (Putricide) ×3", "• Trinket (Halion) ×1"].join("\n"),
+      ["- Belt (Putricide) x3 ", "- Trinket (Halion) x1 "].join("\n"),
     );
   });
 });

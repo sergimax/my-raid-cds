@@ -227,7 +227,7 @@ export function formatGearPickCopyText(options: FormatGearPickCopyOptions): stri
       continue;
     }
     const bossSuffix = item.bossName ? ` (${item.bossName})` : "";
-    lines.push(`• ${item.itemName}${bossSuffix} ×${item.mySofts}`);
+    lines.push(`- ${item.itemName}${bossSuffix} x${item.mySofts} `);
   }
 
   return lines.join("\n");
