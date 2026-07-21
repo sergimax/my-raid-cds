@@ -139,3 +139,13 @@ export function getExportFilterGridTemplateAreas(hasDungeon: boolean): string {
 export function getExportFilterGridMaxWidth(): number {
   return EXPORT_FILTER_UNIT_WIDTH * EXPORT_FILTER_GRID_COLUMN_COUNT;
 }
+
+/**
+ * Character pick results column on wide layouts — 2 unit columns including the
+ * inter-column gap (same span math as Soft pick copy).
+ */
+export function getExportResultColumnMinWidth(
+  gridColumnGapPx = EXPORT_FILTER_GRID_GAP_SPACING * 8,
+): number {
+  return 2 * EXPORT_FILTER_UNIT_WIDTH + gridColumnGapPx;
+}
