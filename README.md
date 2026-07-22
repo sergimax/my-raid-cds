@@ -2,8 +2,9 @@
 
 **English** | [Русский](README.ru.md)
 
-Web app to track which raid cooldowns each character has used per dungeon (WotLK-focused). Data persists locally in `localStorage`.
-Active link: [sergimax.ru/my-raid-cds](https://sergimax.ru/my-raid-cds)
+Web app to track which raid cooldowns each character has used per dungeon (WotLK-focused).
+Data persists locally in `localStorage`.
+Live site: [sergimax.ru/my-raid-cds](https://sergimax.ru/my-raid-cds)
 
 ![App version](https://img.shields.io/badge/App_version-1.51.1-purple)
 ![Game version](https://img.shields.io/badge/WoW-3.3.5a-brown)
@@ -16,55 +17,72 @@ Toolbar panels are mutually exclusive (only one open at a time).
 
 ### Characters & dungeons
 
-Add characters and raids by hand, or load the WotLK template when the dungeon list is empty. Edit specs, WowSims gear, and raid metadata later.
+Add manually or load the WotLK raid template when the list is empty.
+Edit specs, WowSims gear, and raid metadata later.
 
 ### Cooldown toggles
 
-Mark which character has used CD on which raid. Reset one character from the table header, or everyone from **Data**.
-
-### Data controls
-
-Bulk reset toggles, or delete all characters / dungeons / custom BiS lists (with confirm). When there are no dungeons, offer **Add from template**.
+Mark which character has CD on which raid.
+Reset one character from the table header, or everyone from the **Data** panel.
 
 ### Table
 
-Sort and search raids (name, size, mode — EN/RU, e.g. `ICC25H` / `ЦЛК25хм`). Compact layout on small screens.
+Sort and search raids (name, size, mode — EN/RU, e.g. `ICC25H` / `ЦЛК25хм`).
+Compact layout on small screens.
 
-### Character pick
+### Data controls
 
-Build a copyable signup line of characters still missing CD on filtered raids. Filter by min GS, role, and specs.
+Bulk reset CDs, or delete all characters / dungeons / local BiS lists (with confirm).
+When there are no dungeons — **Add from template**.
 
-### Soft pick
+### Character pick for a raid
 
-Plan soft reserves for one character + spec on BiS upgrades from filtered raids. Session-only; pasteable call lines. ICC / ToC bosses follow encounter order.
+Copyable signup line of characters still missing CD on filtered raids.
+Filters: min GS, role, specs.
+
+### Soft pick for a raid
+
+Soft reserves for one character + spec on BiS upgrades from filtered raids.
+Session-only; pasteable call lines.
 
 ### BiS builds
 
-Built-in presets per spec; save editable local copies that drive gear hints. Paper-doll slot layout.
+Built-in presets per spec; local copies are editable and used for gear-choice hints.
+Slot layout matches the in-game paper doll.
 
 ### Gear hints
 
-Toggle cells tint amber for missing BiS and blue for ilvl upgrades. Tooltips list loot by boss (ICC / ToC in encounter order).
+CD cells:
+- amber — missing BiS
+- blue — ilvl upgrade
+
+Tooltips group loot by boss.
 
 ### EN / RU
 
-Full UI and item tooltips. First visit defaults to Russian.
+Full UI and item tooltips.
+First visit defaults to Russian.
 
 ### Theme
 
-Light/dark mode, saved locally. Header links to GitHub and [sergimax.ru](https://sergimax.ru).
+Light/dark mode, saved locally.
+Header links to GitHub and [sergimax.ru](https://sergimax.ru).
 
 ## Development
 
-**Stack:** React 19, TypeScript, Vite, MUI, Vitest + Testing Library.
+**Stack:**
+React 19, TypeScript, Vite, MUI, Vitest + Testing Library.
 
-**CI:** On push/PR to `main`, GitHub Actions runs **Lint**, **Test**, and **Build** in parallel (`.github/workflows/ci.yml`); pushes to `main` also upload a `dist` artifact (`.github/workflows/build-artifacts.yml`).
+**CI:**
+On push/PR to `main`, GitHub Actions runs **Lint**, **Test**, and **Build** in parallel (`.github/workflows/ci.yml`); pushes to `main` also upload a `dist` artifact (`.github/workflows/build-artifacts.yml`).
 
-**Layout:** `src/components/` (UI), `src/hooks/` (domain + overlay panels), `src/utils/`, `src/data/` (WoW bundles + BiS presets), `src/storage/`. Tests are colocated as `*.test.ts(x)`.
+**Layout:**
+`src/components/` (UI), `src/hooks/` (domain + overlay panels), `src/utils/`, `src/data/` (WoW bundles + BiS presets), `src/storage/`. Tests are colocated as `*.test.ts(x)`.
 
 Contributor/agent conventions: [`.cursor/rules/project-rules.mdc`](.cursor/rules/project-rules.mdc).
 
-**Roadmap:** [docs/roadmap.md](docs/roadmap.md).
+**Planned features:**
+[docs/roadmap.md](docs/roadmap.md).
 
 ### Quick start
 
@@ -87,7 +105,8 @@ Open [http://localhost:5173](http://localhost:5173).
 | `npm run comment:bis-presets` | Add slot comments to BiS preset files |
 | `npm run download:gear-slot-icons` | Regenerate WoW paper-doll slot placeholder PNGs in `src/assets/gear-slot-icons/` |
 
-Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spec` sections with `## Server - Author - List - URL` blocks; Titans guild lists use `## Titans - Guild - Titans` with Russian slot labels). Regenerate TypeScript presets after editing the markdown.
+Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spec` sections with `## Server - Author - List - URL` blocks; Titans guild lists use `## Titans - Guild - Titans` with Russian slot labels).
+Regenerate TypeScript presets after editing the markdown.
 
 ### Persistence
 
@@ -98,4 +117,5 @@ Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spe
 | `my-raid-cds-item-tooltip-locale` | `en` or `ru` (defaults to `ru`) |
 | `my-raid-cds-color-mode` | Light/dark preference |
 
-Corrupted tracker data resets with an error alert. Legacy saves migrate on load.
+Corrupted tracker data resets with an error alert.
+Legacy saves migrate on load.
