@@ -14,9 +14,16 @@ import {
 } from "../hooks/item-tooltip-locale.ts";
 import type { ItemTooltipLocale } from "../constants/item-tooltips.ts";
 
-export function ItemTooltipLocaleProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<ItemTooltipLocale>(() =>
-    getInitialItemTooltipLocale(),
+export function ItemTooltipLocaleProvider({
+  children,
+  initialLocale,
+}: {
+  children: ReactNode;
+  /** When set (e.g. tests), skips storage / default detection for the first paint. */
+  initialLocale?: ItemTooltipLocale;
+}) {
+  const [locale, setLocaleState] = useState<ItemTooltipLocale>(
+    () => initialLocale ?? getInitialItemTooltipLocale(),
   );
 
   useEffect(() => {
