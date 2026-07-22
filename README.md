@@ -49,7 +49,7 @@ Full UI + item tooltips (Cavern of Time / WoWRoad).
 
 ### Theme
 
-Light/dark mode with a slate UI chrome (frosted header, card-style table and panels), saved locally. App crest in the header (`logo.svg`); favicon uses `logo-as-icon.svg`.
+Light/dark mode with a slate UI chrome (frosted header, card-style table and panels), saved locally. App crest in the header (`logo.svg`); favicon uses `logo-as-icon.svg`. Header also links to the GitHub repo and [sergimax.ru](https://sergimax.ru) (home icon).
 
 ## Development
 
