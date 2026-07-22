@@ -53,8 +53,8 @@ Slot layout matches the in-game paper doll.
 ### Gear hints
 
 CD cells:
-- amber — missing BiS
-- blue — ilvl upgrade
+- <span style="color:#d97706">amber</span> — missing BiS
+- <span style="color:#0284c7">blue</span> — ilvl upgrade
 
 Tooltips group loot by boss.
 
