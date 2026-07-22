@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **README.ru.md:** Russian project readme with language switcher links to/from `README.md`.
+
+### Changed
+
+- **Default locale:** First visit (no saved preference) uses Russian for UI and item tooltips (`DEFAULT_ITEM_TOOLTIP_LOCALE`); `document.documentElement.lang` follows the active locale.
+
 ## [1.51.1] - 2026-07-22
 
 ### Added

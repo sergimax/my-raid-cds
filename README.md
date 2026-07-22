@@ -1,6 +1,8 @@
 # My Raid CDs
 
-Web app to track which raid cooldowns each character has used per dungeon (WotLK-focused). Data persists in `localStorage`.
+**English** | [Русский](README.ru.md)
+
+Web app to track which raid cooldowns each character has used per dungeon (WotLK-focused). Data persists locally in `localStorage`.
 
 ![App version](https://img.shields.io/badge/App_version-1.51.1-purple)
 ![Game version](https://img.shields.io/badge/WoW-3.3.5a-brown)
@@ -45,7 +47,7 @@ Amber = missing BiS targets from the selected list; blue = stat-filtered ilvl up
 
 ### EN / RU
 
-Full UI + item tooltips (Cavern of Time / WoWRoad).
+Full UI + item tooltips (Cavern of Time / WoWRoad). First visit (no saved locale) defaults to **Russian**.
 
 ### Theme
 
@@ -92,7 +94,7 @@ Built-in BiS lists are authored in `scripts/bis-list-sources.md` (`# Class - Spe
 |-----|----------|
 | `my-raid-cds` | Characters, dungeons, toggles (`schemaVersion` 5) |
 | `my-raid-cds-bis-lists` | BiS preset selections and local lists (malformed entries skipped on load) |
-| `my-raid-cds-item-tooltip-locale` | `en` or `ru` |
+| `my-raid-cds-item-tooltip-locale` | `en` or `ru` (defaults to `ru`) |
 | `my-raid-cds-color-mode` | Light/dark preference |
 
 Corrupted tracker data resets with an error alert. Legacy saves migrate on load.
