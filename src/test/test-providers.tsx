@@ -7,7 +7,7 @@ import { createAppTheme } from "../theme/create-app-theme.ts";
 export function TestProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider theme={createAppTheme("light")}>
-      <ItemTooltipLocaleProvider>
+      <ItemTooltipLocaleProvider initialLocale="en">
         <BisListsProvider>{children}</BisListsProvider>
       </ItemTooltipLocaleProvider>
     </ThemeProvider>
