@@ -3,6 +3,7 @@
 **English** | [Русский](README.ru.md)
 
 Web app to track which raid cooldowns each character has used per dungeon (WotLK-focused). Data persists locally in `localStorage`.
+Active link: [sergimax.ru/my-raid-cds](https://sergimax.ru/my-raid-cds)
 
 ![App version](https://img.shields.io/badge/App_version-1.51.1-purple)
 ![Game version](https://img.shields.io/badge/WoW-3.3.5a-brown)
@@ -11,47 +12,47 @@ Web app to track which raid cooldowns each character has used per dungeon (WotLK
 
 ## Features
 
-Toolbar panels (character pick, soft pick, BiS builds, add character, add dungeon, data) are mutually exclusive and share the same outlined panel shell. Add character / dungeon stay narrow (480px); Data controls use a 2×2 unit grid (680px); BiS lists cap at 1280px; Character pick and Soft pick cap at 1920px so the unit-grid layouts do not stretch edge-to-edge on ultrawide screens.
+Toolbar panels are mutually exclusive (only one open at a time).
 
 ### Characters & dungeons
 
-Add manually or load a WotLK raid template when the list is empty. The new-dungeon form suggests known raid names and auto-fills short abbreviations. Edit name, specs, gear (WowSims import), dungeon metadata, and emblem badges. The edit dialog nudges you to re-import gear or update gear score when those fields drift apart.
+Add characters and raids by hand, or load the WotLK template when the dungeon list is empty. Edit specs, WowSims gear, and raid metadata later.
 
 ### Cooldown toggles
 
-Per character–dungeon switches; reset per character from the table header, or reset all from the **Data** panel.
+Mark which character has used CD on which raid. Reset one character from the table header, or everyone from **Data**.
 
 ### Data controls
 
-Toolbar **Data** (EN) / **Данные** (RU). Unit-sized action blocks to reset all cooldown toggles, delete all characters, delete all dungeons (or **Add from template** when the list is empty), and delete all custom BiS lists. Destructive actions ask for confirmation.
+Bulk reset toggles, or delete all characters / dungeons / custom BiS lists (with confirm). When there are no dungeons, offer **Add from template**.
 
 ### Table
 
-Sort by name, type (size + Heroic), ilvl, or completions; mixed dungeon search by raid name, size, and mode (e.g. `ICC`, `Uld10`, `ICC25N` / `ЦЛК25об`, `ToC25H` / `ИК25хм`; EN/RU names work in either locale); compact layout on narrow screens.
+Sort and search raids (name, size, mode — EN/RU, e.g. `ICC25H` / `ЦЛК25хм`). Compact layout on small screens.
 
 ### Character pick
 
-Copy a raid roster of characters still missing CD for visible (filtered) rows. Open via toolbar **Character pick** (EN) / **Подбор персонажа** (RU). The panel uses a bordered filter grid of equal unit-width columns: **min GS**, **role** (WoW LFG icons in an equal 2×2 grid), **character specs** (2×1; **Select all** / **Clear all**), and **raids** (table search, chips with raid icons). **Reset all filters** in the panel header clears specs, roles, and min GS. Spec checkboxes sync with the table raid search: characters on CD for every visible raid are cleared and disabled; **Select all** skips them. Inactive rows show CD styling (italic, muted, grayscale) or per-spec strikethrough when role/GS filters block a spec; hover tooltips explain why. At viewport widths ≥1600px, signup result lines sit to the right of the filter grid (at least two unit columns wide; scroll inside the block). Per-raid lines include a **Copy** button.
+Build a copyable signup line of characters still missing CD on filtered raids. Filter by min GS, role, and specs.
 
 ### Soft pick
 
-Plan soft reserves for one character + spec. Open via toolbar **Soft pick** (EN) / **Подбор софтов** (RU). Set raid soft-reserve rules (max softs 1–4; **re-roll** or **+100**), pick a single main/off spec (same compact character-spec list as Character pick), then assign your softs and competing calls (histogram by soft weight) on BiS / BiS-variant upgrades from table-filtered raids. ICC and ToC targets list bosses in encounter order; the pasteable call uses `- Item (Boss) xN ` lines. Layout: stacked on small screens; medium puts softs beside filters with the soft-reserve call below; wide (≥1600px) puts the call beside softs (softs column keeps a one-unit minimum so it does not collapse). Session-only (not persisted).
+Plan soft reserves for one character + spec on BiS upgrades from filtered raids. Session-only; pasteable call lines. ICC / ToC bosses follow encounter order.
 
 ### BiS builds
 
-Built-in presets per spec (Titans + community sources); toolbar **BiS builds** (EN) / **BIS сборки** (RU). Save editable local copies; drives gear upgrade hints. Slot rows use an in-game paper-doll layout (paired left/right armor table + bottom weapons) with WoW empty-slot icons (Back uses the Chest icon; shirt/tabard shown as cosmetic placeholders only). Read-only presets use a compact layout with truncated slot names. Save failures (e.g. storage quota) show an alert; malformed local entries are skipped on load rather than wiping the store.
+Built-in presets per spec; save editable local copies that drive gear hints. Paper-doll slot layout.
 
 ### Gear hints
 
-Amber = missing BiS targets from the selected list; blue = stat-filtered ilvl upgrades (darker tint = more slots). Dual-spec characters split the toggle cell left (main) / right (off). Rings and trinkets count as satisfied when equipped in either slot of the pair. Normal/heroic same-name variants count as the same item for BiS and ilvl. Same-ilvl faction twins (e.g. Alliance/Horde Solace) satisfy BiS, but the other faction id can still appear on the ilvl track so you can pick a variant. Ilvl hints filter proc trinkets by role (tank / healer / melee DPS) when bundled stats are misleading. Ruby Sanctum rows filter loot by size and difficulty (10N/10H/25N/25H). Dismissible legend above the table explains colors. Tooltips label boss-loot sections **BiS** / **Upgrades**, omit wrong-mode drops, and list tier tokens (including Vault of Archavon tier hands/legs); ICC and ToC boss groups follow encounter order; light theme uses a dark high-contrast tooltip panel with bright item-name colors. Tank ilvl hints require defense, dodge, or parry (BiS list overrides).
+Toggle cells tint amber for missing BiS and blue for ilvl upgrades. Tooltips list loot by boss (ICC / ToC in encounter order).
 
 ### EN / RU
 
-Full UI + item tooltips (Cavern of Time / WoWRoad). First visit (no saved locale) defaults to **Russian**.
+Full UI and item tooltips. First visit defaults to Russian.
 
 ### Theme
 
-Light/dark mode with a slate UI chrome (frosted header, card-style table and panels), saved locally. App crest in the header (`logo.svg`); favicon uses `logo-as-icon.svg`. Header also links to the GitHub repo and [sergimax.ru](https://sergimax.ru) (home icon).
+Light/dark mode, saved locally. Header links to GitHub and [sergimax.ru](https://sergimax.ru).
 
 ## Development
 
