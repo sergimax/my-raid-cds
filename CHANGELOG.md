@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.51.1] - 2026-07-22
+
 ### Added
 
 - **Author site:** Header meta cluster links to [sergimax.ru](https://sergimax.ru) via a home icon beside GitHub.
