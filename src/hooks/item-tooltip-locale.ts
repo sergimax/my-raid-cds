@@ -1,5 +1,6 @@
 import { createContext } from "react";
 import {
+  DEFAULT_ITEM_TOOLTIP_LOCALE,
   ITEM_TOOLTIP_LOCALE_STORAGE_KEY,
   ITEM_TOOLTIP_LOCALES,
   type ItemTooltipLocale,
@@ -27,5 +28,5 @@ function readStoredItemTooltipLocale(): ItemTooltipLocale | null {
 }
 
 export function getInitialItemTooltipLocale(): ItemTooltipLocale {
-  return readStoredItemTooltipLocale() ?? "en";
+  return readStoredItemTooltipLocale() ?? DEFAULT_ITEM_TOOLTIP_LOCALE;
 }

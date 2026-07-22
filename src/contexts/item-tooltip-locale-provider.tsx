@@ -20,6 +20,10 @@ export function ItemTooltipLocaleProvider({ children }: { children: ReactNode })
   );
 
   useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
+
+  useEffect(() => {
     hideExternalWowTooltips();
   }, [locale]);
 
