@@ -23,7 +23,8 @@ export const enMessages = {
       "Interface language: Russian. Click for English. Item tooltips use WoWRoad.",
     localeAria: "Interface language {{locale}}. Switch to {{nextLocale}}.",
     versionAria: "Version {{version}}",
-    authorHint: "by sergimax via cursor",
+    githubHint: "Source on GitHub · by sergimax via Cursor",
+    authorSiteAria: "sergimax.ru",
   },
   intro: {
     title: "Get started",
