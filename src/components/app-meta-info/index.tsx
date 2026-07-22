@@ -62,7 +62,7 @@ export function AppMetaInfo() {
           color="inherit"
           aria-label={authorSiteAria}
         >
-          <HomeIcon fontSize="small"  />
+          <HomeIcon fontSize="small" />
         </IconButton>
       </Tooltip>
     </Box>
